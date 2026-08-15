@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
+import javax.xml.XMLConstants;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.internal.RuntimeBehavior;
@@ -140,7 +141,22 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   private final boolean m_loadClasses;
   private boolean m_validate = false;
   private boolean m_doctypeDeclared = false;
-  private boolean m_hasWarn = false;
+
+  /**
+   * Whether the parser was given the bundled schema, which {@code XMLParser} decides before the
+   * parse starts and only for a suite that declares no doctype.
+   *
+   * <p>Reporting is gated on having a grammar: without one a validating parser only ever complains
+   * that none was found, which would turn the "declare a schema" hint into a hard failure.
+   */
+  private boolean m_schemaValidated = false;
+
+  /**
+   * Whether the root element has been looked at yet. The hint below is decided there and nowhere
+   * else: a schema declaration deeper in the document is not one, and re-reading it on every
+   * element would let a nested element decide whether the file declared a grammar.
+   */
+  private boolean m_rootInspected = false;
 
   /**
    * Resolved once per parse rather than per violation, so a malformed suite cannot re-read the
@@ -638,15 +654,9 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
    */
   @Override
   public void startElement(String uri, String localName, String qName, Attributes attributes) {
-    if (!m_doctypeDeclared && !m_hasWarn) {
-      String msg =
-          String.format(
-              "It is strongly recommended to add "
-                  + "\"<!DOCTYPE suite SYSTEM \"%s\" >\" at the top of the suite file [%s]"
-                  + " otherwise TestNG may fail or not work as expected.",
-              Parser.HTTPS_TESTNG_DTD_URL, this.m_fileName);
-      Logger.getLogger(TestNGContentHandler.class).warn(msg);
-      m_hasWarn = true;
+    if (!m_rootInspected) {
+      m_rootInspected = true;
+      warnIfNoGrammarIsDeclared(attributes);
     }
     String name = attributes.getValue("name");
 
@@ -855,11 +865,67 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     }
   }
 
+  /**
+   * Told by {@code XMLParser} whether it attached the bundled schema, which is the only thing that
+   * gives a doctype-less suite a grammar to be judged against.
+   */
+  void setSchemaValidated(boolean schemaValidated) {
+    m_schemaValidated = schemaValidated;
+  }
+
+  /**
+   * Records the doctype {@code XMLParser} saw in the prologue, before the parse began.
+   *
+   * <p>A second, independent source for what {@link #startDTD} reports. The lexical handler is
+   * optional in SAX, and on a parser that refuses it a doctype with only an internal subset is
+   * reported by nothing -- {@link #resolveEntity} fires solely for an external subset. Such a suite
+   * was then advised to declare the grammar it had just declared, and had its violations discarded
+   * even under strict. The prologue is read whatever the parser supports, so it closes that gap.
+   */
+  void doctypeDeclared() {
+    m_doctypeDeclared = true;
+  }
+
+  /**
+   * Advises declaring a grammar when the document has none, once, on the root element.
+   *
+   * <p>The schema comes first: it is what TestNG writes and what it recommends. The doctype is
+   * still offered, because it is what every existing suite file carries and it stays supported.
+   */
+  private void warnIfNoGrammarIsDeclared(Attributes attributes) {
+    if (m_doctypeDeclared || declaresASchema(attributes)) {
+      return;
+    }
+    Logger.getLogger(TestNGContentHandler.class)
+        .warn(
+            String.format(
+                "It is strongly recommended to declare a schema at the top of the suite file [%s],"
+                    + " either xsi:noNamespaceSchemaLocation=\"%s\" on <suite> (recommended) or"
+                    + " \"<!DOCTYPE suite SYSTEM \"%s\" >\", otherwise TestNG may fail or not work"
+                    + " as expected.",
+                this.m_fileName, XMLParser.HTTPS_TESTNG_XSD_URL, Parser.HTTPS_TESTNG_DTD_URL));
+  }
+
+  /**
+   * Whether the element declares a schema, in either spelling and whether or not the parser was
+   * namespace aware -- the DTD path leaves namespace awareness off, so the attribute arrives only
+   * under its qualified name there.
+   */
+  private static boolean declaresASchema(Attributes attributes) {
+    return attributes.getValue(
+                XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "noNamespaceSchemaLocation")
+            != null
+        || attributes.getValue(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "schemaLocation")
+            != null
+        || attributes.getValue("xsi:noNamespaceSchemaLocation") != null
+        || attributes.getValue("xsi:schemaLocation") != null;
+  }
+
   @Override
   public void error(SAXParseException e) throws SAXException {
-    if (!m_doctypeDeclared) {
-      // Without a doctype a validating parser only ever complains that no grammar was found, which
-      // would turn the existing "you should add a <!DOCTYPE>" hint into a hard failure.
+    if (!m_doctypeDeclared && !m_schemaValidated) {
+      // With no grammar a validating parser only ever complains that none was found, which would
+      // turn the "declare a schema" hint into a hard failure.
       return;
     }
     switch (m_validationMode) {
@@ -871,7 +937,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
                 "The suite file ["
                     + m_fileName
                     + "] does not conform to "
-                    + Parser.TESTNG_DTD
+                    + (m_schemaValidated ? XMLParser.TESTNG_XSD : Parser.TESTNG_DTD)
                     + ": "
                     + e.getMessage()
                     + ". Run with [-D"

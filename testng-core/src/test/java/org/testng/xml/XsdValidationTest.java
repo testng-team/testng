@@ -34,8 +34,8 @@ import org.xml.sax.SAXParseException;
  */
 public class XsdValidationTest {
 
-  /** Shipped next to the DTD, in {@code testng-core/src/main/resources}. */
-  static final String TESTNG_XSD = "testng-1.1.xsd";
+  /** The schema the reader resolves, so that a version bump cannot leave the tests behind. */
+  static final String TESTNG_XSD = XMLParser.TESTNG_XSD;
 
   private static final String INVALID_SUITE = "xml/validation/wrong-element-order.xml";
 

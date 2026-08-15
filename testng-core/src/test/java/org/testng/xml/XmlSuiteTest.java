@@ -61,10 +61,15 @@ public class XmlSuiteTest extends SimpleBaseTest {
     }
   }
 
+  /**
+   * The expected line number is 1 rather than 2 because the output no longer opens with a doctype:
+   * a suite now declares its schema on the {@code <suite>} element itself, so that element moved up
+   * a line.
+   */
   @DataProvider(name = "dp")
   public Object[][] getData() {
     return new Object[][] {
-      {"1000", 1, 2},
+      {"1000", 1, 1},
       {"", 0, 0}
     };
   }

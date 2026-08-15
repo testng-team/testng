@@ -1,11 +1,17 @@
 package org.testng.xml;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import org.testng.TestNGException;
 import org.testng.log4testng.Logger;
 import org.xml.sax.SAXException;
@@ -15,6 +21,12 @@ import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
 public abstract class XMLParser<T> implements IFileParser<T> {
+
+  /** The name of the TestNG schema, shipped next to the DTD. */
+  public static final String TESTNG_XSD = "testng-1.1.xsd";
+
+  /** Where the schema is published, for suite files to declare and for tools to fetch. */
+  public static final String HTTPS_TESTNG_XSD_URL = "https://testng.org/" + TESTNG_XSD;
 
   /**
    * Whether the next parse will validate against the TestNG DTD. Exposed so that tests can tell
@@ -42,7 +54,38 @@ public abstract class XMLParser<T> implements IFileParser<T> {
    */
   public void parse(InputStream is, DefaultHandler dh) throws SAXException, IOException {
     SAXParserFactory spf = loadSAXParserFactory();
-    configureValidation(spf);
+    if (!validatesAgainstSuiteSchema() || !XmlValidationMode.current().isValidating()) {
+      // Nothing to choose between, so neither the buffering nor the prologue scan below would be
+      // read. This is also the path every parser that is not reading a suite takes.
+      configureValidation(spf);
+      parse(spf, is, dh, false, false);
+      return;
+    }
+    // Buffered because the grammar has to be chosen before the parser is built -- JAXP rejects
+    // setValidating(true) together with setSchema(...) -- while the doctype is only observed once
+    // parsing is under way. Suite files are a few kilobytes; #3316 buffers the DTD on the same
+    // grounds.
+    //
+    // Closed here rather than left to the parser, which is what consumes -- and closes -- the
+    // stream on the path below. Parser opens a FileInputStream per suite file and closes none, and
+    // JarFileUtils deletes the directory it extracted a jar into as soon as parsing returns: on
+    // Windows a file still held open cannot be deleted.
+    byte[] document;
+    try (InputStream source = is) {
+      document = source.readAllBytes();
+    }
+    boolean declaresDoctype = XmlPrologue.declaresDoctype(document);
+    boolean schemaValidated = configureGrammar(spf, declaresDoctype);
+    parse(spf, new ByteArrayInputStream(document), dh, schemaValidated, declaresDoctype);
+  }
+
+  private static void parse(
+      SAXParserFactory spf,
+      InputStream is,
+      DefaultHandler dh,
+      boolean schemaValidated,
+      boolean declaresDoctype)
+      throws SAXException, IOException {
     SAXParser parser;
     try {
       parser = spf.newSAXParser();
@@ -51,7 +94,88 @@ public abstract class XMLParser<T> implements IFileParser<T> {
       throw new TestNGException("No SAXParser could be configured to read suite files.", e);
     }
     registerLexicalHandler(parser, dh);
+    if (dh instanceof TestNGContentHandler) {
+      TestNGContentHandler handler = (TestNGContentHandler) dh;
+      handler.setSchemaValidated(schemaValidated);
+      if (declaresDoctype) {
+        // Only ever confirms: the scan answers "no doctype" for input it could not read, so a
+        // false here means "nothing found", not "nothing there".
+        handler.doctypeDeclared();
+      }
+    }
     parser.parse(is, dh);
+  }
+
+  /**
+   * Whether a document with no doctype should be validated against the TestNG suite schema.
+   *
+   * <p>False here, and overridden only by {@link SuiteXmlParser}: this class is a generic SAX front
+   * end -- {@code TestsuiteXmlParser} reads JUnit reports through it -- and a {@code <testsuite>}
+   * document is not a suite. Validating one against {@code testng-1.1.xsd} would report violations
+   * for a grammar it was never meant to satisfy.
+   */
+  protected boolean validatesAgainstSuiteSchema() {
+    return false;
+  }
+
+  /**
+   * Points the parser at the grammar the document declares, and reports whether that grammar is the
+   * schema rather than the DTD.
+   *
+   * <p>A suite carrying a doctype keeps being validated against it, so nothing changes for the
+   * documents that have one -- including the case of an internal subset that declares entities but
+   * not {@code <suite>}, which a DTD-validating parser rightly rejects and a schema would not see.
+   * A suite that declares no doctype had no grammar at all until now, and gets the bundled schema.
+   */
+  private static boolean configureGrammar(SAXParserFactory spf, boolean declaresDoctype) {
+    if (declaresDoctype) {
+      configureValidation(spf);
+      return false;
+    }
+    if (BundledSchema.INSTANCE == null) {
+      return false;
+    }
+    // Schema validation is defined in terms of namespaces, even for a schema without one. Safe to
+    // turn on here in a way it is not for the DTD path: with no DTD to validate against, an xmlns
+    // attribute cannot become a validity error for being undeclared.
+    spf.setNamespaceAware(true);
+    spf.setSchema(BundledSchema.INSTANCE);
+    return true;
+  }
+
+  /**
+   * The bundled schema, compiled once and only when a suite is actually read without a doctype.
+   *
+   * <p>Loaded from the classpath rather than from the document's {@code
+   * xsi:noNamespaceSchemaLocation}, for the reason the entity resolver loads the DTD from the
+   * classpath: a parse must not depend on reaching testng.org, and must not fetch a grammar from
+   * whatever URL a suite file happens to name. The declaration in the document stays meaningful to
+   * everything else -- IDEs and standalone validators read it -- but TestNG validates against the
+   * copy it ships.
+   *
+   * <p>A missing or uncompilable schema degrades to "no validation" rather than failing the parse:
+   * a repackaged jar that dropped the resource should still run suites.
+   */
+  private static final class BundledSchema {
+    private static final Schema INSTANCE = compile();
+
+    private static Schema compile() {
+      URL url = XMLParser.class.getClassLoader().getResource(TESTNG_XSD);
+      if (url == null) {
+        Logger.getLogger(XMLParser.class)
+            .warn(
+                TESTNG_XSD
+                    + " is not on the classpath; suites without a doctype are not validated.");
+        return null;
+      }
+      try {
+        return SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+            .newSchema(new StreamSource(url.toExternalForm()));
+      } catch (SAXException e) {
+        Logger.getLogger(XMLParser.class).warn(TESTNG_XSD + " does not compile: " + e);
+        return null;
+      }
+    }
   }
 
   /**
@@ -68,9 +192,9 @@ public abstract class XMLParser<T> implements IFileParser<T> {
     try {
       parser.setProperty("http://xml.org/sax/properties/lexical-handler", dh);
     } catch (SAXNotRecognizedException | SAXNotSupportedException e) {
-      // Optional in SAX. Losing it costs detection of a doctype that has no external subset;
-      // TestNGContentHandler.resolveEntity still catches the external case, so this degrades
-      // rather than breaks and is not worth failing the parse over.
+      // Optional in SAX, and no longer costly for a suite: the prologue scan above already told
+      // the handler whether a doctype is declared, including the internal-subset-only case that
+      // neither startDTD nor resolveEntity would report here. Not worth failing the parse over.
       Logger.getLogger(XMLParser.class)
           .warn("The XML parser in use does not report doctype declarations: " + e);
     }

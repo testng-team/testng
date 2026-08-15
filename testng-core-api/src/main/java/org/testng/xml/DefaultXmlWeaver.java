@@ -15,6 +15,7 @@ import static org.testng.xml.XmlSuite.DEFAULT_VERBOSE;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import javax.xml.XMLConstants;
 import org.testng.TestNGException;
 import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
@@ -58,14 +59,23 @@ import org.testng.reporters.XMLStringBuffer;
 public class DefaultXmlWeaver implements IWeaveXml {
   // TODO: move constants to XmlSuite?
   /**
-   * The name of the TestNG DTD. Must stay in sync with {@code Parser.TESTNG_DTD}, which is the
-   * version the reader resolves from the classpath. The two had drifted apart, so the emitted
-   * doctype advertised a schema that was never the one used to read the file back. They cannot
-   * share a constant: {@code Parser} lives in testng-core, which depends on this module.
+   * The name of the TestNG schema. Must stay in sync with {@code XMLParser.TESTNG_XSD}, which is
+   * the version the reader resolves from the classpath: the two had drifted apart when the doctype
+   * still carried this, and the emitted grammar was never the one used to read the file back. They
+   * cannot share a constant, since {@code XMLParser} lives in testng-core, which depends on this
+   * module; {@code theEmittedSchemaDeclarationNamesTheSchemaTheParserResolves} pins them together.
    */
-  private static final String TESTNG_DTD = "testng-1.1.dtd";
+  private static final String TESTNG_XSD = "testng-1.1.xsd";
 
-  private static final String HTTPS_TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
+  private static final String HTTPS_TESTNG_XSD_URL = "https://testng.org/" + TESTNG_XSD;
+
+  /** The namespace declaration and the schema hint, in that order, for the {@code <suite>} tag. */
+  private static final String SCHEMA_DECLARATION =
+      " xmlns:xsi=\""
+          + XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI
+          + "\" xsi:noNamespaceSchemaLocation=\""
+          + HTTPS_TESTNG_XSD_URL
+          + '"';
 
   /** Immutable, so a single instance can serve every {@code asXmlFragment} call. */
   private static final DefaultXmlWeaver LEGACY_FRAGMENT_WEAVER = new DefaultXmlWeaver();
@@ -90,7 +100,6 @@ public class DefaultXmlWeaver implements IWeaveXml {
   public String asXml(XmlSuite xmlSuite) {
     XMLStringBuffer xsb = new XMLStringBuffer();
     xsb.setDefaultComment(defaultComment);
-    xsb.setDocType("suite SYSTEM \"" + HTTPS_TESTNG_DTD_URL + '\"');
     Properties p = new Properties();
     p.setProperty("name", xmlSuite.getName());
     if (xmlSuite.getVerbose() != null) {
@@ -156,7 +165,17 @@ public class DefaultXmlWeaver implements IWeaveXml {
         "allow-return-values",
         String.valueOf(xmlSuite.getAllowReturnValues()),
         DEFAULT_ALLOW_RETURN_VALUES.toString());
-    xsb.push("suite", p);
+    // The schema rather than a doctype: it is what TestNG recommends, and what the reader validates
+    // a suite against when it declares no doctype. Emitting a doctype here would have TestNG
+    // producing files it then reports as declaring the older grammar -- testng-failed.xml is
+    // rewritten on every failing run, so this output is most of what users ever see TestNG write.
+    // The two cannot both be declared: the DTD declares neither xmlns:xsi nor
+    // xsi:noNamespaceSchemaLocation, so a document carrying both is not DTD-valid.
+    //
+    // Passed as the tag's schema rather than through the attribute map, which is a Properties and
+    // so unordered: the declarations belong before the attributes they apply to, and a namespace
+    // declaration turning up after its own use reads like a mistake.
+    xsb.push("suite", SCHEMA_DECLARATION, p);
 
     if (xmlSuite.getGroups() != null) {
       asXml(xsb, xmlSuite.getGroups());

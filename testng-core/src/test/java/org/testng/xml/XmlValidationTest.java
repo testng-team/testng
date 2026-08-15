@@ -46,6 +46,8 @@ public class XmlValidationTest {
   private static final String INVALID_SUITE = "xml/validation/wrong-element-order.xml";
   private static final String VALID_SUITE = "xml/goodWithDoctype.xml";
   private static final String INTERNAL_SUBSET_SUITE = "xml/validation/internal-subset-only.xml";
+  private static final String SCHEMA_DECLARED_INVALID_SUITE =
+      "xml/validation/schema-declared-wrong-element-order.xml";
 
   private String previousMode;
 
@@ -122,6 +124,88 @@ public class XmlValidationTest {
           .isInstanceOf(TestNGException.class)
           .hasRootCauseInstanceOf(SAXParseException.class);
     }
+  }
+
+  /**
+   * A suite that declares a schema instead of a doctype must be validated against it.
+   *
+   * <p>Nothing validated such a file: {@code error()} returned early unless a doctype had been
+   * seen, and {@code XMLParser} configured {@code setValidating(true)}, which is DTD validation, so
+   * a document carrying no DTD had no grammar to violate. Both halves have to be fixed for this to
+   * pass, and neither shows up in any other test -- the corpus is 99 doctypes out of 101 files.
+   */
+  @Test
+  public void theSuiteParserReportsAViolationOfADeclaredSchema() {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
+
+    assertThatThrownBy(() -> SuiteCorpus.parseFile(SCHEMA_DECLARED_INVALID_SUITE))
+        .isInstanceOf(TestNGException.class)
+        .hasRootCauseInstanceOf(SAXParseException.class);
+  }
+
+  /**
+   * The schema TestNG validates against is the one it ships, not the one the suite file names.
+   *
+   * <p>The declaration is a hint for other tools -- IDEs and standalone validators read it -- and
+   * following it would mean a parse depends on reaching a host, and that any suite file could point
+   * the validator at a grammar of its choosing. The DTD path settled this years ago by resolving
+   * from the classpath; this pins the same property for schemas, using an address nothing can
+   * serve.
+   */
+  @Test
+  public void theBundledSchemaIsUsedRatherThanTheOneTheSuiteNames() {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
+    String xml =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<suite xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+            + "       xsi:noNamespaceSchemaLocation=\"http://127.0.0.1:1/unreachable.xsd\"\n"
+            + "       name=\"UnreachableSchema\">\n"
+            // <groups> may only be the first child of <suite>.
+            + "  <parameter name=\"before\" value=\"groups\"/>\n"
+            + "  <groups><run><include name=\"included\"/></run></groups>\n"
+            + "</suite>\n";
+
+    assertThatThrownBy(() -> SuiteCorpus.parseString("unreachable-schema.xml", xml))
+        .as(
+            "the violation must be found against the bundled schema, without fetching the named one")
+        .isInstanceOf(TestNGException.class)
+        .hasRootCauseInstanceOf(SAXParseException.class);
+  }
+
+  /**
+   * Validating against a schema requires a namespace-aware parser, and that widens what counts as
+   * malformed: an undeclared prefix is now an error where it used to be read as part of the name. A
+   * suite that declares a doctype is unaffected, since that path stays as it was.
+   *
+   * <p>Characterization rather than a requirement -- the behaviour is a consequence of the schema
+   * being wired in, not something aimed for. It is pinned because it is the one way a file that
+   * used to parse can stop parsing, so it needs to be visible, and because {@code
+   * testng.xml.validation=off} is the way out.
+   */
+  @Test
+  public void anUndeclaredPrefixIsRejectedOnlyWhereTheSchemaApplies() {
+    String suite =
+        "<suite name=\"UndeclaredPrefix\">\n"
+            + "  <test name=\"t\" foo:bar=\"x\"><classes><class name=\"C\"/></classes></test>\n"
+            + "</suite>\n";
+    String withDoctype =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<!DOCTYPE suite SYSTEM \"https://testng.org/testng-1.1.dtd\">\n"
+            + suite;
+    String withoutDoctype = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + suite;
+
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "warn");
+    assertThatCode(() -> SuiteCorpus.parseString("with-doctype.xml", withDoctype))
+        .as("the DTD path is not namespace aware, so it reads foo:bar as a plain attribute name")
+        .doesNotThrowAnyException();
+    assertThatThrownBy(() -> SuiteCorpus.parseString("no-doctype.xml", withoutDoctype))
+        .as("the schema path is namespace aware, so an unbound prefix is malformed")
+        .isInstanceOf(TestNGException.class);
+
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "off");
+    assertThatCode(() -> SuiteCorpus.parseString("no-doctype.xml", withoutDoctype))
+        .as("turning validation off restores the previous behaviour")
+        .doesNotThrowAnyException();
   }
 
   @Test
@@ -241,11 +325,12 @@ public class XmlValidationTest {
   /**
    * A suite with no doctype at all must keep parsing, even under strict.
    *
-   * <p>A validating parser reports "no grammar found" for such a document. Those errors are
-   * suppressed because neither {@code startDTD} nor {@code resolveEntity} fires, so {@code
-   * m_doctypeDeclared} stays false -- and that suppression is what keeps strict mode usable for the
-   * many suites that never declared a doctype. Tightening the gate would silently start rejecting
-   * all of them, which is the regression this pins.
+   * <p>Such a document used to be validated by nothing: a validating parser only reported "no
+   * grammar found", and those errors were suppressed because neither {@code startDTD} nor {@code
+   * resolveEntity} fires. It is now validated against the bundled schema instead, so what keeps
+   * strict mode usable for the many suites that never declared a doctype is that they satisfy the
+   * schema -- not that their violations are discarded. A schema that rejected them, or a gate that
+   * let "no grammar found" through, would break all of them at once; this pins both.
    *
    * <p>Written inline because the fixtures named {@code xml/*WithoutDoctype.xml} all declare one:
    * they are byte-identical to their {@code WithDoctype} counterparts apart from the root element's
@@ -290,10 +375,14 @@ public class XmlValidationTest {
   }
 
   /**
-   * The documented cost of the same situation: a doctype with only an internal subset goes
-   * unnoticed, since {@code resolveEntity} is never called for one. Asserted so the trade-off is
-   * recorded rather than merely described in a comment -- and so that a future parser change which
-   * happens to fix it does not do so silently.
+   * The cost of the same situation, for a parser built by hand: a doctype with only an internal
+   * subset goes unnoticed, since {@code resolveEntity} is never called for one.
+   *
+   * <p>No longer the cost on the path users take. {@link XMLParser#parse} reads the prologue before
+   * building a parser, and tells the handler what it found, so a suite is judged the same way
+   * whether or not the parser accepted the lexical handler -- see {@link
+   * #aDoctypeFoundBeforeTheParseIsEnoughToReportViolations()}. This stays to pin what SAX alone
+   * reports, so that the two sources cannot be confused for one.
    */
   @Test
   public void anInternalSubsetIsMissedWithoutLexicalEvents() {
@@ -304,6 +393,32 @@ public class XmlValidationTest {
                 assertThat(parseValidating(pathOf(INTERNAL_SUBSET_SUITE), false).getName())
                     .isEqualTo("InternalSubsetOnly"))
         .doesNotThrowAnyException();
+  }
+
+  /**
+   * What the prologue scan found is enough on its own to have violations reported.
+   *
+   * <p>The lexical handler is optional in SAX, and without it a doctype carrying only an internal
+   * subset reaches neither {@code startDTD} nor {@code resolveEntity}. Reporting used to be gated
+   * on those two alone, so such a suite had its violations discarded even under strict. Asserted
+   * without either event, which is the only way to tell the prologue apart from the SAX events that
+   * normally arrive alongside it.
+   */
+  @Test
+  public void aDoctypeFoundBeforeTheParseIsEnoughToReportViolations() throws Exception {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
+    SAXParseException violation = new SAXParseException("not conforming", null);
+
+    TestNGContentHandler unaware = new TestNGContentHandler("no-events.xml", false);
+    assertThatCode(() -> unaware.error(violation))
+        .as("with no grammar known, a violation is still discarded")
+        .doesNotThrowAnyException();
+
+    TestNGContentHandler told = new TestNGContentHandler("no-events.xml", false);
+    told.doctypeDeclared();
+    assertThatThrownBy(() -> told.error(violation))
+        .as("the doctype seen in the prologue is enough, with no lexical or entity event")
+        .isSameAs(violation);
   }
 
   private static Path pathOf(String suiteFile) {

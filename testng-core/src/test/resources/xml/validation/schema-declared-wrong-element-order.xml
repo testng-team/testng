@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The same violation as wrong-element-order.xml, declared through an XSD instead of a doctype:
+  <groups> may only be the first child of <suite>. Used to prove that a suite which declares a
+  schema rather than a doctype is validated at all.
+
+  Such a file used to be validated by nothing. error() returned early unless a doctype had been
+  seen, and the parser was configured with setValidating(true), which is DTD validation, so a
+  document carrying no DTD had no grammar to violate.
+-->
+<suite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://testng.org/testng-1.1.xsd"
+       name="SchemaDeclaredWrongElementOrder">
+  <parameter name="before" value="groups"/>
+  <groups>
+    <run>
+      <include name="included"/>
+    </run>
+  </groups>
+</suite>
