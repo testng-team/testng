@@ -201,6 +201,49 @@ public class ReflectionRecipesTest {
     assertThat(isOrImplementsInterface(ITestContext.class, clazz)).isFalse();
   }
 
+  @DataProvider
+  public Object[][] primitives() {
+    return new Object[][] {
+      {boolean.class},
+      {byte.class},
+      {char.class},
+      {short.class},
+      {int.class},
+      {long.class},
+      {float.class},
+      {double.class},
+      {void.class}
+    };
+  }
+
+  @Test(dataProvider = "primitives")
+  public void testIsInstanceOfRejectsUnrelatedObject(final Class<?> primitive) {
+    assertThat(ReflectionRecipes.isInstanceOf(primitive, "not-a-" + primitive.getName())).isFalse();
+  }
+
+  @DataProvider
+  public Object[][] primitiveAndArgument() {
+    return new Object[][] {
+      // Boxed type of the primitive itself.
+      {int.class, 1, true},
+      {boolean.class, true, true},
+      {char.class, 'a', true},
+      // Widens to the primitive.
+      {int.class, (byte) 1, true},
+      {long.class, 1, true},
+      {double.class, 1.0f, true},
+      // Would narrow, so it does not match.
+      {int.class, 1L, false},
+      {float.class, 1.0d, false},
+    };
+  }
+
+  @Test(dataProvider = "primitiveAndArgument")
+  public void testIsInstanceOfHonoursWidening(
+      final Class<?> primitive, final Object argument, final boolean expected) {
+    assertThat(ReflectionRecipes.isInstanceOf(primitive, argument)).isEqualTo(expected);
+  }
+
   private interface T {
     void s0(TestContextJustForTesting testContext, int i, Boolean b);
 

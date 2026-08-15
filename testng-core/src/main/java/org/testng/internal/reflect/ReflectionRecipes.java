@@ -25,11 +25,22 @@ import org.testng.xml.XmlTest;
 public final class ReflectionRecipes {
 
   private static final Map<Class<?>, Class<?>> PRIMITIVE_MAPPING = new HashMap<>();
+
+  /**
+   * Boxed types that widen to each primitive. Keyed by exactly the primitives of {@link
+   * #PRIMITIVE_MAPPING}, so a lookup never returns null; one with no widening source maps to an
+   * empty list.
+   */
   private static final Map<Class<?>, List<Class<?>>> ASSIGNABLE_MAPPING = new HashMap<>();
 
   static {
     initPrimitiveMapping();
     initAssignableMapping();
+    // Primitives nothing widens to are left out above; give them an entry so the two tables share
+    // one key set and callers never have to guard the lookup.
+    for (final Class<?> primitive : PRIMITIVE_MAPPING.keySet()) {
+      ASSIGNABLE_MAPPING.putIfAbsent(primitive, Collections.emptyList());
+    }
   }
 
   private static void initPrimitiveMapping() {
