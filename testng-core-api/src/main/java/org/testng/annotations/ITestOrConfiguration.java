@@ -1,5 +1,7 @@
 package org.testng.annotations;
 
+import org.jspecify.annotations.Nullable;
+
 /** This interface captures methods common to @Test and @Configuration */
 public interface ITestOrConfiguration extends IParameterizable {
   /**
@@ -36,8 +38,12 @@ public interface ITestOrConfiguration extends IParameterizable {
 
   void setDependsOnMethods(String[] dependsOnMethods);
 
-  /** @return The description for this method, which will be shown in the reports. */
+  /**
+   * @return The description for this method, which will be shown in the reports, or {@code null}
+   *     when neither the method nor anything it inherits from carries one.
+   */
+  @Nullable
   String getDescription();
 
-  void setDescription(String description);
+  void setDescription(@Nullable String description);
 }

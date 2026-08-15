@@ -1,5 +1,6 @@
 package org.testng.annotations;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.IRetryAnalyzer;
 import org.testng.internal.annotations.IDataProvidable;
 
@@ -68,9 +69,14 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
 
   void setDataProvider(String v);
 
+  /**
+   * @return The class holding the data provider, or {@code null} when neither the method nor
+   *     anything it inherits from names one.
+   */
+  @Nullable
   Class<?> getDataProviderClass();
 
-  void setDataProviderClass(Class<?> v);
+  void setDataProviderClass(@Nullable Class<?> v);
 
   String getDataProviderDynamicClass();
 
