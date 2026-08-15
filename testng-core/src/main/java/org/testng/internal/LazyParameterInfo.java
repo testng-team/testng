@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.util.function.Supplier;
+import org.testng.IFactoryInstance;
 
 /**
  * A lazy, memoizing {@link IParameterInfo} used by constructor based {@code @Factory} methods when
@@ -15,8 +16,7 @@ import java.util.function.Supplier;
  */
 public class LazyParameterInfo implements IParameterInfo {
 
-  private final int index;
-  private final Object[] parameters;
+  private final FactoryInstance factoryInstance;
   private final Class<?> targetClass;
   private final Supplier<Object> creator;
 
@@ -26,9 +26,8 @@ public class LazyParameterInfo implements IParameterInfo {
   private volatile Throwable failure;
 
   public LazyParameterInfo(
-      int index, Object[] parameters, Class<?> targetClass, Supplier<Object> creator) {
-    this.index = index;
-    this.parameters = parameters;
+      FactoryInstance factoryInstance, Class<?> targetClass, Supplier<Object> creator) {
+    this.factoryInstance = factoryInstance;
     this.targetClass = targetClass;
     this.creator = creator;
   }
@@ -65,13 +64,19 @@ public class LazyParameterInfo implements IParameterInfo {
   }
 
   @Override
+  @Deprecated
   public int getIndex() {
-    return index;
+    return factoryInstance.getInvocationIndex();
   }
 
   @Override
   public Object[] getParameters() {
-    return parameters;
+    return factoryInstance.rawParameters();
+  }
+
+  @Override
+  public IFactoryInstance getFactoryInstance() {
+    return factoryInstance;
   }
 
   @Override

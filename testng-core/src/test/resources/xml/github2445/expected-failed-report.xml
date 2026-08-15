@@ -7,7 +7,7 @@
         <classes>
             <class name="test.reports.issue2445.Test1">
                 <methods>
-                    <include name="test1"/>
+                    <include name="test1" factory-instances="0"/>
                 </methods>
             </class> <!-- test.reports.issue2445.Test1 -->
         </classes>

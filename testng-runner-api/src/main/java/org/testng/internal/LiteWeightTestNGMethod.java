@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import org.testng.IClass;
 import org.testng.IDataProviderMethod;
+import org.testng.IFactoryInstance;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -42,6 +44,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   private final boolean isAfterClassConfiguration;
   private final boolean isBeforeSuiteConfiguration;
   private final boolean isAfterSuiteConfiguration;
+  private final IFactoryInstance factoryInstance;
   private List<Integer> invocationNumbers;
   private final List<Integer> failedInvocationNumbers;
   private boolean ignoreMissingDependencies;
@@ -95,6 +98,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
     isAfterClassConfiguration = iTestNGMethod.isAfterClassConfiguration();
     isBeforeSuiteConfiguration = iTestNGMethod.isBeforeSuiteConfiguration();
     isAfterSuiteConfiguration = iTestNGMethod.isAfterSuiteConfiguration();
+    factoryInstance = iTestNGMethod.getFactoryInstance().orElse(null);
     invocationNumbers = iTestNGMethod.getInvocationNumbers();
     failedInvocationNumbers = iTestNGMethod.getFailedInvocationNumbers();
     ignoreMissingDependencies = iTestNGMethod.ignoreMissingDependencies();
@@ -183,6 +187,11 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   @Override
   public Object getInstance() {
     return instance;
+  }
+
+  @Override
+  public Optional<IFactoryInstance> getFactoryInstance() {
+    return Optional.ofNullable(factoryInstance);
   }
 
   @Override

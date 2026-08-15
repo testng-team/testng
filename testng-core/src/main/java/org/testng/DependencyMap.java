@@ -3,6 +3,7 @@ package org.testng;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -110,9 +111,7 @@ public class DependencyMap {
     boolean result =
         IInstanceIdentity.getInstanceId(derivedClassMethod) != null
             || IInstanceIdentity.getInstanceId(baseClassMethod) != null;
-    boolean params =
-        null != baseClassMethod.getFactoryMethodParamsInfo()
-            && null != derivedClassMethod.getFactoryMethodParamsInfo().getParameters();
+    boolean params = baseClassMethod.getFactoryInstance().isPresent();
 
     if (result && params && RuntimeBehavior.enforceThreadAffinity()) {
       return hasSameParameters(baseClassMethod, derivedClassMethod);
@@ -122,10 +121,19 @@ public class DependencyMap {
 
   private static boolean hasSameParameters(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    return baseClassMethod
-        .getFactoryMethodParamsInfo()
-        .getParameters()[0]
-        .equals(derivedClassMethod.getFactoryMethodParamsInfo().getParameters()[0]);
+    Optional<IFactoryInstance> first = baseClassMethod.getFactoryInstance();
+    Optional<IFactoryInstance> second = derivedClassMethod.getFactoryInstance();
+    if (first.isEmpty() || second.isEmpty()) {
+      return false;
+    }
+    Object[] firstParams = first.get().getParameters();
+    Object[] secondParams = second.get().getParameters();
+    if (firstParams.length == 0 || secondParams.length == 0) {
+      return false;
+    }
+    // A data provider row may legitimately hold null, and this used to be a plain equals() call on
+    // it -- comparing thread affinity of two instances is no reason to throw.
+    return Objects.equals(firstParams[0], secondParams[0]);
   }
 
   private static boolean isSameInstance(
@@ -139,7 +147,7 @@ public class DependencyMap {
     Class<?> baseClass = instanceClassOf(baseClassMethod);
     Class<?> derivedClass = instanceClassOf(derivedClassMethod);
     boolean assignable = baseClass.isAssignableFrom(derivedClass);
-    if (null != baseClassMethod.getFactoryMethodParamsInfo()
+    if (baseClassMethod.getFactoryInstance().isPresent()
         && RuntimeBehavior.enforceThreadAffinity()) {
       return assignable && hasSameParameters(baseClassMethod, derivedClassMethod);
     }

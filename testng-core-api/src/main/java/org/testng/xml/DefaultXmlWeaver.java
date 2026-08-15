@@ -566,6 +566,10 @@ public class DefaultXmlWeaver implements IWeaveXml {
     if (invocationNumbers != null && !invocationNumbers.isEmpty()) {
       p.setProperty("invocation-numbers", XmlClass.listToString(invocationNumbers));
     }
+    List<Integer> factoryInstances = xmlInclude.getFactoryInstances();
+    if (!factoryInstances.isEmpty()) {
+      p.setProperty("factory-instances", XmlClass.listToString(factoryInstances));
+    }
 
     Map<String, String> parameters = xmlInclude.getLocalParameters();
     if (!parameters.isEmpty()) {

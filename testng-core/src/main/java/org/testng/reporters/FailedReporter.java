@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -292,15 +293,14 @@ public class FailedReporter implements IReporter {
                   each -> {
                     if (each.size() > 1) {
                       XmlInclude tmpMethodName = each.get(0);
-                      each.stream()
-                          .map(XmlInclude::getInvocationNumbers)
-                          .reduce(
-                              (a1, a2) -> {
-                                Set<Integer> set = new HashSet<>(a1);
-                                set.addAll(a2);
-                                return new ArrayList<>(set);
-                              })
-                          .ifPresent(tmpMethodName::addInvocationNumbers);
+                      mergeAxis(
+                          each,
+                          XmlInclude::getInvocationNumbers,
+                          tmpMethodName::addInvocationNumbers);
+                      mergeAxis(
+                          each,
+                          XmlInclude::getFactoryInstances,
+                          tmpMethodName::addFactoryInstances);
                       return Collections.singletonList(tmpMethodName);
                     }
                     return each;
@@ -346,6 +346,20 @@ public class FailedReporter implements IReporter {
     return Collections.emptyMap();
   }
 
+  /**
+   * Unions one list-valued axis of an &lt;include&gt; across the group that shares a method name,
+   * so the retained tag carries every failure of that method. Re-adding the retained tag's own
+   * values is a no-op: both setters add into a set.
+   */
+  private static void mergeAxis(
+      List<XmlInclude> group,
+      Function<XmlInclude, List<Integer>> reader,
+      Consumer<List<Integer>> writer) {
+    writer.accept(
+        new ArrayList<>(
+            group.stream().map(reader).flatMap(List::stream).collect(Collectors.toSet())));
+  }
+
   private static List<XmlInclude> asXmlIncludes(List<ITestNGMethod> methods, XmlTest srcXmlTest) {
     AtomicInteger i = new AtomicInteger(0);
     return methods.stream()
@@ -354,6 +368,12 @@ public class FailedReporter implements IReporter {
               XmlInclude methodName =
                   new XmlInclude(
                       m.getMethodName(), m.getFailedInvocationNumbers(), i.getAndIncrement());
+              // All the instances of one factory powered class collapse into a single <class> tag,
+              // so without this the regenerated suite could not say which of them failed.
+              m.getFactoryInstance()
+                  .ifPresent(
+                      it ->
+                          methodName.addFactoryInstances(Collections.singletonList(it.getIndex())));
               methodName.setParameters(findMethodLocalParameters(srcXmlTest, m));
               return methodName;
             })

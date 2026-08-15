@@ -20,6 +20,7 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.IInstanceIdentity;
 import org.testng.internal.IParameterInfo;
@@ -285,7 +286,13 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
    *     or {@code null} if there is none (eager instance, successful construction, or no factory).
    */
   private static Throwable lazyInstantiationFailure(IMethodInstance mi) {
-    IParameterInfo info = mi.getMethod().getFactoryMethodParamsInfo();
+    // A lazy-instantiation detail, so it is read from the internal factory metadata rather than
+    // from the public IFactoryInstance the method hands out.
+    ITestNGMethod method = mi.getMethod();
+    IParameterInfo info =
+        method instanceof BaseTestMethod
+            ? ((BaseTestMethod) method).getFactoryParameterInfo()
+            : null;
     return info == null ? null : info.getInstantiationFailure();
   }
 

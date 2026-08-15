@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.1.dtd">
+<suite name="issue3111">
+  <test name="selected factory instances">
+    <classes>
+      <class name="test.factory.issue3111.ParallelFactorySample">
+        <methods>
+          <include name="test" factory-instances="1 3"/>
+        </methods>
+      </class>
+    </classes>
+  </test>
+</suite>

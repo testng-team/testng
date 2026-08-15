@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.testng.IClass;
+import org.testng.IFactoryInstance;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -168,12 +169,8 @@ public abstract class BaseTestMethod
    *     creation.
    */
   public boolean isInstanceInstantiated() {
-    Object wrapped =
-        Optional.ofNullable(m_instance).map(IObject.IdentifiableObject::getInstance).orElse(null);
-    if (wrapped instanceof IParameterInfo) {
-      return ((IParameterInfo) wrapped).isInstanceInstantiated();
-    }
-    return true;
+    IParameterInfo info = getFactoryParameterInfo();
+    return info == null || info.isInstanceInstantiated();
   }
 
   @Override
@@ -316,6 +313,24 @@ public abstract class BaseTestMethod
   @Override
   public void setTimeOut(long timeOut) {
     m_timeOut = timeOut;
+  }
+
+  @Override
+  public Optional<IFactoryInstance> getFactoryInstance() {
+    IParameterInfo info = getFactoryParameterInfo();
+    return info == null ? Optional.empty() : Optional.ofNullable(info.getFactoryInstance());
+  }
+
+  /**
+   * Returns the internal factory metadata this method is bound to.
+   *
+   * @return - The metadata, or {@code null}. Unlike the deprecated {@link
+   *     #getFactoryMethodParamsInfo()} this is not part of {@link ITestNGMethod}, so the
+   *     lazy-instantiation details stay available to TestNG without being published.
+   */
+  public IParameterInfo getFactoryParameterInfo() {
+    Object instance = m_instance == null ? null : m_instance.getInstance();
+    return instance instanceof IParameterInfo ? (IParameterInfo) instance : null;
   }
 
   /**
@@ -570,11 +585,9 @@ public abstract class BaseTestMethod
   }
 
   private String instanceParameters() {
-    IParameterInfo instance = getFactoryMethodParamsInfo();
-    if (instance != null) {
-      return ", instance params:" + Arrays.toString(instance.getParameters());
-    }
-    return "";
+    return getFactoryInstance()
+        .map(it -> ", instance params:" + Arrays.toString(it.getParameters()))
+        .orElse("");
   }
 
   protected String getSignature() {
@@ -853,14 +866,9 @@ public abstract class BaseTestMethod
   }
 
   @Override
+  @Deprecated
   public IParameterInfo getFactoryMethodParamsInfo() {
-    if (m_instance == null) {
-      return null;
-    }
-    if (m_instance.getInstance() instanceof IParameterInfo) {
-      return (IParameterInfo) m_instance.getInstance();
-    }
-    return null;
+    return getFactoryParameterInfo();
   }
 
   private long invocationTime;

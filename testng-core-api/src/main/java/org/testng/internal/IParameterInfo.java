@@ -1,16 +1,33 @@
 package org.testng.internal;
 
+import org.testng.IFactoryInstance;
+
 /** Represents the ability to retrieve the parameters associated with a factory method. */
 public interface IParameterInfo {
 
   /** @return - The actual instance associated with a factory method */
   Object getInstance();
 
-  /** @return - The actual index of instance associated with a factory method */
+  /**
+   * @return - The index of the factory <em>invocation</em> that produced this instance. A factory
+   *     method returning several instances from one invocation gives all of them the same value.
+   * @deprecated - As of TestNG <code>v7.13.0</code>. Use {@link IFactoryInstance#getIndex()}, which
+   *     identifies the instance rather than the invocation.
+   */
+  @Deprecated
   int getIndex();
 
   /** @return - The parameters associated with the factory method as an array. */
   Object[] getParameters();
+
+  /**
+   * @return - The public view of the factory instance this object describes, or <code>null</code>
+   *     for an implementation that does not provide one. Reading it never instantiates a lazy
+   *     instance.
+   */
+  default IFactoryInstance getFactoryInstance() {
+    return null;
+  }
 
   /**
    * @return - The class of the instance produced by the factory, known <em>without</em> having to

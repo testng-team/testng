@@ -10,10 +10,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
 import org.testng.IDataProviderListener;
+import org.testng.IFactory;
 import org.testng.IInstanceInfo;
 import org.testng.ITestContext;
 import org.testng.ITestMethodFinder;
@@ -210,6 +210,7 @@ public class FactoryMethod extends BaseTestMethod {
     try {
       List<Integer> indices = factoryAnnotation.getIndices();
       int position = 0;
+      IFactory factory = new FactoryDescriptor(getConstructorOrMethod(), m_lazy);
       while (parameterIterator.hasNext()) {
         Object[] parameters = parameterIterator.next();
         if (parameters == null) {
@@ -228,25 +229,32 @@ public class FactoryMethod extends BaseTestMethod {
                     "The Factory method %s.%s() should have produced at-least one instance.",
                     com.getDeclaringClass().getName(), com.getName());
           }
+          // A single invocation can return several instances, so the slot within testInstances is
+          // what separates them; the invocation itself only supplies the offset they start at.
           if (indices == null || indices.isEmpty()) {
-            final int instancePosition = position;
-            result.addAll(
-                Arrays.stream(testInstances)
-                    .map(instance -> new ParameterInfo(instance, instancePosition, parameters))
-                    .collect(Collectors.toList()));
+            for (int slot = 0; slot < testInstances.length; slot++) {
+              result.add(
+                  new ParameterInfo(
+                      testInstances[slot],
+                      new FactoryInstance(position, slot, parameters, factory)));
+            }
           } else {
             for (Integer index : indices) {
-              int i = index - position;
-              if (i >= 0 && i < testInstances.length) {
-                result.add(new ParameterInfo(testInstances[i], position, parameters));
+              int slot = index - position;
+              if (slot >= 0 && slot < testInstances.length) {
+                result.add(
+                    new ParameterInfo(
+                        testInstances[slot],
+                        new FactoryInstance(position, slot, parameters, factory)));
               }
             }
           }
           position += testInstances.length;
         } else {
           if (indices == null || indices.isEmpty() || indices.contains(position)) {
+            // A constructor factory produces exactly one instance per invocation, so the slot is
+            // always 0 and the invocation index already is the instance's position.
             if (m_lazy) {
-              int slot = position;
               // An Iterator<Object[]> is free to hand back the same array for every row (a reused
               // buffer). Eager construction is unaffected because the constructor consumes the
               // values
@@ -257,13 +265,14 @@ public class FactoryMethod extends BaseTestMethod {
               Constructor<?> constructor = com.getConstructor();
               result.add(
                   new LazyParameterInfo(
-                      slot,
-                      rowParameters,
+                      new FactoryInstance(position, 0, rowParameters, factory),
                       com.getDeclaringClass(),
                       () -> m_objectFactory.newInstance(constructor, rowParameters)));
             } else {
               Object instance = m_objectFactory.newInstance(com.getConstructor(), parameters);
-              result.add(new ParameterInfo(instance, position, parameters));
+              result.add(
+                  new ParameterInfo(
+                      instance, new FactoryInstance(position, 0, parameters, factory)));
             }
           }
           position++;

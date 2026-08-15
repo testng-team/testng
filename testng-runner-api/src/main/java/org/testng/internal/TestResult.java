@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.testng.IAttributes;
 import org.testng.IClass;
+import org.testng.IFactoryInstance;
 import org.testng.ITest;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -24,6 +25,8 @@ import org.testng.collections.Objects;
 
 /** This class represents the result of a test. */
 public class TestResult implements ITestResult {
+
+  private static final Object[] NO_FACTORY_PARAMETERS = {};
 
   private ITestNGMethod m_method = null;
   private List<ITestNGMethod> skippedDueTo = new ArrayList<>();
@@ -310,11 +313,10 @@ public class TestResult implements ITestResult {
 
   @Override
   public Object[] getFactoryParameters() {
-    IParameterInfo instance = this.m_method.getFactoryMethodParamsInfo();
-    if (instance != null) {
-      return instance.getParameters();
-    }
-    return new Object[0];
+    return this.m_method
+        .getFactoryInstance()
+        .map(IFactoryInstance::getParameters)
+        .orElse(NO_FACTORY_PARAMETERS);
   }
 
   @Override
