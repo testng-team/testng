@@ -4,6 +4,7 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Iterator;
+import org.jspecify.annotations.Nullable;
 import org.testng.internal.Utils;
 
 /**
@@ -18,7 +19,7 @@ import org.testng.internal.Utils;
 public class ResourceAwareIterator<T> implements CloseableIterator<T> {
 
   private final Iterator<T> delegate;
-  private final AutoCloseable resource;
+  private final @Nullable AutoCloseable resource;
   private boolean closed;
 
   /**
@@ -26,7 +27,7 @@ public class ResourceAwareIterator<T> implements CloseableIterator<T> {
    * @param resource the resource to release on {@link #close()}, or {@code null} if there is
    *     nothing to release.
    */
-  public ResourceAwareIterator(Iterator<T> delegate, AutoCloseable resource) {
+  public ResourceAwareIterator(Iterator<T> delegate, @Nullable AutoCloseable resource) {
     this.delegate = delegate;
     this.resource = resource;
   }
@@ -43,7 +44,7 @@ public class ResourceAwareIterator<T> implements CloseableIterator<T> {
    *     iterator was derived from), or {@code null} if there is nothing to release.
    */
   public static CloseableIterator<Object[]> forDataProvider(
-      Iterator<Object> iterator, Type returnType, AutoCloseable resource) {
+      Iterator<Object> iterator, Type returnType, @Nullable AutoCloseable resource) {
     return new ResourceAwareIterator<>(toObjectArrayIterator(iterator, returnType), resource);
   }
 
