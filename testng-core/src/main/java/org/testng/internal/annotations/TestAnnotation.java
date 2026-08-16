@@ -1,5 +1,6 @@
 package org.testng.internal.annotations;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.IRetryAnalyzer;
 import org.testng.annotations.CustomAttribute;
 import org.testng.annotations.ITestAnnotation;
@@ -18,9 +19,9 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   private String m_suiteName = "";
   private String m_testName = "";
   private boolean m_singleThreaded = false;
-  private Class<?> m_dataProviderClass = null;
-  private String m_dataProviderDynamicClass = null;
-  private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass = null;
+  private @Nullable Class<?> m_dataProviderClass;
+  private String m_dataProviderDynamicClass = "";
+  private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass = DisabledRetryAnalyzer.class;
   private boolean m_skipFailedInvocations = false;
   private boolean m_ignoreMissingDependencies = false;
   private CustomAttribute[] m_attributes = {};
@@ -58,12 +59,12 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   }
 
   @Override
-  public Class<?> getDataProviderClass() {
+  public @Nullable Class<?> getDataProviderClass() {
     return m_dataProviderClass;
   }
 
   @Override
-  public void setDataProviderClass(Class<?> dataProviderClass) {
+  public void setDataProviderClass(@Nullable Class<?> dataProviderClass) {
     m_dataProviderClass = dataProviderClass;
   }
 

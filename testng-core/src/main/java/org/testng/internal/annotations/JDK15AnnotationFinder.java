@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import org.jspecify.annotations.Nullable;
 import org.testng.IAnnotationTransformer;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.AfterClass;
@@ -75,7 +76,8 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     m_annotationMap.put(IAfterMethod.class, AfterMethod.class);
   }
 
-  private <A extends Annotation> A findAnnotationInSuperClasses(Class<?> cls, Class<A> a) {
+  private <A extends Annotation> @Nullable A findAnnotationInSuperClasses(
+      Class<?> cls, Class<A> a) {
     // Hack for @Listeners: we don't look in superclasses for this annotation
     // because inheritance of this annotation causes aggregation instead of
     // overriding
@@ -98,13 +100,13 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   }
 
   @Override
-  public <A extends IAnnotation> A findAnnotation(Method m, Class<A> annotationClass) {
+  public <A extends IAnnotation> @Nullable A findAnnotation(Method m, Class<A> annotationClass) {
     return findAnnotation(null, m, annotationClass);
   }
 
   @Override
-  public <A extends IAnnotation> A findAnnotation(
-      Class<?> clazz, Method m, Class<A> annotationClass) {
+  public <A extends IAnnotation> @Nullable A findAnnotation(
+      @Nullable Class<?> clazz, Method m, Class<A> annotationClass) {
     final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
     if (a == null) {
       throw new IllegalArgumentException(
@@ -123,7 +125,8 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   }
 
   @Override
-  public <A extends IAnnotation> A findAnnotation(ITestNGMethod tm, Class<A> annotationClass) {
+  public <A extends IAnnotation> @Nullable A findAnnotation(
+      ITestNGMethod tm, Class<A> annotationClass) {
     final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
     if (a == null) {
       throw new IllegalArgumentException(
@@ -147,7 +150,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   }
 
   @Override
-  public <A extends IAnnotation> A findAnnotation(
+  public <A extends IAnnotation> @Nullable A findAnnotation(
       ConstructorOrMethod com, Class<A> annotationClass) {
     if (com.getConstructor() != null) {
       return findAnnotation(com.getConstructor(), annotationClass);
@@ -159,11 +162,11 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   }
 
   private void transform(
-      IAnnotation a,
-      Class<?> testClass,
-      Constructor<?> testConstructor,
-      Method testMethod,
-      Class<?> whichClass) {
+      @Nullable IAnnotation a,
+      @Nullable Class<?> testClass,
+      @Nullable Constructor<?> testConstructor,
+      @Nullable Method testMethod,
+      @Nullable Class<?> whichClass) {
     if (!m_transformer.isEnabled()) {
       return;
     }
@@ -192,19 +195,24 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   }
 
   @Override
-  public <A extends IAnnotation> A findAnnotation(Class<?> cls, Class<A> annotationClass) {
+  public <A extends IAnnotation> @Nullable A findAnnotation(
+      Class<?> cls, Class<A> annotationClass) {
     final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
     if (a == null) {
       throw new IllegalArgumentException(
           "Java @Annotation class for '" + annotationClass + "' not found.");
     }
     Annotation annotation = findAnnotationInSuperClasses(cls, a);
+    if (annotation == null) {
+      return null;
+    }
     return findAnnotation(
         cls, annotation, annotationClass, cls, null, null, new Pair<>(annotation, cls), null);
   }
 
   @Override
-  public <A extends IAnnotation> A findAnnotation(Constructor<?> cons, Class<A> annotationClass) {
+  public <A extends IAnnotation> @Nullable A findAnnotation(
+      Constructor<?> cons, Class<A> annotationClass) {
     final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
     if (a == null) {
       throw new IllegalArgumentException(
@@ -266,15 +274,15 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     }
   }
 
-  private <A extends IAnnotation> A findAnnotation(
+  private <A extends IAnnotation> @Nullable A findAnnotation(
       Class<?> cls,
-      Annotation a,
+      @Nullable Annotation a,
       Class<A> annotationClass,
-      Class<?> testClass,
-      Constructor<?> testConstructor,
-      Method testMethod,
+      @Nullable Class<?> testClass,
+      @Nullable Constructor<?> testConstructor,
+      @Nullable Method testMethod,
       Pair<Annotation, ?> p,
-      Class<?> whichClass) {
+      @Nullable Class<?> whichClass) {
     if (a == null) {
       return null;
     }

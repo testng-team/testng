@@ -1,22 +1,24 @@
 package org.testng.internal.annotations;
 
+import org.jspecify.annotations.Nullable;
+
 public class BaseBeforeAfter extends TestOrConfiguration implements IBaseBeforeAfter {
 
   private boolean m_alwaysRun = false;
   private boolean m_inheritGroups = true;
   private String[] m_beforeGroups = {};
   private String[] m_afterGroups = {};
-  private String m_description;
+  private @Nullable String m_description;
 
   /** @return the description */
   @Override
-  public String getDescription() {
+  public @Nullable String getDescription() {
     return m_description;
   }
 
   /** @param description the description to set */
   @Override
-  public void setDescription(String description) {
+  public void setDescription(@Nullable String description) {
     m_description = description;
   }
 

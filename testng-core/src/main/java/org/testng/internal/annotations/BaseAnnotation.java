@@ -2,14 +2,15 @@ package org.testng.internal.annotations;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import org.jspecify.annotations.Nullable;
 
 public class BaseAnnotation {
 
-  private Class<?> m_testClass;
-  private Method m_method;
-  private Constructor m_constructor;
+  private @Nullable Class<?> m_testClass;
+  private @Nullable Method m_method;
+  private @Nullable Constructor m_constructor;
 
-  public Constructor getConstructor() {
+  public @Nullable Constructor getConstructor() {
     return m_constructor;
   }
 
@@ -17,7 +18,7 @@ public class BaseAnnotation {
     m_constructor = constructor;
   }
 
-  public Method getMethod() {
+  public @Nullable Method getMethod() {
     return m_method;
   }
 
@@ -25,7 +26,7 @@ public class BaseAnnotation {
     m_method = method;
   }
 
-  public Class<?> getTestClass() {
+  public @Nullable Class<?> getTestClass() {
     return m_testClass;
   }
 

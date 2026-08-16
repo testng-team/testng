@@ -305,7 +305,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           handleConfigurationSkip(
               tm,
               testResult,
-              configurationAnnotation,
+              Objects.requireNonNull(
+                  configurationAnnotation,
+                  "a configuration method always carries a @Before/@After annotation"),
               arguments.getTestMethod(),
               arguments.getInstance(),
               arguments.getSuite());

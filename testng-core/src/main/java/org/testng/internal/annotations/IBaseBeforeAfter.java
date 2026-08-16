@@ -1,5 +1,6 @@
 package org.testng.internal.annotations;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.ITestOrConfiguration;
 
 /** Base interface for IBeforeSuite, IAfterSuite, etc... */
@@ -46,6 +47,7 @@ public interface IBaseBeforeAfter extends ITestOrConfiguration {
    * The description for this method. The string used will appear in the HTML report and also on
    * standard output if verbose &gt; 2.
    */
+  @Nullable
   String getDescription();
 
   default boolean ignoreFailure() {

@@ -1,5 +1,6 @@
 package org.testng.internal.annotations;
 
+import java.util.Collections;
 import java.util.List;
 import org.testng.IRetryDataProvider;
 import org.testng.annotations.IDataProviderAnnotation;
@@ -7,11 +8,12 @@ import org.testng.annotations.IDataProviderAnnotation;
 /** An implementation of IDataProvider. */
 public class DataProviderAnnotation extends BaseAnnotation implements IDataProviderAnnotation {
 
-  private String m_name;
+  private String m_name = "";
   private boolean m_parallel;
-  private List<Integer> m_indices;
+  private List<Integer> m_indices = Collections.emptyList();
   private boolean m_bubbleUpFailures = false;
-  private Class<? extends IRetryDataProvider> retryUsing;
+  private Class<? extends IRetryDataProvider> retryUsing =
+      IRetryDataProvider.DisableDataProviderRetries.class;
 
   private boolean cachedDataForTestRetries = true;
 

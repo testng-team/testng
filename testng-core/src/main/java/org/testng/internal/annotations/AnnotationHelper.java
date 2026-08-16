@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.IAnnotation;
@@ -63,27 +64,32 @@ public class AnnotationHelper {
     // Utility class.defeat instantiation.
   }
 
-  public static ITestAnnotation findTest(IAnnotationFinder finder, Class<?> cls) {
+  public static @Nullable ITestAnnotation findTest(IAnnotationFinder finder, Class<?> cls) {
     return finder.findAnnotation(cls, ITestAnnotation.class);
   }
 
-  public static ITestAnnotation findTest(IAnnotationFinder finder, Method m) {
+  public static @Nullable ITestAnnotation findTest(IAnnotationFinder finder, Method m) {
     return finder.findAnnotation(m, ITestAnnotation.class);
   }
 
-  public static ITestAnnotation findTest(IAnnotationFinder finder, ITestNGMethod m) {
+  public static @Nullable ITestAnnotation findTest(IAnnotationFinder finder, ITestNGMethod m) {
     return finder.findAnnotation(m, ITestAnnotation.class);
   }
 
-  public static IFactoryAnnotation findFactory(IAnnotationFinder finder, Method m) {
+  public static @Nullable IFactoryAnnotation findFactory(IAnnotationFinder finder, Method m) {
     return finder.findAnnotation(m, IFactoryAnnotation.class);
   }
 
-  public static IFactoryAnnotation findFactory(IAnnotationFinder finder, Constructor<?> c) {
+  public static @Nullable IFactoryAnnotation findFactory(
+      IAnnotationFinder finder, Constructor<?> c) {
     return finder.findAnnotation(c, IFactoryAnnotation.class);
   }
 
-  public static IConfigurationAnnotation findConfiguration(
+  /**
+   * @return The configuration annotation carried by the method, or {@code null} when it carries
+   *     none.
+   */
+  public static @Nullable IConfigurationAnnotation findConfiguration(
       IAnnotationFinder finder, ConstructorOrMethod m) {
     IConfigurationAnnotation result = null;
     boolean ignoreFailure = false;
@@ -137,21 +143,22 @@ public class AnnotationHelper {
     return result;
   }
 
-  public static IConfigurationAnnotation findConfiguration(IAnnotationFinder finder, Method m) {
+  public static @Nullable IConfigurationAnnotation findConfiguration(
+      IAnnotationFinder finder, Method m) {
     return findConfiguration(finder, new ConstructorOrMethod(m));
   }
 
   private static IConfigurationAnnotation createConfiguration(
-      IConfigurationAnnotation bs,
-      IConfigurationAnnotation as,
-      IConfigurationAnnotation bt,
-      IConfigurationAnnotation at,
-      IConfigurationAnnotation bg,
-      IConfigurationAnnotation ag,
-      IConfigurationAnnotation bc,
-      IConfigurationAnnotation ac,
-      IConfigurationAnnotation bm,
-      IConfigurationAnnotation am) {
+      @Nullable IConfigurationAnnotation bs,
+      @Nullable IConfigurationAnnotation as,
+      @Nullable IConfigurationAnnotation bt,
+      @Nullable IConfigurationAnnotation at,
+      @Nullable IConfigurationAnnotation bg,
+      @Nullable IConfigurationAnnotation ag,
+      @Nullable IConfigurationAnnotation bc,
+      @Nullable IConfigurationAnnotation ac,
+      @Nullable IConfigurationAnnotation bm,
+      @Nullable IConfigurationAnnotation am) {
     ConfigurationAnnotation result = new ConfigurationAnnotation();
 
     if (bs != null) {
@@ -306,7 +313,7 @@ public class AnnotationHelper {
     return vResult.values().toArray(new ITestNGMethod[0]);
   }
 
-  public static <A extends Annotation> A findAnnotationSuperClasses(
+  public static <A extends Annotation> @Nullable A findAnnotationSuperClasses(
       Class<A> annotationClass, Class<?> parameterClass) {
     Class<?> c = parameterClass;
     while (c != null) {

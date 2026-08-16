@@ -3,6 +3,7 @@ package org.testng.internal.annotations;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IAnnotation;
 import org.testng.internal.ConstructorOrMethod;
@@ -19,7 +20,7 @@ public interface IAnnotationFinder {
    * @param <A> The expected {@link IAnnotation} type
    * @return The annotation on the class or null if none found.
    */
-  <A extends IAnnotation> A findAnnotation(Class<?> cls, Class<A> annotationClass);
+  <A extends IAnnotation> @Nullable A findAnnotation(Class<?> cls, Class<A> annotationClass);
 
   /**
    * @param m - The corresponding {@link Method}
@@ -28,14 +29,15 @@ public interface IAnnotationFinder {
    * @return The annotation on the method. If not found, return the annotation on the declaring
    *     class. If not found, return null.
    */
-  <A extends IAnnotation> A findAnnotation(Method m, Class<A> annotationClass);
+  <A extends IAnnotation> @Nullable A findAnnotation(Method m, Class<A> annotationClass);
 
-  <A extends IAnnotation> A findAnnotation(ITestNGMethod m, Class<A> annotationClass);
+  <A extends IAnnotation> @Nullable A findAnnotation(ITestNGMethod m, Class<A> annotationClass);
 
-  <A extends IAnnotation> A findAnnotation(ConstructorOrMethod com, Class<A> annotationClass);
+  <A extends IAnnotation> @Nullable A findAnnotation(
+      ConstructorOrMethod com, Class<A> annotationClass);
 
-  <A extends IAnnotation> A findAnnotation(
-      Class<?> clazz, Method m, java.lang.Class<A> annotationClass);
+  <A extends IAnnotation> @Nullable A findAnnotation(
+      @Nullable Class<?> clazz, Method m, java.lang.Class<A> annotationClass);
 
   /**
    * @param cons - The corresponding {@link Constructor}
@@ -44,7 +46,7 @@ public interface IAnnotationFinder {
    * @return The annotation on the method. If not found, return the annotation on the declaring
    *     class. If not found, return null.
    */
-  <A extends IAnnotation> A findAnnotation(Constructor<?> cons, Class<A> annotationClass);
+  <A extends IAnnotation> @Nullable A findAnnotation(Constructor<?> cons, Class<A> annotationClass);
 
   /**
    * @param cls - The corresponding class.

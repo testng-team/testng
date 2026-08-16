@@ -1,5 +1,6 @@
 package org.testng.internal.annotations;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.ITestOrConfiguration;
 
 public class TestOrConfiguration extends BaseAnnotation implements ITestOrConfiguration {
@@ -8,7 +9,7 @@ public class TestOrConfiguration extends BaseAnnotation implements ITestOrConfig
   private boolean m_enabled = true;
   private String[] m_dependsOnGroups = {};
   private String[] m_dependsOnMethods = {};
-  private String m_description = "";
+  private @Nullable String m_description = "";
   private int m_priority;
   private long m_timeOut = 0;
 
@@ -38,7 +39,7 @@ public class TestOrConfiguration extends BaseAnnotation implements ITestOrConfig
   }
 
   @Override
-  public String getDescription() {
+  public @Nullable String getDescription() {
     return m_description;
   }
 
@@ -58,7 +59,7 @@ public class TestOrConfiguration extends BaseAnnotation implements ITestOrConfig
   }
 
   @Override
-  public void setDescription(String description) {
+  public void setDescription(@Nullable String description) {
     m_description = description;
   }
 

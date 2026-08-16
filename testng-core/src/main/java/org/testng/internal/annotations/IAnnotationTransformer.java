@@ -2,6 +2,7 @@ package org.testng.internal.annotations;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.ITestAnnotation;
 
 /** For backward compatibility. */
@@ -9,10 +10,10 @@ public interface IAnnotationTransformer extends org.testng.IAnnotationTransforme
 
   default void transform(
       ITestAnnotation annotation,
-      Class testClass,
-      Constructor testConstructor,
-      Method testMethod,
-      Class<?> occurringClazz) {
+      @Nullable Class testClass,
+      @Nullable Constructor testConstructor,
+      @Nullable Method testMethod,
+      @Nullable Class<?> occurringClazz) {
     // not implemented
   }
 }

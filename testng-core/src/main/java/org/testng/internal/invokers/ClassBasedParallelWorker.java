@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.IMethodInstance;
 import org.testng.ITestNGMethod;
 import org.testng.internal.MethodInstance;
@@ -112,7 +113,7 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
   }
 
   private static boolean isSequential(
-      org.testng.annotations.ITestAnnotation test, XmlTest xmlTest) {
+      org.testng.annotations.@Nullable ITestAnnotation test, XmlTest xmlTest) {
     return test != null && test.getSingleThreaded()
         || XmlSuite.ParallelMode.CLASSES.equals(xmlTest.getParallel());
   }
