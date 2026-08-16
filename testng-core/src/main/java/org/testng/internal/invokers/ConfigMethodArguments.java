@@ -2,6 +2,8 @@ package org.testng.internal.invokers;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.testng.IClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -9,20 +11,20 @@ import org.testng.xml.XmlSuite;
 
 public class ConfigMethodArguments extends MethodArguments {
 
-  private IClass testClass;
+  private @Nullable IClass testClass;
   private final ITestNGMethod[] allMethods;
   private final XmlSuite suite;
-  private final ITestResult testMethodResult;
+  private final @Nullable ITestResult testMethodResult;
 
   private ConfigMethodArguments(
-      IClass testClass,
-      ITestNGMethod currentTestMethod,
+      @Nullable IClass testClass,
+      @Nullable ITestNGMethod currentTestMethod,
       ITestNGMethod[] allMethods,
       XmlSuite suite,
       Map<String, String> params,
-      Object[] parameterValues,
-      Object instance,
-      ITestResult testMethodResult) {
+      Object @Nullable [] parameterValues,
+      @Nullable Object instance,
+      @Nullable ITestResult testMethodResult) {
     super(instance, currentTestMethod, params, parameterValues);
     this.testClass = testClass;
     this.allMethods = allMethods;
@@ -30,7 +32,7 @@ public class ConfigMethodArguments extends MethodArguments {
     this.testMethodResult = testMethodResult;
   }
 
-  public IClass getTestClass() {
+  public @Nullable IClass getTestClass() {
     return testClass;
   }
 
@@ -42,7 +44,7 @@ public class ConfigMethodArguments extends MethodArguments {
     return suite;
   }
 
-  public ITestResult getTestMethodResult() {
+  public @Nullable ITestResult getTestMethodResult() {
     return testMethodResult;
   }
 
@@ -52,14 +54,14 @@ public class ConfigMethodArguments extends MethodArguments {
 
   public static class Builder {
 
-    private IClass testClass;
-    private ITestNGMethod currentTestMethod;
-    private ITestNGMethod[] allMethods;
-    private XmlSuite suite;
-    private Map<String, String> params;
-    private Object[] parameterValues;
-    private Object instance;
-    private ITestResult testMethodResult;
+    private @Nullable IClass testClass;
+    private @Nullable ITestNGMethod currentTestMethod;
+    private ITestNGMethod @Nullable [] allMethods;
+    private @Nullable XmlSuite suite;
+    private @Nullable Map<String, String> params;
+    private Object @Nullable [] parameterValues;
+    private @Nullable Object instance;
+    private @Nullable ITestResult testMethodResult;
 
     public Builder forTestClass(IClass testClass) {
       this.testClass = testClass;
@@ -93,7 +95,7 @@ public class ConfigMethodArguments extends MethodArguments {
       return this;
     }
 
-    public Builder usingParameterValues(Object[] parameterValues) {
+    public Builder usingParameterValues(Object @Nullable [] parameterValues) {
       this.parameterValues = parameterValues;
       return this;
     }
@@ -112,9 +114,9 @@ public class ConfigMethodArguments extends MethodArguments {
       return new ConfigMethodArguments(
           testClass,
           currentTestMethod,
-          allMethods,
-          suite,
-          params,
+          Objects.requireNonNull(allMethods),
+          Objects.requireNonNull(suite),
+          Objects.requireNonNull(params),
           parameterValues,
           instance,
           testMethodResult);

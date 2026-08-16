@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.testng.ClassMethodMap;
 import org.testng.IClassListener;
 import org.testng.ITestContext;
@@ -26,16 +28,29 @@ public abstract class AbstractParallelWorker {
   public abstract List<IWorker<ITestNGMethod>> createWorkers(Arguments arguments);
 
   public static class Arguments {
-    private List<ITestNGMethod> methods;
-    private IInvoker invoker;
-    private ConfigurationGroupMethods configMethods;
-    private ClassMethodMap classMethodMap;
-    private List<IClassListener> listeners;
-    private ITestContext testContext;
-    private IAnnotationFinder finder;
+    private final List<ITestNGMethod> methods;
+    private final IInvoker invoker;
+    private final ConfigurationGroupMethods configMethods;
+    private final ClassMethodMap classMethodMap;
+    private final List<IClassListener> listeners;
+    private final ITestContext testContext;
+    private final IAnnotationFinder finder;
 
-    private Arguments() {
-      // We have a builder. Defeat instantiation via constructors.
+    private Arguments(
+        List<ITestNGMethod> methods,
+        IInvoker invoker,
+        ConfigurationGroupMethods configMethods,
+        ClassMethodMap classMethodMap,
+        List<IClassListener> listeners,
+        ITestContext testContext,
+        IAnnotationFinder finder) {
+      this.methods = methods;
+      this.invoker = invoker;
+      this.configMethods = configMethods;
+      this.classMethodMap = classMethodMap;
+      this.listeners = listeners;
+      this.testContext = testContext;
+      this.finder = finder;
     }
 
     public List<ITestNGMethod> getMethods() {
@@ -67,49 +82,58 @@ public abstract class AbstractParallelWorker {
     }
 
     public static class Builder {
-      private final Arguments instance;
-
-      public Builder() {
-        instance = new Arguments();
-      }
+      private @Nullable List<ITestNGMethod> methods;
+      private @Nullable IInvoker invoker;
+      private @Nullable ConfigurationGroupMethods configMethods;
+      private @Nullable ClassMethodMap classMethodMap;
+      private @Nullable List<IClassListener> listeners;
+      private @Nullable ITestContext testContext;
+      private @Nullable IAnnotationFinder finder;
 
       public Builder methods(List<ITestNGMethod> methods) {
-        instance.methods = methods;
+        this.methods = methods;
         return this;
       }
 
       public Builder invoker(IInvoker invoker) {
-        instance.invoker = invoker;
+        this.invoker = invoker;
         return this;
       }
 
       public Builder configMethods(ConfigurationGroupMethods configMethods) {
-        instance.configMethods = configMethods;
+        this.configMethods = configMethods;
         return this;
       }
 
       public Builder classMethodMap(ClassMethodMap classMethodMap) {
-        instance.classMethodMap = classMethodMap;
+        this.classMethodMap = classMethodMap;
         return this;
       }
 
       public Builder listeners(Collection<IClassListener> listeners) {
-        instance.listeners = new LinkedList<>(listeners);
+        this.listeners = new LinkedList<>(listeners);
         return this;
       }
 
       public Builder testContext(ITestContext testContext) {
-        instance.testContext = testContext;
+        this.testContext = testContext;
         return this;
       }
 
       public Builder finder(IAnnotationFinder finder) {
-        instance.finder = finder;
+        this.finder = finder;
         return this;
       }
 
       public Arguments build() {
-        return instance;
+        return new Arguments(
+            Objects.requireNonNull(methods),
+            Objects.requireNonNull(invoker),
+            Objects.requireNonNull(configMethods),
+            Objects.requireNonNull(classMethodMap),
+            Objects.requireNonNull(listeners),
+            Objects.requireNonNull(testContext),
+            Objects.requireNonNull(finder));
       }
     }
   }

@@ -1,25 +1,27 @@
 package org.testng.internal.invokers;
 
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestNGMethod;
 
 public class Arguments {
 
-  protected final Object instance;
-  protected final ITestNGMethod tm;
+  protected final @Nullable Object instance;
+  protected final @Nullable ITestNGMethod tm;
   protected final Map<String, String> params;
 
-  protected Arguments(Object instance, ITestNGMethod tm, Map<String, String> params) {
+  protected Arguments(
+      @Nullable Object instance, @Nullable ITestNGMethod tm, Map<String, String> params) {
     this.instance = instance;
     this.tm = tm;
     this.params = params;
   }
 
-  public Object getInstance() {
+  public @Nullable Object getInstance() {
     return instance;
   }
 
-  public ITestNGMethod getTestMethod() {
+  public @Nullable ITestNGMethod getTestMethod() {
     return tm;
   }
 

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import org.jspecify.annotations.Nullable;
 import org.testng.IClass;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -84,8 +85,8 @@ class TestNgMethodUtils {
 
   /** @return Only the ITestNGMethods applicable for this testClass */
   static ITestNGMethod[] filterMethods(
-      Object instance,
-      IClass testClass,
+      @Nullable Object instance,
+      @Nullable IClass testClass,
       ITestNGMethod[] methods,
       BiPredicate<ITestNGMethod, IClass> predicate) {
     List<ITestNGMethod> vResult = new ArrayList<>();
@@ -104,7 +105,7 @@ class TestNgMethodUtils {
     return vResult.toArray(new ITestNGMethod[0]);
   }
 
-  private static boolean isSameInstance(ITestNGMethod tm, Object instance) {
+  private static boolean isSameInstance(ITestNGMethod tm, @Nullable Object instance) {
     if (instance == null) {
       return true;
     }

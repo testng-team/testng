@@ -1,6 +1,7 @@
 package org.testng.internal.invokers;
 
 import java.util.Set;
+import org.jspecify.annotations.Nullable;
 import org.testng.IInvokedMethod;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -12,7 +13,7 @@ final class ExceptionUtils {
     // Utility class. Defeat instantiation.
   }
 
-  static Throwable getExceptionDetails(ITestContext context, Object instance) {
+  static @Nullable Throwable getExceptionDetails(ITestContext context, Object instance) {
     Set<ITestResult> configResults = context.getFailedConfigurations().getAllResults();
     if (configResults.isEmpty()) {
       configResults = context.getSkippedConfigurations().getAllResults();
@@ -41,7 +42,7 @@ final class ExceptionUtils {
     return instance.equals(configResult.getInstance());
   }
 
-  private static Throwable getConfigFailureException(ITestContext context) {
+  private static @Nullable Throwable getConfigFailureException(ITestContext context) {
     for (IInvokedMethod method : context.getSuite().getAllInvokedMethods()) {
       ITestNGMethod m = method.getTestMethod();
       if (m.isBeforeSuiteConfiguration() && (!method.getTestResult().isSuccess())) {

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.testng.IMethodInstance;
@@ -54,17 +55,20 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
         params = getParameters(im);
         prevClass = c;
       }
+      // prevClass starts out null, so the first iteration always takes the branch above.
+      Map<String, String> currentParams = Objects.requireNonNull(params);
       if (shouldRunSequentially(c, sequentialClasses)) {
         if (!processedClasses.contains(c)) {
           processedClasses.add(c);
           // Sequential class: all methods in one worker
-          TestMethodWorker worker = createTestMethodWorker(arguments, methodInstances, params, c);
+          TestMethodWorker worker =
+              createTestMethodWorker(arguments, methodInstances, currentParams, c);
           result.add(worker);
         }
       } else {
         // Parallel class: each method in its own worker
         TestMethodWorker worker =
-            createTestMethodWorker(arguments, Collections.singletonList(im), params, c);
+            createTestMethodWorker(arguments, Collections.singletonList(im), currentParams, c);
         result.add(worker);
       }
     }

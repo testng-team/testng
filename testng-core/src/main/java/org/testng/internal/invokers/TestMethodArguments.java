@@ -1,6 +1,8 @@
 package org.testng.internal.invokers;
 
 import java.util.Map;
+import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.internal.ConfigurationGroupMethods;
@@ -14,9 +16,9 @@ public class TestMethodArguments extends MethodArguments {
   private final ConfigurationGroupMethods groupMethods;
 
   private TestMethodArguments(
-      Object instance,
-      ITestNGMethod tm,
-      Object[] parameterValues,
+      @Nullable Object instance,
+      @Nullable ITestNGMethod tm,
+      Object @Nullable [] parameterValues,
       int parametersIndex,
       Map<String, String> params,
       ITestClass testClass,
@@ -51,17 +53,33 @@ public class TestMethodArguments extends MethodArguments {
     return testClass;
   }
 
+  /**
+   * The inherited getter is nullable only to serve {@link ConfigMethodArguments}, which stands for
+   * suite and test level configurations that have no current test method. A test method invocation
+   * always has one, so this narrows the contract back.
+   */
+  @Override
+  public ITestNGMethod getTestMethod() {
+    return Objects.requireNonNull(super.getTestMethod());
+  }
+
+  /** Always present, for the same reason as {@link #getTestMethod()}. */
+  @Override
+  public Object getInstance() {
+    return Objects.requireNonNull(super.getInstance());
+  }
+
   public static class Builder {
 
-    private Object instance;
-    private ITestNGMethod tm;
-    private Object[] parameterValues;
+    private @Nullable Object instance;
+    private @Nullable ITestNGMethod tm;
+    private Object @Nullable [] parameterValues;
     private int parametersIndex;
-    private Map<String, String> params;
-    private ITestClass testClass;
-    private ITestNGMethod[] beforeMethods;
-    private ITestNGMethod[] afterMethods;
-    private ConfigurationGroupMethods groupMethods;
+    private @Nullable Map<String, String> params;
+    private @Nullable ITestClass testClass;
+    private ITestNGMethod @Nullable [] beforeMethods;
+    private ITestNGMethod @Nullable [] afterMethods;
+    private @Nullable ConfigurationGroupMethods groupMethods;
 
     public Builder usingInstance(Object instance) {
       this.instance = instance;
@@ -73,7 +91,7 @@ public class TestMethodArguments extends MethodArguments {
       return this;
     }
 
-    public Builder withParameterValues(Object[] parameterValues) {
+    public Builder withParameterValues(Object @Nullable [] parameterValues) {
       this.parameterValues = parameterValues;
       return this;
     }
@@ -126,11 +144,11 @@ public class TestMethodArguments extends MethodArguments {
           tm,
           parameterValues,
           parametersIndex,
-          params,
-          testClass,
-          beforeMethods,
-          afterMethods,
-          groupMethods);
+          Objects.requireNonNull(params),
+          Objects.requireNonNull(testClass),
+          Objects.requireNonNull(beforeMethods),
+          Objects.requireNonNull(afterMethods),
+          Objects.requireNonNull(groupMethods));
     }
   }
 }

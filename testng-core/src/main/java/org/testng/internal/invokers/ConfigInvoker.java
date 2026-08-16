@@ -9,8 +9,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.jspecify.annotations.Nullable;
 import org.testng.ConfigurationNotInvokedException;
 import org.testng.IClass;
 import org.testng.IConfigurable;
@@ -87,17 +89,20 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
    *     least one of these methods failed.
    */
   public boolean hasConfigurationFailureFor(
-      ITestNGMethod testNGMethod, String[] groups, IClass testClass, Object instance) {
+      @Nullable ITestNGMethod testNGMethod,
+      String[] groups,
+      IClass testClass,
+      @Nullable Object instance) {
     return hasConfigurationFailureFor(null, testNGMethod, groups, testClass, instance);
   }
 
   @Override
   public boolean hasConfigurationFailureFor(
-      ITestNGMethod configMethod,
-      ITestNGMethod testNGMethod,
+      @Nullable ITestNGMethod configMethod,
+      @Nullable ITestNGMethod testNGMethod,
       String[] groups,
       IClass testClass,
-      Object instance) {
+      @Nullable Object instance) {
     boolean result = false;
 
     Class<?> cls = testClass.getRealClass();
@@ -124,8 +129,13 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     }
     // if method is BeforeClass, currentTestMethod will be null
     if ((m_continueOnFailedConfiguration || annotationFound) && hasConfigFailure(testNGMethod)) {
-      Object key = TestNgMethodUtils.getMethodInvocationToken(testNGMethod, instance);
-      result = m_methodInvocationResults.get(testNGMethod).contains(key);
+      // hasConfigFailure() is false for a null method, and a set of arguments that carries a test
+      // method carries its instance too, so both are present on this branch.
+      Object key =
+          TestNgMethodUtils.getMethodInvocationToken(
+              Objects.requireNonNull(testNGMethod), Objects.requireNonNull(instance));
+      // hasConfigFailure() has just established that the map holds this key.
+      result = Objects.requireNonNull(m_methodInvocationResults.get(testNGMethod)).contains(key);
     } else if (!(m_continueOnFailedConfiguration || annotationFound)) {
       for (Class<?> clazz : m_classInvocationResults.keySet()) {
         if (clazz.isAssignableFrom(cls) && m_classInvocationResults.get(clazz).contains(instance)) {
@@ -241,6 +251,8 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       if (null == arguments.getTestClass()) {
         arguments.setTestClass(tm.getTestClass());
       }
+      // Defaulted just above, so it is set from here on.
+      IClass testClass = Objects.requireNonNull(arguments.getTestClass());
 
       ITestResult testResult = TestResult.newContextAwareTestResult(tm, m_testContext);
       testResult.setStatus(ITestResult.STARTED);
@@ -251,7 +263,8 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         if (inst == null) {
           inst = arguments.getInstance();
         }
-        Class<?> objectClass = inst.getClass();
+        // Either the configuration method carries its own instance or the caller supplied one.
+        Class<?> objectClass = Objects.requireNonNull(inst).getClass();
         ConstructorOrMethod method = tm.getConstructorOrMethod();
 
         // Only run the configuration if
@@ -276,11 +289,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           continue;
         }
         if (hasConfigurationFailureFor(
-                tm,
-                arguments.getTestMethod(),
-                tm.getGroups(),
-                arguments.getTestClass(),
-                arguments.getInstance())
+                tm, arguments.getTestMethod(), tm.getGroups(), testClass, arguments.getInstance())
             && !alwaysRun) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
           InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), testResult);
@@ -438,7 +447,8 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         : m_configuration.getConfigurable();
   }
 
-  private void runConfigurationListeners(ITestResult tr, ITestNGMethod tm, boolean before) {
+  private void runConfigurationListeners(
+      ITestResult tr, @Nullable ITestNGMethod tm, boolean before) {
     ListenerComparator comparator = m_configuration.getListenerComparator();
     if (before) {
       TestListenerHelper.runPreConfigurationListeners(
@@ -462,8 +472,8 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       ITestNGMethod tm,
       ITestResult testResult,
       IConfigurationAnnotation annotation,
-      ITestNGMethod currentTestMethod,
-      Object instance,
+      @Nullable ITestNGMethod currentTestMethod,
+      @Nullable Object instance,
       XmlSuite suite) {
     recordConfigurationInvocationFailed(
         tm, testResult.getTestClass(), annotation, currentTestMethod, instance, suite);
@@ -471,7 +481,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     runConfigurationListeners(testResult, currentTestMethod, false /* after */);
   }
 
-  private boolean hasConfigFailure(ITestNGMethod currentTestMethod) {
+  private boolean hasConfigFailure(@Nullable ITestNGMethod currentTestMethod) {
     return currentTestMethod != null && m_methodInvocationResults.containsKey(currentTestMethod);
   }
 
@@ -479,15 +489,16 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       Throwable ite,
       ITestNGMethod tm,
       ITestResult testResult,
-      IConfigurationAnnotation annotation,
-      ITestNGMethod currentTestMethod,
-      Object instance,
+      @Nullable IConfigurationAnnotation annotation,
+      @Nullable ITestNGMethod currentTestMethod,
+      @Nullable Object instance,
       XmlSuite suite) {
     Throwable cause = ite.getCause() != null ? ite.getCause() : ite;
 
     if (isSkipExceptionAndSkip(cause)) {
       testResult.setThrowable(cause);
-      handleConfigurationSkip(tm, testResult, annotation, currentTestMethod, instance, suite);
+      handleConfigurationSkip(
+          tm, testResult, Objects.requireNonNull(annotation), currentTestMethod, instance, suite);
       return;
     }
     Utils.log(
@@ -523,7 +534,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   }
 
   /** @return true if this class or a parent class failed to initialize. */
-  private boolean classConfigurationFailed(Class<?> cls, Object instance) {
+  private boolean classConfigurationFailed(Class<?> cls, @Nullable Object instance) {
     return m_classInvocationResults.entrySet().stream()
         .anyMatch(
             classSetEntry -> {
@@ -537,7 +548,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   }
 
   private static void copyAttributesFromNativelyInjectedTestResult(
-      Object[] source, ITestResult target) {
+      Object[] source, @Nullable ITestResult target) {
     if (source == null || target == null) {
       return;
     }
@@ -547,17 +558,21 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         .ifPresent(eachSource -> TestResult.copyAttributes((ITestResult) eachSource, target));
   }
 
-  private void setMethodInvocationFailure(ITestNGMethod method, Object instance) {
+  private void setMethodInvocationFailure(
+      @Nullable ITestNGMethod method, @Nullable Object instance) {
     if (method == null) {
       return;
     }
     Set<Object> instances = m_methodInvocationResults.computeIfAbsent(method, k -> new HashSet<>());
-    instances.add(TestNgMethodUtils.getMethodInvocationToken(method, instance));
+    // Both come from one set of arguments, and a set that carries a test method carries its
+    // instance too, so a non-null method means a non-null instance.
+    instances.add(
+        TestNgMethodUtils.getMethodInvocationToken(method, Objects.requireNonNull(instance)));
   }
 
   private final AutoCloseableLock internalLock = new AutoCloseableLock();
 
-  private void setClassInvocationFailure(Class<?> clazz, Object instance) {
+  private void setClassInvocationFailure(Class<?> clazz, @Nullable Object instance) {
     try (AutoCloseableLock ignore = internalLock.lock()) {
       Set<Object> instances = m_classInvocationResults.computeIfAbsent(clazz, k -> new HashSet<>());
       Object objectToAdd = instance == null ? NULL_OBJECT : instance;
@@ -573,8 +588,8 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       ITestNGMethod tm,
       IClass testClass,
       IConfigurationAnnotation annotation,
-      ITestNGMethod currentTestMethod,
-      Object instance,
+      @Nullable ITestNGMethod currentTestMethod,
+      @Nullable Object instance,
       XmlSuite suite) {
     // If beforeTestClass or afterTestClass failed, mark either the config method's
     // entire class as failed, or the class under tests as failed, depending on
@@ -630,7 +645,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     }
   }
 
-  private static Object computeInstance(Object instance, Object inst, ITestNGMethod tm) {
+  private static Object computeInstance(@Nullable Object instance, Object inst, ITestNGMethod tm) {
     if (instance == null
         || !tm.getConstructorOrMethod().getDeclaringClass().isAssignableFrom(instance.getClass())) {
       return inst;
@@ -671,7 +686,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     return method.isIgnoreFailure();
   }
 
-  private boolean canIgnoreConfigFailure(IClass testClass, ITestNGMethod configMethod) {
+  private boolean canIgnoreConfigFailure(IClass testClass, @Nullable ITestNGMethod configMethod) {
     boolean instanceMatch = testClass instanceof ITestClass;
     if (!instanceMatch) {
       return false;

@@ -1,6 +1,8 @@
 package org.testng.internal.invokers;
 
 import java.util.Map;
+import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.xml.XmlSuite;
@@ -22,16 +24,32 @@ public class GroupConfigMethodArguments extends Arguments {
     return groupMethods;
   }
 
+  /**
+   * A group configuration is always tied to the test method that triggered it, so this narrows the
+   * inherited contract back. See {@link TestMethodArguments#getTestMethod()} for why the base is
+   * nullable at all.
+   */
+  @Override
+  public ITestNGMethod getTestMethod() {
+    return Objects.requireNonNull(super.getTestMethod());
+  }
+
+  /** Always present, for the same reason as {@link #getTestMethod()}. */
+  @Override
+  public Object getInstance() {
+    return Objects.requireNonNull(super.getInstance());
+  }
+
   public XmlSuite getSuite() {
     return getTestMethod().getXmlTest().getSuite();
   }
 
   public static class Builder {
 
-    private ITestNGMethod testMethod;
-    private ConfigurationGroupMethods groupMethods;
-    private Map<String, String> params;
-    private Object instance;
+    private @Nullable ITestNGMethod testMethod;
+    private @Nullable ConfigurationGroupMethods groupMethods;
+    private @Nullable Map<String, String> params;
+    private @Nullable Object instance;
 
     public Builder forTestMethod(ITestNGMethod testMethod) {
       this.testMethod = testMethod;
@@ -54,7 +72,11 @@ public class GroupConfigMethodArguments extends Arguments {
     }
 
     public GroupConfigMethodArguments build() {
-      return new GroupConfigMethodArguments(testMethod, groupMethods, params, instance);
+      return new GroupConfigMethodArguments(
+          Objects.requireNonNull(testMethod),
+          Objects.requireNonNull(groupMethods),
+          Objects.requireNonNull(params),
+          Objects.requireNonNull(instance));
     }
   }
 }

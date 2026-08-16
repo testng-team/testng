@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -16,9 +17,9 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import org.jspecify.annotations.Nullable;
 import org.testng.IConfigurable;
 import org.testng.IConfigureCallBack;
 import org.testng.IHookCallBack;
@@ -256,7 +257,7 @@ public class MethodInvocationHelper {
       final ITestResult testResult)
       throws Throwable {
     final Throwable[] error = new Throwable[1];
-    AtomicReference<Boolean> wasCalled = new AtomicReference<>(false);
+    AtomicBoolean wasCalled = new AtomicBoolean(false);
 
     IHookCallBack callback =
         new IHookCallBack() {
@@ -305,7 +306,7 @@ public class MethodInvocationHelper {
       Object instance,
       Object[] parameterValues,
       ITestResult testResult,
-      IHookable hookable)
+      @Nullable IHookable hookable)
       throws InterruptedException, ThreadExecutionException {
     if (ThreadUtil.isTestNGThread()
         && testResult.getTestContext().getCurrentXmlTest().getParallel()
@@ -324,7 +325,7 @@ public class MethodInvocationHelper {
       Object instance,
       Object[] parameterValues,
       ITestResult testResult,
-      IHookable hookable) {
+      @Nullable IHookable hookable) {
 
     Consumer<Throwable> failureMarker =
         t -> {
@@ -392,7 +393,7 @@ public class MethodInvocationHelper {
       Object instance,
       Object[] parameterValues,
       ITestResult testResult,
-      IHookable hookable)
+      @Nullable IHookable hookable)
       throws InterruptedException, ThreadExecutionException {
     ExecutorService exec = ThreadUtil.createExecutor(configuration, 1, tm.getMethodName());
 
@@ -467,7 +468,9 @@ public class MethodInvocationHelper {
       testResult.setStatus(ITestResult.SUCCESS); // if no exception till here then SUCCESS.
       return flag;
     } catch (ExecutionException e) {
-      throw new ThreadExecutionException(e.getCause());
+      // FutureTask never completes exceptionally without a cause, and the only handler of this
+      // wrapper reads the cause straight back out.
+      throw new ThreadExecutionException(Objects.requireNonNull(e.getCause()));
     }
   }
 
@@ -488,7 +491,7 @@ public class MethodInvocationHelper {
         + "size.";
   }
 
-  private static StackTraceElement[] getRunningMethodStackTrace(ExecutorService exec) {
+  private static StackTraceElement @Nullable [] getRunningMethodStackTrace(ExecutorService exec) {
     if (!(exec instanceof ThreadPoolExecutor)) {
       return null;
     }
@@ -517,7 +520,7 @@ public class MethodInvocationHelper {
       final ITestResult testResult)
       throws Throwable {
     final Throwable[] error = new Throwable[1];
-    AtomicReference<Boolean> wasCalled = new AtomicReference<>(false);
+    AtomicBoolean wasCalled = new AtomicBoolean(false);
 
     IConfigureCallBack callback =
         new IConfigureCallBack() {
