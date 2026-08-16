@@ -1,7 +1,6 @@
 package org.testng.internal.thread.graph;
 
 import java.util.List;
-import javax.annotation.Nonnull;
 import org.testng.thread.IWorker;
 
 class PhoneyWorker<T> implements IWorker<T> {
@@ -13,7 +12,8 @@ class PhoneyWorker<T> implements IWorker<T> {
 
   @Override
   public List<T> getTasks() {
-    return null;
+    // A PhoneyWorker stands in for a thread id, never for work: it has no tasks to report.
+    return List.of();
   }
 
   @Override
@@ -27,7 +27,7 @@ class PhoneyWorker<T> implements IWorker<T> {
   }
 
   @Override
-  public int compareTo(@Nonnull IWorker<T> o) {
+  public int compareTo(IWorker<T> o) {
     return 0;
   }
 
