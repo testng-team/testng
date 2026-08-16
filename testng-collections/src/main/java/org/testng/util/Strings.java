@@ -5,17 +5,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 
 public final class Strings {
   private Strings() {
     // Utility class. Defeat instantiation.
   }
 
-  public static boolean isNullOrEmpty(String string) {
+  public static boolean isNullOrEmpty(@Nullable String string) {
     return Optional.ofNullable(string).orElse("").trim().isEmpty();
   }
 
-  public static boolean isNotNullAndNotEmpty(String string) {
+  public static boolean isNotNullAndNotEmpty(@Nullable String string) {
     return !isNullOrEmpty(string);
   }
 
