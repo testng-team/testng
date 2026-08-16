@@ -1,5 +1,6 @@
 package org.testng.internal.thread;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestNGMethod;
 
 /** Exception used to signal a thread timeout. */
@@ -11,7 +12,7 @@ public class ThreadTimeoutException extends Exception {
     this(msg, null);
   }
 
-  public ThreadTimeoutException(String msg, Throwable cause) {
+  public ThreadTimeoutException(String msg, @Nullable Throwable cause) {
     super(msg, cause);
   }
 
@@ -23,7 +24,7 @@ public class ThreadTimeoutException extends Exception {
     this(tm, timeout, null);
   }
 
-  public ThreadTimeoutException(ITestNGMethod tm, long timeout, Throwable cause) {
+  public ThreadTimeoutException(ITestNGMethod tm, long timeout, @Nullable Throwable cause) {
     this(
         "Method " + tm.getQualifiedName() + "() didn't finish within the time-out " + timeout,
         cause);
