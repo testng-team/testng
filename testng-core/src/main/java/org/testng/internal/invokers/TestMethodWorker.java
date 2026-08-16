@@ -47,7 +47,10 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   // and associated to a different instance
   private final List<IMethodInstance> m_methodInstances;
   private final Map<String, String> m_parameters;
-  private final List<ITestResult> m_testResults = new ArrayList<>();
+  // There is one worker per test method, so a big @Factory suite holds a lot of these at once.
+  // Built on the first result rather than up front, since a worker that is still waiting to run
+  // has nothing to put in it. Only the thread running the worker adds to it.
+  private @Nullable List<ITestResult> m_testResults;
   private final ConfigurationGroupMethods m_groupMethods;
   private final @Nullable ClassMethodMap m_classMethodMap;
   private final ITestContext m_testContext;
@@ -147,7 +150,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
             m_testInvoker.registerSkippedTestResult(testMethod, start, instantiationFailure);
         m_testInvoker.getNotifier().addSkippedTest(testMethod, result);
         m_testInvoker.invokeListenersForSkippedTestResult(result, new InvokedMethod(start, result));
-        m_testResults.add(result);
+        testResults().add(result);
         continue;
       }
 
@@ -181,8 +184,8 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     List<ITestResult> testResults =
         m_testInvoker.invokeTestMethods(tm, m_groupMethods, instance, m_testContext);
 
-    if (testResults != null) {
-      m_testResults.addAll(testResults);
+    if (testResults != null && !testResults.isEmpty()) {
+      testResults().addAll(testResults);
     }
   }
 
@@ -321,6 +324,13 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   }
 
   public List<ITestResult> getTestResults() {
+    return m_testResults == null ? Collections.emptyList() : m_testResults;
+  }
+
+  private List<ITestResult> testResults() {
+    if (m_testResults == null) {
+      m_testResults = new ArrayList<>();
+    }
     return m_testResults;
   }
 
