@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -114,18 +115,27 @@ public class Model {
   }
 
   public ResultsByClass getFailedResultsByClass(ISuite suite) {
-    return m_failedResultsByClass.get(suite);
+    return resultsByClass(m_failedResultsByClass, suite);
   }
 
   public ResultsByClass getSkippedResultsByClass(ISuite suite) {
-    return m_skippedResultsByClass.get(suite);
+    return resultsByClass(m_skippedResultsByClass, suite);
   }
 
   public ResultsByClass getPassedResultsByClass(ISuite suite) {
-    return m_passedResultsByClass.get(suite);
+    return resultsByClass(m_passedResultsByClass, suite);
   }
 
-  public String getTag(ITestResult tr) {
+  // init() files every suite in all three tables, so a suite the model never saw reads as empty
+  // rather than null -- the way an unknown suite name reads as "passed" in getStatusForSuite.
+  private static ResultsByClass resultsByClass(
+      Map<ISuite, ResultsByClass> resultsBySuite, ISuite suite) {
+    ResultsByClass results = resultsBySuite.get(suite);
+    return results != null ? results : new ResultsByClass();
+  }
+
+  /** @return the anchor tag of a result the model holds, or {@code null} for any other result. */
+  public @Nullable String getTag(ITestResult tr) {
     return m_testResultMap.get(tr);
   }
 
