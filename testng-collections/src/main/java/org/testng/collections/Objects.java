@@ -3,7 +3,6 @@ package org.testng.collections;
 import java.util.ArrayList;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
-import org.testng.util.Strings;
 
 public final class Objects {
 
@@ -11,9 +10,9 @@ public final class Objects {
 
   private static class ValueHolder {
     private final String m_name;
-    private final String m_value;
+    private final @Nullable Object m_value;
 
-    public ValueHolder(String name, String value) {
+    ValueHolder(String name, @Nullable Object value) {
       m_name = name;
       m_value = value;
     }
@@ -22,13 +21,13 @@ public final class Objects {
       return m_value == null;
     }
 
-    @Override
-    public String toString() {
-      return m_name + "=" + m_value;
+    boolean isEmptyString() {
+      return m_value instanceof String && ((String) m_value).isEmpty();
     }
 
-    public boolean isEmptyString() {
-      return Strings.isNullOrEmpty(m_value);
+    @Override
+    public String toString() {
+      return m_name + "=" + format(m_value);
     }
   }
 
@@ -53,35 +52,31 @@ public final class Objects {
     }
 
     public ToStringHelper add(String name, @Nullable String value) {
-      values.add(new ValueHolder(name, s(value)));
+      values.add(new ValueHolder(name, value));
       return this;
     }
 
     public ToStringHelper add(String name, @Nullable Object value) {
-      values.add(new ValueHolder(name, s(value)));
+      values.add(new ValueHolder(name, value));
       return this;
-    }
-
-    private String s(@Nullable Object o) {
-      return o != null ? (o.toString().isEmpty() ? "\"\"" : o.toString()) : "{null}";
     }
 
     @Override
     public String toString() {
       StringBuilder result = new StringBuilder("[" + m_className + " ");
-      for (int i = 0; i < values.size(); i++) {
-        ValueHolder vh = values.get(i);
+      boolean emitted = false;
+      for (ValueHolder vh : values) {
         if (m_omitNulls && vh.isNull()) {
           continue;
         }
         if (m_omitEmptyStrings && vh.isEmptyString()) {
           continue;
         }
-
-        if (i > 0) {
+        if (emitted) {
           result.append(" ");
         }
         result.append(vh.toString());
+        emitted = true;
       }
       result.append("]");
 
@@ -91,5 +86,13 @@ public final class Objects {
 
   public static ToStringHelper toStringHelper(Class<?> class1) {
     return new ToStringHelper(class1.getSimpleName());
+  }
+
+  private static String format(@Nullable Object value) {
+    if (value == null) {
+      return "{null}";
+    }
+    String text = value.toString();
+    return text.isEmpty() ? "\"\"" : text;
   }
 }
