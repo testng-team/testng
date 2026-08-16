@@ -58,6 +58,32 @@ look: the `branches: ['*']` filter in `test.yml` does not match `/`, so pushing 
 exact dependency set of the published pom, versions ignored. When it fails, either the change is
 wrong or the expected list needs updating — decide which, do not just update the list.
 
+## Declaring a package null-marked
+
+How the check is scoped is documented where it is configured, in
+`build-logic/code-quality/src/main/kotlin/testng.errorprone.gradle.kts`. What that comment cannot
+say is that a green build proves nothing on its own: it is also what an unchecked package looks
+like.
+
+Several of the main packages span several modules, and there the placement decides the coverage.
+Module A's `package-info.class` reaches B's compile classpath only if B depends on A, so putting the
+file on the wrong side leaves the other half compiling **unchecked**.
+
+Prove the coverage per module traversed, not once per package. Drop a throwaway
+
+```java
+private static Object nullAwayProbe() { return null; }
+```
+
+into one file of **each** module the package lives in, and compile those modules. Before the
+`package-info.java` every probe must compile clean; after it every probe must fail with
+`[NullAway] returning @Nullable expression from method with @NonNull return type`. A probe that
+still passes marks a half that is not under the check, and the error count for that package means
+nothing until it does.
+
+`@NullMarked` does not descend into sub-packages: `org.testng.internal.thread.graph` was marked long
+before `org.testng.internal.thread`.
+
 ## Layout
 
 Modules are listed in `settings.gradle.kts`; only `:testng` is published, as a shaded jar merging
