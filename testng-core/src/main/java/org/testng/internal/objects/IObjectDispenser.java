@@ -1,5 +1,6 @@
 package org.testng.internal.objects;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.internal.objects.pojo.CreationAttributes;
 
 /**
@@ -10,6 +11,7 @@ public interface IObjectDispenser {
 
   String GUICE_HELPER = "testng.guice-helper";
 
+  @Nullable
   Object dispense(CreationAttributes attributes);
 
   /** @param dispenser - The {@link IObjectDispenser} to dispense */

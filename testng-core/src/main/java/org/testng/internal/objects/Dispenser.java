@@ -11,8 +11,6 @@ public final class Dispenser {
 
   /** @return - An {@link IObjectDispenser} that backed by the chain of responsibilities. */
   public static IObjectDispenser newInstance(ITestObjectFactory objectFactory) {
-    GuiceBasedObjectDispenser dispenser = new GuiceBasedObjectDispenser();
-    dispenser.setNextDispenser(new SimpleObjectDispenser(objectFactory));
-    return dispenser;
+    return new GuiceBasedObjectDispenser(new SimpleObjectDispenser(objectFactory));
   }
 }
