@@ -3,16 +3,17 @@ package org.testng.internal.reflect;
 import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Set;
+import org.jspecify.annotations.Nullable;
 
 public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
 
-  private Parameter[] conformingParameters = null;
+  private Parameter @Nullable [] conformingParameters = null;
 
   public AbstractNodeMethodMatcher(final MethodMatcherContext context) {
     super(context);
   }
 
-  protected Parameter[] getConformingParameters() {
+  protected Parameter @Nullable [] getConformingParameters() {
     return conformingParameters;
   }
 
@@ -50,7 +51,9 @@ public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
     if (getConforms() == null) {
       conforms();
     }
-    if (getConformingParameters() == null) {
+    // Bound once: NullAway cannot refine across two getter calls.
+    final Parameter[] parameters = getConformingParameters();
+    if (parameters == null) {
       throw new MethodMatcherException(
           this.getClass().getSimpleName() + " mismatch",
           getContext().getMethod(),
@@ -60,7 +63,7 @@ public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
     return ReflectionRecipes.inject(
         getContext().getMethodParameter(),
         InjectableParameter.Assistant.ALL_INJECTS,
-        matchingArguments(getConformingParameters(), getContext().getArguments()),
+        matchingArguments(parameters, getContext().getArguments()),
         getContext().getMethod(),
         getContext().getTestContext(),
         getContext().getTestResult());
