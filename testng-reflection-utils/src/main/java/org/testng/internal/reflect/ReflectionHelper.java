@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 
 public class ReflectionHelper {
   /**
@@ -66,7 +67,7 @@ public class ReflectionHelper {
    * @param <T> - The annotation type
    * @return - Either the annotation if found (or) <code>null.</code>
    */
-  public static <T extends Annotation> T findAnnotation(
+  public static <T extends Annotation> @Nullable T findAnnotation(
       Class<?> typedTestClass, Class<T> annotation) {
     if (typedTestClass == null || annotation == null) {
       return null;
