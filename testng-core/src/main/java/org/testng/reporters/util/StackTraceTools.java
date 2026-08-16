@@ -1,5 +1,6 @@
 package org.testng.reporters.util;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestNGMethod;
 
 /**
@@ -20,7 +21,8 @@ public final class StackTraceTools {
    * @return topmost position of the test method in the stack, or top of stack if <code>method
    *     </code> is not in it.
    */
-  public static int getTestRoot(StackTraceElement[] stack, ITestNGMethod method) {
+  public static int getTestRoot(
+      StackTraceElement @Nullable [] stack, @Nullable ITestNGMethod method) {
     if (stack == null || method == null) {
       return -1;
     }
@@ -41,7 +43,7 @@ public final class StackTraceTools {
    *     </code> is not in it.
    */
   public static StackTraceElement[] getTestNGInfrastructure(
-      StackTraceElement[] stack, ITestNGMethod method) {
+      StackTraceElement @Nullable [] stack, @Nullable ITestNGMethod method) {
     if (method == null || stack == null) {
       return new StackTraceElement[] {};
     }
