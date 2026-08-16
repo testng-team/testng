@@ -1,5 +1,6 @@
 package org.testng.reporters.jq;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.ISuite;
 import org.testng.reporters.XMLStringBuffer;
 
@@ -30,7 +31,7 @@ public abstract class BaseMultiSuitePanel extends BasePanel implements INavigato
   }
 
   @Override
-  public String getClassName() {
+  public @Nullable String getClassName() {
     return null;
   }
 
