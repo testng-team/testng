@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 import org.testng.log4testng.Logger;
 import org.testng.util.Strings;
@@ -110,13 +111,13 @@ public final class TestNamesMatcher {
     return matchedTests;
   }
 
-  private void addIfNotNull(XmlSuite xmlSuite) {
+  private void addIfNotNull(@Nullable XmlSuite xmlSuite) {
     if (xmlSuite != null) {
       cloneSuites.add(xmlSuite);
     }
   }
 
-  private XmlSuite cloneIfSuiteContainTestsWithNamesMatchingAny(XmlSuite suite) {
+  private @Nullable XmlSuite cloneIfSuiteContainTestsWithNamesMatchingAny(XmlSuite suite) {
     List<XmlTest> tests = new LinkedList<>();
     for (XmlTest xt : suite.getTests()) {
       if (xt.nameMatchesAny(testNames)) {

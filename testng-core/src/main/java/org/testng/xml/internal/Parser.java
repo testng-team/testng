@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.ServiceLoader;
+import org.jspecify.annotations.Nullable;
 import org.testng.xml.IFileParser;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.ISuiteParser;
@@ -50,13 +51,13 @@ public class Parser {
   }
 
   /**
-   * The file name of the xml suite being parsed. This may be null if the Parser has not been
-   * initialized with a file name. TODO CQ This member is never used.
+   * The file name of the xml suite being parsed, or {@link #DEFAULT_FILENAME} when the Parser was
+   * not given one.
    */
   private String m_fileName;
 
-  private InputStream m_inputStream;
-  private IPostProcessor m_postProcessor;
+  private @Nullable InputStream m_inputStream;
+  private @Nullable IPostProcessor m_postProcessor;
 
   private boolean m_loadClasses = true;
 
@@ -66,7 +67,7 @@ public class Parser {
    *
    * @param fileName the filename corresponding to the inputStream or null if unknown.
    */
-  public Parser(String fileName) {
+  public Parser(@Nullable String fileName) {
     init(fileName, null);
   }
 
@@ -79,7 +80,7 @@ public class Parser {
     init(null, is);
   }
 
-  private void init(String fileName, InputStream is) {
+  private void init(@Nullable String fileName, @Nullable InputStream is) {
     m_fileName = fileName != null ? fileName : DEFAULT_FILENAME;
     m_inputStream = is;
   }
@@ -122,17 +123,15 @@ public class Parser {
     List<String> toBeAdded = new ArrayList<>();
     List<String> toBeRemoved = new ArrayList<>();
 
-    if (m_fileName != null) {
-      URI uri = constructURI(m_fileName);
-      if (uri == null || uri.getScheme() == null) {
-        uri = new File(m_fileName).toURI();
-      }
-      if ("file".equalsIgnoreCase(uri.getScheme())) {
-        File mainFile = new File(uri);
-        toBeParsed.add(mainFile.getCanonicalPath());
-      } else {
-        toBeParsed.add(uri.toString());
-      }
+    URI uri = constructURI(m_fileName);
+    if (uri == null || uri.getScheme() == null) {
+      uri = new File(m_fileName).toURI();
+    }
+    if ("file".equalsIgnoreCase(uri.getScheme())) {
+      File mainFile = new File(uri);
+      toBeParsed.add(mainFile.getCanonicalPath());
+    } else {
+      toBeParsed.add(uri.toString());
     }
 
     /*
@@ -268,7 +267,7 @@ public class Parser {
     return result;
   }
 
-  private static URI constructURI(String text) {
+  private static @Nullable URI constructURI(String text) {
     try {
       return URI.create(text);
     } catch (Exception e) {
