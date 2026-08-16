@@ -8,58 +8,49 @@ import org.testng.xml.XmlTest;
 /** Represents the elaborate set of attributes required for object creation. */
 public class DetailedAttributes {
 
-  private Class<?> declaringClass;
-  private Map<Class<?>, IClass> classes;
-  private XmlTest xmlTest;
-  private IAnnotationFinder finder;
-  private boolean create;
-  private String errorMsgPrefix;
+  private final Class<?> declaringClass;
+  private final Map<Class<?>, IClass> classes;
+  private final XmlTest xmlTest;
+  private final IAnnotationFinder finder;
+  private final boolean create;
+  private final String errorMsgPrefix;
+
+  public DetailedAttributes(
+      Class<?> declaringClass,
+      Map<Class<?>, IClass> classes,
+      XmlTest xmlTest,
+      IAnnotationFinder finder,
+      boolean create,
+      String errorMsgPrefix) {
+    this.declaringClass = declaringClass;
+    this.classes = classes;
+    this.xmlTest = xmlTest;
+    this.finder = finder;
+    this.create = create;
+    this.errorMsgPrefix = errorMsgPrefix;
+  }
 
   public Class<?> getDeclaringClass() {
     return declaringClass;
-  }
-
-  public void setDeclaringClass(Class<?> declaringClass) {
-    this.declaringClass = declaringClass;
   }
 
   public Map<Class<?>, IClass> getClasses() {
     return classes;
   }
 
-  public void setClasses(Map<Class<?>, IClass> classes) {
-    this.classes = classes;
-  }
-
   public XmlTest getXmlTest() {
     return xmlTest;
-  }
-
-  public void setXmlTest(XmlTest xmlTest) {
-    this.xmlTest = xmlTest;
   }
 
   public IAnnotationFinder getFinder() {
     return finder;
   }
 
-  public void setFinder(IAnnotationFinder finder) {
-    this.finder = finder;
-  }
-
   public boolean isCreate() {
     return create;
   }
 
-  public void setCreate(boolean create) {
-    this.create = create;
-  }
-
   public String getErrorMsgPrefix() {
     return errorMsgPrefix;
-  }
-
-  public void setErrorMsgPrefix(String errorMsgPrefix) {
-    this.errorMsgPrefix = errorMsgPrefix;
   }
 }

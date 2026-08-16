@@ -1,5 +1,6 @@
 package org.testng.internal.objects.pojo;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestContext;
 import org.testng.internal.invokers.objects.GuiceContext;
 
@@ -7,11 +8,12 @@ import org.testng.internal.invokers.objects.GuiceContext;
 public class CreationAttributes {
 
   private final BasicAttributes basic;
-  private final DetailedAttributes detailed;
-  private final ITestContext context;
-  private final GuiceContext suiteContext;
+  private final @Nullable DetailedAttributes detailed;
+  private final @Nullable ITestContext context;
+  private final @Nullable GuiceContext suiteContext;
 
-  public CreationAttributes(ITestContext ctx, BasicAttributes basic, DetailedAttributes detailed) {
+  public CreationAttributes(
+      ITestContext ctx, BasicAttributes basic, @Nullable DetailedAttributes detailed) {
     this.basic = basic;
     this.detailed = detailed;
     this.context = ctx;
@@ -25,7 +27,7 @@ public class CreationAttributes {
     this.suiteContext = suiteContext;
   }
 
-  public DetailedAttributes getDetailedAttributes() {
+  public @Nullable DetailedAttributes getDetailedAttributes() {
     return detailed;
   }
 
@@ -33,11 +35,11 @@ public class CreationAttributes {
     return basic;
   }
 
-  public ITestContext getContext() {
+  public @Nullable ITestContext getContext() {
     return context;
   }
 
-  public GuiceContext getSuiteContext() {
+  public @Nullable GuiceContext getSuiteContext() {
     return suiteContext;
   }
 }

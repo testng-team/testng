@@ -173,13 +173,12 @@ public class ClassImpl implements IClass, IObject {
   }
 
   private DetailedAttributes newDetailedAttributes(boolean create, String errMsgPrefix) {
-    DetailedAttributes ea = new DetailedAttributes();
-    ea.setXmlTest(m_testContext.getCurrentXmlTest());
-    ea.setClasses(m_classes);
-    ea.setFinder(m_annotationFinder);
-    ea.setDeclaringClass(m_class);
-    ea.setErrorMsgPrefix(errMsgPrefix);
-    ea.setCreate(create);
-    return ea;
+    return new DetailedAttributes(
+        m_class,
+        m_classes,
+        m_testContext.getCurrentXmlTest(),
+        m_annotationFinder,
+        create,
+        errMsgPrefix);
   }
 }
