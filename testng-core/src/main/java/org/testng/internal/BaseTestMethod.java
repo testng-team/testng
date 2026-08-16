@@ -206,10 +206,14 @@ public abstract class BaseTestMethod
 
   @Override
   public @Nullable Object getInstance() {
-    return Optional.ofNullable(m_instance)
-        .map(IObject.IdentifiableObject::getInstance)
-        .map(IParameterInfo::embeddedInstance)
-        .orElse(null);
+    // Hot path (called per invocation via TestNgMethodUtils.isSameInstance): a plain null-guarded
+    // chain instead of Optional.ofNullable(...).map(...).map(...), which allocated three throwaway
+    // Optionals on every call. embeddedInstance passes null straight through, so the result is
+    // unchanged.
+    if (m_instance == null) {
+      return null;
+    }
+    return IParameterInfo.embeddedInstance(m_instance.getInstance());
   }
 
   /**
@@ -225,9 +229,7 @@ public abstract class BaseTestMethod
 
   @Override
   public @Nullable UUID getInstanceId() {
-    return Optional.ofNullable(m_instance)
-        .map(IObject.IdentifiableObject::getInstanceId)
-        .orElse(null);
+    return m_instance == null ? null : m_instance.getInstanceId();
   }
 
   /** {@inheritDoc} */
