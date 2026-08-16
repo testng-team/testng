@@ -256,29 +256,27 @@ public class NavigatorPanel extends BasePanel {
     xsb.push(D, C, "method-list-content " + type + " " + suiteName);
     int count = 0;
     List<ITestResult> testResults = provider.getResults();
-    if (testResults != null) {
-      testResults.sort(ResultsByClass.METHOD_NAME_COMPARATOR);
-      for (ITestResult tr : testResults) {
-        String testName = Model.getTestResultName(tr);
-        xsb.push(S);
-        xsb.addEmptyElement("img", "src", image, "width", "3%");
-        xsb.addRequired(
-            "a",
-            testName,
-            "href",
-            "#",
-            "hash-for-method",
-            getModel().getTag(tr),
-            "panel-name",
-            suiteName,
-            "title",
-            tr.getTestClass().getName(),
-            C,
-            "method navigator-link");
-        xsb.pop(S);
-        xsb.addEmptyElement("br");
-        count++;
-      }
+    testResults.sort(ResultsByClass.METHOD_NAME_COMPARATOR);
+    for (ITestResult tr : testResults) {
+      String testName = Model.getTestResultName(tr);
+      xsb.push(S);
+      xsb.addEmptyElement("img", "src", image, "width", "3%");
+      xsb.addRequired(
+          "a",
+          testName,
+          "href",
+          "#",
+          "hash-for-method",
+          getModel().getTag(tr),
+          "panel-name",
+          suiteName,
+          "title",
+          tr.getTestClass().getName(),
+          C,
+          "method navigator-link");
+      xsb.pop(S);
+      xsb.addEmptyElement("br");
+      count++;
     }
     xsb.pop(D);
     xsb.pop("li");
