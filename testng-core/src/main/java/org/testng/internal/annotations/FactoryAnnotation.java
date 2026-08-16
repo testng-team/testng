@@ -1,17 +1,18 @@
 package org.testng.internal.annotations;
 
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.Lazy;
 
 /** An implementation of IFactory */
 public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotation {
 
-  private String m_dataProvider = null;
-  private Class<?> m_dataProviderClass;
-  private String m_dataProviderDynamicClass;
+  private String m_dataProvider = "";
+  private @Nullable Class<?> m_dataProviderClass;
+  private String m_dataProviderDynamicClass = "";
   private boolean m_enabled = true;
-  private List<Integer> m_indices;
+  private @Nullable List<Integer> m_indices;
   private Lazy m_lazy = Lazy.UNSET;
 
   @Override
@@ -24,12 +25,12 @@ public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotat
     m_dataProvider = dataProvider;
   }
 
-  public void setDataProviderClass(Class<?> dataProviderClass) {
+  public void setDataProviderClass(@Nullable Class<?> dataProviderClass) {
     m_dataProviderClass = dataProviderClass;
   }
 
   @Override
-  public Class<?> getDataProviderClass() {
+  public @Nullable Class<?> getDataProviderClass() {
     return m_dataProviderClass;
   }
 
@@ -54,7 +55,7 @@ public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotat
   }
 
   @Override
-  public List<Integer> getIndices() {
+  public @Nullable List<Integer> getIndices() {
     return m_indices;
   }
 
@@ -69,7 +70,7 @@ public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotat
   }
 
   @Override
-  public void setLazy(Lazy lazy) {
+  public void setLazy(@Nullable Lazy lazy) {
     m_lazy = lazy == null ? Lazy.UNSET : lazy;
   }
 }

@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;
@@ -41,13 +43,15 @@ import org.testng.log4testng.Logger;
  */
 public class JDK15TagFactory {
 
-  public <A extends IAnnotation> A createTag(
-      Class<?> cls, Method method, Annotation a, Class<A> annotationClass) {
+  public <A extends IAnnotation> @Nullable A createTag(
+      Class<?> cls, @Nullable Method method, Annotation a, Class<A> annotationClass) {
     IAnnotation result = null;
 
     if (a != null) {
       if (annotationClass == IDataProviderAnnotation.class) {
-        result = createDataProviderTag(method, a);
+        Method dataProviderMethod =
+            Objects.requireNonNull(method, "@DataProvider is only ever looked up on a method");
+        result = createDataProviderTag(dataProviderMethod, a);
       } else if (annotationClass == IFactoryAnnotation.class) {
         result = createFactoryTag(cls, a);
       } else if (annotationClass == IParametersAnnotation.class) {
@@ -80,7 +84,8 @@ public class JDK15TagFactory {
     return (A) result;
   }
 
-  private IAnnotation maybeCreateNewConfigurationTag(Annotation a, Class<?> annotationClass) {
+  private @Nullable IAnnotation maybeCreateNewConfigurationTag(
+      Annotation a, Class<?> annotationClass) {
     IAnnotation result = null;
 
     if (annotationClass == IBeforeSuite.class) {
@@ -577,7 +582,7 @@ public class JDK15TagFactory {
    * annotation don't allow nulls, so each type has a different way of defining its own default.
    */
   interface Default<T> {
-    boolean isDefault(T t);
+    boolean isDefault(@Nullable T t);
   }
 
   private static final Default<Class<?>> DEFAULT_CLASS = c -> c == Object.class;
@@ -590,7 +595,7 @@ public class JDK15TagFactory {
    * the hierarchy (Object).
    */
   @SuppressWarnings("unchecked")
-  private <T> T findInherited(
+  private <T> @Nullable T findInherited(
       T methodValue,
       Class<?> cls,
       Class<? extends Annotation> annotationClass,
@@ -642,7 +647,7 @@ public class JDK15TagFactory {
     return result.toArray(new String[0]);
   }
 
-  private Object invokeMethod(Annotation test, String methodName) {
+  private @Nullable Object invokeMethod(Annotation test, String methodName) {
     Object result = null;
     try {
       // Note:  we should cache methods already looked up

@@ -3,6 +3,7 @@ package org.testng.internal.annotations;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Ignore;
 import org.testng.internal.reflect.ReflectionHelper;
@@ -18,10 +19,10 @@ public class IgnoreListener implements IAnnotationTransformer {
   @Override
   public void transform(
       ITestAnnotation annotation,
-      Class testClass,
-      Constructor tc,
-      Method testMethod,
-      Class<?> clazz) {
+      @Nullable Class testClass,
+      @Nullable Constructor tc,
+      @Nullable Method testMethod,
+      @Nullable Class<?> clazz) {
     if (!annotation.getEnabled()) {
       return;
     }
@@ -34,7 +35,7 @@ public class IgnoreListener implements IAnnotationTransformer {
     ignoreTestAtClass(clazz, annotation);
   }
 
-  private static void ignoreTestAtClass(Class<?> clazz, ITestAnnotation annotation) {
+  private static void ignoreTestAtClass(@Nullable Class<?> clazz, ITestAnnotation annotation) {
     if (clazz != null) {
       ignoreTest(annotation, ReflectionHelper.findAnnotation(clazz, Ignore.class));
       Package testPackage = clazz.getPackage();
@@ -44,7 +45,7 @@ public class IgnoreListener implements IAnnotationTransformer {
     }
   }
 
-  private static void ignoreTest(ITestAnnotation annotation, Ignore ignore) {
+  private static void ignoreTest(ITestAnnotation annotation, @Nullable Ignore ignore) {
     if (ignore == null) {
       return;
     }
@@ -66,7 +67,7 @@ public class IgnoreListener implements IAnnotationTransformer {
   }
 
   @SuppressWarnings("deprecation")
-  private static Ignore findAnnotation(Package testPackage) {
+  private static @Nullable Ignore findAnnotation(@Nullable Package testPackage) {
     if (testPackage == null) {
       return null;
     }
