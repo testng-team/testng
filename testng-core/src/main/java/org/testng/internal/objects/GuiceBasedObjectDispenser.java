@@ -1,7 +1,10 @@
 package org.testng.internal.objects;
 
 import com.google.inject.Injector;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
+import org.jspecify.annotations.Nullable;
+import org.testng.IClass;
 import org.testng.ITestContext;
 import org.testng.annotations.Guice;
 import org.testng.internal.annotations.AnnotationHelper;
@@ -15,13 +18,17 @@ class GuiceBasedObjectDispenser implements IObjectDispenser {
   private IObjectDispenser dispenser;
   private static final ReentrantLock lock = new ReentrantLock();
 
+  GuiceBasedObjectDispenser(IObjectDispenser dispenser) {
+    this.dispenser = dispenser;
+  }
+
   @Override
   public void setNextDispenser(IObjectDispenser dispenser) {
     this.dispenser = dispenser;
   }
 
   @Override
-  public Object dispense(CreationAttributes attributes) {
+  public @Nullable Object dispense(CreationAttributes attributes) {
     if (attributes.getBasicAttributes() == null) {
       // We don't have the ability to process object creation with elaborate attributes
       return this.dispenser.dispense(attributes);
@@ -34,38 +41,40 @@ class GuiceBasedObjectDispenser implements IObjectDispenser {
     }
   }
 
-  private Object dispenseObject(CreationAttributes attributes) {
+  private @Nullable Object dispenseObject(CreationAttributes attributes) {
     BasicAttributes sa = attributes.getBasicAttributes();
-    Class<?> cls = sa.getTestClass() == null ? sa.getRawClass() : sa.getTestClass().getRealClass();
+    Class<?> rawClass = sa.getRawClass();
+    IClass testClass = sa.getTestClass();
+    // BasicAttributes lets both halves be null, but no construction site leaves both out:
+    // ClassImpl is the only one that omits the raw class, and it supplies itself as the IClass.
+    Class<?> cls = testClass == null ? Objects.requireNonNull(rawClass) : testClass.getRealClass();
     if (cannotDispense(cls)) {
       return this.dispenser.dispense(attributes);
     }
     ITestContext ctx = attributes.getContext();
-    GuiceContext suiteCtx = attributes.getSuiteContext();
-    GuiceHelper helper;
+    Injector injector;
     // TODO: remove unused entries from helpers
     if (ctx == null) {
-      helper = new GuiceHelper(suiteCtx);
+      // No test context means a suite context instead. Nothing enforces that, and one caller
+      // reaches here with neither -- see #3377.
+      GuiceContext suite = Objects.requireNonNull(attributes.getSuiteContext());
+      injector = new GuiceHelper(suite).getInjector(cls, suite.getInjectorFactory());
     } else {
-      helper = (GuiceHelper) ctx.getAttribute(GUICE_HELPER);
+      GuiceHelper helper = (GuiceHelper) ctx.getAttribute(GUICE_HELPER);
       if (helper == null) {
         helper = new GuiceHelper(ctx);
         ctx.setAttribute(GUICE_HELPER, helper);
       }
-    }
-    Injector injector;
-    if (ctx == null) {
-      injector = helper.getInjector(cls, suiteCtx.getInjectorFactory());
-    } else {
       injector = helper.getInjector(cls, ctx.getInjectorFactory());
     }
     if (injector == null) {
       return null;
     }
-    if (sa.getRawClass() == null) {
-      return injector.getInstance(sa.getTestClass().getRealClass());
+    if (rawClass != null) {
+      return injector.getInstance(rawClass);
     }
-    return injector.getInstance(sa.getRawClass());
+    // Without a raw class, cls already resolved to the test class above.
+    return injector.getInstance(cls);
   }
 
   private static boolean cannotDispense(Class<?> clazz) {
