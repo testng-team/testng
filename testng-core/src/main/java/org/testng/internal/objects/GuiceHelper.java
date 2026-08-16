@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.function.BiPredicate;
 import java.util.stream.StreamSupport;
+import org.jspecify.annotations.Nullable;
 import org.testng.IClass;
 import org.testng.IInjectorFactory;
 import org.testng.IModule;
@@ -39,7 +40,7 @@ class GuiceHelper {
   private final String parentModule;
   private final String stageString;
   private final String testName;
-  private final ITestContext context;
+  private final @Nullable ITestContext context;
 
   private static final BiPredicate<Module, Module> CLASS_EQUALITY =
       (m, n) -> m.getClass().equals(n.getClass());
@@ -58,10 +59,12 @@ class GuiceHelper {
     this.context = null;
   }
 
+  @Nullable
   Injector getInjector(IClass iClass, IInjectorFactory injectorFactory) {
     return getInjector(iClass.getRealClass(), injectorFactory);
   }
 
+  @Nullable
   Injector getInjector(Class<?> cls, IInjectorFactory injectorFactory) {
     Guice guice = AnnotationHelper.findAnnotationSuperClasses(Guice.class, cls);
     if (guice == null) {
@@ -110,6 +113,7 @@ class GuiceHelper {
     m_injectors.put(moduleInstances, injector);
   }
 
+  @Nullable
   Injector getInjector(List<Module> moduleInstances) {
     return m_injectors.get(moduleInstances);
   }
@@ -127,7 +131,7 @@ class GuiceHelper {
     return m_guiceModules.get(cls);
   }
 
-  private Module getParentModule() {
+  private @Nullable Module getParentModule() {
     Class<? extends Module> parentModule = getParentModuleClass();
     if (parentModule == null) {
       return null;
@@ -153,7 +157,7 @@ class GuiceHelper {
   }
 
   @SuppressWarnings("unchecked")
-  private Class<? extends Module> getParentModuleClass() {
+  private @Nullable Class<? extends Module> getParentModuleClass() {
     if (isStringEmpty(this.parentModule)) {
       return null;
     }
@@ -168,7 +172,7 @@ class GuiceHelper {
   }
 
   private Injector createInjector(
-      Injector parent, IInjectorFactory injectorFactory, List<Module> moduleInstances) {
+      @Nullable Injector parent, IInjectorFactory injectorFactory, List<Module> moduleInstances) {
     Stage stage = Stage.DEVELOPMENT;
     if (isStringNotEmpty(stageString)) {
       stage = Stage.valueOf(stageString);

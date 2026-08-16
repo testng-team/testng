@@ -6,6 +6,7 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 import org.testng.internal.ClassHelper;
 
@@ -36,7 +37,7 @@ public final class InstanceCreator {
     }
   }
 
-  public static <T> T newInstance(Constructor<T> constructor, Object... parameters) {
+  public static <T> T newInstance(Constructor<T> constructor, @Nullable Object... parameters) {
     try {
       return constructor.newInstance(parameters);
     } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {

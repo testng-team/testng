@@ -3,6 +3,8 @@ package org.testng.internal.objects;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Map;
+import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.testng.IClass;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
@@ -35,7 +37,7 @@ class SimpleObjectDispenser implements IObjectDispenser {
   }
 
   @Override
-  public Object dispense(CreationAttributes attributes) {
+  public @Nullable Object dispense(CreationAttributes attributes) {
     DetailedAttributes detailed = attributes.getDetailedAttributes();
     if (detailed != null) {
       return createInstance(
@@ -53,7 +55,9 @@ class SimpleObjectDispenser implements IObjectDispenser {
     }
     if (basic.getRawClass() == null) {
       try {
-        return objectFactory.newInstance(basic.getTestClass().getRealClass());
+        // See GuiceBasedObjectDispenser: no construction site leaves both halves out.
+        return objectFactory.newInstance(
+            Objects.requireNonNull(basic.getTestClass()).getRealClass());
       } catch (TestNGException e) {
         return null;
       }
@@ -62,7 +66,7 @@ class SimpleObjectDispenser implements IObjectDispenser {
   }
 
   /* Create an instance for the given class. */
-  static <T> T createInstance(
+  static <T> @Nullable T createInstance(
       Class<T> declaringClass,
       Map<Class<?>, IClass> classes,
       XmlTest xmlTest,
@@ -120,7 +124,7 @@ class SimpleObjectDispenser implements IObjectDispenser {
     return result;
   }
 
-  private static <T> T instantiateUsingParameterizedConstructor(
+  private static <T> @Nullable T instantiateUsingParameterizedConstructor(
       IAnnotationFinder finder,
       Constructor<T> constructor,
       XmlTest xmlTest,
@@ -196,7 +200,7 @@ class SimpleObjectDispenser implements IObjectDispenser {
   }
 
   /** Find the best constructor given the parameters found on the annotation */
-  private static <T> Constructor<T> findAnnotatedConstructor(
+  private static <T> @Nullable Constructor<T> findAnnotatedConstructor(
       IAnnotationFinder finder, Class<T> declaringClass) {
     Constructor<T>[] constructors = (Constructor<T>[]) declaringClass.getDeclaredConstructors();
 

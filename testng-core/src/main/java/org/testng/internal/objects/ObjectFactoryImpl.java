@@ -1,6 +1,7 @@
 package org.testng.internal.objects;
 
 import java.lang.reflect.Constructor;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 
@@ -13,7 +14,7 @@ import org.testng.TestNGException;
 public class ObjectFactoryImpl implements ITestObjectFactory {
 
   @Override
-  public <T> T newInstance(Constructor<T> constructor, Object... params) {
+  public <T> @Nullable T newInstance(Constructor<T> constructor, Object... params) {
     if (constructor == null) {
       throw new IllegalArgumentException("Constructor cannot be null.");
     }
@@ -30,7 +31,7 @@ public class ObjectFactoryImpl implements ITestObjectFactory {
     }
   }
 
-  private static <T> T tryOtherConstructor(Class<T> declaringClass) {
+  private static <T> @Nullable T tryOtherConstructor(Class<T> declaringClass) {
     T result;
     try {
       // Special case for inner classes
