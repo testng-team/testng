@@ -4,13 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.Test;
 
-/**
- * Characterization tests for {@link Objects.ToStringHelper}.
- *
- * <p>{@code omitNulls()} and {@code omitEmptyStrings()} are dead code, and {@code
- * org.testng.internal.TestResult} is their only caller -- so what they do (nothing) shows up in
- * reports through {@code TestResult.toString()}. That is recorded here rather than fixed.
- */
+/** Tests for {@link Objects.ToStringHelper}. */
 public class ObjectsTest {
 
   private static class Sample {}
@@ -52,9 +46,7 @@ public class ObjectsTest {
   }
 
   @Test
-  public void omitNullsDoesNotOmitAnything() {
-    // add() stores s(value), and s(null) returns the *string* "{null}", so ValueHolder.isNull() is
-    // never true and the flag has no effect.
+  public void omitNullsDropsNullValues() {
     String actual =
         Objects.toStringHelper(Sample.class)
             .omitNulls()
@@ -62,12 +54,11 @@ public class ObjectsTest {
             .add("b", "2")
             .toString();
 
-    assertThat(actual).isEqualTo("[Sample a={null} b=2]");
+    assertThat(actual).isEqualTo("[Sample b=2]");
   }
 
   @Test
-  public void omitEmptyStringsDoesNotOmitAnything() {
-    // s("") returns "\"\"", which Strings.isNullOrEmpty does not consider empty.
+  public void omitEmptyStringsDropsEmptyStrings() {
     String actual =
         Objects.toStringHelper(Sample.class)
             .omitEmptyStrings()
@@ -75,11 +66,64 @@ public class ObjectsTest {
             .add("b", "2")
             .toString();
 
-    assertThat(actual).isEqualTo("[Sample a=\"\" b=2]");
+    assertThat(actual).isEqualTo("[Sample b=2]");
+  }
+
+  @Test
+  public void omitFiltersTogetherDropNullAndEmptyAndKeepTheRest() {
+    String actual =
+        Objects.toStringHelper(Sample.class)
+            .omitNulls()
+            .omitEmptyStrings()
+            .add("a", "v")
+            .add("b", (Object) null)
+            .add("c", "")
+            .toString();
+
+    assertThat(actual).isEqualTo("[Sample a=v]");
+  }
+
+  @Test
+  public void omitFiltersDoNotGlueTheNextValueToTheClassName() {
+    String actual =
+        Objects.toStringHelper(Sample.class)
+            .omitNulls()
+            .add("skipped", (Object) null)
+            .add("kept", "v")
+            .toString();
+
+    assertThat(actual).isEqualTo("[Sample kept=v]");
+  }
+
+  @Test
+  public void omitFiltersKeepASingleSpaceBetweenSurvivingValues() {
+    String actual =
+        Objects.toStringHelper(Sample.class)
+            .omitNulls()
+            .omitEmptyStrings()
+            .add("a", "1")
+            .add("skipped", (Object) null)
+            .add("b", "2")
+            .toString();
+
+    assertThat(actual).isEqualTo("[Sample a=1 b=2]");
   }
 
   @Test
   public void rendersAnEmptyHelperAsBareBrackets() {
     assertThat(Objects.toStringHelper(Sample.class).toString()).isEqualTo("[Sample ]");
+  }
+
+  @Test
+  public void omittingEveryValueLooksLikeAnEmptyHelper() {
+    String actual =
+        Objects.toStringHelper(Sample.class)
+            .omitNulls()
+            .omitEmptyStrings()
+            .add("a", (Object) null)
+            .add("b", "")
+            .toString();
+
+    assertThat(actual).isEqualTo("[Sample ]");
   }
 }
