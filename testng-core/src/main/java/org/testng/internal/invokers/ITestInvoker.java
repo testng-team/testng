@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.jspecify.annotations.Nullable;
 import org.testng.IInvokedMethod;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -43,12 +44,19 @@ public interface ITestInvoker {
   void runTestResultListener(ITestResult tr);
 
   default ITestResult registerSkippedTestResult(
-      ITestNGMethod testMethod, long start, Throwable throwable) {
+      ITestNGMethod testMethod, long start, @Nullable Throwable throwable) {
     return registerSkippedTestResult(testMethod, start, throwable, null);
   }
 
+  /**
+   * @param source the result to copy attributes and parameters from, or null when the skip has no
+   *     originating result
+   */
   ITestResult registerSkippedTestResult(
-      ITestNGMethod testMethod, long start, Throwable throwable, ITestResult source);
+      ITestNGMethod testMethod,
+      long start,
+      @Nullable Throwable throwable,
+      @Nullable ITestResult source);
 
   void invokeListenersForSkippedTestResult(ITestResult r, IInvokedMethod invokedMethod);
 

@@ -1,6 +1,7 @@
 package org.testng.internal.invokers;
 
 import java.util.Iterator;
+import org.jspecify.annotations.Nullable;
 import org.testng.IDataProviderMethod;
 import org.testng.internal.collections.CloseableIterator;
 
@@ -27,7 +28,7 @@ public class ParameterHolder implements AutoCloseable {
    * original resource is released regardless of how the exposed iterator was wrapped or how much of
    * it was consumed.
    */
-  private final CloseableIterator<Object[]> closeableSource;
+  private final @Nullable CloseableIterator<Object[]> closeableSource;
 
   public ParameterHolder(
       Iterator<Object[]> parameters, ParameterOrigin origin, IDataProviderMethod dph) {
@@ -38,7 +39,7 @@ public class ParameterHolder implements AutoCloseable {
       Iterator<Object[]> parameters,
       ParameterOrigin origin,
       IDataProviderMethod dph,
-      CloseableIterator<Object[]> closeableSource) {
+      @Nullable CloseableIterator<Object[]> closeableSource) {
     super();
     this.parameters = parameters;
     this.origin = origin;

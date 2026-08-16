@@ -2,6 +2,7 @@ package org.testng.internal.invokers;
 
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import org.jspecify.annotations.Nullable;
 import org.testng.IHookable;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -12,7 +13,7 @@ public class InvokeMethodRunnable implements Callable<Boolean> {
   private final ITestNGMethod m_method;
   private final Object m_instance;
   private final Object[] m_parameters;
-  private final IHookable m_hookable;
+  private final @Nullable IHookable m_hookable;
   private final ITestResult m_testResult;
 
   /**
@@ -26,7 +27,7 @@ public class InvokeMethodRunnable implements Callable<Boolean> {
       ITestNGMethod thisMethod,
       Object instance,
       Object[] parameters,
-      IHookable hookable,
+      @Nullable IHookable hookable,
       ITestResult testResult) {
     m_method = thisMethod;
     m_instance = instance;

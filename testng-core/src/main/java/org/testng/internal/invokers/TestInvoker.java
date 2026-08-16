@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.DataProviderHolder;
 import org.testng.IClassListener;
 import org.testng.IDataProviderListener;
@@ -344,7 +345,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
    * @param testMethod test method being checked for
    * @return error message or null if dependencies have been run successfully
    */
-  private String checkDependencies(ITestNGMethod testMethod) {
+  private @Nullable String checkDependencies(ITestNGMethod testMethod) {
     // If this method is marked alwaysRun, no need to check for its dependencies
     if (testMethod.isAlwaysRun()) {
       return null;
@@ -687,8 +688,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   // pass both paramValues and paramIndex to be thread safe in case parallel=true + dataprovider.
   private ITestResult invokeMethod(
       TestMethodArguments arguments, XmlSuite suite, FailureContext failureContext) {
+    // Every route in here rebuilds the arguments with the values for this one invocation; the
+    // template object the invocation loop starts from never reaches this method.
+    Object[] parameterValues = Objects.requireNonNull(arguments.getParameterValues());
     TestResult testResult =
-        TestResult.newTestResult(arguments.getParameterValues(), arguments.getParametersIndex());
+        TestResult.newTestResult(parameterValues, arguments.getParametersIndex());
     testResult.setHost(m_testContext.getHost());
 
     GroupConfigMethodArguments cfgArgs =
@@ -783,14 +787,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
           willfullyIgnored =
               !MethodInvocationHelper.invokeHookable(
                   arguments.getInstance(),
-                  arguments.getParameterValues(),
+                  parameterValues,
                   hookableInstance,
                   thisMethod,
                   testResult);
         } else {
           // Not a IHookable, invoke directly
-          MethodInvocationHelper.invokeMethod(
-              thisMethod, arguments.getInstance(), arguments.getParameterValues());
+          MethodInvocationHelper.invokeMethod(thisMethod, arguments.getInstance(), parameterValues);
         }
         if (!willfullyIgnored) {
           setTestStatus(testResult, ITestResult.SUCCESS);
@@ -802,7 +805,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 m_configuration,
                 arguments.getTestMethod(),
                 arguments.getInstance(),
-                arguments.getParameterValues(),
+                parameterValues,
                 testResult,
                 hookableInstance);
       }
@@ -820,7 +823,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       testResult.setThrowable(ite.getCause());
       setTestStatus(testResult, ITestResult.FAILURE);
     } catch (ThreadExecutionException tee) { // wrapper for TestNGRuntimeException
-      Throwable cause = tee.getCause();
+      // The wrapper is only ever constructed around a cause that is already known to be present.
+      Throwable cause = Objects.requireNonNull(tee.getCause());
       if (TestNGRuntimeException.class.equals(cause.getClass())) {
         testResult.setThrowable(cause.getCause());
       } else {
@@ -866,9 +870,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       // instance a @Factory produced is a separate axis, recorded by FailedReporter as the
       // factory-instances attribute; writing it here used to overwrite the row index and make the
       // regenerated suite re-run the wrong ones.
-      if (testResult.getThrowable() != null
-          && arguments.getParameterValues().length > 0
-          && !willRetryMethod) {
+      if (testResult.getThrowable() != null && parameterValues.length > 0 && !willRetryMethod) {
         arguments.getTestMethod().addFailedInvocationNumber(arguments.getParametersIndex());
       }
 
@@ -941,7 +943,10 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
   @Override
   public ITestResult registerSkippedTestResult(
-      ITestNGMethod testMethod, long start, Throwable throwable, ITestResult source) {
+      ITestNGMethod testMethod,
+      long start,
+      @Nullable Throwable throwable,
+      @Nullable ITestResult source) {
     ITestResult result =
         TestResult.newEndTimeAwareTestResult(testMethod, m_testContext, throwable, start);
     if (source != null) {

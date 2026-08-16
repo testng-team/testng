@@ -1,6 +1,7 @@
 package org.testng.internal.invokers;
 
 import java.util.Arrays;
+import org.jspecify.annotations.Nullable;
 import org.testng.IExpectedExceptionsHolder;
 import org.testng.ITestNGMethod;
 import org.testng.TestException;
@@ -70,7 +71,7 @@ public class ExpectedExceptionsHolder {
     }
   }
 
-  public TestException noException(ITestNGMethod testMethod) {
+  public @Nullable TestException noException(ITestNGMethod testMethod) {
     if (hasNoExpectedClasses()) {
       return null;
     }

@@ -4,6 +4,7 @@ import static org.testng.internal.Parameters.MethodParameters;
 
 import java.util.Map;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderMethod;
 import org.testng.ITestContext;
@@ -47,7 +48,7 @@ class ParameterHandler {
       Map<String, String> parameters,
       Map<String, String> allParameterNames,
       ITestContext testContext,
-      Object fedInstance) {
+      @Nullable Object fedInstance) {
     return handleParameters(
         testMethod,
         testMethod.getInstance(),
@@ -63,7 +64,7 @@ class ParameterHandler {
       Map<String, String> allParameterNames,
       Map<String, String> parameters,
       ITestContext testContext,
-      Object fedInstance) {
+      @Nullable Object fedInstance) {
     XmlSuite suite = testContext.getCurrentXmlTest().getSuite();
     try {
       MethodParameters methodParams =
@@ -104,8 +105,8 @@ class ParameterHandler {
    * TestResult} containing the cause
    */
   static class ParameterBag {
-    final ParameterHolder parameterHolder;
-    final ITestResult errorResult;
+    final @Nullable ParameterHolder parameterHolder;
+    final @Nullable ITestResult errorResult;
     boolean bubbleUpFailures = false;
 
     ParameterBag(ParameterHolder parameterHolder) {

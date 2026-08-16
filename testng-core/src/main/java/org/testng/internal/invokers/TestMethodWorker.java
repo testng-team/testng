@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.Nullable;
 import org.testng.ClassMethodMap;
 import org.testng.IClassListener;
 import org.testng.IMethodInstance;
@@ -49,7 +49,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   private final Map<String, String> m_parameters;
   private final List<ITestResult> m_testResults = new ArrayList<>();
   private final ConfigurationGroupMethods m_groupMethods;
-  private final ClassMethodMap m_classMethodMap;
+  private final @Nullable ClassMethodMap m_classMethodMap;
   private final ITestContext m_testContext;
   private final List<IClassListener> m_listeners;
   private long currentThreadId;
@@ -66,7 +66,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       List<IMethodInstance> testMethods,
       Map<String, String> parameters,
       ConfigurationGroupMethods groupMethods,
-      ClassMethodMap classMethodMap,
+      @Nullable ClassMethodMap classMethodMap,
       ITestContext testContext,
       List<IClassListener> listeners) {
     this.m_testInvoker = testInvoker;
@@ -191,8 +191,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
   /** Invoke the @BeforeClass methods if not done already */
   protected void invokeBeforeClassMethods(ITestClass testClass, IMethodInstance mi) {
+    // Guarded by canInvokeBeforeClassMethods().
     Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
-        m_classMethodMap.getInvokedBeforeClassMethods();
+        Objects.requireNonNull(m_classMethodMap).getInvokedBeforeClassMethods();
     Set<Object> instances =
         invokedBeforeClassMethods.computeIfAbsent(testClass, key -> ConcurrentHashMap.newKeySet());
     Object instance = mi.getInstance();
@@ -274,7 +275,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
    *     when the method is not identity-aware (in which case the per-instance config lookup yields
    *     none).
    */
-  private static UUID instanceIdOf(IMethodInstance mi) {
+  private static @Nullable UUID instanceIdOf(IMethodInstance mi) {
     ITestNGMethod method = mi.getMethod();
     return method instanceof IInstanceIdentity
         ? ((IInstanceIdentity) method).getInstanceId()
@@ -285,7 +286,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
    * @return - The throwable raised while lazily constructing the instance this method is bound to,
    *     or {@code null} if there is none (eager instance, successful construction, or no factory).
    */
-  private static Throwable lazyInstantiationFailure(IMethodInstance mi) {
+  private static @Nullable Throwable lazyInstantiationFailure(IMethodInstance mi) {
     // A lazy-instantiation detail, so it is read from the internal factory metadata rather than
     // from the public IFactoryInstance the method hands out.
     ITestNGMethod method = mi.getMethod();
@@ -327,7 +328,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   }
 
   @Override
-  public int compareTo(@Nonnull IWorker<ITestNGMethod> other) {
+  public int compareTo(IWorker<ITestNGMethod> other) {
     if (m_methodInstances.isEmpty()) {
       return 0;
     }
