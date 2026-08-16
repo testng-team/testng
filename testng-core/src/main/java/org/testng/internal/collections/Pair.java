@@ -1,5 +1,6 @@
 package org.testng.internal.collections;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.collections.Objects;
 
 public class Pair<A, B> {
@@ -28,7 +29,7 @@ public class Pair<A, B> {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (this == obj) {
       return true;
     }
