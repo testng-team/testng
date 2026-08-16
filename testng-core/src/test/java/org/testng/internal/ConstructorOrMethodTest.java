@@ -20,6 +20,13 @@ public class ConstructorOrMethodTest {
     void bar() {}
   }
 
+  // Used only by the "already accessible before wrapping" test, so the shared cache entry for this
+  // member is not touched by any other test.
+  @SuppressWarnings("unused")
+  static class AccessibilitySample {
+    private void secret() {}
+  }
+
   private static Method method(String name, Class<?>... params) throws NoSuchMethodException {
     return Sample.class.getDeclaredMethod(name, params);
   }
@@ -55,6 +62,24 @@ public class ConstructorOrMethodTest {
 
     assertThat(second.getMethod().isAccessible())
         .as("the sibling wrapper sees the shared handle as accessible")
+        .isTrue();
+  }
+
+  @Test
+  @SuppressWarnings("deprecation")
+  public void anAlreadyAccessibleHandleStaysAccessibleThroughTheWrapper()
+      throws NoSuchMethodException {
+    // juherr's scenario: the member is first interned through a plain lookup, then a copy that was
+    // already made accessible is wrapped. Interning must carry that accessibility onto the shared
+    // handle instead of silently dropping it.
+    new ConstructorOrMethod(AccessibilitySample.class.getDeclaredMethod("secret"));
+
+    Method accessible = AccessibilitySample.class.getDeclaredMethod("secret");
+    accessible.setAccessible(true);
+    ConstructorOrMethod wrapper = new ConstructorOrMethod(accessible);
+
+    assertThat(wrapper.getMethod().isAccessible())
+        .as("an already-accessible incoming handle stays accessible after wrapping")
         .isTrue();
   }
 

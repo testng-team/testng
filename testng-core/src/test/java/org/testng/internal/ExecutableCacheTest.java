@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -21,9 +22,24 @@ public class ExecutableCacheTest {
 
   @SuppressWarnings("unused")
   static class Sample {
+    Sample(String ignored) {}
+
     void foo(String s) {}
 
     void foo(int i) {}
+  }
+
+  interface Parent<T> {
+    T value();
+  }
+
+  // A covariant override: the compiler adds a bridge method `Object value()` next to the real
+  // `String value()`, so this class has two `value()` methods that differ only in return type.
+  static class Child implements Parent<String> {
+    @Override
+    public String value() {
+      return "child";
+    }
   }
 
   private static Method foo() throws NoSuchMethodException {
@@ -52,6 +68,61 @@ public class ExecutableCacheTest {
     Executable withInt = cache.intern(Sample.class.getDeclaredMethod("foo", int.class));
 
     assertThat(withString).isNotSameAs(withInt);
+  }
+
+  @Test
+  public void aCovariantMethodAndItsBridgeAreKeptDistinct() throws NoSuchMethodException {
+    // The cache keys on the Executable itself, and Method#equals compares the return type, so a
+    // covariant method and its compiler-generated bridge must not collapse into one entry.
+    ExecutableCache cache = new ExecutableCache();
+
+    Method real = Child.class.getDeclaredMethod("value"); // most specific: returns String
+    Method bridge = null;
+    for (Method m : Child.class.getDeclaredMethods()) {
+      if (m.getName().equals("value") && m.isBridge()) {
+        bridge = m;
+      }
+    }
+    assertThat(bridge).as("the compiler should have generated a bridge method").isNotNull();
+
+    assertThat(cache.intern(real)).isNotSameAs(cache.intern(bridge));
+  }
+
+  @Test
+  @SuppressWarnings("deprecation")
+  public void anAccessibleIncomingMethodUpgradesTheSharedHandle() throws NoSuchMethodException {
+    ExecutableCache cache = new ExecutableCache();
+
+    // The member is first interned through a plain (not-accessible) copy, so the shared handle
+    // starts out not accessible.
+    Executable shared = cache.intern(foo());
+    assertThat(shared.isAccessible()).isFalse();
+
+    // A later caller hands over a copy it had already made accessible...
+    Method accessible = foo();
+    accessible.setAccessible(true);
+    Executable returned = cache.intern(accessible);
+
+    // ...so the shared handle is upgraded, and every later lookup sees it as accessible.
+    assertThat(returned).isSameAs(shared);
+    assertThat(shared.isAccessible()).isTrue();
+    assertThat(cache.intern(foo()).isAccessible()).isTrue();
+  }
+
+  @Test
+  @SuppressWarnings("deprecation")
+  public void anAccessibleIncomingConstructorUpgradesTheSharedHandle()
+      throws NoSuchMethodException {
+    ExecutableCache cache = new ExecutableCache();
+
+    Executable shared = cache.intern(Sample.class.getDeclaredConstructor(String.class));
+    assertThat(shared.isAccessible()).isFalse();
+
+    Constructor<?> accessible = Sample.class.getDeclaredConstructor(String.class);
+    accessible.setAccessible(true);
+
+    assertThat(cache.intern(accessible)).isSameAs(shared);
+    assertThat(shared.isAccessible()).isTrue();
   }
 
   @Test
