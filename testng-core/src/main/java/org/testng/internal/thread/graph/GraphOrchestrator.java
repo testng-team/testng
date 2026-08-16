@@ -8,6 +8,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.jspecify.annotations.Nullable;
 import org.testng.IDynamicGraph;
 import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.RuntimeBehavior;
@@ -24,7 +25,7 @@ public class GraphOrchestrator<T> {
   private final IDynamicGraph<T> graph;
   private final Map<T, IWorker<T>> mapping = new ConcurrentHashMap<>();
   private final Map<T, T> upstream = new ConcurrentHashMap<>();
-  private final Comparator<T> comparator;
+  private final @Nullable Comparator<T> comparator;
   private final IThreadWorkerFactory<T> factory;
   private final boolean shutdownExecutorOnFinish;
   private final CountDownLatch completed = new CountDownLatch(1);
@@ -35,7 +36,7 @@ public class GraphOrchestrator<T> {
       ExecutorService service,
       IThreadWorkerFactory<T> factory,
       IDynamicGraph<T> graph,
-      Comparator<T> comparator) {
+      @Nullable Comparator<T> comparator) {
     this(service, factory, graph, comparator, true);
   }
 
@@ -49,7 +50,7 @@ public class GraphOrchestrator<T> {
       ExecutorService service,
       IThreadWorkerFactory<T> factory,
       IDynamicGraph<T> graph,
-      Comparator<T> comparator,
+      @Nullable Comparator<T> comparator,
       boolean shutdownExecutorOnFinish) {
     this.service = service;
     this.graph = graph;
