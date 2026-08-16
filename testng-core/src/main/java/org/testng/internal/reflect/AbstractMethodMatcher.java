@@ -1,9 +1,11 @@
 package org.testng.internal.reflect;
 
+import org.jspecify.annotations.Nullable;
+
 public abstract class AbstractMethodMatcher implements MethodMatcher {
 
   private final MethodMatcherContext context;
-  private Boolean conforms = null;
+  private @Nullable Boolean conforms = null;
 
   public AbstractMethodMatcher(final MethodMatcherContext context) {
     this.context = context;
@@ -13,7 +15,7 @@ public abstract class AbstractMethodMatcher implements MethodMatcher {
     return context;
   }
 
-  protected Boolean getConforms() {
+  protected @Nullable Boolean getConforms() {
     return conforms;
   }
 

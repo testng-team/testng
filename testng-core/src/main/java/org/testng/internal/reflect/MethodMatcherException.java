@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 
 /**
@@ -17,7 +18,7 @@ public class MethodMatcherException extends TestNGException {
     this(generateMessage(message, method, args));
   }
 
-  public MethodMatcherException(String message) {
+  public MethodMatcherException(@Nullable String message) {
     super(message);
   }
 
@@ -31,29 +32,29 @@ public class MethodMatcherException extends TestNGException {
 
   static String generateMessage(
       final String message, final Constructor constructor, final Object[] args) {
-    Parameter[] parameter = null;
-    String name = null;
-    if (constructor != null) {
-      parameter = ReflectionRecipes.getConstructorParameters(constructor);
-      name = constructor.getName();
-    }
-    return generateMessage(message, name, "Constructor", parameter, args);
+    // Both parameter accessors answer an empty array for a null input, so only the name is
+    // nullable.
+    return generateMessage(
+        message,
+        constructor != null ? constructor.getName() : null,
+        "Constructor",
+        ReflectionRecipes.getConstructorParameters(constructor),
+        args);
   }
 
   public static String generateMessage(
       final String message, final Method method, final Object[] args) {
-    Parameter[] parameter = null;
-    String name = null;
-    if (method != null) {
-      parameter = ReflectionRecipes.getMethodParameters(method);
-      name = method.getName();
-    }
-    return generateMessage(message, name, "Method", parameter, args);
+    return generateMessage(
+        message,
+        method != null ? method.getName() : null,
+        "Method",
+        ReflectionRecipes.getMethodParameters(method),
+        args);
   }
 
   private static String generateMessage(
       final String message,
-      final String name,
+      final @Nullable String name,
       final String prefix,
       Parameter[] parameter,
       final Object[] args) {

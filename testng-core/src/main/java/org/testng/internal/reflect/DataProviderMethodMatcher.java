@@ -1,11 +1,13 @@
 package org.testng.internal.reflect;
 
+import org.jspecify.annotations.Nullable;
+
 /** Checks the conformance as per data-provide specifications. */
 public class DataProviderMethodMatcher extends AbstractMethodMatcher {
 
   private final DirectMethodMatcher directMethodMatcher;
   private final ArrayEndingMethodMatcher arrayEndingMethodMatcher;
-  private MethodMatcher matchingMatcher = null;
+  private @Nullable MethodMatcher matchingMatcher = null;
 
   public DataProviderMethodMatcher(final MethodMatcherContext context) {
     super(context);

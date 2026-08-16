@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
@@ -87,9 +88,12 @@ public final class ReflectionRecipes {
     boolean isInstanceOf;
     final boolean directInstance = reference.isInstance(object);
     if (!directInstance && reference.isPrimitive()) {
-      isInstanceOf = PRIMITIVE_MAPPING.get(reference).isInstance(object);
+      // Both tables share one key set (see the static initialiser) and isPrimitive() was just
+      // checked, so neither lookup misses.
+      isInstanceOf = Objects.requireNonNull(PRIMITIVE_MAPPING.get(reference)).isInstance(object);
       if (!isInstanceOf) {
-        isInstanceOf = ASSIGNABLE_MAPPING.get(reference).contains(object.getClass());
+        isInstanceOf =
+            Objects.requireNonNull(ASSIGNABLE_MAPPING.get(reference)).contains(object.getClass());
       }
 
     } else {
