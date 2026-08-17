@@ -4,7 +4,7 @@ import java.io.Writer;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This class allows you to generate an XML text document by pushing and popping tags from a stack
