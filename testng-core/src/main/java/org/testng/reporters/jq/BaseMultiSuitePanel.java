@@ -6,7 +6,7 @@ import org.testng.reporters.XMLStringBuffer;
 
 public abstract class BaseMultiSuitePanel extends BasePanel implements INavigatorPanel {
 
-  abstract String getHeader(ISuite suite);
+  abstract @Nullable String getHeader(ISuite suite);
 
   abstract String getContent(ISuite suite, XMLStringBuffer xsb);
 

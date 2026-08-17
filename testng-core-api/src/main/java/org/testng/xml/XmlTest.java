@@ -6,9 +6,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 
 /** This class describes the tag &lt;test&gt; in testng.xml. */
@@ -16,31 +18,31 @@ public class XmlTest implements Cloneable {
 
   public static final int DEFAULT_TIMEOUT_MS = Integer.MAX_VALUE;
 
-  private XmlSuite m_suite;
-  private String m_name;
+  private @Nullable XmlSuite m_suite;
+  private @Nullable String m_name;
   private Integer m_verbose = XmlSuite.DEFAULT_VERBOSE;
   private int m_threadCount = -1;
 
   private List<XmlClass> m_xmlClasses = new ArrayList<>();
 
   private Map<String, String> m_parameters = new HashMap<>();
-  private XmlSuite.ParallelMode m_parallel;
+  private XmlSuite.@Nullable ParallelMode m_parallel;
 
   private List<XmlMethodSelector> m_methodSelectors = new ArrayList<>();
   // test level packages
   private List<XmlPackage> m_xmlPackages = new ArrayList<>();
 
-  private String m_timeOut;
+  private @Nullable String m_timeOut;
   private Boolean m_skipFailedInvocationCounts = XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
-  private Map<String, List<Integer>> m_failedInvocationNumbers = null; // lazily initialized
+  private @Nullable Map<String, List<Integer>> m_failedInvocationNumbers; // lazily initialized
 
   private Boolean m_preserveOrder = XmlSuite.DEFAULT_PRESERVE_ORDER;
 
   private int m_index;
 
-  private Boolean m_groupByInstances;
+  private @Nullable Boolean m_groupByInstances;
 
-  private Boolean m_allowReturnValues = null;
+  private @Nullable Boolean m_allowReturnValues;
 
   private Map<String, String> m_xmlDependencyGroups = new HashMap<>();
 
@@ -148,12 +150,12 @@ public class XmlTest implements Cloneable {
   }
 
   /** @return Returns the name. */
-  public String getName() {
+  public @Nullable String getName() {
     return m_name;
   }
 
   /** @param name The name to set. */
-  public void setName(String name) {
+  public void setName(@Nullable String name) {
     m_name = name;
   }
 
@@ -170,26 +172,35 @@ public class XmlTest implements Cloneable {
     m_threadCount = threadCount;
   }
 
+  /** Creates the {@code <groups>} and {@code <run>} pair on first use, and returns the run. */
+  private XmlRun groupsRun() {
+    XmlGroups groups = groups();
+    XmlRun run = groups.getRun();
+    if (run == null) {
+      run = new XmlRun();
+      groups.setRun(run);
+    }
+    return run;
+  }
+
+  /** Creates the {@code <groups>} element on first use, and returns it. */
+  private XmlGroups groups() {
+    XmlGroups groups = m_xmlGroups;
+    if (groups == null) {
+      groups = new XmlGroups();
+      m_xmlGroups = groups;
+    }
+    return groups;
+  }
+
   public void setIncludedGroups(List<String> g) {
-    if (m_xmlGroups == null) {
-      m_xmlGroups = new XmlGroups();
-    }
-    if (m_xmlGroups.getRun() == null) {
-      m_xmlGroups.setRun(new XmlRun());
-    }
-    List<String> includes = m_xmlGroups.getRun().getIncludes();
+    List<String> includes = groupsRun().getIncludes();
     includes.clear();
     includes.addAll(g);
   }
 
   public void setExcludedGroups(List<String> g) {
-    if (m_xmlGroups == null) {
-      m_xmlGroups = new XmlGroups();
-    }
-    if (m_xmlGroups.getRun() == null) {
-      m_xmlGroups.setRun(new XmlRun());
-    }
-    List<String> excludes = m_xmlGroups.getRun().getExcludes();
+    List<String> excludes = groupsRun().getExcludes();
     excludes.clear();
     excludes.addAll(g);
   }
@@ -204,21 +215,21 @@ public class XmlTest implements Cloneable {
   }
 
   public void addIncludedGroup(String g) {
-    if (m_xmlGroups == null) {
-      m_xmlGroups = new XmlGroups();
-      m_xmlGroups.setRun(new XmlRun());
+    XmlGroups groups = m_xmlGroups;
+    if (groups == null) {
+      groups = new XmlGroups();
+      groups.setRun(new XmlRun());
+      m_xmlGroups = groups;
     }
-    m_xmlGroups.getRun().getIncludes().add(g);
+    // Unlike addExcludedGroup, a <groups> element that has no <run> yet is not repaired here. The
+    // asymmetry is kept: setGroups and addMetaGroup can both leave one in that state, and calling
+    // this method afterwards has always thrown.
+    Objects.requireNonNull(groups.getRun(), "<groups> has no <run> to add an included group to")
+        .onInclude(g);
   }
 
   public void addExcludedGroup(String g) {
-    if (m_xmlGroups == null) {
-      m_xmlGroups = new XmlGroups();
-    }
-    if (m_xmlGroups.getRun() == null) {
-      m_xmlGroups.setRun(new XmlRun());
-    }
-    m_xmlGroups.getRun().getExcludes().add(g);
+    groupsRun().onExclude(g);
   }
 
   /** @return Returns the verbose. */
@@ -259,13 +270,10 @@ public class XmlTest implements Cloneable {
   }
 
   public void addMetaGroup(String name, List<String> metaGroup) {
-    if (m_xmlGroups == null) {
-      m_xmlGroups = new XmlGroups();
-    }
     XmlDefine define = new XmlDefine();
     define.setName(name);
     define.getIncludes().addAll(metaGroup);
-    m_xmlGroups.getDefines().add(define);
+    groups().getDefines().add(define);
   }
 
   public void addMetaGroup(String name, String... metaGroup) {
@@ -301,7 +309,7 @@ public class XmlTest implements Cloneable {
     m_parameters.put(key, value);
   }
 
-  public String getParameter(String name) {
+  public @Nullable String getParameter(String name) {
     String result = m_parameters.get(name);
     if (null == result) {
       result = getSuite().getParameter(name);
@@ -334,7 +342,7 @@ public class XmlTest implements Cloneable {
     return Optional.ofNullable(m_parallel).orElse(getSuite().getParallel());
   }
 
-  public String getTimeOut() {
+  public @Nullable String getTimeOut() {
     String result = getSuite().getTimeOut();
     if (null != m_timeOut) {
       result = m_timeOut;
@@ -356,11 +364,11 @@ public class XmlTest implements Cloneable {
     m_timeOut = Long.toString(timeOut);
   }
 
-  private void setTimeOut(String timeOut) {
+  private void setTimeOut(@Nullable String timeOut) {
     m_timeOut = timeOut;
   }
 
-  public void setScript(XmlScript script) {
+  public void setScript(@Nullable XmlScript script) {
     List<XmlMethodSelector> selectors = getMethodSelectors();
     if (!selectors.isEmpty()) {
       XmlMethodSelector xms = selectors.get(0);
@@ -372,7 +380,8 @@ public class XmlTest implements Cloneable {
     }
   }
 
-  public XmlScript getScript() {
+  /** @return the script of the first method selector, or {@code null} if none carries one. */
+  public @Nullable XmlScript getScript() {
     List<XmlMethodSelector> selectors = getMethodSelectors();
     if (selectors.isEmpty()) {
       return null;
@@ -423,20 +432,23 @@ public class XmlTest implements Cloneable {
    * @return The invocation numbers of the method
    */
   public List<Integer> getInvocationNumbers(String method) {
-    if (m_failedInvocationNumbers == null) {
-      m_failedInvocationNumbers = new HashMap<>();
+    Map<String, List<Integer>> cached = m_failedInvocationNumbers;
+    if (cached == null) {
+      cached = new HashMap<>();
+      m_failedInvocationNumbers = cached;
       for (XmlClass c : getXmlClasses()) {
         for (XmlInclude xi : c.getIncludedMethods()) {
           List<Integer> invocationNumbers = xi.getInvocationNumbers();
           if (!invocationNumbers.isEmpty()) {
             String methodName = c.getName() + "." + xi.getName();
-            m_failedInvocationNumbers.put(methodName, invocationNumbers);
+            cached.put(methodName, invocationNumbers);
           }
         }
       }
     }
 
-    return Optional.ofNullable(m_failedInvocationNumbers.get(method)).orElse(new ArrayList<>());
+    List<Integer> numbers = cached.get(method);
+    return numbers != null ? numbers : new ArrayList<>();
   }
 
   public void setPreserveOrder(Boolean preserveOrder) {
@@ -532,20 +544,27 @@ public class XmlTest implements Cloneable {
         return XmlSuite.f();
       }
     } else {
-      if (other.m_xmlGroups == null) {
+      XmlGroups otherGroups = other.m_xmlGroups;
+      if (otherGroups == null) {
         return false;
       }
-      if ((m_xmlGroups.getRun() == null && other.m_xmlGroups != null)
-          || m_xmlGroups.getRun() != null && other.m_xmlGroups == null) {
+      // Was a two-armed condition whose second arm re-tested other.m_xmlGroups, already known
+      // non-null one line above; only the first arm could ever fire.
+      XmlRun run = m_xmlGroups.getRun();
+      if (run == null) {
         return false;
       }
-      if (!m_xmlGroups.getRun().getExcludes().equals(other.m_xmlGroups.getRun().getExcludes())) {
+      // The other side's <run> is not tested, exactly as before: comparing against a <groups>
+      // that has none has always thrown here.
+      XmlRun otherRun =
+          Objects.requireNonNull(otherGroups.getRun(), "the compared <groups> has no <run>");
+      if (!run.getExcludes().equals(otherRun.getExcludes())) {
         return XmlSuite.f();
       }
-      if (!m_xmlGroups.getRun().getIncludes().equals(other.m_xmlGroups.getRun().getIncludes())) {
+      if (!run.getIncludes().equals(otherRun.getIncludes())) {
         return XmlSuite.f();
       }
-      if (!m_xmlGroups.getDefines().equals(other.m_xmlGroups.getDefines())) {
+      if (!m_xmlGroups.getDefines().equals(otherGroups.getDefines())) {
         return false;
       }
     }
@@ -665,13 +684,13 @@ public class XmlTest implements Cloneable {
     m_suite = suite;
   }
 
-  private XmlGroups m_xmlGroups;
+  private @Nullable XmlGroups m_xmlGroups;
 
   public void setGroups(XmlGroups xmlGroups) {
     m_xmlGroups = xmlGroups;
   }
 
-  public XmlGroups getXmlGroups() {
+  public @Nullable XmlGroups getXmlGroups() {
     return m_xmlGroups;
   }
 

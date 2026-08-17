@@ -1,5 +1,6 @@
 package org.testng.reporters.jq;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.ISuite;
 import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
@@ -16,7 +17,7 @@ public class TestNgXmlPanel extends BaseMultiSuitePanel {
   }
 
   @Override
-  public String getHeader(ISuite suite) {
+  public @Nullable String getHeader(ISuite suite) {
     return suite.getXmlSuite().getFileName();
   }
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 import org.testng.collections.Objects;
 import org.testng.internal.ClassHelper;
@@ -13,22 +14,24 @@ public class XmlClass implements Cloneable {
 
   private List<XmlInclude> m_includedMethods = new ArrayList<>();
   private List<String> m_excludedMethods = new ArrayList<>();
-  private String m_name = null;
-  private Class m_class = null;
+  // Assigned by init, which every constructor calls directly: NullAway traces an initializer
+  // helper one hop only, so reaching init through a delegating overload stops it seeing this.
+  private String m_name;
+  private @Nullable Class m_class;
   /** The index of this class in the &lt;test&gt; tag */
   private int m_index;
   /** True if the classes need to be loaded */
   private boolean m_loadClasses = true;
 
   private Map<String, String> m_parameters = new HashMap<>();
-  private XmlTest m_xmlTest;
+  private @Nullable XmlTest m_xmlTest;
 
   public XmlClass() {
     init("", null, 0, false /* load classes */);
   }
 
   public XmlClass(String name) {
-    init(name, null, 0);
+    init(name, null, 0, true /* load classes */);
   }
 
   public XmlClass(String name, boolean loadClasses) {
@@ -51,11 +54,7 @@ public class XmlClass implements Cloneable {
     init(className, null, index, loadClasses);
   }
 
-  private void init(String className, Class cls, int index) {
-    init(className, cls, index, true /* load classes */);
-  }
-
-  private void init(String className, Class cls, int index, boolean resolveClass) {
+  private void init(String className, @Nullable Class cls, int index, boolean resolveClass) {
     m_name = className;
     m_class = cls;
     m_index = index;
@@ -65,20 +64,21 @@ public class XmlClass implements Cloneable {
     }
   }
 
-  private void loadClass() {
-    m_class = ClassHelper.forName(m_name);
+  /** Resolves {@link #m_name}, caches it in {@link #m_class} and hands it back. */
+  private Class<?> loadClass() {
+    Class<?> cls = ClassHelper.forName(m_name);
 
-    if (null == m_class) {
+    if (null == cls) {
       throw new TestNGException("Cannot find class in classpath: " + m_name);
     }
+    m_class = cls;
+    return cls;
   }
 
   /** @return Returns the className. */
   public Class<?> getSupportClass() {
-    if (m_class == null) {
-      loadClass();
-    }
-    return m_class;
+    Class<?> cls = m_class;
+    return cls == null ? loadClass() : cls;
   }
 
   /** @param className The className to set. */

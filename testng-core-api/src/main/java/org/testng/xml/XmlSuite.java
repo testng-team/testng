@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestObjectFactory;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
@@ -87,7 +88,7 @@ public class XmlSuite implements Cloneable {
       this.name = name;
     }
 
-    public static FailurePolicy getValidPolicy(String policy) {
+    public static @Nullable FailurePolicy getValidPolicy(@Nullable String policy) {
       if (policy == null) {
         return null;
       }
@@ -104,7 +105,8 @@ public class XmlSuite implements Cloneable {
     }
   }
 
-  private String m_test;
+  /** Never assigned; {@link #getTest()} has always returned null. */
+  private @Nullable String m_test;
 
   /** The default suite name TODO CQ is this OK as a default name. */
   private static final String DEFAULT_SUITE_NAME = "Default Suite";
@@ -115,7 +117,7 @@ public class XmlSuite implements Cloneable {
   /** The suite verbose flag (0 to 10). */
   public static final Integer DEFAULT_VERBOSE = 1;
 
-  private Integer m_verbose = null;
+  private @Nullable Integer m_verbose;
 
   public static final ParallelMode DEFAULT_PARALLEL = ParallelMode.NONE;
   private ParallelMode m_parallel = DEFAULT_PARALLEL;
@@ -162,7 +164,7 @@ public class XmlSuite implements Cloneable {
    * Whether {@code @Factory} produced instances are created lazily. {@code null} means "unset at
    * the suite level" so the {@link org.testng.TestNG} configuration decides (default eager).
    */
-  private Boolean m_lazyFactory = null;
+  private @Nullable Boolean m_lazyFactory;
 
   public static final Boolean DEFAULT_ALLOW_RETURN_VALUES = Boolean.FALSE;
   private Boolean m_allowReturnValues = DEFAULT_ALLOW_RETURN_VALUES;
@@ -180,27 +182,27 @@ public class XmlSuite implements Cloneable {
   private Map<String, String> m_parameters = new HashMap<>();
 
   /** Name of the XML file. */
-  private String m_fileName;
+  private @Nullable String m_fileName;
 
   /** Time out for methods/tests. */
-  private String m_timeOut;
+  private @Nullable String m_timeOut;
 
   /** List of child XML suites specified using <suite-file> tags. */
   private final List<XmlSuite> m_childSuites = new ArrayList<>();
 
   /** Parent XML suite if this suite was specified in another suite using <suite-file> tag. */
-  private XmlSuite m_parentSuite;
+  private @Nullable XmlSuite m_parentSuite;
 
   private List<String> m_suiteFiles = new ArrayList<>();
 
-  private Class<? extends ITestObjectFactory> m_objectFactoryClass;
+  private @Nullable Class<? extends ITestObjectFactory> m_objectFactoryClass;
 
   private List<String> m_listeners = new ArrayList<>();
 
   public static final Boolean DEFAULT_PRESERVE_ORDER = Boolean.TRUE;
   private Boolean m_preserveOrder = DEFAULT_PRESERVE_ORDER;
 
-  private XmlMethodSelectors m_xmlMethodSelectors;
+  private @Nullable XmlMethodSelectors m_xmlMethodSelectors;
   private boolean parsed = false;
 
   public void setParsed(boolean parsed) {
@@ -213,12 +215,12 @@ public class XmlSuite implements Cloneable {
   }
 
   /** @return The fileName. */
-  public String getFileName() {
+  public @Nullable String getFileName() {
     return m_fileName;
   }
 
   /** @param fileName The fileName to set. */
-  public void setFileName(String fileName) {
+  public void setFileName(@Nullable String fileName) {
     m_fileName = fileName;
   }
 
@@ -239,7 +241,7 @@ public class XmlSuite implements Cloneable {
     return m_guiceStage;
   }
 
-  public Class<? extends ITestObjectFactory> getObjectFactoryClass() {
+  public @Nullable Class<? extends ITestObjectFactory> getObjectFactoryClass() {
     return m_objectFactoryClass;
   }
 
@@ -259,7 +261,8 @@ public class XmlSuite implements Cloneable {
     return shareThreadPoolForDataProviders;
   }
 
-  public void setObjectFactoryClass(Class<? extends ITestObjectFactory> objectFactoryClass) {
+  public void setObjectFactoryClass(
+      @Nullable Class<? extends ITestObjectFactory> objectFactoryClass) {
     m_objectFactoryClass = objectFactoryClass;
   }
 
@@ -342,7 +345,7 @@ public class XmlSuite implements Cloneable {
    *
    * @return The test.
    */
-  public String getTest() {
+  public @Nullable String getTest() {
     return m_test;
   }
 
@@ -440,9 +443,10 @@ public class XmlSuite implements Cloneable {
    * Returns the parameter defined in this suite only.
    *
    * @param name The parameter name.
-   * @return The parameter defined in this suite only.
+   * @return The parameter defined in this suite only, or {@code null} if this suite does not define
+   *     it. Unlike {@link XmlTest#getParameter(String)} this does not consult a parent suite.
    */
-  public String getParameter(String name) {
+  public @Nullable String getParameter(String name) {
     return m_parameters.get(name);
   }
 
@@ -491,7 +495,7 @@ public class XmlSuite implements Cloneable {
     return getXmlPackages();
   }
 
-  public void setMethodSelectors(XmlMethodSelectors xms) {
+  public void setMethodSelectors(@Nullable XmlMethodSelectors xms) {
     m_xmlMethodSelectors = xms;
   }
 
@@ -510,11 +514,11 @@ public class XmlSuite implements Cloneable {
     return m_listeners;
   }
 
-  public void setXmlMethodSelectors(XmlMethodSelectors xms) {
+  public void setXmlMethodSelectors(@Nullable XmlMethodSelectors xms) {
     m_xmlMethodSelectors = xms;
   }
 
-  public XmlMethodSelectors getXmlMethodSelectors() {
+  public @Nullable XmlMethodSelectors getXmlMethodSelectors() {
     return m_xmlMethodSelectors;
   }
 
@@ -590,7 +594,7 @@ public class XmlSuite implements Cloneable {
    *
    * @param timeOut The timeout.
    */
-  public void setTimeOut(String timeOut) {
+  public void setTimeOut(@Nullable String timeOut) {
     m_timeOut = timeOut;
   }
 
@@ -599,7 +603,7 @@ public class XmlSuite implements Cloneable {
    *
    * @return The timeout.
    */
-  public String getTimeOut() {
+  public @Nullable String getTimeOut() {
     return m_timeOut;
   }
 
@@ -662,12 +666,12 @@ public class XmlSuite implements Cloneable {
     return m_dataProviderThreadCount;
   }
 
-  public void setParentSuite(XmlSuite parentSuite) {
+  public void setParentSuite(@Nullable XmlSuite parentSuite) {
     m_parentSuite = parentSuite;
     updateParameters();
   }
 
-  public XmlSuite getParentSuite() {
+  public @Nullable XmlSuite getParentSuite() {
     return m_parentSuite;
   }
 
@@ -850,32 +854,41 @@ public class XmlSuite implements Cloneable {
     }
   }
 
-  private void initGroupsRun() {
-    if (m_xmlGroups == null) {
-      m_xmlGroups = new XmlGroups();
+  /** Creates the {@code <groups>} and {@code <run>} pair on first use, and returns the run. */
+  private XmlRun groupsRun() {
+    XmlGroups groups = groups();
+    XmlRun run = groups.getRun();
+    if (run == null) {
+      run = new XmlRun();
+      groups.setRun(run);
     }
-    if (m_xmlGroups.getRun() == null) {
-      m_xmlGroups.setRun(new XmlRun());
+    return run;
+  }
+
+  /** Creates the {@code <groups>} element on first use, and returns it. */
+  private XmlGroups groups() {
+    XmlGroups groups = m_xmlGroups;
+    if (groups == null) {
+      groups = new XmlGroups();
+      m_xmlGroups = groups;
     }
+    return groups;
   }
 
   public void addIncludedGroup(String g) {
-    initGroupsRun();
-    m_xmlGroups.getRun().onInclude(g);
+    groupsRun().onInclude(g);
   }
 
   /** @param g - The list of groups to include. */
   public void setIncludedGroups(List<String> g) {
-    initGroupsRun();
-    List<String> includes = m_xmlGroups.getRun().getIncludes();
+    List<String> includes = groupsRun().getIncludes();
     includes.clear();
     includes.addAll(g);
   }
 
   /** @param g The excludedGrousps to set. */
   public void setExcludedGroups(List<String> g) {
-    initGroupsRun();
-    List<String> excludes = m_xmlGroups.getRun().getExcludes();
+    List<String> excludes = groupsRun().getExcludes();
     excludes.clear();
     excludes.addAll(g);
   }
@@ -895,8 +908,7 @@ public class XmlSuite implements Cloneable {
   }
 
   public void addExcludedGroup(String g) {
-    initGroupsRun();
-    m_xmlGroups.getRun().onExclude(g);
+    groupsRun().onExclude(g);
   }
 
   public Boolean getGroupByInstances() {
@@ -913,11 +925,11 @@ public class XmlSuite implements Cloneable {
    *     at the suite level, in which case the {@link org.testng.TestNG} configuration decides
    *     (default eager).
    */
-  public Boolean getLazyFactory() {
+  public @Nullable Boolean getLazyFactory() {
     return m_lazyFactory;
   }
 
-  public void setLazyFactory(Boolean lazyFactory) {
+  public void setLazyFactory(@Nullable Boolean lazyFactory) {
     m_lazyFactory = lazyFactory;
   }
 
@@ -933,9 +945,9 @@ public class XmlSuite implements Cloneable {
     m_allowReturnValues = allowReturnValues;
   }
 
-  private XmlGroups m_xmlGroups;
+  private @Nullable XmlGroups m_xmlGroups;
 
-  public void setGroups(XmlGroups xmlGroups) {
+  public void setGroups(@Nullable XmlGroups xmlGroups) {
     m_xmlGroups = xmlGroups;
   }
 
@@ -959,7 +971,8 @@ public class XmlSuite implements Cloneable {
     System.out.println("Language:" + language);
   }
 
-  public XmlGroups getGroups() {
+  /** @return the {@code <groups>} element, or {@code null} if the suite declares none. */
+  public @Nullable XmlGroups getGroups() {
     return m_xmlGroups;
   }
 

@@ -2,11 +2,12 @@ package org.testng.xml;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 public class XmlGroups {
 
   private List<XmlDefine> m_defines = new ArrayList<>();
-  private XmlRun m_run;
+  private @Nullable XmlRun m_run;
   private List<XmlDependencies> m_dependencies = new ArrayList<>();
 
   public List<XmlDefine> getDefines() {
@@ -21,11 +22,15 @@ public class XmlGroups {
     m_defines = defines;
   }
 
-  public XmlRun getRun() {
+  /**
+   * @return the {@code <run>} element, or {@code null} when none has been set. A {@code <groups>}
+   *     can legitimately carry only {@code <define>} or {@code <dependencies>} elements.
+   */
+  public @Nullable XmlRun getRun() {
     return m_run;
   }
 
-  public void setRun(XmlRun run) {
+  public void setRun(@Nullable XmlRun run) {
     m_run = run;
   }
 

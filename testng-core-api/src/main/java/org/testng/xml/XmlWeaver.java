@@ -1,5 +1,7 @@
 package org.testng.xml;
 
+import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.RuntimeBehavior;
@@ -7,7 +9,7 @@ import org.testng.internal.objects.InstanceCreator;
 
 /** A Utility class that helps represent a {@link XmlSuite} and {@link XmlTest} as String. */
 final class XmlWeaver {
-  private static IWeaveXml instance = null;
+  private static @Nullable IWeaveXml instance;
   private static final boolean testMode = RuntimeBehavior.isTestMode();
 
   private XmlWeaver() {}
@@ -16,7 +18,11 @@ final class XmlWeaver {
     if (testMode) {
       // Do not resort to caching when running Unit tests for TestNG, because we have to check
       // both implementations. If we cache the instance, then its not possible to do that.
-      return attemptDefaultImplementationInstantiation();
+      // The requireNonNull records what the callers have always assumed: in test mode a third
+      // party weaver is not instantiated, and dereferencing the result threw here already.
+      return Objects.requireNonNull(
+          attemptDefaultImplementationInstantiation(),
+          "test mode does not instantiate a third party weaver named by -Dtestng.xml.weaver");
     }
     return instantiateIfRequired();
   }
@@ -70,7 +76,7 @@ final class XmlWeaver {
     return getInstance().asXml(xmlTest, indent);
   }
 
-  private static IWeaveXml attemptDefaultImplementationInstantiation() {
+  private static @Nullable IWeaveXml attemptDefaultImplementationInstantiation() {
     String clazz = getClassName();
     if (clazz.equals(DefaultXmlWeaver.class.getName())) {
       return new DefaultXmlWeaver();
