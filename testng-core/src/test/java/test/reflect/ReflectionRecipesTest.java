@@ -3,6 +3,7 @@ package test.reflect;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.internal.reflect.ReflectionRecipes.exactMatch;
 import static org.testng.internal.reflect.ReflectionRecipes.getMethodParameters;
 import static org.testng.internal.reflect.ReflectionRecipes.isOrImplementsInterface;
@@ -24,6 +25,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.NoInjection;
 import org.testng.annotations.Test;
 import org.testng.internal.reflect.InjectableParameter;
+import org.testng.internal.reflect.MethodMatcherException;
 import org.testng.internal.reflect.ReflectionRecipes;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlTest;
@@ -235,6 +237,9 @@ public class ReflectionRecipesTest {
       // Would narrow, so it does not match.
       {int.class, 1L, false},
       {float.class, 1.0d, false},
+      // byte widens to short; char does not (JLS 5.1.2).
+      {short.class, (byte) 1, true},
+      {short.class, 'a', false},
     };
   }
 
@@ -243,6 +248,43 @@ public class ReflectionRecipesTest {
       final Class<?> primitive, final Object argument, final boolean expected) {
     assertThat(ReflectionRecipes.isInstanceOf(primitive, argument)).isEqualTo(expected);
   }
+
+  @Test
+  public void generateMessageStringifiesPrimitiveArray() throws Exception {
+    final Method method = ReflectionRecipesTest.class.getMethod("oneInt", int.class);
+    final String message =
+        MethodMatcherException.generateMessage("probe", method, new Object[] {new int[] {1, 2}});
+    assertThat(message).contains("[1, 2]");
+  }
+
+  @Test
+  public void leftoverArgumentsWithNullMethodKeepDiagnostic() {
+    final String previous = System.getProperty("strictParameterMatch");
+    System.setProperty("strictParameterMatch", "true");
+    try {
+      assertThatThrownBy(
+              () ->
+                  ReflectionRecipes.inject(
+                      getMethodParameters(ReflectionRecipesTest.class, "oneInt"),
+                      InjectableParameter.Assistant.ALL_INJECTS,
+                      new Object[] {1, "leftover"},
+                      (Method) null,
+                      null,
+                      null))
+          .isInstanceOf(MethodMatcherException.class)
+          .hasMessageContaining("Missing one or more parameters")
+          .hasMessageContaining("leftover")
+          .hasMessageContaining("Method: null");
+    } finally {
+      if (previous == null) {
+        System.clearProperty("strictParameterMatch");
+      } else {
+        System.setProperty("strictParameterMatch", previous);
+      }
+    }
+  }
+
+  public static void oneInt(int value) {}
 
   private interface T {
     void s0(TestContextJustForTesting testContext, int i, Boolean b);
