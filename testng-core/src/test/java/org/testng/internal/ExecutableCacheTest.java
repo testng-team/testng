@@ -73,7 +73,7 @@ public class ExecutableCacheTest {
   @Test
   public void aCovariantMethodAndItsBridgeAreKeptDistinct() throws NoSuchMethodException {
     // The cache keys on the Executable itself, and Method#equals compares the return type, so a
-    // covariant method and its compiler-generated bridge must not collapse into one entry.
+    // covariant method and its compiler-generated bridge must not collapse onto one shared handle.
     ExecutableCache cache = new ExecutableCache();
 
     Method real = Child.class.getDeclaredMethod("value"); // most specific: returns String

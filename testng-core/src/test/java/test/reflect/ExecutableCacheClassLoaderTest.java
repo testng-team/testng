@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Executable;
 import org.testng.annotations.Test;
@@ -27,6 +28,10 @@ public class ExecutableCacheClassLoaderTest {
     assertThat(collect(loaderRef))
         .as("the throwaway class loader must be collectible after interning its method")
         .isNull();
+
+    // Pin the cache past the GC above, so this proves the loader is collectible *while the cache is
+    // still alive* — not merely because the cache itself was collected too.
+    Reference.reachabilityFence(cache);
   }
 
   /**

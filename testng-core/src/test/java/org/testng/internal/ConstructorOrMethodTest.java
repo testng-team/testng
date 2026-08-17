@@ -20,7 +20,7 @@ public class ConstructorOrMethodTest {
     void bar() {}
   }
 
-  // Used only by the "already accessible before wrapping" test, so the shared cache entry for this
+  // Used only by the "already accessible before wrapping" test, so the shared handle for this
   // member is not touched by any other test.
   @SuppressWarnings("unused")
   static class AccessibilitySample {
@@ -29,13 +29,6 @@ public class ConstructorOrMethodTest {
 
   private static Method method(String name, Class<?>... params) throws NoSuchMethodException {
     return Sample.class.getDeclaredMethod(name, params);
-  }
-
-  @Test
-  public void reflectionHandsBackDistinctCopiesSoInterningIsWorthIt() throws NoSuchMethodException {
-    // Baseline assumption the whole optimization rests on: the JDK returns a fresh Method copy per
-    // lookup, so without interning every wrapper would retain its own heavy handle.
-    assertThat(method("bar")).isNotSameAs(method("bar"));
   }
 
   @Test
@@ -104,13 +97,13 @@ public class ConstructorOrMethodTest {
   }
 
   @Test
-  public void descriptorAccessorsDoNotRequireResolution() throws NoSuchMethodException {
+  public void accessorsReadStraightFromTheHandle() throws NoSuchMethodException {
     ConstructorOrMethod com = new ConstructorOrMethod(method("foo", String.class));
 
     assertThat(com.getName()).isEqualTo("foo");
     assertThat(com.getDeclaringClass()).isEqualTo(Sample.class);
     assertThat(com.getParameterTypes()).containsExactly(String.class);
-    // Defensive copy: mutating the returned array must not corrupt the descriptor.
+    // Defensive copy: mutating the returned array must not corrupt the wrapper's parameter types.
     com.getParameterTypes()[0] = Integer.class;
     assertThat(com.getParameterTypes()).containsExactly(String.class);
   }
@@ -126,12 +119,10 @@ public class ConstructorOrMethodTest {
   }
 
   @Test
-  public void equalsHashCodeAndDescriptorAgreeAcrossInterningModes() throws NoSuchMethodException {
-    // A wrapper built with interning on (shared Entry descriptor) must be indistinguishable from
-    // one
-    // built with interning off (descriptor read off the strong handle): the two representations
-    // have
-    // to compare, hash and describe identically.
+  public void equalsHashCodeAndAccessorsAgreeAcrossInterningModes() throws NoSuchMethodException {
+    // A wrapper built with interning on (holding the shared handle) must be indistinguishable from
+    // one built with interning off (holding the handle it was given): the two have to compare, hash
+    // and describe identically.
     ConstructorOrMethod interned = build("true", method("foo", String.class));
     ConstructorOrMethod strong = build("false", method("foo", String.class));
 
