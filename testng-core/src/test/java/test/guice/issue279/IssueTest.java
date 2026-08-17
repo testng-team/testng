@@ -3,6 +3,7 @@ package test.guice.issue279;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.List;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -32,6 +33,21 @@ public class IssueTest extends SimpleBaseTest {
     xmlSuite.setListeners(Arrays.asList(MyListener.class.getName(), DummyReporter.class.getName()));
     createXmlTest(xmlSuite, "sample_test", TestClassWithoutListener.class);
     TestNG testng = create(xmlSuite);
+    testng.run();
+    assertThat(MyListener.getInstance()).isInstanceOf(TextGreeter.class);
+    assertThat(DummyReporter.getInstance()).isInstanceOf(TextGreeter.class);
+  }
+
+  @Test(description = "GITHUB-3377")
+  public void setListenerClassesDoesNotThrowWhenListenerIsGuiceAnnotated() {
+    TestNG testng = new TestNG();
+    testng.setListenerClasses(List.of(MyListener.class));
+  }
+
+  @Test(description = "GITHUB-3377")
+  public void setListenerClassesInjectsGuiceAnnotatedListeners() {
+    TestNG testng = create(TestClassWithoutListener.class);
+    testng.setListenerClasses(List.of(MyListener.class, DummyReporter.class));
     testng.run();
     assertThat(MyListener.getInstance()).isInstanceOf(TextGreeter.class);
     assertThat(DummyReporter.getInstance()).isInstanceOf(TextGreeter.class);

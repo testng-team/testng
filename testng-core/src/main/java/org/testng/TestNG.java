@@ -27,7 +27,6 @@ import org.testng.SuiteRunner.TestListenersContainer;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Configuration;
-import org.testng.internal.DefaultListenerFactory;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.ExitCode;
 import org.testng.internal.IConfiguration;
@@ -713,11 +712,21 @@ public class TestNG {
    */
   public void setListenerClasses(List<Class<? extends ITestNGListener>> classes) {
     ITestNGListenerFactory factory = m_configuration.getListenerFactory();
-    if (factory == null) {
-      factory = new DefaultListenerFactory(m_objectFactory, null);
+    if (factory != null) {
+      for (Class<? extends ITestNGListener> cls : classes) {
+        addListener(factory.createListener(cls));
+      }
+      return;
     }
+    // Same path as addListeners(XmlSuite): a GuiceContext so @Guice listeners
+    // do not reach GuiceBasedObjectDispenser with neither a test nor a suite context.
+    IObjectDispenser dispenser = Dispenser.newInstance(m_objectFactory);
+    XmlSuite suite = m_suites.isEmpty() ? new XmlSuite() : m_suites.get(0);
+    GuiceContext context = new GuiceContext(suite, this.m_configuration);
     for (Class<? extends ITestNGListener> cls : classes) {
-      addListener(factory.createListener(cls));
+      BasicAttributes basic = new BasicAttributes(null, cls);
+      CreationAttributes attributes = new CreationAttributes(basic, context);
+      addListener((ITestNGListener) dispenser.dispense(attributes));
     }
   }
 
