@@ -266,6 +266,8 @@
   <classes>
     <class name="test.reflect.ReflectionRecipesTest" />
     <class name="test.reflect.TestMethodMatcher" />
+    <class name="test.reflect.ExecutableCacheClassLoaderTest" />
+    <class name="test.reflect.InterningRegressionTest" />
   </classes>
   </test>
 
@@ -759,6 +761,8 @@
   <test name="Utils">
     <classes>
       <class name="org.testng.internal.UtilsTest" />
+      <class name="org.testng.internal.ConstructorOrMethodTest"/>
+      <class name="org.testng.internal.ExecutableCacheTest"/>
       <class name="org.testng.internal.ClassHelperTest"/>
       <class name="org.testng.internal.objects.InstanceCreatorTest"/>
       <class name="org.testng.util.StringsTest"/>

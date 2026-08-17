@@ -115,7 +115,7 @@ public class FactoryMethod extends BaseTestMethod {
     }
     if (com.getMethod() != null && !Modifier.isPublic(com.getMethod().getModifiers())) {
       try {
-        com.getMethod().setAccessible(true);
+        com.makeAccessible();
       } catch (SecurityException e) {
         throw new TestNGException(com.getMethod().getName() + " must be public", e);
       }
