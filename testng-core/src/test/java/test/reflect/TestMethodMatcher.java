@@ -82,6 +82,10 @@ public class TestMethodMatcher {
       new Object[] {"goodTestIssue122", new Object[] {3, "three", "four"}},
       new Object[] {"badTestIssue122", new Object[] {3, "three", "four"}},
       new Object[] {"mixedArgs", new Object[] {3, true, "three", "four"}},
+      // char does not widen to short; reject here instead of Method.invoke()
+      new Object[] {"takesShort", new Object[] {'a'}},
+      // primitive array must stay in the diagnostic, not ClassCastException
+      new Object[] {"takesString", new Object[] {new int[] {1, 2}}},
     };
   }
 
@@ -120,6 +124,14 @@ public class TestMethodMatcher {
             "has no parameters defined but was found to be using a data provider (either explicitly specified or inherited from class level annotation")
         .hasMessageContaining("Method: ")
         .hasMessageContaining("Arguments: ");
+  }
+
+  public void takesShort(short value) {
+    throw new AssertionError("char must not match short");
+  }
+
+  public void takesString(String value) {
+    throw new AssertionError("int[] must not match String");
   }
 
   public void goodTestIssue122(String s, String[] strings) {

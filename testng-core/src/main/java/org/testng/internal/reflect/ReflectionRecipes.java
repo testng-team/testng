@@ -331,7 +331,7 @@ public final class ReflectionRecipes {
    * @param parameters array of parameter instances under question.
    * @param filters filters to use.
    * @param args user supplied arguments.
-   * @param injectionMethod current test method.
+   * @param injectionMethod current test method, or {@code null} when there is no holder.
    * @param context current test context.
    * @param testResult on going test results.
    * @return injected arguments.
@@ -340,7 +340,7 @@ public final class ReflectionRecipes {
       final Parameter[] parameters,
       final Set<InjectableParameter> filters,
       final Object[] args,
-      final Method injectionMethod,
+      final @Nullable Method injectionMethod,
       final ITestContext context,
       final ITestResult testResult) {
     return nativelyInject(parameters, filters, args, injectionMethod, context, testResult);
@@ -350,7 +350,7 @@ public final class ReflectionRecipes {
       final Parameter[] parameters,
       final Set<InjectableParameter> filters,
       final Object[] args,
-      final Object injectionMethod,
+      final @Nullable Object injectionMethod,
       final ITestContext context,
       final ITestResult testResult) {
     if (filters == null || filters.isEmpty()) {
