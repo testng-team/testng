@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import org.testng.TestNGException;
 import org.testng.internal.Yaml;
@@ -66,7 +67,10 @@ public class Converter {
         findAllSuites(parser.parse(), allSuites);
 
         for (XmlSuite suite : allSuites) {
-          String fileName = suite.getFileName();
+          // Every suite here was read from a file the converter was given, and both parsers set
+          // the name: TestNGContentHandler for XML, Yaml for YAML.
+          String fileName =
+              Objects.requireNonNull(suite.getFileName(), "a parsed suite names its file");
           int ind = fileName.lastIndexOf(".");
           String bn = fileName.substring(0, ind);
           int ind2 = bn.lastIndexOf(File.separatorChar);

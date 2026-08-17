@@ -2,16 +2,17 @@ package org.testng.xml;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 public class XmlDefine {
 
-  private String m_name;
+  private @Nullable String m_name;
 
-  public void setName(String name) {
+  public void setName(@Nullable String name) {
     m_name = name;
   }
 
-  public String getName() {
+  public @Nullable String getName() {
     return m_name;
   }
 

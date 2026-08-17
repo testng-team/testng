@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import javax.xml.XMLConstants;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
@@ -80,7 +81,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
   /** Immutable, so a single instance can serve every {@code asXmlFragment} call. */
   private static final DefaultXmlWeaver LEGACY_FRAGMENT_WEAVER = new DefaultXmlWeaver();
 
-  private final String defaultComment;
+  private final @Nullable String defaultComment;
 
   /** Writes the name of each named tag as a trailing XML comment, as TestNG always has. */
   public DefaultXmlWeaver() {
@@ -92,7 +93,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
    *     tag's own {@code name} attribute. Pass the empty string to write no comment at all, which
    *     is what {@link CommentDisabledXmlWeaver} does.
    */
-  protected DefaultXmlWeaver(String defaultComment) {
+  protected DefaultXmlWeaver(@Nullable String defaultComment) {
     this.defaultComment = defaultComment;
   }
 

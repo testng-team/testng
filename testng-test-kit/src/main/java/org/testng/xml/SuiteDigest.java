@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.TreeMap;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A canonical, human-readable dump of everything a suite file can express, used by the round trip
@@ -96,7 +97,7 @@ public final class SuiteDigest {
     }
   }
 
-  private static void appendGroups(StringBuilder sb, String prefix, XmlGroups groups) {
+  private static void appendGroups(StringBuilder sb, String prefix, @Nullable XmlGroups groups) {
     if (groups == null) {
       append(sb, prefix + ".groups", null);
       return;
@@ -144,7 +145,7 @@ public final class SuiteDigest {
     }
   }
 
-  private static void appendScript(StringBuilder sb, String prefix, XmlScript script) {
+  private static void appendScript(StringBuilder sb, String prefix, @Nullable XmlScript script) {
     if (script == null) {
       return;
     }
@@ -156,7 +157,7 @@ public final class SuiteDigest {
     return new TreeMap<>(map);
   }
 
-  private static void append(StringBuilder sb, String key, Object value) {
+  private static void append(StringBuilder sb, String key, @Nullable Object value) {
     sb.append(key).append('=').append(render(value)).append('\n');
   }
 
@@ -167,7 +168,7 @@ public final class SuiteDigest {
    * parameter valued {@code a,b}. Two different suites sharing a digest is a round trip test that
    * passes for the wrong reason, which is the one thing this class must not do.
    */
-  private static String render(Object value) {
+  private static String render(@Nullable Object value) {
     if (value instanceof Map) {
       StringJoiner rendered = new StringJoiner(", ", "{", "}");
       ((Map<?, ?>) value).forEach((k, v) -> rendered.add(render(k) + '=' + render(v)));
@@ -186,7 +187,7 @@ public final class SuiteDigest {
    * structure and never data. That is what makes the output unambiguous while keeping it readable
    * -- the point of the digest is that a difference shows up as a diff on a single line.
    */
-  private static String escape(Object value) {
+  private static String escape(@Nullable Object value) {
     StringBuilder result = new StringBuilder();
     for (char c : String.valueOf(value).toCharArray()) {
       if (c == '\\' || c == ',' || c == '=' || c == '[' || c == ']' || c == '{' || c == '}') {

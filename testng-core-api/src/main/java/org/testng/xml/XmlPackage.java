@@ -3,6 +3,7 @@ package org.testng.xml;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.testng.internal.PackageUtils;
 import org.testng.internal.Utils;
 import org.testng.internal.protocols.UnhandledIOException;
@@ -10,10 +11,10 @@ import org.testng.internal.protocols.UnhandledIOException;
 /** This class describes the tag <code>&lt;package&gt;</code> in testng.xml. */
 public class XmlPackage {
 
-  private String m_name;
+  private @Nullable String m_name;
   private List<String> m_include = new ArrayList<>();
   private List<String> m_exclude = new ArrayList<>();
-  private List<XmlClass> m_xmlClasses = null;
+  private @Nullable List<XmlClass> m_xmlClasses;
 
   public XmlPackage() {}
 
@@ -43,21 +44,23 @@ public class XmlPackage {
   }
 
   /** @return the name */
-  public String getName() {
+  public @Nullable String getName() {
     return m_name;
   }
 
   /** @param name the name to set */
-  public void setName(String name) {
+  public void setName(@Nullable String name) {
     m_name = name;
   }
 
   public List<XmlClass> getXmlClasses() {
-    if (null == m_xmlClasses) {
-      m_xmlClasses = initializeXmlClasses();
+    List<XmlClass> xmlClasses = m_xmlClasses;
+    if (null == xmlClasses) {
+      xmlClasses = initializeXmlClasses();
+      m_xmlClasses = xmlClasses;
     }
 
-    return m_xmlClasses;
+    return xmlClasses;
   }
 
   private List<XmlClass> initializeXmlClasses() {

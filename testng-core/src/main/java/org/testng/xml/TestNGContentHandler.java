@@ -18,9 +18,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Stack;
 import javax.xml.XMLConstants;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.internal.RuntimeBehavior;
@@ -46,22 +48,25 @@ import org.xml.sax.helpers.DefaultHandler;
 public class TestNGContentHandler extends DefaultHandler implements LexicalHandler {
   private static final int DTD_CONNECTION_TIMEOUT_MILLIS = 10_000;
 
-  private XmlSuite m_currentSuite = null;
-  private XmlTest m_currentTest = null;
-  private XmlDefine m_currentDefine = null;
-  private XmlRun m_currentRun = null;
-  private List<XmlClass> m_currentClasses = null;
+  /** Only the end tag half of the {@code xml*} methods below is called without attributes. */
+  private static final String START_TAG_ATTRIBUTES = "a start tag carries its attributes";
+
+  private @Nullable XmlSuite m_currentSuite;
+  private @Nullable XmlTest m_currentTest;
+  private @Nullable XmlDefine m_currentDefine;
+  private @Nullable XmlRun m_currentRun;
+  private @Nullable List<XmlClass> m_currentClasses;
   private int m_currentTestIndex = 0;
   private int m_currentClassIndex = 0;
   private int m_currentIncludeIndex = 0;
-  private List<XmlPackage> m_currentPackages = null;
-  private XmlPackage m_currentPackage = null;
+  private @Nullable List<XmlPackage> m_currentPackages;
+  private @Nullable XmlPackage m_currentPackage;
   private final List<XmlSuite> m_suites = new ArrayList<>();
-  private XmlGroups m_currentGroups = null;
-  private Map<String, String> m_currentTestParameters = null;
-  private Map<String, String> m_currentSuiteParameters = null;
-  private Map<String, String> m_currentClassParameters = null;
-  private Include m_currentInclude;
+  private @Nullable XmlGroups m_currentGroups;
+  private @Nullable Map<String, String> m_currentTestParameters;
+  private @Nullable Map<String, String> m_currentSuiteParameters;
+  private @Nullable Map<String, String> m_currentClassParameters;
+  private @Nullable Include m_currentInclude;
 
   // Borrowed this implementation from this SO post : https://stackoverflow.com/a/29751441/679824
   private final EntityResolver m_redirectionAwareResolver =
@@ -126,16 +131,16 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   private final Stack<Location> m_locations = new Stack<>();
   private boolean isSuiteFileTag = false;
 
-  private XmlClass m_currentClass = null;
-  private ArrayList<XmlInclude> m_currentIncludedMethods = null;
-  private List<String> m_currentExcludedMethods = null;
-  private ArrayList<XmlMethodSelector> m_currentSelectors = null;
-  private XmlMethodSelector m_currentSelector = null;
-  private String m_currentLanguage = null;
-  private String m_currentExpression = null;
+  private @Nullable XmlClass m_currentClass;
+  private @Nullable ArrayList<XmlInclude> m_currentIncludedMethods;
+  private @Nullable List<String> m_currentExcludedMethods;
+  private @Nullable ArrayList<XmlMethodSelector> m_currentSelectors;
+  private @Nullable XmlMethodSelector m_currentSelector;
+  private @Nullable String m_currentLanguage;
+  private @Nullable String m_currentExpression;
   private final List<String> m_suiteFiles = new ArrayList<>();
   private boolean m_enabledTest;
-  private List<String> m_listeners;
+  private @Nullable List<String> m_listeners;
 
   private final String m_fileName;
   private final boolean m_loadClasses;
@@ -281,36 +286,82 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     return Thread.currentThread().getContextClassLoader().getResourceAsStream(Parser.TESTNG_DTD);
   }
 
+  // Every m_currentXxx field declared above is set when its element's start tag is seen and cleared
+  // at the matching end tag, so it is non-null for the whole of that element's body. A null means
+  // the document is not well formed, which SAX reports separately. The accessors below assert it so
+  // the failure names the element instead of arriving as a bare NullPointerException.
+  private XmlSuite currentSuite() {
+    return Objects.requireNonNull(m_currentSuite, "no <suite> is being parsed");
+  }
+
+  private XmlTest currentTest() {
+    return Objects.requireNonNull(m_currentTest, "no <test> is being parsed");
+  }
+
+  private XmlClass currentClass() {
+    return Objects.requireNonNull(m_currentClass, "no <class> is being parsed");
+  }
+
+  private XmlGroups currentGroups() {
+    return Objects.requireNonNull(m_currentGroups, "no <groups> is being parsed");
+  }
+
+  private XmlMethodSelector currentSelector() {
+    return Objects.requireNonNull(m_currentSelector, "no <method-selector> is being parsed");
+  }
+
+  private List<XmlMethodSelector> currentSelectors() {
+    return Objects.requireNonNull(m_currentSelectors, "no <method-selectors> is being parsed");
+  }
+
+  private Include currentInclude() {
+    return Objects.requireNonNull(m_currentInclude, "no <include> is being parsed");
+  }
+
+  private Map<String, String> currentSuiteParameters() {
+    return Objects.requireNonNull(m_currentSuiteParameters, "no <suite> is being parsed");
+  }
+
+  private Map<String, String> currentTestParameters() {
+    return Objects.requireNonNull(m_currentTestParameters, "no <test> is being parsed");
+  }
+
+  private Map<String, String> currentClassParameters() {
+    return Objects.requireNonNull(m_currentClassParameters, "no <class> is being parsed");
+  }
+
   /** Parse <suite-file> */
-  private void xmlSuiteFile(boolean start, Attributes attributes) {
+  private void xmlSuiteFile(boolean start, @Nullable Attributes startAttributes) {
     if (start) {
-      String path = attributes.getValue("path");
+      String path = Objects.requireNonNull(startAttributes, START_TAG_ATTRIBUTES).getValue("path");
       pushLocation(Location.SUITE);
       m_suiteFiles.add(path);
       isSuiteFileTag = true;
     } else {
-      m_currentSuite.setSuiteFiles(m_suiteFiles);
+      currentSuite().setSuiteFiles(m_suiteFiles);
       popLocation();
       isSuiteFileTag = false;
     }
   }
 
   /** Parse <suite> */
-  private void xmlSuite(boolean start, Attributes attributes) {
+  private void xmlSuite(boolean start, @Nullable Attributes startAttributes) {
     if (start) {
       pushLocation(Location.SUITE);
+      Attributes attributes = Objects.requireNonNull(startAttributes, START_TAG_ATTRIBUTES);
       String name = attributes.getValue("name");
       if (isStringBlank(name)) {
         throw new TestNGException("The <suite> tag must define the name attribute");
       }
-      m_currentSuite = new XmlSuite();
-      m_currentSuite.setFileName(m_fileName);
-      m_currentSuite.setName(name);
+      XmlSuite suite = new XmlSuite();
+      m_currentSuite = suite;
+      suite.setFileName(m_fileName);
+      suite.setName(name);
       m_currentSuiteParameters = new HashMap<>();
 
       String verbose = attributes.getValue("verbose");
       if (null != verbose) {
-        m_currentSuite.setVerbose(Integer.parseInt(verbose));
+        suite.setVerbose(Integer.parseInt(verbose));
       }
       String jUnit = attributes.getValue("junit");
       if (null != jUnit) {
@@ -320,7 +371,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       if (parallel != null) {
         XmlSuite.ParallelMode mode = XmlSuite.ParallelMode.getValidParallel(parallel);
         if (mode != null) {
-          m_currentSuite.setParallel(mode);
+          suite.setParallel(mode);
         } else {
           Utils.log(
               "Parser",
@@ -330,36 +381,36 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       }
       String parentModule = attributes.getValue("parent-module");
       if (parentModule != null) {
-        m_currentSuite.setParentModule(parentModule);
+        suite.setParentModule(parentModule);
       }
       String guiceStage = attributes.getValue("guice-stage");
       if (guiceStage != null) {
-        m_currentSuite.setGuiceStage(guiceStage);
+        suite.setGuiceStage(guiceStage);
       }
       XmlSuite.FailurePolicy configFailurePolicy =
           XmlSuite.FailurePolicy.getValidPolicy(attributes.getValue("configfailurepolicy"));
       if (null != configFailurePolicy) {
-        m_currentSuite.setConfigFailurePolicy(configFailurePolicy);
+        suite.setConfigFailurePolicy(configFailurePolicy);
       }
       String groupByInstances = attributes.getValue("group-by-instances");
       if (groupByInstances != null) {
-        m_currentSuite.setGroupByInstances(Boolean.parseBoolean(groupByInstances));
+        suite.setGroupByInstances(Boolean.parseBoolean(groupByInstances));
       }
       String lazyFactory = attributes.getValue("lazy-factory");
       if (lazyFactory != null) {
-        m_currentSuite.setLazyFactory(Boolean.parseBoolean(lazyFactory));
+        suite.setLazyFactory(Boolean.parseBoolean(lazyFactory));
       }
       String skip = attributes.getValue("skipfailedinvocationcounts");
       if (skip != null) {
-        m_currentSuite.setSkipFailedInvocationCounts(Boolean.parseBoolean(skip));
+        suite.setSkipFailedInvocationCounts(Boolean.parseBoolean(skip));
       }
       String threadCount = attributes.getValue("thread-count");
       if (null != threadCount) {
-        m_currentSuite.setThreadCount(Integer.parseInt(threadCount));
+        suite.setThreadCount(Integer.parseInt(threadCount));
       }
       String dataProviderThreadCount = attributes.getValue("data-provider-thread-count");
       if (null != dataProviderThreadCount) {
-        m_currentSuite.setDataProviderThreadCount(Integer.parseInt(dataProviderThreadCount));
+        suite.setDataProviderThreadCount(Integer.parseInt(dataProviderThreadCount));
       }
 
       String shareThreadPoolForDataProviders =
@@ -367,24 +418,22 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       Optional.ofNullable(shareThreadPoolForDataProviders)
           .ifPresent(
               it ->
-                  m_currentSuite.setShareThreadPoolForDataProviders(
+                  suite.setShareThreadPoolForDataProviders(
                       Boolean.parseBoolean(shareThreadPoolForDataProviders)));
 
       String useGlobalThreadPool = attributes.getValue("use-global-thread-pool");
       Optional.ofNullable(useGlobalThreadPool)
           .ifPresent(
-              it ->
-                  m_currentSuite.shouldUseGlobalThreadPool(
-                      Boolean.parseBoolean(useGlobalThreadPool)));
+              it -> suite.shouldUseGlobalThreadPool(Boolean.parseBoolean(useGlobalThreadPool)));
 
       String timeOut = attributes.getValue("time-out");
       if (null != timeOut) {
-        m_currentSuite.setTimeOut(timeOut);
+        suite.setTimeOut(timeOut);
       }
       String objectFactory = attributes.getValue("object-factory");
       if (null != objectFactory && m_loadClasses) {
         try {
-          m_currentSuite.setObjectFactoryClass(
+          suite.setObjectFactoryClass(
               (Class<? extends ITestObjectFactory>) Class.forName(objectFactory));
         } catch (Exception e) {
           Utils.log(
@@ -395,45 +444,50 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       }
       String preserveOrder = attributes.getValue("preserve-order");
       if (preserveOrder != null) {
-        m_currentSuite.setPreserveOrder(Boolean.valueOf(preserveOrder));
+        suite.setPreserveOrder(Boolean.valueOf(preserveOrder));
       }
       String allowReturnValues = attributes.getValue("allow-return-values");
       if (allowReturnValues != null) {
-        m_currentSuite.setAllowReturnValues(Boolean.valueOf(allowReturnValues));
+        suite.setAllowReturnValues(Boolean.valueOf(allowReturnValues));
       }
     } else {
-      m_currentSuite.setParameters(m_currentSuiteParameters);
-      m_suites.add(m_currentSuite);
+      XmlSuite suite = currentSuite();
+      suite.setParameters(currentSuiteParameters());
+      m_suites.add(suite);
       m_currentSuiteParameters = null;
       popLocation();
     }
   }
 
   /** Parse <define> */
-  private void xmlDefine(boolean start, Attributes attributes) {
+  private void xmlDefine(boolean start, @Nullable Attributes startAttributes) {
     if (start) {
-      String name = attributes.getValue("name");
-      m_currentDefine = new XmlDefine();
-      m_currentDefine.setName(name);
+      String name = Objects.requireNonNull(startAttributes, START_TAG_ATTRIBUTES).getValue("name");
+      XmlDefine define = new XmlDefine();
+      define.setName(name);
+      m_currentDefine = define;
     } else {
       // define is only defined within the context of XmlGroups
-      m_currentGroups.addDefine(m_currentDefine);
+      currentGroups()
+          .addDefine(Objects.requireNonNull(m_currentDefine, "no <define> is being parsed"));
       m_currentDefine = null;
     }
   }
 
   /** Parse <script> */
-  private void xmlScript(boolean start, Attributes attributes) {
+  private void xmlScript(boolean start, @Nullable Attributes startAttributes) {
     if (start) {
-      m_currentLanguage = attributes.getValue("language");
+      m_currentLanguage =
+          Objects.requireNonNull(startAttributes, START_TAG_ATTRIBUTES).getValue("language");
       m_currentExpression = "";
     } else {
       XmlScript script = new XmlScript();
-      script.setExpression(m_currentExpression);
+      script.setExpression(
+          Objects.requireNonNull(m_currentExpression, "no <script> is being parsed"));
       script.setLanguage(m_currentLanguage);
-      m_currentSelector.setScript(script);
+      currentSelector().setScript(script);
       if (m_locations.peek() == Location.TEST) {
-        m_currentTest.setScript(script);
+        currentTest().setScript(script);
       }
       m_currentLanguage = null;
       m_currentExpression = null;
@@ -441,19 +495,21 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   }
 
   /** Parse &lt;test&gt; */
-  private void xmlTest(boolean start, Attributes attributes) {
+  private void xmlTest(boolean start, @Nullable Attributes startAttributes) {
     if (start) {
-      m_currentTest = new XmlTest(m_currentSuite, m_currentTestIndex++);
+      XmlTest test = new XmlTest(currentSuite(), m_currentTestIndex++);
+      m_currentTest = test;
       pushLocation(Location.TEST);
       m_currentTestParameters = new HashMap<>();
+      Attributes attributes = Objects.requireNonNull(startAttributes, START_TAG_ATTRIBUTES);
       final String testName = attributes.getValue("name");
       if (isStringBlank(testName)) {
         throw new TestNGException("The <test> tag must define the name attribute");
       }
-      m_currentTest.setName(attributes.getValue("name"));
+      test.setName(attributes.getValue("name"));
       String verbose = attributes.getValue("verbose");
       if (null != verbose) {
-        m_currentTest.setVerbose(Integer.parseInt(verbose));
+        test.setVerbose(Integer.parseInt(verbose));
       }
       String jUnit = attributes.getValue("junit");
       if (null != jUnit) {
@@ -461,21 +517,21 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       }
       String skip = attributes.getValue("skipfailedinvocationcounts");
       if (skip != null) {
-        m_currentTest.setSkipFailedInvocationCounts(Boolean.parseBoolean(skip));
+        test.setSkipFailedInvocationCounts(Boolean.parseBoolean(skip));
       }
       String groupByInstances = attributes.getValue("group-by-instances");
       if (groupByInstances != null) {
-        m_currentTest.setGroupByInstances(Boolean.parseBoolean(groupByInstances));
+        test.setGroupByInstances(Boolean.parseBoolean(groupByInstances));
       }
       String preserveOrder = attributes.getValue("preserve-order");
       if (preserveOrder != null) {
-        m_currentTest.setPreserveOrder(Boolean.valueOf(preserveOrder));
+        test.setPreserveOrder(Boolean.valueOf(preserveOrder));
       }
       String parallel = attributes.getValue("parallel");
       if (parallel != null) {
         XmlSuite.ParallelMode mode = XmlSuite.ParallelMode.getValidParallel(parallel);
         if (mode != null) {
-          m_currentTest.setParallel(mode);
+          test.setParallel(mode);
         } else {
           Utils.log(
               "Parser",
@@ -489,11 +545,11 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       }
       String threadCount = attributes.getValue("thread-count");
       if (null != threadCount) {
-        m_currentTest.setThreadCount(Integer.parseInt(threadCount));
+        test.setThreadCount(Integer.parseInt(threadCount));
       }
       String timeOut = attributes.getValue("time-out");
       if (null != timeOut) {
-        m_currentTest.setTimeOut(Long.parseLong(timeOut));
+        test.setTimeOut(Long.parseLong(timeOut));
       }
       m_enabledTest = true;
       String enabledTestString = attributes.getValue("enabled");
@@ -501,18 +557,19 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
         m_enabledTest = Boolean.parseBoolean(enabledTestString);
       }
     } else {
+      XmlTest test = currentTest();
       if (null != m_currentTestParameters && !m_currentTestParameters.isEmpty()) {
-        m_currentTest.setParameters(m_currentTestParameters);
+        test.setParameters(m_currentTestParameters);
       }
       if (null != m_currentClasses) {
-        m_currentTest.setXmlClasses(m_currentClasses);
+        test.setXmlClasses(m_currentClasses);
       }
       m_currentClasses = null;
       m_currentTest = null;
       m_currentTestParameters = null;
       popLocation();
       if (!m_enabledTest) {
-        List<XmlTest> tests = m_currentSuite.getTests();
+        List<XmlTest> tests = currentSuite().getTests();
         tests.remove(tests.size() - 1);
       }
     }
@@ -523,7 +580,8 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       m_currentClasses = new ArrayList<>();
       m_currentClassIndex = 0;
     } else {
-      m_currentTest.setXmlClasses(m_currentClasses);
+      currentTest()
+          .setXmlClasses(Objects.requireNonNull(m_currentClasses, "no <classes> is being parsed"));
       m_currentClasses = null;
     }
   }
@@ -533,7 +591,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       m_listeners = new ArrayList<>();
     } else {
       if (null != m_listeners) {
-        m_currentSuite.setListeners(m_listeners);
+        currentSuite().setListeners(m_listeners);
         m_listeners = null;
       }
     }
@@ -542,7 +600,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   public void xmlListener(boolean start, Attributes attributes) {
     if (start) {
       String listener = attributes.getValue("class-name");
-      m_listeners.add(listener);
+      Objects.requireNonNull(m_listeners, "no <listeners> is being parsed").add(listener);
     }
   }
 
@@ -554,10 +612,10 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
         Location location = m_locations.peek();
         switch (location) {
           case TEST:
-            m_currentTest.setXmlPackages(m_currentPackages);
+            currentTest().setXmlPackages(m_currentPackages);
             break;
           case SUITE:
-            m_currentSuite.setXmlPackages(m_currentPackages);
+            currentSuite().setXmlPackages(m_currentPackages);
             break;
           case CLASS:
             throw new UnsupportedOperationException("CLASS");
@@ -576,20 +634,23 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       m_currentSelectors = new ArrayList<>();
       return;
     }
+    List<XmlMethodSelector> selectors = currentSelectors();
     if (m_locations.peek() == Location.TEST) {
-      m_currentTest.setMethodSelectors(m_currentSelectors);
+      currentTest().setMethodSelectors(selectors);
     } else {
-      m_currentSuite.setMethodSelectors(m_currentSelectors);
+      currentSuite().setMethodSelectors(selectors);
     }
 
     m_currentSelectors = null;
   }
 
-  public void xmlSelectorClass(boolean start, Attributes attributes) {
+  public void xmlSelectorClass(boolean start, @Nullable Attributes startAttributes) {
     if (start) {
-      m_currentSelector.setName(attributes.getValue("name"));
+      Attributes attributes = Objects.requireNonNull(startAttributes, START_TAG_ATTRIBUTES);
+      XmlMethodSelector selector = currentSelector();
+      selector.setName(attributes.getValue("name"));
       String priority = attributes.getValue("priority");
-      m_currentSelector.setPriority(
+      selector.setPriority(
           priority == null ? XmlMethodSelector.DEFAULT_PRIORITY : Integer.parseInt(priority));
     }
   }
@@ -598,7 +659,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     if (start) {
       m_currentSelector = new XmlMethodSelector();
     } else {
-      m_currentSelectors.add(m_currentSelector);
+      currentSelectors().add(currentSelector());
       m_currentSelector = null;
     }
   }
@@ -609,8 +670,11 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       m_currentExcludedMethods = new ArrayList<>();
       m_currentIncludeIndex = 0;
     } else {
-      m_currentClass.setIncludedMethods(m_currentIncludedMethods);
-      m_currentClass.setExcludedMethods(m_currentExcludedMethods);
+      XmlClass xmlClass = currentClass();
+      xmlClass.setIncludedMethods(
+          Objects.requireNonNull(m_currentIncludedMethods, "no <methods> is being parsed"));
+      xmlClass.setExcludedMethods(
+          Objects.requireNonNull(m_currentExcludedMethods, "no <methods> is being parsed"));
       m_currentIncludedMethods = null;
       m_currentExcludedMethods = null;
     }
@@ -621,15 +685,15 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       m_currentRun = new XmlRun();
     } else {
       // Xml run is only defined in the context of groups
-      m_currentGroups.setRun(m_currentRun);
+      currentGroups().setRun(Objects.requireNonNull(m_currentRun, "no <run> is being parsed"));
       m_currentRun = null;
     }
   }
 
   public void xmlGroup(boolean start, Attributes attributes) {
     if (start) {
-      m_currentTest.addXmlDependencyGroup(
-          attributes.getValue("name"), attributes.getValue("depends-on"));
+      currentTest()
+          .addXmlDependencyGroup(attributes.getValue("name"), attributes.getValue("depends-on"));
     }
   }
 
@@ -637,10 +701,11 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     if (start) {
       m_currentGroups = new XmlGroups();
     } else {
+      XmlGroups groups = currentGroups();
       if (m_currentTest == null) {
-        m_currentSuite.setGroups(m_currentGroups);
+        currentSuite().setGroups(groups);
       } else {
-        m_currentTest.setGroups(m_currentGroups);
+        currentTest().setGroups(groups);
       }
 
       m_currentGroups = null;
@@ -689,10 +754,11 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       // will complain, but in the meantime, dodge the NPE so SAX
       // can finish parsing the file.
       if (null != m_currentClasses) {
-        m_currentClass = new XmlClass(name, m_currentClassIndex++, m_loadClasses);
-        m_currentClass.setXmlTest(m_currentTest);
+        XmlClass xmlClass = new XmlClass(name, m_currentClassIndex++, m_loadClasses);
+        m_currentClass = xmlClass;
+        xmlClass.setXmlTest(currentTest());
         m_currentClassParameters = new HashMap<>();
-        m_currentClasses.add(m_currentClass);
+        m_currentClasses.add(xmlClass);
         pushLocation(Location.CLASS);
       }
     } else if ("package".equals(qName)) {
@@ -727,16 +793,16 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       Location location = m_locations.peek();
       switch (location) {
         case TEST:
-          m_currentTestParameters.put(name, value);
+          currentTestParameters().put(name, value);
           break;
         case SUITE:
-          m_currentSuiteParameters.put(name, value);
+          currentSuiteParameters().put(name, value);
           break;
         case CLASS:
-          m_currentClassParameters.put(name, value);
+          currentClassParameters().put(name, value);
           break;
         case INCLUDE:
-          m_currentInclude.parameters.put(name, value);
+          currentInclude().parameters.put(name, value);
           break;
         default:
           throw new AssertionError("Unexpected value: " + location);
@@ -748,7 +814,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     String name;
     String invocationNumbers;
     String factoryInstances;
-    String description;
+    @Nullable String description;
     Map<String, String> parameters = new HashMap<>();
 
     Include(String name, String numbers, String factoryInstances) {
@@ -758,34 +824,37 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     }
   }
 
-  private void xmlInclude(boolean start, Attributes attributes) {
+  private void xmlInclude(boolean start, @Nullable Attributes startAttributes) {
     if (start) {
       m_locations.push(Location.INCLUDE);
-      m_currentInclude =
+      Attributes attributes = Objects.requireNonNull(startAttributes, START_TAG_ATTRIBUTES);
+      Include current =
           new Include(
               attributes.getValue("name"),
               attributes.getValue("invocation-numbers"),
               attributes.getValue("factory-instances"));
-      m_currentInclude.description = attributes.getValue("description");
+      current.description = attributes.getValue("description");
+      m_currentInclude = current;
     } else {
-      String name = m_currentInclude.name;
+      Include current = currentInclude();
+      String name = current.name;
       if (null != m_currentIncludedMethods) {
-        String in = m_currentInclude.invocationNumbers;
+        String in = current.invocationNumbers;
         XmlInclude include;
         if (!Utils.isStringEmpty(in)) {
           include = new XmlInclude(name, stringToList(in), m_currentIncludeIndex++);
         } else {
           include = new XmlInclude(name, m_currentIncludeIndex++);
         }
-        String factoryInstances = m_currentInclude.factoryInstances;
+        String factoryInstances = current.factoryInstances;
         if (!Utils.isStringEmpty(factoryInstances)) {
           include.addFactoryInstances(stringToList(factoryInstances));
         }
-        for (Map.Entry<String, String> entry : m_currentInclude.parameters.entrySet()) {
+        for (Map.Entry<String, String> entry : current.parameters.entrySet()) {
           include.addParameter(entry.getKey(), entry.getValue());
         }
 
-        include.setDescription(m_currentInclude.description);
+        include.setDescription(current.description);
         m_currentIncludedMethods.add(include);
       } else if (null != m_currentDefine) {
         m_currentDefine.onElement(name);
@@ -800,10 +869,10 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     }
   }
 
-  private void xmlExclude(boolean start, Attributes attributes) {
+  private void xmlExclude(boolean start, @Nullable Attributes startAttributes) {
     if (start) {
       m_locations.push(Location.EXCLUDE);
-      String name = attributes.getValue("name");
+      String name = Objects.requireNonNull(startAttributes, START_TAG_ATTRIBUTES).getValue("name");
       if (null != m_currentExcludedMethods) {
         m_currentExcludedMethods.add(name);
       } else if (null != m_currentRun) {
@@ -854,7 +923,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     } else if ("packages".equals(qName)) {
       xmlPackages(false);
     } else if ("class".equals(qName)) {
-      m_currentClass.setParameters(m_currentClassParameters);
+      currentClass().setParameters(currentClassParameters());
       m_currentClassParameters = null;
       popLocation();
     } else if ("listeners".equals(qName)) {
@@ -976,7 +1045,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     }
   }
 
-  public XmlSuite getSuite() {
+  public @Nullable XmlSuite getSuite() {
     return m_currentSuite;
   }
 

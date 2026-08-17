@@ -12,6 +12,7 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 import org.testng.log4testng.Logger;
 import org.xml.sax.SAXException;
@@ -157,9 +158,9 @@ public abstract class XMLParser<T> implements IFileParser<T> {
    * a repackaged jar that dropped the resource should still run suites.
    */
   private static final class BundledSchema {
-    private static final Schema INSTANCE = compile();
+    private static final @Nullable Schema INSTANCE = compile();
 
-    private static Schema compile() {
+    private static @Nullable Schema compile() {
       URL url = XMLParser.class.getClassLoader().getResource(TESTNG_XSD);
       if (url == null) {
         Logger.getLogger(XMLParser.class)

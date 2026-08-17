@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import org.jspecify.annotations.Nullable;
 
 public class XmlInclude {
 
@@ -17,10 +18,10 @@ public class XmlInclude {
   // out as "17 1". The generated suite should not depend on that.
   private final Set<Integer> m_factoryInstances = new TreeSet<>();
   private final int m_index;
-  private String m_description;
+  private @Nullable String m_description;
   private final Map<String, String> m_parameters = new HashMap<>();
 
-  private XmlClass m_xmlClass;
+  private @Nullable XmlClass m_xmlClass;
 
   public XmlInclude() {
     this("", 0);
@@ -40,7 +41,7 @@ public class XmlInclude {
     m_index = index;
   }
 
-  public void setDescription(String description) {
+  public void setDescription(@Nullable String description) {
     m_description = description;
   }
 
@@ -49,7 +50,7 @@ public class XmlInclude {
     m_parameters.putAll(parameters);
   }
 
-  public String getDescription() {
+  public @Nullable String getDescription() {
     return m_description;
   }
 

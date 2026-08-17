@@ -1,23 +1,25 @@
 package org.testng.xml;
 
+import org.jspecify.annotations.Nullable;
+
 public class XmlScript {
 
-  private String language;
-  private String expression;
+  private @Nullable String language;
+  private @Nullable String expression;
 
-  public void setLanguage(String language) {
+  public void setLanguage(@Nullable String language) {
     this.language = language;
   }
 
-  public void setExpression(String expression) {
+  public void setExpression(@Nullable String expression) {
     this.expression = expression;
   }
 
-  public String getExpression() {
+  public @Nullable String getExpression() {
     return expression;
   }
 
-  public String getLanguage() {
+  public @Nullable String getLanguage() {
     return language;
   }
 }

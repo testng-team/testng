@@ -1,5 +1,7 @@
 package org.testng.xml;
 
+import org.jspecify.annotations.Nullable;
+
 /** This class describes the tag <code>&lt;method-selector&gt;</code> in testng.xml. */
 public class XmlMethodSelector {
 
@@ -7,18 +9,18 @@ public class XmlMethodSelector {
   public static final int DEFAULT_PRIORITY = 0;
 
   // Either this:
-  private String m_className;
+  private @Nullable String m_className;
   private int m_priority = DEFAULT_PRIORITY;
 
   // Or that:
-  private XmlScript m_script;
+  private @Nullable XmlScript m_script;
 
   // For YAML
-  public void setClassName(String s) {
+  public void setClassName(@Nullable String s) {
     m_className = s;
   }
 
-  public String getClassName() {
+  public @Nullable String getClassName() {
     return m_className;
   }
 
@@ -32,11 +34,11 @@ public class XmlMethodSelector {
     m_className = name;
   }
 
-  public XmlScript getScript() {
+  public @Nullable XmlScript getScript() {
     return m_script;
   }
 
-  public void setScript(XmlScript script) {
+  public void setScript(@Nullable XmlScript script) {
     m_script = script;
   }
 
