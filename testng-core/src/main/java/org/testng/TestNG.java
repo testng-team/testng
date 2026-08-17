@@ -712,21 +712,21 @@ public class TestNG {
    */
   public void setListenerClasses(List<Class<? extends ITestNGListener>> classes) {
     ITestNGListenerFactory factory = m_configuration.getListenerFactory();
-    if (factory != null) {
+    if (factory == null) {
+      // Same path as addListeners(XmlSuite): a GuiceContext so @Guice listeners
+      // do not reach GuiceBasedObjectDispenser with neither a test nor a suite context.
+      IObjectDispenser dispenser = Dispenser.newInstance(m_objectFactory);
+      XmlSuite suite = m_suites.isEmpty() ? new XmlSuite() : m_suites.get(0);
+      GuiceContext context = new GuiceContext(suite, this.m_configuration);
       for (Class<? extends ITestNGListener> cls : classes) {
-        addListener(factory.createListener(cls));
+        BasicAttributes basic = new BasicAttributes(null, cls);
+        CreationAttributes attributes = new CreationAttributes(basic, context);
+        addListener((ITestNGListener) dispenser.dispense(attributes));
       }
       return;
     }
-    // Same path as addListeners(XmlSuite): a GuiceContext so @Guice listeners
-    // do not reach GuiceBasedObjectDispenser with neither a test nor a suite context.
-    IObjectDispenser dispenser = Dispenser.newInstance(m_objectFactory);
-    XmlSuite suite = m_suites.isEmpty() ? new XmlSuite() : m_suites.get(0);
-    GuiceContext context = new GuiceContext(suite, this.m_configuration);
     for (Class<? extends ITestNGListener> cls : classes) {
-      BasicAttributes basic = new BasicAttributes(null, cls);
-      CreationAttributes attributes = new CreationAttributes(basic, context);
-      addListener((ITestNGListener) dispenser.dispense(attributes));
+      addListener(factory.createListener(cls));
     }
   }
 
