@@ -175,6 +175,7 @@ public class TestNG {
   private String m_xmlPathInJar = CommandLineArgs.XML_PATH_IN_JAR_DEFAULT;
 
   private List<String> m_stringSuites = new ArrayList<>();
+  private final List<Class<? extends ITestNGListener>> m_listenerClasses = new ArrayList<>();
 
   private IHookable m_hookable;
   private IConfigurable m_configurable;
@@ -713,21 +714,33 @@ public class TestNG {
   public void setListenerClasses(List<Class<? extends ITestNGListener>> classes) {
     ITestNGListenerFactory factory = m_configuration.getListenerFactory();
     if (factory == null) {
-      // Same path as addListeners(XmlSuite): a GuiceContext so @Guice listeners
-      // do not reach GuiceBasedObjectDispenser with neither a test nor a suite context.
-      IObjectDispenser dispenser = Dispenser.newInstance(m_objectFactory);
-      XmlSuite suite = m_suites.isEmpty() ? new XmlSuite() : m_suites.get(0);
-      GuiceContext context = new GuiceContext(suite, this.m_configuration);
-      for (Class<? extends ITestNGListener> cls : classes) {
-        BasicAttributes basic = new BasicAttributes(null, cls);
-        CreationAttributes attributes = new CreationAttributes(basic, context);
-        addListener((ITestNGListener) dispenser.dispense(attributes));
+      // CLI configure() calls this before setTestSuites(), so m_suites is still
+      // empty. Remember the classes and instantiate them once the suite exists,
+      // so a -listener can inherit that suite's Guice parent-module.
+      m_listenerClasses.addAll(classes);
+      if (!m_suites.isEmpty()) {
+        instantiatePendingListenerClasses();
       }
       return;
     }
     for (Class<? extends ITestNGListener> cls : classes) {
       addListener(factory.createListener(cls));
     }
+  }
+
+  private void instantiatePendingListenerClasses() {
+    if (m_listenerClasses.isEmpty()) {
+      return;
+    }
+    XmlSuite suite = m_suites.isEmpty() ? new XmlSuite() : m_suites.get(0);
+    IObjectDispenser dispenser = Dispenser.newInstance(m_objectFactory);
+    GuiceContext context = new GuiceContext(suite, this.m_configuration);
+    for (Class<? extends ITestNGListener> cls : m_listenerClasses) {
+      BasicAttributes basic = new BasicAttributes(null, cls);
+      CreationAttributes attributes = new CreationAttributes(basic, context);
+      addListener((ITestNGListener) dispenser.dispense(attributes));
+    }
+    m_listenerClasses.clear();
   }
 
   /**
@@ -1010,6 +1023,7 @@ public class TestNG {
     // loader for tests, if specified).
     //
     addServiceLoaderListeners();
+    instantiatePendingListenerClasses();
 
     //
     // Install the listeners found in the suites
