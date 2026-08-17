@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.IConfigurationListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
@@ -26,7 +27,9 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
   /** Default prefix for messages printed out by this reporter */
   public static final String LISTENER_PREFIX = "[VerboseTestNG] ";
 
-  private String suiteName;
+  /** Set by {@link #onStart} and cleared by {@link #onFinish}: null between suites. */
+  private @Nullable String suiteName;
+
   private final String prefix;
 
   private enum Status {

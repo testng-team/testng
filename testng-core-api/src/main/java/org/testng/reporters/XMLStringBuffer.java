@@ -20,7 +20,7 @@ public class XMLStringBuffer {
   private static final String DEFAULT_INDENT_INCREMENT = "  ";
 
   /** The buffer to hold the xml document */
-  private IBuffer m_buffer;
+  private final IBuffer m_buffer;
 
   /** The stack of tags to make sure XML document is well formed. */
   private final Stack<Tag> m_tagStack = new Stack<>();
@@ -28,10 +28,11 @@ public class XMLStringBuffer {
   /** A string of space character representing the current indentation. */
   private String m_currentIndent = "";
 
-  private String defaultComment = null;
+  private @Nullable String defaultComment;
 
   public XMLStringBuffer() {
-    init(Buffer.create(), "", "1.0", "UTF-8");
+    this("");
+    setXmlDetails("1.0", "UTF-8");
   }
 
   /**
@@ -39,7 +40,7 @@ public class XMLStringBuffer {
    *     This constructor will not insert an <code>&lt;?xml</code> prologue.
    */
   public XMLStringBuffer(String start) {
-    init(Buffer.create(), start);
+    this(Buffer.create(), start);
   }
 
   /**
@@ -47,23 +48,8 @@ public class XMLStringBuffer {
    * @param start A string of spaces indicating the indentation at which to start the generation.
    */
   public XMLStringBuffer(IBuffer buffer, String start) {
-    init(buffer, start);
-  }
-
-  private void init(IBuffer buffer, String start) {
-    init(buffer, start, null, null);
-  }
-
-  /**
-   * @param start A string of spaces indicating the indentation at which to start the generation.
-   */
-  private void init(
-      IBuffer buffer, String start, @Nullable String version, @Nullable String encoding) {
     m_buffer = buffer;
     m_currentIndent = start;
-    if (version != null) {
-      setXmlDetails(version, encoding);
-    }
   }
 
   /**
@@ -160,7 +146,7 @@ public class XMLStringBuffer {
    *
    * @param tagName The name of the tag this pop() is supposed to match.
    */
-  public void pop(String tagName) {
+  public void pop(@Nullable String tagName) {
     m_currentIndent = m_currentIndent.substring(DEFAULT_INDENT_INCREMENT.length());
     Tag t = m_tagStack.pop();
     if (null != tagName) {
@@ -293,11 +279,11 @@ public class XMLStringBuffer {
     m_buffer.append(s);
   }
 
-  public void setDefaultComment(String defaultComment) {
+  public void setDefaultComment(@Nullable String defaultComment) {
     this.defaultComment = defaultComment;
   }
 
-  public void addCDATA(String content) {
+  public void addCDATA(@Nullable String content) {
     if (content != null) {
       // Solution from https://coderanch.com/t/455930/java/Remove-control-characters
       content = content.replaceAll("[\\p{Cc}&&[^\\r\\n]]", "");
@@ -352,9 +338,9 @@ public class XMLStringBuffer {
 class Tag {
   public final String tagName;
   public final String indent;
-  public final Properties properties;
+  public final @Nullable Properties properties;
 
-  public Tag(String ind, String n, Properties p) {
+  public Tag(String ind, String n, @Nullable Properties p) {
     tagName = n;
     indent = ind;
     properties = p;

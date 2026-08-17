@@ -2,6 +2,7 @@ package org.testng.reporters;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestResult;
 
 @SuppressWarnings("unused")
@@ -64,7 +65,7 @@ public class XMLReporterConfig implements IReporterConfig {
     STATUSES.put(TEST_SKIPPED, ITestResult.SKIP);
   }
 
-  public static Integer getStatus(String status) {
+  public static @Nullable Integer getStatus(String status) {
     return STATUSES.get(status);
   }
 
@@ -104,7 +105,7 @@ public class XMLReporterConfig implements IReporterConfig {
    * The root output directory where the XMLs will be written. This will default for now to the
    * default TestNG output directory
    */
-  private String outputDirectory;
+  private @Nullable String outputDirectory;
 
   /**
    * Indicates whether the <code>groups</code> attribute should be generated for a <code>test-method
@@ -161,11 +162,11 @@ public class XMLReporterConfig implements IReporterConfig {
     return stackTraceOutputLevel;
   }
 
-  public String getOutputDirectory() {
+  public @Nullable String getOutputDirectory() {
     return outputDirectory;
   }
 
-  public void setOutputDirectory(String outputDirectory) {
+  public void setOutputDirectory(@Nullable String outputDirectory) {
     this.outputDirectory = outputDirectory;
   }
 

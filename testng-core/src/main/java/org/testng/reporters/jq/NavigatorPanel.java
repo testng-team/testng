@@ -3,6 +3,7 @@ package org.testng.reporters.jq;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -267,7 +268,7 @@ public class NavigatorPanel extends BasePanel {
           "href",
           "#",
           "hash-for-method",
-          getModel().getTag(tr),
+          Objects.requireNonNull(getModel().getTag(tr), "The model holds no tag for this result"),
           "panel-name",
           suiteName,
           "title",

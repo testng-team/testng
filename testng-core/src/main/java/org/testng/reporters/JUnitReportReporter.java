@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import org.jspecify.annotations.Nullable;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -175,7 +176,7 @@ public class JUnitReportReporter implements IReporter {
     return Collections.unmodifiableList(sortedResults);
   }
 
-  private static String getHostName() {
+  private static @Nullable String getHostName() {
     try {
       return InetAddress.getLocalHost().getHostName();
     } catch (UnknownHostException e) {
@@ -195,21 +196,13 @@ public class JUnitReportReporter implements IReporter {
   }
 
   private TestTag createIgnoredTestTagFor(ITestNGMethod method) {
-    TestTag testTag = new TestTag();
-    Properties p2 = new Properties();
-    p2.setProperty(XMLConstants.ATTR_CLASSNAME, method.getRealClass().getName());
-    p2.setProperty(XMLConstants.ATTR_NAME, method.getMethodName());
+    TestTag testTag = new TestTag(method.getRealClass().getName(), method.getMethodName());
     testTag.childTag = XMLConstants.SKIPPED;
-    testTag.properties = p2;
     return testTag;
   }
 
   private TestTag createTestTagFor(ITestResult tr, Class<?> cls) {
-    TestTag testTag = new TestTag();
-
-    Properties p2 = new Properties();
-    p2.setProperty(XMLConstants.ATTR_CLASSNAME, cls.getName());
-    p2.setProperty(XMLConstants.ATTR_NAME, getTestName(tr));
+    TestTag testTag = new TestTag(cls.getName(), getTestName(tr));
     int status = tr.getStatus();
     if (status == ITestResult.SKIP || status == ITestResult.SUCCESS_PERCENTAGE_FAILURE) {
       testTag.childTag = XMLConstants.SKIPPED;
@@ -220,7 +213,6 @@ public class JUnitReportReporter implements IReporter {
     if (!output.isEmpty()) {
       testTag.sysOut = String.join("\n", output);
     }
-    testTag.properties = p2;
     return testTag;
   }
 
@@ -248,7 +240,7 @@ public class JUnitReportReporter implements IReporter {
   }
 
   /** Set property if value is non-null */
-  private void safeSetProperty(Properties p, String key, String value) {
+  private void safeSetProperty(Properties p, String key, @Nullable String value) {
     if (value != null) {
       p.setProperty(key, value);
     }
@@ -296,12 +288,18 @@ public class JUnitReportReporter implements IReporter {
   }
 
   private static class TestTag {
-    Properties properties;
-    String message;
-    String type;
-    String stackTrace;
-    String childTag;
-    String sysOut;
+    final Properties properties;
+    @Nullable String message;
+    @Nullable String type;
+    @Nullable String stackTrace;
+    @Nullable String childTag;
+    @Nullable String sysOut;
+
+    TestTag(String className, String name) {
+      properties = new Properties();
+      properties.setProperty(XMLConstants.ATTR_CLASSNAME, className);
+      properties.setProperty(XMLConstants.ATTR_NAME, name);
+    }
   }
 
   private void addResults(Set<ITestResult> allResults, Map<Class<?>, Set<ITestResult>> out) {

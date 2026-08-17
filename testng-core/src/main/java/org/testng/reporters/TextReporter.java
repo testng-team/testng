@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
@@ -129,7 +130,7 @@ public class TextReporter implements ITestListener {
     logResult("", logBuf.toString());
   }
 
-  private void logResult(String status, ITestResult tr, String stackTrace) {
+  private void logResult(String status, ITestResult tr, @Nullable String stackTrace) {
     logResult(
         status,
         tr.getMethod().getQualifiedName(),
@@ -163,7 +164,7 @@ public class TextReporter implements ITestListener {
       String name,
       String description,
       CustomAttribute[] attributes,
-      String stackTrace,
+      @Nullable String stackTrace,
       Object[] params,
       Class<?>[] paramTypes) {
     StringBuilder msg = new StringBuilder(name);

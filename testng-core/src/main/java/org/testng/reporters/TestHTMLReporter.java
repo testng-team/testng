@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
@@ -24,7 +25,7 @@ public class TestHTMLReporter implements ITestListener {
   private static final Comparator<ITestResult> CONFIGURATION_COMPARATOR =
       new ConfigurationComparator();
 
-  private ITestContext m_testContext = null;
+  private @Nullable ITestContext m_testContext;
 
   /////
   // implements ITestListener
@@ -36,10 +37,11 @@ public class TestHTMLReporter implements ITestListener {
 
   @Override
   public void onFinish(ITestContext context) {
+    ITestContext testContext = Objects.requireNonNull(m_testContext, "onStart() has not run");
     generateLog(
-        m_testContext,
+        testContext,
         null /* host */,
-        m_testContext.getOutputDirectory(),
+        testContext.getOutputDirectory(),
         context.getFailedConfigurations().getAllResults(),
         context.getSkippedConfigurations().getAllResults(),
         context.getPassedTests().getAllResults(),
@@ -308,7 +310,7 @@ public class TestHTMLReporter implements ITestListener {
 
   public static void generateLog(
       ITestContext testContext,
-      String host,
+      @Nullable String host,
       String outputDirectory,
       Collection<ITestResult> failedConfs,
       Collection<ITestResult> skippedConfs,
@@ -416,7 +418,7 @@ public class TestHTMLReporter implements ITestListener {
     }
   }
 
-  private static void log(String s) {
+  private static void log(@Nullable String s) {
     Logger.getLogger(TestHTMLReporter.class).info("[TestHTMLReporter] " + s);
   }
 

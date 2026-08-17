@@ -14,6 +14,7 @@ import static org.testng.xml.XmlSuite.DEFAULT_VERBOSE;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import javax.xml.XMLConstants;
 import org.jspecify.annotations.Nullable;
@@ -428,7 +429,8 @@ public class DefaultXmlWeaver implements IWeaveXml {
     List<String> includes = xmlDefine.getIncludes();
     boolean hasElements = hasElements(includes);
     if (hasElements) {
-      xsb.push("define", "name", xmlDefine.getName());
+      xsb.push(
+          "define", "name", Objects.requireNonNull(xmlDefine.getName(), "<define> has no name"));
     }
     for (String s : includes) {
       xsb.addEmptyElement("include", "name", s);
@@ -476,13 +478,14 @@ public class DefaultXmlWeaver implements IWeaveXml {
   protected void asXml(XMLStringBuffer xsb, XmlPackage xmlPackage) {
     List<String> includes = xmlPackage.getInclude();
     List<String> excludes = xmlPackage.getExclude();
+    String name = Objects.requireNonNull(xmlPackage.getName(), "<package> has no name");
 
     if (includes.isEmpty() && excludes.isEmpty()) {
-      xsb.addEmptyElement("package", "name", xmlPackage.getName());
+      xsb.addEmptyElement("package", "name", name);
       return;
     }
 
-    xsb.push("package", "name", xmlPackage.getName());
+    xsb.push("package", "name", name);
     for (String m : includes) {
       xsb.addEmptyElement("include", "name", m);
     }
