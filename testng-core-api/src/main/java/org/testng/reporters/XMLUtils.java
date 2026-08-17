@@ -103,7 +103,7 @@ public final class XMLUtils {
       for (Object element : attributes.entrySet()) {
         Entry entry = (Entry) element;
         String key = entry.getKey().toString();
-        String value = escapeNonNull(entry.getValue().toString());
+        String value = escape(entry.getValue().toString());
         result.append(" ").append(key).append("=\"").append(value).append("\"");
       }
     }
@@ -133,11 +133,14 @@ public final class XMLUtils {
         .append(EOL);
   }
 
-  public static @Nullable String escape(String input) {
-    return input == null ? null : escapeNonNull(input);
-  }
-
-  private static String escapeNonNull(String input) {
+  /**
+   * Escapes the five characters that cannot appear literally in an XML attribute value.
+   *
+   * @param input the text to escape; must not be null. Until TestNG 7.13 a null input was answered
+   *     with null, a contract no caller in TestNG ever used.
+   * @return the escaped text, never null
+   */
+  public static String escape(String input) {
     StringBuilder result = new StringBuilder();
     StringCharacterIterator iterator = new StringCharacterIterator(input);
     char character = iterator.current();
