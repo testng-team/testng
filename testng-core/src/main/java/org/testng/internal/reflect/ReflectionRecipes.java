@@ -408,12 +408,14 @@ public final class ReflectionRecipes {
                 prefix + "constructor.",
                 (Constructor<?>) injectionMethod,
                 queue.backingList.toArray());
-      } else {
+      } else if (injectionMethod instanceof Method || injectionMethod == null) {
         msg =
             MethodMatcherException.generateMessage(
-                prefix + "method.",
-                injectionMethod instanceof Method ? (Method) injectionMethod : null,
-                queue.backingList.toArray());
+                prefix + "method.", (Method) injectionMethod, queue.backingList.toArray());
+      } else {
+        throw new TestNGException(
+            "Injection holder must be a method or constructor, got "
+                + injectionMethod.getClass().getName());
       }
 
       boolean block = RuntimeBehavior.useStrictParameterMatching();

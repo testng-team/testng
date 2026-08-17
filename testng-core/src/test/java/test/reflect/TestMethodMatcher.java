@@ -114,16 +114,20 @@ public class TestMethodMatcher {
         new DataProviderMethodMatcher(
             new MethodMatcherContext(method, params, iTestContext, iTestResult));
     assertThat(matcher.conforms()).isFalse();
-    assertThatThrownBy(
-            () -> {
-              method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
-            })
-        .isInstanceOf(MethodMatcherException.class)
-        // separate lines are used here to avoid \n vs \r\n if running tests in Windows
-        .hasMessageContaining(
-            "has no parameters defined but was found to be using a data provider (either explicitly specified or inherited from class level annotation")
-        .hasMessageContaining("Method: ")
-        .hasMessageContaining("Arguments: ");
+    var thrown =
+        assertThatThrownBy(
+                () -> {
+                  method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
+                })
+            .isInstanceOf(MethodMatcherException.class)
+            // separate lines are used here to avoid \n vs \r\n if running tests in Windows
+            .hasMessageContaining(
+                "has no parameters defined but was found to be using a data provider (either explicitly specified or inherited from class level annotation")
+            .hasMessageContaining("Method: ")
+            .hasMessageContaining("Arguments: ");
+    if ("takesString".equals(methodName)) {
+      thrown.hasMessageContaining("[1, 2]");
+    }
   }
 
   public void takesShort(short value) {
