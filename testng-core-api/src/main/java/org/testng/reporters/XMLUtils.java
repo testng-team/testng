@@ -42,7 +42,8 @@ public final class XMLUtils {
     return result.toString();
   }
 
-  public static String extractComment(String tag, Properties properties) {
+  public static @Nullable String extractComment(
+      @Nullable String tag, @Nullable Properties properties) {
     if (properties == null || "span".equals(tag)) {
       return null;
     }
@@ -70,7 +71,7 @@ public final class XMLUtils {
       String sp,
       String elementName,
       @Nullable String value,
-      Properties attributes) {
+      @Nullable Properties attributes) {
     if (null != value) {
       xmlRequired(result, sp, elementName, value, attributes);
     }
@@ -85,7 +86,8 @@ public final class XMLUtils {
     result.append(xml(sp, elementName, value, attributes));
   }
 
-  public static void xmlOpen(IBuffer result, String indent, String tag, Properties attributes) {
+  public static void xmlOpen(
+      IBuffer result, String indent, String tag, @Nullable Properties attributes) {
     xmlOpen(result, indent, tag, attributes, false /* no newline */);
   }
 
@@ -96,19 +98,23 @@ public final class XMLUtils {
    * @param result the buffer to append attributes to.
    * @param attributes the attributes to append (may be null).
    */
-  public static void appendAttributes(IBuffer result, Properties attributes) {
+  public static void appendAttributes(IBuffer result, @Nullable Properties attributes) {
     if (null != attributes) {
       for (Object element : attributes.entrySet()) {
         Entry entry = (Entry) element;
         String key = entry.getKey().toString();
-        String value = escape(entry.getValue().toString());
+        String value = escapeNonNull(entry.getValue().toString());
         result.append(" ").append(key).append("=\"").append(value).append("\"");
       }
     }
   }
 
   public static void xmlOpen(
-      IBuffer result, String indent, String tag, Properties attributes, boolean noNewLine) {
+      IBuffer result,
+      String indent,
+      String tag,
+      @Nullable Properties attributes,
+      boolean noNewLine) {
     result.append(indent).append("<").append(tag);
     appendAttributes(result, attributes);
     result.append(">");
@@ -117,7 +123,7 @@ public final class XMLUtils {
     }
   }
 
-  public static void xmlClose(IBuffer result, String indent, String tag, String comment) {
+  public static void xmlClose(IBuffer result, String indent, String tag, @Nullable String comment) {
     result
         .append(indent)
         .append("</")
@@ -127,10 +133,11 @@ public final class XMLUtils {
         .append(EOL);
   }
 
-  public static String escape(String input) {
-    if (input == null) {
-      return null;
-    }
+  public static @Nullable String escape(String input) {
+    return input == null ? null : escapeNonNull(input);
+  }
+
+  private static String escapeNonNull(String input) {
     StringBuilder result = new StringBuilder();
     StringCharacterIterator iterator = new StringCharacterIterator(input);
     char character = iterator.current();

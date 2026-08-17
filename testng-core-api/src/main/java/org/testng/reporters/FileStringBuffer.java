@@ -9,6 +9,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.testng.log4testng.Logger;
 
 /**
@@ -28,7 +30,7 @@ public class FileStringBuffer implements IBuffer {
   private static final boolean VERBOSE = RuntimeBehavior.verboseMode();
   private static final Logger LOGGER = Logger.getLogger(FileStringBuffer.class);
 
-  private File m_file;
+  private @Nullable File m_file;
   private StringBuilder m_sb = new StringBuilder();
   private final int m_maxCharacters;
 
@@ -142,6 +144,9 @@ public class FileStringBuffer implements IBuffer {
     } else {
       result = m_sb.toString();
     }
-    return result;
+    // Only null when reading the temporary file back failed. Both in-tree callers
+    // (XMLStringBuffer.setXmlDetails and toXML) dereference the result immediately, so the
+    // NullPointerException was already theirs; this raises it one frame earlier and names it.
+    return Objects.requireNonNull(result, "The temporary file could not be read back");
   }
 }

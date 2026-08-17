@@ -12,6 +12,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import org.jspecify.annotations.Nullable;
 import org.testng.IInvokedMethod;
 import org.testng.IReporter;
 import org.testng.ISuite;
@@ -45,7 +48,13 @@ public class SuiteHTMLReporter implements IReporter {
   private static final String CLOSE_TD = "</td>";
 
   private final Map<String, ITestClass> m_classes = new HashMap<>();
-  private String m_outputDirectory;
+  /** Null until {@link #generateReport} sets it; read it through {@link #outputDirectory()}. */
+  private @Nullable String m_outputDirectory;
+
+  private String outputDirectory() {
+    return Objects.requireNonNull(
+        m_outputDirectory, "generateReport() has not set the output directory yet");
+  }
 
   @Override
   public void generateReport(
@@ -208,7 +217,7 @@ public class SuiteHTMLReporter implements IReporter {
     sb.append(suiteBuf);
     sb.append("</table>").append("</body></html>\n");
 
-    Utils.writeFile(m_outputDirectory, "index.html", sb.toString());
+    Utils.writeFile(outputDirectory(), "index.html", sb.toString());
   }
 
   private void generateExcludedMethodsReport(XmlSuite xmlSuite, ISuite suite) {
@@ -498,14 +507,11 @@ public class SuiteHTMLReporter implements IReporter {
           .append("<tr> <td align=\"center\"><b>Group name</b></td>")
           .append("<td align=\"center\"><b>Methods</b></td></tr>");
 
-      String[] groupNames = groups.keySet().toArray(new String[0]);
-      Arrays.sort(groupNames);
-      for (String group : groupNames) {
-        Collection<ITestNGMethod> methods = groups.get(group);
-        sb.append("<tr><td>").append(group).append(CLOSE_TD);
+      for (Map.Entry<String, Collection<ITestNGMethod>> group : new TreeMap<>(groups).entrySet()) {
+        sb.append("<tr><td>").append(group.getKey()).append(CLOSE_TD);
         StringBuilder methodNames = new StringBuilder();
         Map<ITestNGMethod, ITestNGMethod> uniqueMethods = new HashMap<>();
-        for (ITestNGMethod tm : methods) {
+        for (ITestNGMethod tm : group.getValue()) {
           uniqueMethods.put(tm, tm);
         }
         for (ITestNGMethod tm : uniqueMethods.values()) {
@@ -687,7 +693,7 @@ public class SuiteHTMLReporter implements IReporter {
 
   private String getOutputDirectory(XmlSuite xmlSuite) {
     File fileResult =
-        new File(m_outputDirectory + File.separatorChar + xmlSuite.getName()).getAbsoluteFile();
+        new File(outputDirectory() + File.separatorChar + xmlSuite.getName()).getAbsoluteFile();
     if (!fileResult.exists()) {
       boolean ignored = fileResult.mkdirs();
       if (!fileResult.exists()) {

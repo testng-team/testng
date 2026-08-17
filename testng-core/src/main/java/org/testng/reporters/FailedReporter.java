@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,6 +16,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.jspecify.annotations.Nullable;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -43,7 +45,7 @@ import org.testng.xml.XmlTest;
 public class FailedReporter implements IReporter {
   public static final String TESTNG_FAILED_XML = "testng-failed.xml";
 
-  private XmlSuite m_xmlSuite;
+  private @Nullable XmlSuite m_xmlSuite;
   private final Map<String, Map<Object, MethodInvocationKey>> keyCache = new ConcurrentHashMap<>();
 
   public FailedReporter() {}
@@ -76,7 +78,11 @@ public class FailedReporter implements IReporter {
       XmlTest current = testContext.getCurrentXmlTest();
       failedSuite
           .getTests()
-          .removeIf(it -> !shouldWriteIntoFile && it.getName().equals(current.getName()));
+          .removeIf(
+              it ->
+                  !shouldWriteIntoFile
+                      && Objects.requireNonNull(it.getName(), "<test> has no name")
+                          .equals(current.getName()));
       clearKeyCache(testContext);
     }
 
@@ -240,7 +246,8 @@ public class FailedReporter implements IReporter {
   /** Generate testng-failed.xml */
   private void createXmlTest(
       ITestContext context, List<ITestNGMethod> methods, XmlTest srcXmlTest) {
-    XmlTest xmlTest = new XmlTest(m_xmlSuite);
+    XmlTest xmlTest =
+        new XmlTest(Objects.requireNonNull(m_xmlSuite, "No failure suite is being generated"));
     xmlTest.setName(context.getName() + "(failed)");
     xmlTest.setScript(srcXmlTest.getScript());
     xmlTest.setIncludedGroups(srcXmlTest.getIncludedGroups());

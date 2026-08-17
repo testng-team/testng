@@ -11,9 +11,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -30,7 +32,8 @@ import org.testng.xml.XmlSuite.ParallelMode;
 public class EmailableReporter2 implements IReporter {
   private static final Logger LOG = Logger.getLogger(EmailableReporter2.class);
 
-  protected PrintWriter writer;
+  /** Null until {@link #generateReport} opens it; read it through {@link #writer()}. */
+  protected @Nullable PrintWriter writer;
 
   protected final List<SuiteResult> suiteResults = new ArrayList<>();
 
@@ -65,7 +68,11 @@ public class EmailableReporter2 implements IReporter {
     writeBody();
     writeDocumentEnd();
 
-    writer.close();
+    writer().close();
+  }
+
+  private PrintWriter writer() {
+    return Objects.requireNonNull(writer, "generateReport() has not opened the writer yet");
   }
 
   protected PrintWriter createWriter(String outdir) throws IOException {
@@ -78,20 +85,22 @@ public class EmailableReporter2 implements IReporter {
   }
 
   protected void writeDocumentStart() {
+    PrintWriter writer = writer();
     writer.println(
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"https://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
     writer.println("<html xmlns=\"https://www.w3.org/1999/xhtml\">");
   }
 
   protected void writeHead() {
-    writer.println("<head>");
-    writer.println("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"/>");
-    writer.println("<title>TestNG Report</title>");
+    writer().println("<head>");
+    writer().println("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"/>");
+    writer().println("<title>TestNG Report</title>");
     writeStylesheet();
-    writer.println("</head>");
+    writer().println("</head>");
   }
 
   protected void writeStylesheet() {
+    PrintWriter writer = writer();
     writer.print("<style type=\"text/css\">");
     writer.print("table {margin-bottom:10px;border-collapse:collapse;empty-cells:show}");
     writer.print("th,td {border:1px solid #009;padding:.25em .5em}");
@@ -113,15 +122,15 @@ public class EmailableReporter2 implements IReporter {
   }
 
   protected void writeBody() {
-    writer.println("<body>");
+    writer().println("<body>");
     writeSuiteSummary();
     writeScenarioSummary();
     writeScenarioDetails();
-    writer.println("</body>");
+    writer().println("</body>");
   }
 
   protected void writeDocumentEnd() {
-    writer.println("</html>");
+    writer().println("</html>");
   }
 
   protected void writeSuiteSummary() {
@@ -134,23 +143,23 @@ public class EmailableReporter2 implements IReporter {
     int totalRetriedTests = 0;
     long totalDuration = 0;
 
-    writer.println("<table>");
-    writer.print("<tr>");
-    writer.print("<th>Test</th>");
-    writer.print("<th># Passed</th>");
-    writer.print("<th># Skipped</th>");
-    writer.print("<th># Retried</th>");
-    writer.print("<th># Failed</th>");
-    writer.print("<th>Time (ms)</th>");
-    writer.print("<th>Included Groups</th>");
-    writer.print("<th>Excluded Groups</th>");
-    writer.println("</tr>");
+    writer().println("<table>");
+    writer().print("<tr>");
+    writer().print("<th>Test</th>");
+    writer().print("<th># Passed</th>");
+    writer().print("<th># Skipped</th>");
+    writer().print("<th># Retried</th>");
+    writer().print("<th># Failed</th>");
+    writer().print("<th>Time (ms)</th>");
+    writer().print("<th>Included Groups</th>");
+    writer().print("<th>Excluded Groups</th>");
+    writer().println("</tr>");
 
     int testIndex = 0;
     for (SuiteResult suiteResult : suiteResults) {
-      writer.print("<tr><th colspan=\"8\">");
-      writer.print(Utils.escapeHtml(suiteResult.getSuiteName()));
-      writer.println("</th></tr>");
+      writer().print("<tr><th colspan=\"8\">");
+      writer().print(Utils.escapeHtml(suiteResult.getSuiteName()));
+      writer().println("</th></tr>");
 
       for (TestResult testResult : suiteResult.getTestResults()) {
         int passedTests = testResult.getPassedTestCount();
@@ -159,11 +168,11 @@ public class EmailableReporter2 implements IReporter {
         int retriedTests = testResult.getRetriedTestCount();
         long duration = testResult.getDuration();
 
-        writer.print("<tr");
+        writer().print("<tr");
         if ((testIndex % 2) == 1) {
-          writer.print(" class=\"stripe\"");
+          writer().print(" class=\"stripe\"");
         }
-        writer.print(">");
+        writer().print(">");
 
         buffer.setLength(0);
         writeTableData(
@@ -182,7 +191,7 @@ public class EmailableReporter2 implements IReporter {
         writeTableData(testResult.getIncludedGroups());
         writeTableData(testResult.getExcludedGroups());
 
-        writer.println("</tr>");
+        writer().println("</tr>");
 
         totalPassedTests += passedTests;
         totalSkippedTests += skippedTests;
@@ -204,8 +213,8 @@ public class EmailableReporter2 implements IReporter {
 
     // Print totals if there was more than one test
     if (testIndex > 1) {
-      writer.print("<tr>");
-      writer.print("<th>Total</th>");
+      writer().print("<tr>");
+      writer().print("<th>Total</th>");
       writeTableHeader(integerFormat.format(totalPassedTests), "num");
       writeTableHeader(
           integerFormat.format(totalSkippedTests), totalSkippedTests > 0 ? "num attn" : "num");
@@ -214,15 +223,16 @@ public class EmailableReporter2 implements IReporter {
       writeTableHeader(
           integerFormat.format(totalFailedTests), totalFailedTests > 0 ? "num attn" : "num");
       writeTableHeader(decimalFormat.format(totalDuration), "num");
-      writer.print("<th colspan=\"2\"></th>");
-      writer.println("</tr>");
+      writer().print("<th colspan=\"2\"></th>");
+      writer().println("</tr>");
     }
 
-    writer.println("</table>");
+    writer().println("</table>");
   }
 
   /** Writes a summary of all the test scenarios. */
   protected void writeScenarioSummary() {
+    PrintWriter writer = writer();
     writer.print("<table id='summary'>");
     writer.print("<thead>");
     writer.print("<tr>");
@@ -302,6 +312,7 @@ public class EmailableReporter2 implements IReporter {
       List<ClassResult> classResults,
       String cssClassPrefix,
       int startingScenarioIndex) {
+    PrintWriter writer = writer();
     int scenarioCount = 0;
     if (!classResults.isEmpty()) {
       writer.print("<tr><th colspan=\"4\">");
@@ -397,6 +408,7 @@ public class EmailableReporter2 implements IReporter {
 
   /** Writes the details for all test scenarios. */
   protected void writeScenarioDetails() {
+    PrintWriter writer = writer();
     int scenarioIndex = 0;
     for (SuiteResult suiteResult : suiteResults) {
       for (TestResult testResult : suiteResult.getTestResults()) {
@@ -442,13 +454,13 @@ public class EmailableReporter2 implements IReporter {
 
   /** Writes the details for an individual test scenario. */
   private void writeScenario(int scenarioIndex, String label, ITestResult result) {
-    writer.print("<h3 id=\"m");
-    writer.print(scenarioIndex);
-    writer.print("\">");
-    writer.print(label);
-    writer.print("</h3>");
+    writer().print("<h3 id=\"m");
+    writer().print(scenarioIndex);
+    writer().print("\">");
+    writer().print(label);
+    writer().print("</h3>");
 
-    writer.print("<table class=\"result\">");
+    writer().print("<table class=\"result\">");
 
     // Write test parameters (if any)
     Object[] parameters = result.getParameters();
@@ -460,56 +472,58 @@ public class EmailableReporter2 implements IReporter {
     // Write reporter messages (if any)
     List<String> reporterMessages = Reporter.getOutput(result);
     if (!reporterMessages.isEmpty()) {
-      writer.print("<tr><th");
+      writer().print("<tr><th");
       if (parameterCount > 1) {
-        writer.printf(" colspan=\"%d\"", parameterCount);
+        writer().printf(" colspan=\"%d\"", parameterCount);
       }
-      writer.print(">Messages</th></tr>");
+      writer().print(">Messages</th></tr>");
 
-      writer.print("<tr><td");
+      writer().print("<tr><td");
       if (parameterCount > 1) {
-        writer.printf(" colspan=\"%d\"", parameterCount);
+        writer().printf(" colspan=\"%d\"", parameterCount);
       }
-      writer.print(">");
+      writer().print(">");
       writeReporterMessages(reporterMessages);
-      writer.print("</td></tr>");
+      writer().print("</td></tr>");
       hasRows = true;
     }
 
     // Write exception (if any)
     Throwable throwable = result.getThrowable();
     if (throwable != null) {
-      writer.print("<tr><th");
+      writer().print("<tr><th");
       if (parameterCount > 1) {
-        writer.printf(" colspan=\"%d\"", parameterCount);
+        writer().printf(" colspan=\"%d\"", parameterCount);
       }
-      writer.print(">");
-      writer.print(result.getStatus() == ITestResult.SUCCESS ? "Expected Exception" : "Exception");
-      writer.print("</th></tr>");
+      writer().print(">");
+      writer()
+          .print(result.getStatus() == ITestResult.SUCCESS ? "Expected Exception" : "Exception");
+      writer().print("</th></tr>");
 
-      writer.print("<tr><td");
+      writer().print("<tr><td");
       if (parameterCount > 1) {
-        writer.printf(" colspan=\"%d\"", parameterCount);
+        writer().printf(" colspan=\"%d\"", parameterCount);
       }
-      writer.print(">");
+      writer().print(">");
       writeStackTrace(throwable);
-      writer.print("</td></tr>");
+      writer().print("</td></tr>");
       hasRows = true;
     }
 
     if (!hasRows) {
-      writer.print("<tr><th");
+      writer().print("<tr><th");
       if (parameterCount > 1) {
-        writer.printf(" colspan=\"%d\"", parameterCount);
+        writer().printf(" colspan=\"%d\"", parameterCount);
       }
-      writer.print(" class=\"invisible\"/></tr>");
+      writer().print(" class=\"invisible\"/></tr>");
     }
 
-    writer.print("</table>");
-    writer.println("<p class=\"totop\"><a href=\"#summary\">back to summary</a></p>");
+    writer().print("</table>");
+    writer().println("<p class=\"totop\"><a href=\"#summary\">back to summary</a></p>");
   }
 
   private boolean dumpParametersInfo(String prefix, Object[] parameters) {
+    PrintWriter writer = writer();
     int parameterCount = parameters == null ? 0 : parameters.length;
     if (parameterCount == 0) {
       return false;
@@ -531,6 +545,7 @@ public class EmailableReporter2 implements IReporter {
   }
 
   private void dumpAttributesInfo(CustomAttribute[] attributes) {
+    PrintWriter writer = writer();
     int parameterCount = attributes == null ? 0 : attributes.length;
     if (parameterCount == 0) {
       return;
@@ -552,6 +567,7 @@ public class EmailableReporter2 implements IReporter {
   }
 
   protected void writeReporterMessages(List<String> reporterMessages) {
+    PrintWriter writer = writer();
     writer.print("<div class=\"messages\">");
     Iterator<String> iterator = reporterMessages.iterator();
     if (!iterator.hasNext()) {
@@ -574,6 +590,7 @@ public class EmailableReporter2 implements IReporter {
   }
 
   protected void writeStackTrace(Throwable throwable) {
+    PrintWriter writer = writer();
     writer.print("<div class=\"stacktrace\">");
     writer.print(Utils.shortStackTrace(throwable, true));
     writer.print("</div>");
@@ -604,7 +621,7 @@ public class EmailableReporter2 implements IReporter {
    * @param html the HTML contents
    * @param cssClasses the space-delimited CSS classes or null if there are no classes to apply
    */
-  protected void writeTableData(String html, String cssClasses) {
+  protected void writeTableData(String html, @Nullable String cssClasses) {
     writeTag("td", html, cssClasses);
   }
 
@@ -615,7 +632,8 @@ public class EmailableReporter2 implements IReporter {
    * @param html the HTML contents
    * @param cssClasses the space-delimited CSS classes or null if there are no classes to apply
    */
-  protected void writeTag(String tag, String html, String cssClasses) {
+  protected void writeTag(String tag, String html, @Nullable String cssClasses) {
+    PrintWriter writer = writer();
     writer.print("<");
     writer.print(tag);
     if (cssClasses != null) {
