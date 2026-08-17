@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
@@ -67,7 +68,7 @@ public final class ReflectionRecipes {
     ASSIGNABLE_MAPPING.put(
         long.class, Arrays.asList(Integer.class, Short.class, Character.class, Byte.class));
     ASSIGNABLE_MAPPING.put(int.class, Arrays.asList(Short.class, Character.class, Byte.class));
-    ASSIGNABLE_MAPPING.put(short.class, Arrays.asList(Character.class, Byte.class));
+    ASSIGNABLE_MAPPING.put(short.class, Arrays.asList(Byte.class));
   }
 
   private ReflectionRecipes() {
@@ -170,7 +171,7 @@ public final class ReflectionRecipes {
    * @param method any valid method.
    * @return extracted method parameters.
    */
-  public static Parameter[] getMethodParameters(final Method method) {
+  public static Parameter[] getMethodParameters(final @Nullable Method method) {
     if (method == null) {
       return new Parameter[] {};
     }
@@ -283,37 +284,6 @@ public final class ReflectionRecipes {
   }
 
   /**
-   * Matches an array of parameters to an array of instances.
-   *
-   * @return matches or not
-   * @see #lenientMatch(Class[], Object[])
-   */
-  public static boolean lenientMatch(final Parameter[] parameters, final Object[] args) {
-    return lenientMatch(classesFromParameters(parameters), args);
-  }
-
-  /**
-   * Matches an array of class instances to an array of instances. Such that {int, boolean, float}
-   * matches {int, boolean}
-   *
-   * @param classes array of class instances to check against.
-   * @param args instances to be verified.
-   * @return matches or not
-   */
-  public static boolean lenientMatch(final Class<?>[] classes, final Object[] args) {
-    boolean matching = true;
-    int i = 0;
-    for (final Class<?> clazz : classes) {
-      matching = ReflectionRecipes.isInstanceOf(clazz, args[i]);
-      i++;
-      if (!matching) {
-        break;
-      }
-    }
-    return matching;
-  }
-
-  /**
    * Omits 1. org.testng.ITestContext or its implementations from input array 2.
    * org.testng.ITestResult or its implementations from input array 3. org.testng.xml.XmlTest or its
    * implementations from input array 4. First method depending on filters.
@@ -361,7 +331,7 @@ public final class ReflectionRecipes {
    * @param parameters array of parameter instances under question.
    * @param filters filters to use.
    * @param args user supplied arguments.
-   * @param injectionMethod current test method.
+   * @param injectionMethod current test method, or {@code null} when there is no holder.
    * @param context current test context.
    * @param testResult on going test results.
    * @return injected arguments.
@@ -370,7 +340,7 @@ public final class ReflectionRecipes {
       final Parameter[] parameters,
       final Set<InjectableParameter> filters,
       final Object[] args,
-      final Method injectionMethod,
+      final @Nullable Method injectionMethod,
       final ITestContext context,
       final ITestResult testResult) {
     return nativelyInject(parameters, filters, args, injectionMethod, context, testResult);
@@ -380,7 +350,7 @@ public final class ReflectionRecipes {
       final Parameter[] parameters,
       final Set<InjectableParameter> filters,
       final Object[] args,
-      final Object injectionMethod,
+      final @Nullable Object injectionMethod,
       final ITestContext context,
       final ITestResult testResult) {
     if (filters == null || filters.isEmpty()) {
@@ -431,17 +401,21 @@ public final class ReflectionRecipes {
       String prefix =
           "Missing one or more parameters that are being injected by the data provider. "
               + "Please add the below arguments to the ";
-      String msg = null;
-      if (injectionMethod instanceof Method) {
-        msg =
-            MethodMatcherException.generateMessage(
-                prefix + "method.", (Method) injectionMethod, queue.backingList.toArray());
-      } else if (injectionMethod instanceof Constructor) {
+      final String msg;
+      if (injectionMethod instanceof Constructor) {
         msg =
             MethodMatcherException.generateMessage(
                 prefix + "constructor.",
                 (Constructor<?>) injectionMethod,
                 queue.backingList.toArray());
+      } else if (injectionMethod instanceof Method || injectionMethod == null) {
+        msg =
+            MethodMatcherException.generateMessage(
+                prefix + "method.", (Method) injectionMethod, queue.backingList.toArray());
+      } else {
+        throw new TestNGException(
+            "Injection holder must be a method or constructor, got "
+                + injectionMethod.getClass().getName());
       }
 
       boolean block = RuntimeBehavior.useStrictParameterMatching();

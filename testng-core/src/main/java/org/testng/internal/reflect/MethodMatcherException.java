@@ -1,5 +1,6 @@
 package org.testng.internal.reflect;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -43,7 +44,7 @@ public class MethodMatcherException extends TestNGException {
   }
 
   public static String generateMessage(
-      final String message, final Method method, final Object[] args) {
+      final String message, final @Nullable Method method, final Object[] args) {
     return generateMessage(
         message,
         method != null ? method.getName() : null,
@@ -87,10 +88,14 @@ public class MethodMatcherException extends TestNGException {
   }
 
   private static String stringify(Object object) {
-    if (object.getClass().isArray()) {
-      return Arrays.toString((Object[]) object);
-    } else {
+    if (!object.getClass().isArray()) {
       return object.toString();
     }
+    final int length = Array.getLength(object);
+    final Object[] elements = new Object[length];
+    for (int i = 0; i < length; i++) {
+      elements[i] = Array.get(object, i);
+    }
+    return Arrays.toString(elements);
   }
 }
