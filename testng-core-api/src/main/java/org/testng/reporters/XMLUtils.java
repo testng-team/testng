@@ -5,7 +5,7 @@ import java.text.StringCharacterIterator;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Static helpers for XML.
