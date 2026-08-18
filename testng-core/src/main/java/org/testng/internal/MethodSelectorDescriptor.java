@@ -1,7 +1,6 @@
 package org.testng.internal;
 
 import java.util.List;
-import javax.annotation.Nonnull;
 import org.testng.IMethodSelector;
 import org.testng.ITestNGMethod;
 
@@ -25,7 +24,7 @@ public class MethodSelectorDescriptor implements Comparable<MethodSelectorDescri
   }
 
   @Override
-  public int compareTo(@Nonnull MethodSelectorDescriptor other) {
+  public int compareTo(MethodSelectorDescriptor other) {
     return m_priority - other.m_priority;
   }
 
