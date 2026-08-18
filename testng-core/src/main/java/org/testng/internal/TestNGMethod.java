@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.testng.IDataProviderMethod;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -33,7 +34,7 @@ public class TestNGMethod extends BaseTestMethod {
       Method method,
       IAnnotationFinder finder,
       XmlTest xmlTest,
-      IObject.IdentifiableObject instance) {
+      IObject.@Nullable IdentifiableObject instance) {
     this(objectFactory, method, finder, true, xmlTest, instance);
   }
 
@@ -43,7 +44,7 @@ public class TestNGMethod extends BaseTestMethod {
       IAnnotationFinder finder,
       boolean initialize,
       XmlTest xmlTest,
-      IObject.IdentifiableObject instance) {
+      IObject.@Nullable IdentifiableObject instance) {
     super(objectFactory, method.getName(), new ConstructorOrMethod(method), finder, instance);
     setXmlTest(xmlTest);
 
@@ -86,7 +87,7 @@ public class TestNGMethod extends BaseTestMethod {
     setInvocationNumbers(xmlTest.getInvocationNumbers(className + "." + m_method.getName()));
 
     ITestAnnotation testAnnotation =
-        AnnotationHelper.findTest(getAnnotationFinder(), m_method.getMethod());
+        AnnotationHelper.findTest(getAnnotationFinder(), m_method.requireMethod());
 
     if (testAnnotation == null) {
       // Try on the class
@@ -138,7 +139,7 @@ public class TestNGMethod extends BaseTestMethod {
   }
 
   private boolean classNameMatcher(XmlClass xmlClass) {
-    return xmlClass.getName().equals(m_method.getMethod().getDeclaringClass().getName());
+    return xmlClass.getName().equals(m_method.getDeclaringClass().getName());
   }
 
   private boolean methodNameMatcher(XmlInclude xmlInclude) {
@@ -173,7 +174,7 @@ public class TestNGMethod extends BaseTestMethod {
     TestNGMethod clone =
         new TestNGMethod(
             m_objectFactory,
-            getConstructorOrMethod().getMethod(),
+            getConstructorOrMethod().requireMethod(),
             getAnnotationFinder(),
             false,
             getXmlTest(),
@@ -226,7 +227,7 @@ public class TestNGMethod extends BaseTestMethod {
     return dataProviderMethod;
   }
 
-  public void setDataProviderMethod(IDataProviderMethod dataProviderMethod) {
+  public void setDataProviderMethod(@Nullable IDataProviderMethod dataProviderMethod) {
     this.dataProviderMethod = dataProviderMethod;
   }
 }

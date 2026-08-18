@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestNGMethod;
 
 public class MethodInheritance {
@@ -55,7 +56,7 @@ public class MethodInheritance {
       };
 
   /** Look in map for a class that is a superclass of methodClass */
-  private static List<ITestNGMethod> findMethodListSuperClass(
+  private static @Nullable List<ITestNGMethod> findMethodListSuperClass(
       Map<Class<?>, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
     return map.entrySet().stream()
         .parallel()

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.IAnnotation;
@@ -66,7 +67,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       String[] beforeGroups,
       String[] afterGroups,
       boolean initialize,
-      IObject.IdentifiableObject instance) {
+      IObject.@Nullable IdentifiableObject instance) {
     super(objectFactory, com.getName(), com, annotationFinder, instance);
     if (initialize) {
       init();
@@ -105,8 +106,8 @@ public class ConfigurationMethod extends BaseTestMethod {
       boolean isIgnoreFailure,
       String[] beforeGroups,
       String[] afterGroups,
-      XmlTest xmlTest,
-      IObject.IdentifiableObject instance) {
+      @Nullable XmlTest xmlTest,
+      IObject.@Nullable IdentifiableObject instance) {
     this(
         objectFactory,
         com,
@@ -139,11 +140,11 @@ public class ConfigurationMethod extends BaseTestMethod {
       boolean isAfterClass,
       boolean isBeforeMethod,
       boolean isAfterMethod,
-      XmlTest xmlTest,
-      IObject.IdentifiableObject instance) {
+      @Nullable XmlTest xmlTest,
+      IObject.@Nullable IdentifiableObject instance) {
     List<ITestNGMethod> result = new ArrayList<>();
     for (ITestNGMethod method : methods) {
-      if (Modifier.isStatic(method.getConstructorOrMethod().getMethod().getModifiers())) {
+      if (Modifier.isStatic(method.getConstructorOrMethod().requireMethod().getModifiers())) {
         String msg =
             "Detected a static method ["
                 + method.getQualifiedName()
@@ -180,7 +181,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
-      IObject.IdentifiableObject instance) {
+      IObject.@Nullable IdentifiableObject instance) {
 
     return createMethods(
         objectFactory,
@@ -203,8 +204,8 @@ public class ConfigurationMethod extends BaseTestMethod {
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
-      XmlTest xmlTest,
-      IObject.IdentifiableObject instance) {
+      @Nullable XmlTest xmlTest,
+      IObject.@Nullable IdentifiableObject instance) {
     return createMethods(
         objectFactory,
         methods,
@@ -226,8 +227,8 @@ public class ConfigurationMethod extends BaseTestMethod {
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
-      XmlTest xmlTest,
-      IObject.IdentifiableObject instance) {
+      @Nullable XmlTest xmlTest,
+      IObject.@Nullable IdentifiableObject instance) {
     return createMethods(
         objectFactory,
         methods,
@@ -249,7 +250,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
-      IObject.IdentifiableObject instance) {
+      IObject.@Nullable IdentifiableObject instance) {
     ITestNGMethod[] result = new ITestNGMethod[methods.length];
     for (int i = 0; i < methods.length; i++) {
       result[i] =
@@ -280,7 +281,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
-      IObject.IdentifiableObject instance) {
+      IObject.@Nullable IdentifiableObject instance) {
     return Arrays.stream(methods)
         .parallel()
         .map(
@@ -310,8 +311,8 @@ public class ConfigurationMethod extends BaseTestMethod {
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
-      XmlTest xmlTest,
-      IObject.IdentifiableObject instance) {
+      @Nullable XmlTest xmlTest,
+      IObject.@Nullable IdentifiableObject instance) {
     return createMethods(
         objectFactory,
         methods,
@@ -402,7 +403,7 @@ public class ConfigurationMethod extends BaseTestMethod {
 
   private void init() {
     IConfigurationAnnotation annotation =
-        AnnotationHelper.findConfiguration(m_annotationFinder, m_method.getMethod());
+        AnnotationHelper.findConfiguration(m_annotationFinder, m_method.requireMethod());
     if (annotation != null) {
       m_inheritGroupsFromTestClass = annotation.getInheritGroups();
       setEnabled(annotation.getEnabled());

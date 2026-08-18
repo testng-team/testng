@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.util.BitSet;
+import org.jspecify.annotations.Nullable;
 import org.testng.IResultMap;
 import org.testng.ITestContext;
 
@@ -59,7 +60,8 @@ public class ExitCode {
     computeAndUpdate(2, context.getFailedButWithinSuccessPercentageTests(), null);
   }
 
-  private void computeAndUpdate(int index, IResultMap testResults, IResultMap configResults) {
+  private void computeAndUpdate(
+      int index, IResultMap testResults, @Nullable IResultMap configResults) {
     boolean containsResults = testResults.size() != 0;
     if (configResults != null) {
       containsResults = containsResults || configResults.size() != 0;

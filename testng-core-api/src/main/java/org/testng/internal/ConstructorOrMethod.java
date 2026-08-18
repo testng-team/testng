@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Wraps either a method or a constructor.
@@ -40,12 +41,31 @@ public class ConstructorOrMethod {
     return member.getParameterTypes(); // the JDK returns a fresh copy each call
   }
 
-  public Method getMethod() {
+  /**
+   * @return the wrapped member if it is a method, or {@code null} if it is a constructor. Prefer
+   *     {@link #requireMethod()} unless the null is what you are testing for.
+   */
+  public @Nullable Method getMethod() {
     return member instanceof Method ? (Method) member : null;
   }
 
-  public Constructor<?> getConstructor() {
+  public @Nullable Constructor<?> getConstructor() {
     return member instanceof Constructor ? (Constructor<?>) member : null;
+  }
+
+  /**
+   * The wrapped member as a {@link Method}, for the callers that only ever see a test or a
+   * configuration method.
+   *
+   * @return the wrapped method
+   * @throws NullPointerException if this wrapper holds a constructor -- the same failure the call
+   *     sites saw before, with a message instead of a bare dereference
+   */
+  public Method requireMethod() {
+    if (member instanceof Method) {
+      return (Method) member;
+    }
+    throw new NullPointerException("Expected a method, but " + member + " is a constructor");
   }
 
   /**
@@ -57,7 +77,7 @@ public class ConstructorOrMethod {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) {
       return true;
     }

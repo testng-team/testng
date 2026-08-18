@@ -8,6 +8,7 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -91,8 +92,14 @@ final class YamlSchema {
         .key(
             "configFailurePolicy",
             String.class,
-            (XmlSuite suite, String value) ->
-                suite.setConfigFailurePolicy(XmlSuite.FailurePolicy.getValidPolicy(value)))
+            (XmlSuite suite, String value) -> {
+              // An unrecognised value keeps the default, as TestNGContentHandler does for XML
+              // and as the sibling parallel key does for its own enum.
+              XmlSuite.FailurePolicy policy = XmlSuite.FailurePolicy.getValidPolicy(value);
+              if (policy != null) {
+                suite.setConfigFailurePolicy(policy);
+              }
+            })
         .key("skipFailedInvocationCounts", Boolean.class, XmlSuite::setSkipFailedInvocationCounts)
         .key("preserveOrder", Boolean.class, XmlSuite::setPreserveOrder)
         .key("groupByInstances", Boolean.class, XmlSuite::setGroupByInstances)
@@ -368,8 +375,11 @@ final class YamlSchema {
       }
       String canonical = deprecatedAliases.get(name);
       if (canonical != null) {
+        SchemaProperty aliased =
+            Objects.requireNonNull(
+                keys.get(canonical), "alias " + name + " points at unknown key " + canonical);
         LOGGER.warn(deprecationMessage(element, name, canonical));
-        return keys.get(canonical);
+        return aliased;
       }
       throw new YAMLException(unknownKeyMessage(element, name, keys.keySet(), deprecatedAliases));
     }

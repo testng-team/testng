@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.IAttributes;
 import org.testng.IClass;
 import org.testng.IFactoryInstance;
@@ -27,18 +28,18 @@ public class TestResult implements ITestResult {
 
   private static final Object[] NO_FACTORY_PARAMETERS = {};
 
-  private ITestNGMethod m_method = null;
+  private @Nullable ITestNGMethod m_method = null;
   private List<ITestNGMethod> skippedDueTo = new ArrayList<>();
   private boolean skipAnalysed = false;
   private int m_status = CREATED;
-  private Throwable m_throwable = null;
+  private @Nullable Throwable m_throwable = null;
   private long m_startMillis = 0;
   private long m_endMillis = 0;
-  private String m_name = null;
-  private String m_host;
+  private @Nullable String m_name = null;
+  private @Nullable String m_host;
   private Object[] m_parameters = {};
-  private String m_instanceName;
-  private ITestContext m_context;
+  private @Nullable String m_instanceName;
+  private @Nullable ITestContext m_context;
   private int m_parameterIndex = -1;
   private boolean m_wasRetried;
   private final IAttributes m_attributes = new Attributes();
@@ -63,7 +64,8 @@ public class TestResult implements ITestResult {
     return newContextAwareTestResult(method, null);
   }
 
-  public static TestResult newContextAwareTestResult(ITestNGMethod method, ITestContext ctx) {
+  public static TestResult newContextAwareTestResult(
+      ITestNGMethod method, @Nullable ITestContext ctx) {
     TestResult result = newEmptyTestResult();
     long time = System.currentTimeMillis();
     result.init(method, ctx, null, time, 0L);
@@ -71,7 +73,7 @@ public class TestResult implements ITestResult {
   }
 
   public static TestResult newTestResultWithCauseAs(
-      ITestNGMethod method, ITestContext ctx, Throwable t) {
+      ITestNGMethod method, @Nullable ITestContext ctx, Throwable t) {
     TestResult result = newEmptyTestResult();
     long time = System.currentTimeMillis();
     result.init(method, ctx, t, time, time);
@@ -79,7 +81,7 @@ public class TestResult implements ITestResult {
   }
 
   public static TestResult newEndTimeAwareTestResult(
-      ITestNGMethod method, ITestContext ctx, Throwable t, long start) {
+      ITestNGMethod method, @Nullable ITestContext ctx, @Nullable Throwable t, long start) {
     TestResult result = newEmptyTestResult();
     long time = System.currentTimeMillis();
     result.init(method, ctx, t, start, time);
@@ -87,7 +89,7 @@ public class TestResult implements ITestResult {
   }
 
   public static TestResult newTestResultFrom(
-      TestResult result, ITestNGMethod method, ITestContext ctx, long start) {
+      TestResult result, ITestNGMethod method, @Nullable ITestContext ctx, long start) {
     TestResult testResult =
         TestResult.newTestResult(result.getParameters(), result.getParameterIndex());
     testResult.setHost(result.getHost());
@@ -96,7 +98,12 @@ public class TestResult implements ITestResult {
     return testResult;
   }
 
-  private void init(ITestNGMethod method, ITestContext ctx, Throwable t, long start, long end) {
+  private void init(
+      ITestNGMethod method,
+      @Nullable ITestContext ctx,
+      @Nullable Throwable t,
+      long start,
+      long end) {
     m_throwable = t;
     m_instanceName = method.getTestClass().getName();
     if (null == m_throwable) {
@@ -104,11 +111,7 @@ public class TestResult implements ITestResult {
     }
     m_startMillis = start;
     m_endMillis = end;
-    if (RuntimeBehavior.isMemoryFriendlyMode()) {
-      m_method = new LiteWeightTestNGMethod(method);
-    } else {
-      m_method = method;
-    }
+    m_method = RuntimeBehavior.isMemoryFriendlyMode() ? new LiteWeightTestNGMethod(method) : method;
     m_context = ctx;
 
     Object instance = method.getInstance();
@@ -116,7 +119,7 @@ public class TestResult implements ITestResult {
     // Calculate the name: either the method name, ITest#getTestName or
     // toString() if it's been overridden.
     if (instance == null) {
-      m_name = m_method.getMethodName();
+      m_name = method.getMethodName();
       return;
     }
     if (instance instanceof ITest) {
@@ -124,7 +127,7 @@ public class TestResult implements ITestResult {
       if (m_name != null) {
         return;
       }
-      m_name = m_method.getMethodName();
+      m_name = method.getMethodName();
       if (Utils.getVerbose() > 1) {
         String msg =
             String.format(
@@ -140,7 +143,7 @@ public class TestResult implements ITestResult {
     }
     String string = instance.toString();
     // Only display toString() if it's been overridden by the user
-    m_name = getMethod().getMethodName();
+    m_name = method.getMethodName();
     try {
       if (!Object.class.getMethod("toString").equals(instance.getClass().getMethod("toString"))) {
         m_instanceName = string.startsWith("class ") ? string.substring("class ".length()) : string;
@@ -161,7 +164,7 @@ public class TestResult implements ITestResult {
    * name, otherwise returns null.
    */
   @Override
-  public String getTestName() {
+  public @Nullable String getTestName() {
     if (this.m_method == null) {
       return null;
     }
@@ -176,18 +179,28 @@ public class TestResult implements ITestResult {
   }
 
   @Override
-  public String getName() {
+  public @Nullable String getName() {
     return m_name;
   }
 
   /** @return Returns the method. */
   @Override
-  public ITestNGMethod getMethod() {
+  public @Nullable ITestNGMethod getMethod() {
     return m_method;
   }
 
+  /**
+   * The method this result belongs to, for the members that only make sense on a result built
+   * through one of the method-aware factories. {@link #newTestResult(Object[], int)} deliberately
+   * builds a carrier that has no method, and those members are not reachable on it.
+   */
+  private ITestNGMethod requireMethod() {
+    return java.util.Objects.requireNonNull(
+        m_method, "This TestResult carries parameters only; it has no test method");
+  }
+
   /** @param method The method to set. */
-  public void setMethod(ITestNGMethod method) {
+  public void setMethod(@Nullable ITestNGMethod method) {
     m_method = method;
   }
 
@@ -211,18 +224,18 @@ public class TestResult implements ITestResult {
   /** @return Returns the testClass. */
   @Override
   public IClass getTestClass() {
-    return m_method.getTestClass();
+    return requireMethod().getTestClass();
   }
 
   /** @return Returns the throwable. */
   @Override
-  public Throwable getThrowable() {
+  public @Nullable Throwable getThrowable() {
     return m_throwable;
   }
 
   /** @param throwable The throwable to set. */
   @Override
-  public void setThrowable(Throwable throwable) {
+  public void setThrowable(@Nullable Throwable throwable) {
     m_throwable = throwable;
   }
 
@@ -271,11 +284,11 @@ public class TestResult implements ITestResult {
   }
 
   @Override
-  public String getHost() {
+  public @Nullable String getHost() {
     return m_host;
   }
 
-  public void setHost(String host) {
+  public void setHost(@Nullable String host) {
     m_host = host;
   }
 
@@ -306,13 +319,13 @@ public class TestResult implements ITestResult {
   }
 
   @Override
-  public Object getInstance() {
-    return IParameterInfo.embeddedInstance(this.m_method.getInstance());
+  public @Nullable Object getInstance() {
+    return IParameterInfo.embeddedInstance(requireMethod().getInstance());
   }
 
   @Override
   public Object[] getFactoryParameters() {
-    return this.m_method
+    return requireMethod()
         .getFactoryInstance()
         .map(IFactoryInstance::getParameters)
         .orElse(NO_FACTORY_PARAMETERS);
@@ -339,11 +352,11 @@ public class TestResult implements ITestResult {
   }
 
   @Override
-  public ITestContext getTestContext() {
+  public @Nullable ITestContext getTestContext() {
     return m_context;
   }
 
-  public void setContext(ITestContext context) {
+  public void setContext(@Nullable ITestContext context) {
     m_context = context;
   }
 
@@ -353,7 +366,7 @@ public class TestResult implements ITestResult {
   }
 
   @Override
-  public String getInstanceName() {
+  public @Nullable String getInstanceName() {
     return m_instanceName;
   }
 
@@ -391,8 +404,12 @@ public class TestResult implements ITestResult {
       return Collections.unmodifiableList(skippedDueTo);
     }
     skipAnalysed = true;
+    ITestContext context = m_context;
+    if (context == null) {
+      return Collections.unmodifiableList(skippedDueTo);
+    }
     // check if there were any config failures
-    Set<ITestResult> skippedConfigs = m_context.getFailedConfigurations().getAllResults();
+    Set<ITestResult> skippedConfigs = context.getFailedConfigurations().getAllResults();
     for (ITestResult skippedConfig : skippedConfigs) {
       if (isGlobalFailure(skippedConfig) || isRelated(skippedConfig)) {
         // If there's a failure in @BeforeTest/@BeforeSuite/@BeforeClass
@@ -410,7 +427,7 @@ public class TestResult implements ITestResult {
       return Collections.unmodifiableList(skippedDueTo);
     }
     // Looks like we didn't have any configuration failures. So some upstream method perhaps failed.
-    if (m_method.getMethodsDependedUpon().length == 0) {
+    if (requireMethod().getMethodsDependedUpon().length == 0) {
       // Maybe group dependencies exist ?
       if (m_method.getGroupsDependedUpon().length == 0) {
         return Collections.emptyList();
@@ -434,7 +451,7 @@ public class TestResult implements ITestResult {
 
       return Collections.unmodifiableList(skippedDueTo);
     }
-    List<String> upstreamMethods = Arrays.asList(m_method.getMethodsDependedUpon());
+    List<String> upstreamMethods = Arrays.asList(requireMethod().getMethodsDependedUpon());
 
     // So we have dependsOnMethod failures
     List<ITestResult> allFailures =
@@ -479,6 +496,9 @@ public class TestResult implements ITestResult {
     }
     Object current = this.getInstance();
     Object thatObject = result.getInstance();
+    if (current == null || thatObject == null) {
+      return false;
+    }
     return current.getClass().isAssignableFrom(thatObject.getClass())
         || thatObject.getClass().isAssignableFrom(current.getClass());
   }
@@ -488,7 +508,7 @@ public class TestResult implements ITestResult {
     if (!m.isBeforeGroupsConfiguration()) {
       return false;
     }
-    String[] myGroups = this.m_method.getGroups();
+    String[] myGroups = requireMethod().getGroups();
     if (myGroups.length == 0 || m.getGroups().length == 0) {
       return false;
     }

@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import org.testng.IClass;
 import org.testng.ITestClassFinder;
 import org.testng.ITestContext;
@@ -18,7 +19,7 @@ public abstract class BaseClassFinder implements ITestClassFinder {
   private final Map<Class<?>, IClass> m_classes = new LinkedHashMap<>();
 
   @Override
-  public IClass getIClass(Class<?> cls) {
+  public @Nullable IClass getIClass(Class<?> cls) {
     return m_classes.get(cls);
   }
 

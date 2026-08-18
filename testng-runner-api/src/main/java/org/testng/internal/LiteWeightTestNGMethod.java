@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import org.jspecify.annotations.Nullable;
 import org.testng.IClass;
 import org.testng.IDataProviderMethod;
 import org.testng.IFactoryInstance;
@@ -44,7 +45,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   private final boolean isAfterClassConfiguration;
   private final boolean isBeforeSuiteConfiguration;
   private final boolean isAfterSuiteConfiguration;
-  private final IFactoryInstance factoryInstance;
+  private final @Nullable IFactoryInstance factoryInstance;
   private List<Integer> invocationNumbers;
   private final List<Integer> failedInvocationNumbers;
   private boolean ignoreMissingDependencies;

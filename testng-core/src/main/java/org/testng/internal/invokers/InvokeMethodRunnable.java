@@ -51,11 +51,11 @@ public class InvokeMethodRunnable implements Callable<Boolean> {
       ConstructorOrMethod m = m_method.getConstructorOrMethod();
       if (m_hookable == null) {
         invoked = true;
-        MethodInvocationHelper.invokeMethod(m.getMethod(), m_instance, m_parameters);
+        MethodInvocationHelper.invokeMethod(m.requireMethod(), m_instance, m_parameters);
       } else {
         invoked =
             MethodInvocationHelper.invokeHookable(
-                m_instance, m_parameters, m_hookable, m.getMethod(), m_testResult);
+                m_instance, m_parameters, m_hookable, m.requireMethod(), m_testResult);
       }
     } catch (Throwable e) {
       invoked = true;

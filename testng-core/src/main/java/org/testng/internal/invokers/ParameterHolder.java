@@ -17,7 +17,7 @@ public class ParameterHolder implements AutoCloseable {
     NATIVE // Native injection is involved.
   }
 
-  final IDataProviderMethod dataProviderHolder;
+  final @Nullable IDataProviderMethod dataProviderHolder;
   public final Iterator<Object[]> parameters;
   final ParameterOrigin origin;
 
@@ -31,14 +31,14 @@ public class ParameterHolder implements AutoCloseable {
   private final @Nullable CloseableIterator<Object[]> closeableSource;
 
   public ParameterHolder(
-      Iterator<Object[]> parameters, ParameterOrigin origin, IDataProviderMethod dph) {
+      Iterator<Object[]> parameters, ParameterOrigin origin, @Nullable IDataProviderMethod dph) {
     this(parameters, origin, dph, null);
   }
 
   public ParameterHolder(
       Iterator<Object[]> parameters,
       ParameterOrigin origin,
-      IDataProviderMethod dph,
+      @Nullable IDataProviderMethod dph,
       @Nullable CloseableIterator<Object[]> closeableSource) {
     super();
     this.parameters = parameters;

@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.testng.IConfigurable;
 import org.testng.IConfigurationListener;
 import org.testng.IExecutionListener;
@@ -17,25 +18,30 @@ public interface IConfiguration {
 
   void setAnnotationFinder(IAnnotationFinder finder);
 
-  void setListenerFactory(ITestNGListenerFactory testNGListenerFactory);
+  void setListenerFactory(@Nullable ITestNGListenerFactory testNGListenerFactory);
 
+  @Nullable
   ITestNGListenerFactory getListenerFactory();
 
-  void setListenerComparator(ListenerComparator comparator);
+  void setListenerComparator(@Nullable ListenerComparator comparator);
 
+  @Nullable
   ListenerComparator getListenerComparator();
 
+  @Nullable
   ITestObjectFactory getObjectFactory();
 
-  void setObjectFactory(ITestObjectFactory m_objectFactory);
+  void setObjectFactory(@Nullable ITestObjectFactory m_objectFactory);
 
+  @Nullable
   IHookable getHookable();
 
-  void setHookable(IHookable h);
+  void setHookable(@Nullable IHookable h);
 
+  @Nullable
   IConfigurable getConfigurable();
 
-  void setConfigurable(IConfigurable c);
+  void setConfigurable(@Nullable IConfigurable c);
 
   List<IExecutionListener> getExecutionListeners();
 

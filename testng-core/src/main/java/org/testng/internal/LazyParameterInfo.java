@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.util.function.Supplier;
+import org.jspecify.annotations.Nullable;
 import org.testng.IFactoryInstance;
 
 /**
@@ -22,8 +23,8 @@ public class LazyParameterInfo implements IParameterInfo {
 
   private final Object lock = new Object();
   private volatile boolean instantiated = false;
-  private volatile Object instance;
-  private volatile Throwable failure;
+  private volatile @Nullable Object instance;
+  private volatile @Nullable Throwable failure;
 
   public LazyParameterInfo(
       FactoryInstance factoryInstance, Class<?> targetClass, Supplier<Object> creator) {

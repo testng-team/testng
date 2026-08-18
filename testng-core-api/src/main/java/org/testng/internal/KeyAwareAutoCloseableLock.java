@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A simple abstraction over {@link java.util.concurrent.locks.ReentrantLock} that can be used when
@@ -36,7 +37,7 @@ public final class KeyAwareAutoCloseableLock {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(@Nullable Object object) {
       if (this == object) {
         return true;
       }

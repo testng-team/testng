@@ -321,7 +321,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
         parameters =
             Parameters.createConfigurationParameters(
-                tm.getConstructorOrMethod().getMethod(),
+                tm.getConstructorOrMethod().requireMethod(),
                 arguments.getParameters(),
                 arguments.getParameterValues(),
                 arguments.getTestMethod(),
@@ -401,11 +401,10 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         return;
       }
       boolean willfullyIgnored = false;
-      boolean usesConfigurableInstance = configurableInstance != null;
-      if (usesConfigurableInstance) {
+      if (configurableInstance != null) {
         willfullyIgnored =
             !MethodInvocationHelper.invokeConfigurable(
-                targetInstance, params, configurableInstance, method.getMethod(), testResult);
+                targetInstance, params, configurableInstance, method.requireMethod(), testResult);
       } else {
         MethodInvocationHelper.invokeMethodConsideringTimeout(
             tm, method, targetInstance, params, testResult, m_configuration);
@@ -413,7 +412,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       boolean testStatusRemainedUnchanged = testResult.isNotRunning();
       boolean throwException = !RuntimeBehavior.ignoreCallbackInvocationSkips();
       if (throwException
-          && usesConfigurableInstance
+          && configurableInstance != null
           && willfullyIgnored
           && testStatusRemainedUnchanged) {
         throw new ConfigurationNotInvokedException(tm);
@@ -442,7 +441,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
   }
 
-  private IConfigurable computeConfigurableInstance(
+  private @Nullable IConfigurable computeConfigurableInstance(
       ConstructorOrMethod method, Object targetInstance) {
     return IConfigurable.class.isAssignableFrom(method.getDeclaringClass())
         ? (IConfigurable) targetInstance

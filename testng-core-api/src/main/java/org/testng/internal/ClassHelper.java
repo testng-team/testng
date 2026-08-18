@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -67,7 +68,7 @@ public final class ClassHelper {
    * @param className the class name to be loaded.
    * @return the class or null if the class is not found.
    */
-  public static Class<?> forName(final String className) {
+  public static @Nullable Class<?> forName(final String className) {
     List<ClassLoader> allClassLoaders = appendContextualClassLoaders(classLoaders);
 
     for (ClassLoader classLoader : allClassLoaders) {

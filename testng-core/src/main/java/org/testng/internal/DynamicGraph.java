@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.jspecify.annotations.Nullable;
 import org.testng.IDynamicGraph;
 import org.testng.IExecutionVisualiser;
 
@@ -252,6 +253,7 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
       return m_outgoingEdges.keySet();
     }
 
+    @Nullable
     Map<T, Integer> from(T node) {
       Map<T, Integer> edges = m_outgoingEdges.get(node);
       return edges == null ? null : Collections.unmodifiableMap(edges);

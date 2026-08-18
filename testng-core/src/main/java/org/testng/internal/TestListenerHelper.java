@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.testng.IClass;
 import org.testng.IConfigurationListener;
 import org.testng.ITestContext;
@@ -26,10 +27,10 @@ public final class TestListenerHelper {
 
   public static void runPreConfigurationListeners(
       ITestResult tr,
-      ITestNGMethod tm,
+      @Nullable ITestNGMethod tm,
       List<IConfigurationListener> listeners,
       IConfigurationListener internal,
-      ListenerComparator comparator) {
+      @Nullable ListenerComparator comparator) {
     internal.beforeConfiguration(tr);
     List<IConfigurationListener> original = ListenerOrderDeterminer.order(listeners, comparator);
 
@@ -45,10 +46,10 @@ public final class TestListenerHelper {
 
   public static void runPostConfigurationListeners(
       ITestResult tr,
-      ITestNGMethod tm,
+      @Nullable ITestNGMethod tm,
       List<IConfigurationListener> listeners,
       IConfigurationListener internal,
-      ListenerComparator comparator) {
+      @Nullable ListenerComparator comparator) {
     List<IConfigurationListener> listenersreversed =
         ListenerOrderDeterminer.reversedOrder(listeners, comparator);
     listenersreversed.add(internal);
