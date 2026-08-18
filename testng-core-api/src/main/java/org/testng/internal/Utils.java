@@ -358,11 +358,7 @@ public final class Utils {
   }
 
   /** Escapes the five characters that must not appear literally in HTML or XML text. */
-  public static @Nullable String escapeHtml(@Nullable String s) {
-    if (s == null) {
-      return null;
-    }
-
+  public static String escapeHtml(String s) {
     StringBuilder result = new StringBuilder();
 
     for (int i = 0; i < s.length(); i++) {
@@ -379,11 +375,7 @@ public final class Utils {
   }
 
   /** Replaces every character the JVM does not define with the Unicode replacement character. */
-  public static @Nullable String escapeUnicode(@Nullable String s) {
-    if (s == null) {
-      return null;
-    }
-
+  public static String escapeUnicode(String s) {
     StringBuilder result = new StringBuilder();
 
     for (int i = 0; i < s.length(); i++) {
