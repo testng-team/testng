@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import org.testng.IAttributes;
 import org.testng.IClass;
 import org.testng.IFactoryInstance;
@@ -349,7 +348,7 @@ public class TestResult implements ITestResult {
   }
 
   @Override
-  public int compareTo(@Nonnull ITestResult comparison) {
+  public int compareTo(ITestResult comparison) {
     return Long.compare(getStartMillis(), comparison.getStartMillis());
   }
 
