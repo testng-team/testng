@@ -81,7 +81,9 @@ public class XmlTestTest extends SimpleBaseTest {
   @Test(description = "GITHUB-3385")
   public void equalsWhenOnlyOneSideHasARun() {
     XmlTest withRun = createXmlTest(createXmlSuite("suite1"), "test");
-    withRun.addExcludedGroup("x");
+    XmlGroups groups = new XmlGroups();
+    groups.setRun(new XmlRun());
+    withRun.setGroups(groups);
     XmlTest withoutRun = createXmlTest(createXmlSuite("suite2"), "test");
     withoutRun.setGroups(new XmlGroups());
     assertThat(withRun).isNotEqualTo(withoutRun);
