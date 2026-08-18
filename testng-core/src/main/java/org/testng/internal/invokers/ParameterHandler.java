@@ -19,13 +19,13 @@ import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 
 class ParameterHandler {
-  private final ITestObjectFactory objectFactory;
+  private final @Nullable ITestObjectFactory objectFactory;
   private final IAnnotationFinder finder;
   private final DataProviderHolder holder;
   private int verbose;
 
   ParameterHandler(
-      ITestObjectFactory objectFactory,
+      @Nullable ITestObjectFactory objectFactory,
       IAnnotationFinder finder,
       DataProviderHolder holder,
       int verbose) {
@@ -125,9 +125,12 @@ class ParameterHandler {
     }
 
     boolean runInParallel() {
-      return (parameterHolder != null)
-          && (parameterHolder.origin == ParameterHolder.ParameterOrigin.ORIGIN_DATA_PROVIDER
-              && parameterHolder.dataProviderHolder.isParallel());
+      if (parameterHolder == null
+          || parameterHolder.origin != ParameterHolder.ParameterOrigin.ORIGIN_DATA_PROVIDER) {
+        return false;
+      }
+      IDataProviderMethod dataProvider = parameterHolder.dataProviderHolder;
+      return dataProvider != null && dataProvider.isParallel();
     }
 
     boolean isBubbleUpFailures() {

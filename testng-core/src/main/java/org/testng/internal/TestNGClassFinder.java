@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.DataProviderHolder;
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
@@ -39,7 +40,7 @@ public class TestNGClassFinder extends BaseClassFinder {
   private final ITestObjectFactory objectFactory;
   private final IAnnotationFinder annotationFinder;
 
-  private String m_factoryCreationFailedMessage = null;
+  private @Nullable String m_factoryCreationFailedMessage = null;
 
   public String getFactoryCreationFailedMessage() {
     return m_factoryCreationFailedMessage;
@@ -198,7 +199,7 @@ public class TestNGClassFinder extends BaseClassFinder {
         oneMoreClass = o.getTargetClass();
       } else {
         Object objToInspect = o.getInstance();
-        if (IInstanceInfo.class.isAssignableFrom(objToInspect.getClass())) {
+        if (objToInspect instanceof IInstanceInfo) {
           IInstanceInfo<?> ii = (IInstanceInfo<?>) objToInspect;
           addInstance(ii);
           oneMoreClass = ii.getInstanceClass();
@@ -347,7 +348,12 @@ public class TestNGClassFinder extends BaseClassFinder {
     if (wrapped instanceof IParameterInfo) {
       // Use the target class, which a lazy IParameterInfo can answer without instantiating its
       // (not-yet-created) instance.
-      key = ((IParameterInfo) wrapped).getTargetClass();
+      // A lazy IParameterInfo whose construction failed has no target class; fall back to the
+      // wrapper's own class rather than dropping the instance.
+      Class<?> targetClass = ((IParameterInfo) wrapped).getTargetClass();
+      if (targetClass != null) {
+        key = targetClass;
+      }
     }
     addInstance(key, o);
   }

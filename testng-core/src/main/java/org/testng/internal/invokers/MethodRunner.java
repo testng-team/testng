@@ -51,7 +51,7 @@ public class MethodRunner implements IMethodRunner {
       }
       Object[] parameterValues =
           Parameters.injectParameters(
-              next, arguments.getTestMethod().getConstructorOrMethod().getMethod(), context);
+              next, arguments.getTestMethod().getConstructorOrMethod().requireMethod(), context);
 
       List<ITestResult> tmpResults = new ArrayList<>();
       int tmpResultsIndex = -1;
@@ -125,7 +125,7 @@ public class MethodRunner implements IMethodRunner {
       }
       Object[] parameterValues =
           Parameters.injectParameters(
-              next, arguments.getTestMethod().getConstructorOrMethod().getMethod(), context);
+              next, arguments.getTestMethod().getConstructorOrMethod().requireMethod(), context);
 
       workers.add(
           new TestMethodWithDataProviderMethodWorker(

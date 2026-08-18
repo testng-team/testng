@@ -116,7 +116,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     }
 
     if (!MethodHelper.isEnabled(
-        testMethod.getConstructorOrMethod().getMethod(), annotationFinder())) {
+        testMethod.getConstructorOrMethod().requireMethod(), annotationFinder())) {
       // return if the method is not enabled. No need to do any more calculations
       return Collections.emptyList();
     }
@@ -781,9 +781,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               : m_configuration.getHookable();
 
       boolean willfullyIgnored = false;
-      boolean usesHookableInstance = hookableInstance != null;
       if (MethodHelper.calculateTimeOut(arguments.getTestMethod()) <= 0) {
-        if (usesHookableInstance) {
+        if (hookableInstance != null) {
           willfullyIgnored =
               !MethodInvocationHelper.invokeHookable(
                   arguments.getInstance(),
@@ -812,7 +811,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       boolean testStatusRemainedUnchanged = testResult.isNotRunning();
       boolean throwException = !RuntimeBehavior.ignoreCallbackInvocationSkips();
       if (throwException
-          && usesHookableInstance
+          && hookableInstance != null
           && willfullyIgnored
           && testStatusRemainedUnchanged) {
         TestNotInvokedException tn = new TestNotInvokedException(arguments.tm);

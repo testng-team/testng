@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
+import org.jspecify.annotations.Nullable;
 
 /** This class houses handling all JVM arguments by TestNG */
 public final class RuntimeBehavior {
@@ -118,7 +119,7 @@ public final class RuntimeBehavior {
     return System.getProperty("testng.order");
   }
 
-  public static String getTestClasspath() {
+  public static @Nullable String getTestClasspath() {
     return System.getProperty(TEST_CLASSPATH);
   }
 

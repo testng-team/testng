@@ -1,11 +1,17 @@
 package org.testng.internal;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.IFactoryInstance;
 
 /** Represents the ability to retrieve the parameters associated with a factory method. */
 public interface IParameterInfo {
 
-  /** @return - The actual instance associated with a factory method */
+  /**
+   * @return - The actual instance associated with a factory method, or <code>null</code> if a lazy
+   *     implementation's construction failed -- the failure is memoized rather than rethrown, and
+   *     {@link #getInstantiationFailure()} reports it.
+   */
+  @Nullable
   Object getInstance();
 
   /**
@@ -25,7 +31,7 @@ public interface IParameterInfo {
    *     for an implementation that does not provide one. Reading it never instantiates a lazy
    *     instance.
    */
-  default IFactoryInstance getFactoryInstance() {
+  default @Nullable IFactoryInstance getFactoryInstance() {
     return null;
   }
 
@@ -35,7 +41,7 @@ public interface IParameterInfo {
    *     created) instance; lazy implementations know it up-front (the declaring class of a
    *     constructor factory) and can answer without triggering construction.
    */
-  default Class<?> getTargetClass() {
+  default @Nullable Class<?> getTargetClass() {
     Object instance = getInstance();
     return instance == null ? null : instance.getClass();
   }
@@ -64,11 +70,11 @@ public interface IParameterInfo {
    *     failure to the affected instance's methods without the failure being re-thrown on every
    *     access. Always {@code null} for eager implementations.
    */
-  default Throwable getInstantiationFailure() {
+  default @Nullable Throwable getInstantiationFailure() {
     return null;
   }
 
-  static Object embeddedInstance(Object original) {
+  static @Nullable Object embeddedInstance(Object original) {
     if (original instanceof IParameterInfo) {
       return ((IParameterInfo) original).getInstance();
     }

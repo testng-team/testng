@@ -17,6 +17,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.jspecify.annotations.Nullable;
 import org.testng.IMethodInstance;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -270,7 +271,7 @@ public class MethodHelper {
     return isEnabled(annotation);
   }
 
-  public static boolean isEnabled(ITestOrConfiguration test) {
+  public static boolean isEnabled(@Nullable ITestOrConfiguration test) {
     return null == test || test.getEnabled();
   }
 
@@ -425,7 +426,7 @@ public class MethodHelper {
   }
 
   protected static String calculateMethodCanonicalName(ITestNGMethod m) {
-    return calculateMethodCanonicalName(m.getConstructorOrMethod().getMethod());
+    return calculateMethodCanonicalName(m.getConstructorOrMethod().requireMethod());
   }
 
   private static String calculateMethodCanonicalName(Method m) {

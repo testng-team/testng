@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.jspecify.annotations.Nullable;
 import org.testng.xml.XmlClass;
 
 public class ClassInfoMap {
@@ -56,7 +57,7 @@ public class ClassInfoMap {
     m_map.put(cls, null);
   }
 
-  public XmlClass getXmlClass(Class<?> cls) {
+  public @Nullable XmlClass getXmlClass(Class<?> cls) {
     return m_map.get(cls);
   }
 

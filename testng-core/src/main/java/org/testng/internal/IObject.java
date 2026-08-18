@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents the associations of a class with one or more instances. Relevant with <code>@Factory
@@ -85,7 +86,7 @@ public interface IObject {
       this.instanceId = instanceId;
     }
 
-    public static Object unwrap(IdentifiableObject object) {
+    public static @Nullable Object unwrap(@Nullable IdentifiableObject object) {
       if (object == null) {
         return null;
       }

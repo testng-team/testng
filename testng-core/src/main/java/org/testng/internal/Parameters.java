@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
 import org.testng.IDataProviderListener;
@@ -959,10 +960,10 @@ public class Parameters {
   /** A parameter passing helper class. */
   public static class MethodParameters {
     private final Map<String, String> xmlParameters;
-    private final Method currentTestMethod;
-    private final ITestContext context;
-    private final Object[] parameterValues;
-    private final ITestResult testResult;
+    private final @Nullable Method currentTestMethod;
+    private final @Nullable ITestContext context;
+    private final Object @Nullable [] parameterValues;
+    private final @Nullable ITestResult testResult;
 
     public MethodParameters(Map<String, String> params, Map<String, String> methodParams) {
       this(params, methodParams, null, null, null, null);
@@ -987,10 +988,10 @@ public class Parameters {
     public MethodParameters(
         Map<String, String> params,
         Map<String, String> methodParams,
-        Object[] pv,
-        Method m,
-        ITestContext ctx,
-        ITestResult tr) {
+        Object @Nullable [] pv,
+        @Nullable Method m,
+        @Nullable ITestContext ctx,
+        @Nullable ITestResult tr) {
       Map<String, String> allParams = new HashMap<>();
       allParams.putAll(params);
       allParams.putAll(methodParams);

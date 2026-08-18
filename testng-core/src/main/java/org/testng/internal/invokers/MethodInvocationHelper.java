@@ -85,7 +85,7 @@ public class MethodInvocationHelper {
       IConfiguration config)
       throws Throwable {
     if (MethodHelper.calculateTimeOut(tm) <= 0) {
-      MethodInvocationHelper.invokeMethod(method.getMethod(), targetInstance, params);
+      MethodInvocationHelper.invokeMethod(method.requireMethod(), targetInstance, params);
     } else {
       MethodInvocationHelper.invokeWithTimeout(config, tm, targetInstance, params, testResult);
       if (!testResult.isSuccess()) {

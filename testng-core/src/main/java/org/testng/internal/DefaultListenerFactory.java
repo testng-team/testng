@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestContext;
 import org.testng.ITestNGListener;
 import org.testng.ITestNGListenerFactory;
@@ -23,7 +24,7 @@ public final class DefaultListenerFactory implements ITestNGListenerFactory {
   }
 
   @Override
-  public ITestNGListener createListener(Class<? extends ITestNGListener> listenerClass) {
+  public @Nullable ITestNGListener createListener(Class<? extends ITestNGListener> listenerClass) {
     BasicAttributes ba = new BasicAttributes(null, listenerClass);
     CreationAttributes attributes = new CreationAttributes(context, ba, null);
     return (ITestNGListener) Dispenser.newInstance(this.m_objectFactory).dispense(attributes);

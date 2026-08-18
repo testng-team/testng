@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestNGMethod;
 
 /**
@@ -13,7 +14,7 @@ import org.testng.ITestNGMethod;
  */
 public final class TestMethodContainer implements IContainer<ITestNGMethod> {
 
-  private ITestNGMethod[] methods;
+  private ITestNGMethod @Nullable [] methods;
   private final Supplier<ITestNGMethod[]> supplier;
   private boolean isCleared = false;
 

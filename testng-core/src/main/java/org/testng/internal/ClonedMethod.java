@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import org.jspecify.annotations.Nullable;
 import org.testng.IClass;
 import org.testng.IFactoryInstance;
 import org.testng.IRetryAnalyzer;
@@ -19,7 +20,7 @@ public class ClonedMethod implements ITestNGMethod {
 
   private final ITestNGMethod m_method;
   private final Method m_javaMethod;
-  private String m_id;
+  private @Nullable String m_id;
   private int m_currentInvocationCount;
 
   private List<Integer> m_invocationNumbers = new ArrayList<>();

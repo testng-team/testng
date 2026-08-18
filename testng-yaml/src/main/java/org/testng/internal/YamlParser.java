@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 import org.testng.xml.ISuiteParser;
 import org.testng.xml.XmlSuite;
@@ -10,7 +11,7 @@ import org.testng.xml.internal.Parser;
 public class YamlParser implements ISuiteParser {
 
   @Override
-  public XmlSuite parse(String filePath, InputStream is, boolean loadClasses)
+  public XmlSuite parse(String filePath, @Nullable InputStream is, boolean loadClasses)
       throws TestNGException {
     try {
       return Yaml.parse(filePath, is, loadClasses);

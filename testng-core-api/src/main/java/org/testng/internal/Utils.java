@@ -67,7 +67,7 @@ public final class Utils {
   }
 
   public static void writeUtf8File(
-      @Nullable String outputDir, String fileName, XMLStringBuffer xsb, String prefix) {
+      @Nullable String outputDir, String fileName, XMLStringBuffer xsb, @Nullable String prefix) {
     try {
       final File outDir = outputDir != null ? new File(outputDir) : new File("").getAbsoluteFile();
       if (!outDir.exists()) {
@@ -223,7 +223,7 @@ public final class Utils {
    * @param level the logging level of the message.
    * @param msg the message to log to System.out.
    */
-  public static void log(String cls, int level, String msg) {
+  public static void log(String cls, int level, @Nullable String msg) {
     // Why this coupling on a static member of getVerbose()?
     if (getVerbose() >= level) {
       if (!cls.isEmpty()) {
@@ -243,7 +243,7 @@ public final class Utils {
   }
 
   /* Tokenize the string using the separator. */
-  public static String[] split(String string, String sep) {
+  public static String[] split(@Nullable String string, String sep) {
     if (string == null || string.isEmpty()) {
       return new String[0];
     }
@@ -285,23 +285,23 @@ public final class Utils {
     }
   }
 
-  public static String defaultIfStringEmpty(String s, String defaultValue) {
+  public static String defaultIfStringEmpty(@Nullable String s, String defaultValue) {
     return isStringEmpty(s) ? defaultValue : s;
   }
 
-  public static boolean isStringBlank(String s) {
+  public static boolean isStringBlank(@Nullable String s) {
     return s == null || s.trim().isEmpty();
   }
 
-  public static boolean isStringEmpty(String s) {
+  public static boolean isStringEmpty(@Nullable String s) {
     return s == null || s.isEmpty();
   }
 
-  public static boolean isStringNotBlank(String s) {
+  public static boolean isStringNotBlank(@Nullable String s) {
     return !isStringBlank(s);
   }
 
-  public static boolean isStringNotEmpty(String s) {
+  public static boolean isStringNotEmpty(@Nullable String s) {
     return !isStringEmpty(s);
   }
 
@@ -357,7 +357,8 @@ public final class Utils {
     FULL
   }
 
-  public static String escapeHtml(String s) {
+  /** Escapes the five characters that must not appear literally in HTML or XML text. */
+  public static @Nullable String escapeHtml(@Nullable String s) {
     if (s == null) {
       return null;
     }
@@ -377,7 +378,8 @@ public final class Utils {
     return result.toString();
   }
 
-  public static String escapeUnicode(String s) {
+  /** Replaces every character the JVM does not define with the Unicode replacement character. */
+  public static @Nullable String escapeUnicode(@Nullable String s) {
     if (s == null) {
       return null;
     }
@@ -538,7 +540,7 @@ public final class Utils {
   }
 
   /* Make sure that either we have an instance or if not, that the method is static */
-  public static void checkInstanceOrStatic(Object instance, Method method) {
+  public static void checkInstanceOrStatic(@Nullable Object instance, @Nullable Method method) {
     if (instance == null && method != null && !Modifier.isStatic(method.getModifiers())) {
       throw new TestNGException(
           "Can't invoke "
@@ -548,7 +550,7 @@ public final class Utils {
     }
   }
 
-  public static void checkReturnType(Method method, Class<?>... returnTypes) {
+  public static void checkReturnType(@Nullable Method method, Class<?>... returnTypes) {
     if (method == null) {
       return;
     }
