@@ -226,10 +226,10 @@ public class FailedReporter implements IReporter {
             method ->
                 relevantConfigs.stream()
                     .map(ITestNGMethod::getConstructorOrMethod)
-                    .map(ConstructorOrMethod::getMethod)
+                    .map(ConstructorOrMethod::requireMethod)
                     .noneMatch(
                         configMethod ->
-                            method.getConstructorOrMethod().getMethod().equals(configMethod)))
+                            method.getConstructorOrMethod().requireMethod().equals(configMethod)))
         .filter(method -> method.getGroups().length > 0)
         .filter(
             method ->

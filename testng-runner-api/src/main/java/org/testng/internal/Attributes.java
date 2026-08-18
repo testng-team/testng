@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.jspecify.annotations.Nullable;
 import org.testng.IAttributes;
 
 /** Simple implementation of IAttributes. */
@@ -11,7 +12,7 @@ public class Attributes implements IAttributes {
   private final Map<String, Object> m_attributes = new ConcurrentHashMap<>();
 
   @Override
-  public Object getAttribute(String name) {
+  public @Nullable Object getAttribute(String name) {
     return m_attributes.get(name);
   }
 
@@ -26,7 +27,7 @@ public class Attributes implements IAttributes {
   }
 
   @Override
-  public Object removeAttribute(String name) {
+  public @Nullable Object removeAttribute(String name) {
     return m_attributes.remove(name);
   }
 }

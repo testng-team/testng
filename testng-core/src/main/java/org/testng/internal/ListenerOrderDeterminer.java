@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestNGListener;
 import org.testng.ListenerComparator;
 import org.testng.collections.Lists;
@@ -48,7 +49,7 @@ public final class ListenerOrderDeterminer {
    * @return - A re-ordered collection wherein preferential listeners are added at the end
    */
   public static <T extends ITestNGListener> List<T> order(
-      Collection<T> original, ListenerComparator comparator) {
+      Collection<T> original, @Nullable ListenerComparator comparator) {
     original = sort(original, comparator);
     Pair<List<T>, List<T>> ordered = arrange(original);
     List<T> ideListeners = ordered.first();
@@ -62,7 +63,7 @@ public final class ListenerOrderDeterminer {
    *     followed by preferential listeners also in reverse order.
    */
   public static <T extends ITestNGListener> List<T> reversedOrder(
-      Collection<T> original, ListenerComparator comparator) {
+      Collection<T> original, @Nullable ListenerComparator comparator) {
     original = sort(original, comparator);
     Pair<List<T>, List<T>> ordered = arrange(original);
     List<T> preferentialListeners = ordered.first();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import org.testng.IClass;
 import org.testng.ITest;
 import org.testng.ITestContext;
@@ -24,14 +25,14 @@ import org.testng.xml.XmlTest;
 public class ClassImpl implements IClass, IObject {
 
   private final Class<?> m_class;
-  private IObject.IdentifiableObject m_defaultInstance = null;
+  private IObject.@Nullable IdentifiableObject m_defaultInstance = null;
   private final IAnnotationFinder m_annotationFinder;
   private final List<IObject.IdentifiableObject> identifiableObjects = new ArrayList<>();
   private final Map<Class<?>, IClass> m_classes;
-  private long[] m_instanceHashCodes;
+  private long @Nullable [] m_instanceHashCodes;
   private final IObject.IdentifiableObject m_instance;
   private final ITestObjectFactory m_objectFactory;
-  private String m_testName = null;
+  private @Nullable String m_testName = null;
   private final XmlClass m_xmlClass;
   private final ITestContext m_testContext;
 

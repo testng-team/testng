@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 import org.testng.collections.Maps;
 import org.testng.log4testng.Logger;
@@ -26,7 +27,7 @@ import org.testng.log4testng.Logger;
  */
 public class Graph<T> {
   private final Map<T, Node<T>> m_nodes = new LinkedHashMap<>();
-  private List<T> m_strictlySortedNodes = null;
+  private @Nullable List<T> m_strictlySortedNodes = null;
   private final Comparator<Node<T>> comparator;
 
   //  A map of nodes that are not the predecessors of any node
@@ -52,7 +53,7 @@ public class Graph<T> {
     return m_independentNodes.containsKey(object);
   }
 
-  private Node<T> findNode(T object) {
+  private @Nullable Node<T> findNode(T object) {
     return m_nodes.get(object);
   }
 
@@ -175,7 +176,7 @@ public class Graph<T> {
     Logger.getLogger(Graph.class).trace("[Graph] " + s.get());
   }
 
-  private Node<T> findNodeWithNoPredecessors(List<Node<T>> nodes) {
+  private @Nullable Node<T> findNodeWithNoPredecessors(List<Node<T>> nodes) {
     return nodes.parallelStream().filter(it -> !it.hasPredecessors()).findFirst().orElse(null);
   }
 

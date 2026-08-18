@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.IClass;
 import org.testng.IFactoryInstance;
 import org.testng.IRetryAnalyzer;
@@ -45,11 +46,11 @@ public abstract class BaseTestMethod
    * The test class on which the test method was found. Note that this is not necessarily the
    * declaring class.
    */
-  protected ITestClass m_testClass;
+  protected @Nullable ITestClass m_testClass;
 
   protected final Class<?> m_methodClass;
   protected final ConstructorOrMethod m_method;
-  private String m_signature;
+  private @Nullable String m_signature;
   protected String m_id = "";
   protected long m_date = -1;
   protected final IAnnotationFinder m_annotationFinder;
@@ -63,8 +64,8 @@ public abstract class BaseTestMethod
 
   private final String m_methodName;
   // If a depends on group is not found
-  private String m_missingGroup;
-  private String m_description = null;
+  private @Nullable String m_missingGroup;
+  private @Nullable String m_description = null;
   protected AtomicInteger m_currentInvocationCount = new AtomicInteger(0);
   private int m_parameterInvocationCount = 1;
   // Set on the per-invocation clones created for a parallel (threadPoolSize > 1)
@@ -72,9 +73,9 @@ public abstract class BaseTestMethod
   // lastTimeOnly @AfterMethod are run once - as a barrier - around the whole pool
   // instead of inside each parallel invocation, so the clones must not run them.
   private boolean m_skipFirstAndLastTimeOnlyConfigs;
-  private Callable<Boolean> m_moreInvocationChecker;
-  private IRetryAnalyzer m_retryAnalyzer = null;
-  private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass = null;
+  private @Nullable Callable<Boolean> m_moreInvocationChecker;
+  private @Nullable IRetryAnalyzer m_retryAnalyzer = null;
+  private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass = DisabledRetryAnalyzer.class;
   private boolean m_skipFailedInvocations = true;
   private long m_invocationTimeOut = 0L;
 
@@ -88,7 +89,7 @@ public abstract class BaseTestMethod
   private int m_priority;
   private int m_interceptedPriority;
 
-  private XmlTest m_xmlTest;
+  private @Nullable XmlTest m_xmlTest;
   private final IObject.IdentifiableObject m_instance;
 
   private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = new ConcurrentHashMap<>();
@@ -126,7 +127,7 @@ public abstract class BaseTestMethod
 
   /** {@inheritDoc} */
   @Override
-  public ITestClass getTestClass() {
+  public @Nullable ITestClass getTestClass() {
     return m_testClass;
   }
 
@@ -155,7 +156,7 @@ public abstract class BaseTestMethod
   }
 
   @Override
-  public Object getInstance() {
+  public @Nullable Object getInstance() {
     return Optional.ofNullable(m_instance)
         .map(IObject.IdentifiableObject::getInstance)
         .map(IParameterInfo::embeddedInstance)
@@ -328,7 +329,7 @@ public abstract class BaseTestMethod
    *     #getFactoryMethodParamsInfo()} this is not part of {@link ITestNGMethod}, so the
    *     lazy-instantiation details stay available to TestNG without being published.
    */
-  public IParameterInfo getFactoryParameterInfo() {
+  public @Nullable IParameterInfo getFactoryParameterInfo() {
     Object instance = m_instance == null ? null : m_instance.getInstance();
     return instance instanceof IParameterInfo ? (IParameterInfo) instance : null;
   }
@@ -609,7 +610,8 @@ public abstract class BaseTestMethod
     return getSignature();
   }
 
-  protected String[] getStringArray(String[] methodArray, String[] classArray) {
+  protected String[] getStringArray(
+      String @Nullable [] methodArray, String @Nullable [] classArray) {
     final Set<String> vResult = new HashSet<>();
     if (null != methodArray) {
       Collections.addAll(vResult, methodArray);
@@ -646,7 +648,7 @@ public abstract class BaseTestMethod
 
   /** {@inheritDoc} */
   @Override
-  public String getMissingGroup() {
+  public @Nullable String getMissingGroup() {
     return m_missingGroup;
   }
 
@@ -673,7 +675,7 @@ public abstract class BaseTestMethod
 
   /** {@inheritDoc} */
   @Override
-  public String getDescription() {
+  public @Nullable String getDescription() {
     return m_description;
   }
 
@@ -753,7 +755,7 @@ public abstract class BaseTestMethod
   public abstract ITestNGMethod clone();
 
   @Override
-  public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
+  public @Nullable IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
     return getRetryAnalyzerConsideringMethodParameters(result);
   }
 
@@ -837,7 +839,7 @@ public abstract class BaseTestMethod
   }
 
   @Override
-  public XmlTest getXmlTest() {
+  public @Nullable XmlTest getXmlTest() {
     return m_xmlTest;
   }
 
@@ -883,7 +885,7 @@ public abstract class BaseTestMethod
     return invocationTime;
   }
 
-  private IRetryAnalyzer getRetryAnalyzerConsideringMethodParameters(ITestResult tr) {
+  private @Nullable IRetryAnalyzer getRetryAnalyzerConsideringMethodParameters(ITestResult tr) {
     if (this.m_retryAnalyzerClass.equals(DisabledRetryAnalyzer.class)) {
       return null;
     }

@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlDefine;
@@ -40,7 +41,7 @@ public final class Yaml {
    * @throws FileNotFoundException if {@code is} is null and {@code filePath} does not exist
    * @throws TestNGException if the document is malformed or uses a key outside the schema
    */
-  public static XmlSuite parse(String filePath, InputStream is, boolean loadClasses)
+  public static XmlSuite parse(String filePath, @Nullable InputStream is, boolean loadClasses)
       throws FileNotFoundException {
     org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml(YamlSchema.constructor(loadClasses));
     if (is == null) {
@@ -213,7 +214,7 @@ public final class Yaml {
    * getIncludedGroups()}: on a test that getter returns the union with the suite's groups, and on a
    * suite it delegates to the parent suite. Either one would duplicate groups on the way out.
    */
-  private static void putRunGroups(Map<String, Object> result, XmlGroups groups) {
+  private static void putRunGroups(Map<String, Object> result, @Nullable XmlGroups groups) {
     if (groups == null || groups.getRun() == null) {
       return;
     }
@@ -226,7 +227,7 @@ public final class Yaml {
    * so a suite level {@code <define>} has no key to be read back through and writing one would make
    * the file unloadable.
    */
-  private static void putMetaGroups(Map<String, Object> result, XmlGroups groups) {
+  private static void putMetaGroups(Map<String, Object> result, @Nullable XmlGroups groups) {
     if (groups == null) {
       return;
     }
@@ -252,7 +253,7 @@ public final class Yaml {
    * <p>{@code getXmlClasses()} is deliberately not called: it scans the classpath, which has
    * nothing to do with what the suite file says.
    */
-  private static Object packageToNode(XmlPackage xmlPackage) {
+  private static @Nullable Object packageToNode(XmlPackage xmlPackage) {
     List<String> include = xmlPackage.getInclude();
     List<String> exclude = xmlPackage.getExclude();
     if (include.isEmpty() && exclude.isEmpty()) {
@@ -376,13 +377,16 @@ public final class Yaml {
   }
 
   private static void putIfDifferent(
-      Map<String, Object> result, String key, Object value, Object defaultValue) {
+      Map<String, Object> result,
+      String key,
+      @Nullable Object value,
+      @Nullable Object defaultValue) {
     if (value != null && !value.equals(defaultValue)) {
       result.put(key, value instanceof Enum ? value.toString() : value);
     }
   }
 
-  private static void putIfPresent(Map<String, Object> result, String key, Object value) {
+  private static void putIfPresent(Map<String, Object> result, String key, @Nullable Object value) {
     if (value == null) {
       return;
     }

@@ -7,11 +7,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.collections.CollectionUtils;
 import org.testng.log4testng.Logger;
@@ -42,7 +42,7 @@ public class ConfigurationGroupMethods {
   private final ITestNGMethod[] m_allMethods;
 
   /** A map that returns the last method belonging to the given group */
-  private volatile Map<String, List<ITestNGMethod>> m_afterGroupsMap = null;
+  private volatile @Nullable Map<String, List<ITestNGMethod>> m_afterGroupsMap = null;
 
   public ConfigurationGroupMethods(
       IContainer<ITestNGMethod> container,
@@ -69,7 +69,6 @@ public class ConfigurationGroupMethods {
     try (AutoCloseableLock ignore = beforeGroups.lock()) {
       return Arrays.stream(groups)
           .map(t -> retrieve(beforeGroupsThatHaveAlreadyRun, m_beforeGroupsMethods, t))
-          .filter(Objects::nonNull)
           .flatMap(Collection::stream)
           .collect(Collectors.toList());
     }
@@ -89,7 +88,6 @@ public class ConfigurationGroupMethods {
       return methodGroups.stream()
           .filter(t -> isLastMethodForGroup(t, testMethod))
           .map(t -> retrieve(afterGroupsThatHaveAlreadyRun, m_afterGroupsMethods, t))
-          .filter(Objects::nonNull)
           .flatMap(Collection::stream)
           .filter(t -> isAfterGroupAllowedToRunAfterTestMethod(t, methodGroups))
           .collect(Collectors.toList());
@@ -113,7 +111,10 @@ public class ConfigurationGroupMethods {
   public void removeBeforeGroups(String[] groups) {
     for (String group : groups) {
       m_beforeGroupsMethods.remove(group);
-      beforeGroupsThatHaveAlreadyRun.get(group).countDown();
+      CountDownLatch latch = beforeGroupsThatHaveAlreadyRun.get(group);
+      if (latch != null) {
+        latch.countDown();
+      }
     }
   }
 
@@ -171,7 +172,7 @@ public class ConfigurationGroupMethods {
       return Collections.emptyList();
     }
     tracker.put(group, new CountDownLatch(1));
-    return map.get(group);
+    return map.getOrDefault(group, Collections.emptyList());
   }
 
   private static List<ITestNGMethod> retrieve(
@@ -180,6 +181,6 @@ public class ConfigurationGroupMethods {
       return Collections.emptyList();
     }
     tracker.add(group);
-    return map.get(group);
+    return map.getOrDefault(group, Collections.emptyList());
   }
 }

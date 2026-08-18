@@ -8,6 +8,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 import org.testng.log4testng.Logger;
 
@@ -21,7 +22,8 @@ public class PropertyUtils {
   private static final Logger LOGGER = Logger.getLogger(PropertyUtils.class);
 
   @SuppressWarnings("unchecked")
-  public static <T> T convertType(Class<T> type, String value, String paramName) {
+  public static <T> @Nullable T convertType(
+      Class<T> type, @Nullable String value, String paramName) {
     try {
       if (value == null || NULL_VALUE.equalsIgnoreCase(value)) {
         if (type.isPrimitive()) {
@@ -93,7 +95,7 @@ public class PropertyUtils {
     setPropertyRealValue(instance, name, realValue);
   }
 
-  public static Class<?> getPropertyType(Class<?> instanceClass, String propertyName) {
+  public static @Nullable Class<?> getPropertyType(Class<?> instanceClass, String propertyName) {
     if (instanceClass == null) {
       LOGGER.warn(
           "Cannot retrieve property class for " + propertyName + ". Target instance class is null");
@@ -105,7 +107,7 @@ public class PropertyUtils {
     return propDesc.getPropertyType();
   }
 
-  private static PropertyDescriptor getPropertyDescriptor(
+  private static @Nullable PropertyDescriptor getPropertyDescriptor(
       Class<?> targetClass, String propertyName) {
     PropertyDescriptor result = null;
     if (targetClass == null) {
@@ -127,7 +129,7 @@ public class PropertyUtils {
     return result;
   }
 
-  public static void setPropertyRealValue(Object instance, String name, Object value) {
+  public static void setPropertyRealValue(Object instance, String name, @Nullable Object value) {
     if (instance == null) {
       LOGGER.warn(
           "Cannot set property " + name + " with value " + value + ". Target instance is null");

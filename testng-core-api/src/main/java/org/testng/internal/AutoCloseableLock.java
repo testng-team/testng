@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.io.Closeable;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A simple abstraction over {@link ReentrantLock} that can be used in conjunction with <code>
@@ -27,7 +28,7 @@ public final class AutoCloseableLock implements Closeable {
   }
 
   @Override
-  public boolean equals(Object object) {
+  public boolean equals(@Nullable Object object) {
     if (this == object) {
       return true;
     }

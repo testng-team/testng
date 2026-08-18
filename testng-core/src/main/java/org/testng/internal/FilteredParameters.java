@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.util.Iterator;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 
@@ -41,7 +42,7 @@ class FilteredParameters implements Iterator<Object[]> {
   }
 
   @Override
-  public Object[] next() {
+  public Object @Nullable [] next() {
     testMethod.setParameterInvocationCount(index);
     Object[] next = parameters.next();
     if (next == null) {

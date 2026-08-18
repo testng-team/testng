@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
+import org.jspecify.annotations.Nullable;
 import org.testng.IConfigurable;
 import org.testng.IConfigurationListener;
 import org.testng.IExecutionListener;
@@ -23,11 +24,11 @@ import org.testng.internal.objects.GuiceBackedInjectorFactory;
 public class Configuration implements IConfiguration {
 
   private IAnnotationFinder m_annotationFinder;
-  private ITestObjectFactory m_objectFactory;
-  private IHookable m_hookable;
-  private IConfigurable m_configurable;
+  private @Nullable ITestObjectFactory m_objectFactory;
+  private @Nullable IHookable m_hookable;
+  private @Nullable IConfigurable m_configurable;
 
-  private ITestNGListenerFactory m_listenerFactory;
+  private @Nullable ITestNGListenerFactory m_listenerFactory;
 
   private boolean shareThreadPoolForDataProviders = false;
   private final Map<Class<? extends IExecutionListener>, IExecutionListener> m_executionListeners =
@@ -39,7 +40,7 @@ public class Configuration implements IConfiguration {
 
   private IInjectorFactory injectorFactory = new GuiceBackedInjectorFactory();
 
-  private ListenerComparator listenerComparator;
+  private @Nullable ListenerComparator listenerComparator;
   private boolean overrideIncludedMethods = false;
 
   private boolean includeAllDataDrivenTestsWhenSkipping;
@@ -51,14 +52,10 @@ public class Configuration implements IConfiguration {
   private boolean lazyFactoryInstantiation = false;
 
   public Configuration() {
-    init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
+    this(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
   }
 
   public Configuration(IAnnotationFinder finder) {
-    init(finder);
-  }
-
-  private void init(IAnnotationFinder finder) {
     m_annotationFinder = finder;
   }
 
@@ -73,52 +70,52 @@ public class Configuration implements IConfiguration {
   }
 
   @Override
-  public void setListenerFactory(ITestNGListenerFactory testNGListenerFactory) {
+  public void setListenerFactory(@Nullable ITestNGListenerFactory testNGListenerFactory) {
     this.m_listenerFactory = testNGListenerFactory;
   }
 
   @Override
-  public ITestNGListenerFactory getListenerFactory() {
+  public @Nullable ITestNGListenerFactory getListenerFactory() {
     return m_listenerFactory;
   }
 
   @Override
-  public void setListenerComparator(ListenerComparator comparator) {
+  public void setListenerComparator(@Nullable ListenerComparator comparator) {
     this.listenerComparator = comparator;
   }
 
   @Override
-  public ListenerComparator getListenerComparator() {
+  public @Nullable ListenerComparator getListenerComparator() {
     return listenerComparator;
   }
 
   @Override
-  public ITestObjectFactory getObjectFactory() {
+  public @Nullable ITestObjectFactory getObjectFactory() {
     return m_objectFactory;
   }
 
   @Override
-  public void setObjectFactory(ITestObjectFactory factory) {
+  public void setObjectFactory(@Nullable ITestObjectFactory factory) {
     m_objectFactory = factory;
   }
 
   @Override
-  public IHookable getHookable() {
+  public @Nullable IHookable getHookable() {
     return m_hookable;
   }
 
   @Override
-  public void setHookable(IHookable h) {
+  public void setHookable(@Nullable IHookable h) {
     m_hookable = h;
   }
 
   @Override
-  public IConfigurable getConfigurable() {
+  public @Nullable IConfigurable getConfigurable() {
     return m_configurable;
   }
 
   @Override
-  public void setConfigurable(IConfigurable c) {
+  public void setConfigurable(@Nullable IConfigurable c) {
     m_configurable = c;
   }
 

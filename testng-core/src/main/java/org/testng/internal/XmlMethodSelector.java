@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import org.jspecify.annotations.Nullable;
 import org.testng.IFactoryInstance;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
@@ -44,7 +45,7 @@ public class XmlMethodSelector implements IMethodSelector {
   private Map<String, String> m_includedGroups = new HashMap<>();
   private Map<String, String> m_excludedGroups = new HashMap<>();
   private List<XmlClass> m_classes = Collections.emptyList();
-  private ScriptMethodSelector scriptSelector;
+  private @Nullable ScriptMethodSelector scriptSelector;
   private boolean m_isInitialized = false;
   private List<ITestNGMethod> m_testMethods = Collections.emptyList();
 

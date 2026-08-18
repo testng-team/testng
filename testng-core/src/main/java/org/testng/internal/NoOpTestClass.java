@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.xml.XmlClass;
@@ -9,7 +10,7 @@ import org.testng.xml.XmlTest;
 
 public class NoOpTestClass implements ITestClass, IObject {
 
-  protected Class<?> m_testClass = null;
+  protected @Nullable Class<?> m_testClass = null;
 
   // Test methods
   protected List<ITestNGMethod> m_beforeClassMethods = new ArrayList<>();
@@ -24,11 +25,11 @@ public class NoOpTestClass implements ITestClass, IObject {
   protected ITestNGMethod[] m_beforeGroupsMethods = new ITestNGMethod[0];
   protected List<ITestNGMethod> m_afterGroupsMethods = new ArrayList<>();
 
-  private final IdentifiableObject[] m_instances;
-  private final long[] m_instanceHashes;
+  private final IdentifiableObject @Nullable [] m_instances;
+  private final long @Nullable [] m_instanceHashes;
 
-  private final XmlTest m_xmlTest;
-  private final XmlClass m_xmlClass;
+  private final @Nullable XmlTest m_xmlTest;
+  private final @Nullable XmlClass m_xmlClass;
 
   protected NoOpTestClass() {
     m_instances = null;
@@ -162,13 +163,12 @@ public class NoOpTestClass implements ITestClass, IObject {
   }
 
   @Override
-  public String getTestName() {
-    // TODO Auto-generated method stub
+  public @Nullable String getTestName() {
     return null;
   }
 
   @Override
-  public XmlTest getXmlTest() {
+  public @Nullable XmlTest getXmlTest() {
     return m_xmlTest;
   }
 
