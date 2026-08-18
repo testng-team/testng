@@ -51,6 +51,45 @@ public class XmlTestTest extends SimpleBaseTest {
     assertThat(xmlTest.getXmlClasses().size()).isEqualTo(copyXmlTest.getXmlClasses().size());
   }
 
+  @Test(description = "GITHUB-3385")
+  public void addIncludedGroupRepairsGroupsWithoutRun() {
+    XmlTest test = createXmlTest(createXmlSuite("suite"), "test");
+    test.setGroups(new XmlGroups());
+    test.addIncludedGroup("g1");
+    assertThat(test.getIncludedGroups()).containsExactly("g1");
+  }
+
+  @Test(description = "GITHUB-3385")
+  public void addIncludedGroupAfterAddMetaGroupRepairsMissingRun() {
+    XmlTest test = createXmlTest(createXmlSuite("suite"), "test");
+    test.addMetaGroup("mg", "g1");
+    test.addIncludedGroup("g2");
+    assertThat(test.getIncludedGroups()).containsExactly("g2");
+    assertThat(test.getMetaGroups()).containsKey("mg");
+  }
+
+  @Test(description = "GITHUB-3385")
+  public void equalsWhenBothGroupsHaveNoRun() {
+    XmlTest left = createXmlTest(createXmlSuite("suite1"), "test");
+    left.setGroups(new XmlGroups());
+    XmlTest right = createXmlTest(createXmlSuite("suite2"), "test");
+    right.setGroups(new XmlGroups());
+    assertThat(left).isEqualTo(right);
+    assertThat(right).isEqualTo(left);
+  }
+
+  @Test(description = "GITHUB-3385")
+  public void equalsWhenOnlyOneSideHasARun() {
+    XmlTest withRun = createXmlTest(createXmlSuite("suite1"), "test");
+    XmlGroups groups = new XmlGroups();
+    groups.setRun(new XmlRun());
+    withRun.setGroups(groups);
+    XmlTest withoutRun = createXmlTest(createXmlSuite("suite2"), "test");
+    withoutRun.setGroups(new XmlGroups());
+    assertThat(withRun).isNotEqualTo(withoutRun);
+    assertThat(withoutRun).isNotEqualTo(withRun);
+  }
+
   private static Map<String, String> newSetOfParameters(String key, String value) {
     Map<String, String> map = new HashMap<>();
     map.put(key, value);

@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -215,17 +214,7 @@ public class XmlTest implements Cloneable {
   }
 
   public void addIncludedGroup(String g) {
-    XmlGroups groups = m_xmlGroups;
-    if (groups == null) {
-      groups = new XmlGroups();
-      groups.setRun(new XmlRun());
-      m_xmlGroups = groups;
-    }
-    // Unlike addExcludedGroup, a <groups> element that has no <run> yet is not repaired here. The
-    // asymmetry is kept: setGroups and addMetaGroup can both leave one in that state, and calling
-    // this method afterwards has always thrown.
-    Objects.requireNonNull(groups.getRun(), "<groups> has no <run> to add an included group to")
-        .onInclude(g);
+    groupsRun().onInclude(g);
   }
 
   public void addExcludedGroup(String g) {
@@ -548,21 +537,21 @@ public class XmlTest implements Cloneable {
       if (otherGroups == null) {
         return false;
       }
-      // Was a two-armed condition whose second arm re-tested other.m_xmlGroups, already known
-      // non-null one line above; only the first arm could ever fire.
       XmlRun run = m_xmlGroups.getRun();
+      XmlRun otherRun = otherGroups.getRun();
       if (run == null) {
-        return false;
-      }
-      // The other side's <run> is not tested, exactly as before: comparing against a <groups>
-      // that has none has always thrown here.
-      XmlRun otherRun =
-          Objects.requireNonNull(otherGroups.getRun(), "the compared <groups> has no <run>");
-      if (!run.getExcludes().equals(otherRun.getExcludes())) {
+        if (otherRun != null) {
+          return XmlSuite.f();
+        }
+      } else if (otherRun == null) {
         return XmlSuite.f();
-      }
-      if (!run.getIncludes().equals(otherRun.getIncludes())) {
-        return XmlSuite.f();
+      } else {
+        if (!run.getExcludes().equals(otherRun.getExcludes())) {
+          return XmlSuite.f();
+        }
+        if (!run.getIncludes().equals(otherRun.getIncludes())) {
+          return XmlSuite.f();
+        }
       }
       if (!m_xmlGroups.getDefines().equals(otherGroups.getDefines())) {
         return false;
