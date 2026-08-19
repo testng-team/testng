@@ -13,6 +13,7 @@ import org.jspecify.annotations.Nullable;
 import org.testng.IMethodInstance;
 import org.testng.ITestNGMethod;
 import org.testng.internal.MethodInstance;
+import org.testng.internal.Utils;
 import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -50,7 +51,7 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
     Map<String, String> params = null;
     Class<?> prevClass = null;
     for (IMethodInstance im : methodInstances) {
-      Class<?> c = im.getMethod().getTestClass().getRealClass();
+      Class<?> c = Utils.requireTestClassOf(im.getMethod()).getRealClass();
       if (!c.equals(prevClass)) {
         // Calculate the parameters to be injected only once per Class and NOT for every iteration.
         params = getParameters(im);
@@ -85,7 +86,7 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
   private static List<IMethodInstance> findClasses(
       List<IMethodInstance> methodInstances, Class<?> c) {
     return methodInstances.stream()
-        .filter(mi -> mi.getMethod().getTestClass().getRealClass() == c)
+        .filter(mi -> Utils.requireTestClassOf(mi.getMethod()).getRealClass() == c)
         .collect(Collectors.toList());
   }
 
@@ -119,7 +120,9 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
   }
 
   private static Map<String, String> getParameters(IMethodInstance im) {
-    XmlTest xmlTest = im.getMethod().getXmlTest();
+    XmlTest xmlTest =
+        Objects.requireNonNull(
+            im.getMethod().getXmlTest(), "a scheduled method belongs to a <test>");
     return im.getMethod().findMethodParameters(xmlTest);
   }
 }

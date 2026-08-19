@@ -51,10 +51,11 @@ public class JUnitReportReporter implements IReporter {
         addResults(tc.getSkippedTests().getAllResults(), results);
         addResults(tc.getFailedConfigurations().getAllResults(), results);
         for (ITestResult tr : tc.getPassedConfigurations().getAllResults()) {
-          if (tr.getMethod().isBeforeMethodConfiguration()) {
+          ITestNGMethod configMethod = Utils.requireMethodOf(tr);
+          if (configMethod.isBeforeMethodConfiguration()) {
             befores.put(tr.getInstance(), tr);
           }
-          if (tr.getMethod().isAfterMethodConfiguration()) {
+          if (configMethod.isAfterMethodConfiguration()) {
             afters.put(tr.getInstance(), tr);
           }
         }
@@ -172,7 +173,7 @@ public class JUnitReportReporter implements IReporter {
 
   private static Collection<ITestResult> sort(Set<ITestResult> results) {
     List<ITestResult> sortedResults = new ArrayList<>(results);
-    sortedResults.sort(Comparator.comparingInt(o -> o.getMethod().getPriority()));
+    sortedResults.sort(Comparator.comparingInt(o -> Utils.requireMethodOf(o).getPriority()));
     return Collections.unmodifiableList(sortedResults);
   }
 
@@ -216,7 +217,7 @@ public class JUnitReportReporter implements IReporter {
     return testTag;
   }
 
-  private static void handleFailure(TestTag testTag, Throwable t) {
+  private static void handleFailure(TestTag testTag, @Nullable Throwable t) {
     testTag.childTag = t instanceof AssertionError ? XMLConstants.FAILURE : XMLConstants.ERROR;
     if (t != null) {
       StringWriter sw = new StringWriter();
@@ -275,7 +276,7 @@ public class JUnitReportReporter implements IReporter {
   }
 
   protected String getTestName(ITestResult tr) {
-    return tr.getMethod().getMethodName();
+    return Utils.requireMethodOf(tr).getMethodName();
   }
 
   private String formatTime(float time) {
@@ -304,7 +305,7 @@ public class JUnitReportReporter implements IReporter {
 
   private void addResults(Set<ITestResult> allResults, Map<Class<?>, Set<ITestResult>> out) {
     for (ITestResult tr : allResults) {
-      Class<?> cls = tr.getMethod().getTestClass().getRealClass();
+      Class<?> cls = Utils.requireTestClassOf(Utils.requireMethodOf(tr)).getRealClass();
       Set<ITestResult> l = out.computeIfAbsent(cls, k -> new HashSet<>());
       l.add(tr);
     }

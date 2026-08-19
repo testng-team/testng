@@ -61,7 +61,7 @@ class ParameterHandler {
 
   private ParameterBag handleParameters(
       ITestNGMethod testMethod,
-      Object instance,
+      @Nullable Object instance,
       Map<String, String> allParameterNames,
       Map<String, String> parameters,
       ITestContext testContext,

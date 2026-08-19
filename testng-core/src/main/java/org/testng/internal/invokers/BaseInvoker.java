@@ -68,7 +68,8 @@ class BaseInvoker {
     }
 
     InvokedMethodListenerInvoker invoker =
-        new InvokedMethodListenerInvoker(listenerMethod, testResult, testResult.getTestContext());
+        new InvokedMethodListenerInvoker(
+            listenerMethod, testResult, Utils.requireTestContextOf(testResult));
     // For BEFORE_INVOCATION method, still run as insert order, but regarding AFTER_INVOCATION, it
     // should be reverse order
     boolean isAfterInvocation = InvokedMethodListenerMethod.AFTER_INVOCATION == listenerMethod;

@@ -6,10 +6,11 @@ import java.util.Set;
 import org.testng.ITestResult;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Maps;
+import org.testng.internal.Utils;
 
 public class ResultsByClass {
   public static final Comparator<ITestResult> METHOD_NAME_COMPARATOR =
-      Comparator.comparing(arg0 -> arg0.getMethod().getMethodName());
+      Comparator.comparing(arg0 -> Utils.requireMethodOf(arg0).getMethodName());
 
   private final ListMultiMap<Class<?>, ITestResult> m_results = Maps.newListMultiMap();
 

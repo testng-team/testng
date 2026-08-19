@@ -29,7 +29,7 @@ public interface ITestInvoker {
   List<ITestResult> invokeTestMethods(
       ITestNGMethod testMethod,
       ConfigurationGroupMethods groupMethods,
-      Object instance,
+      @Nullable Object instance,
       ITestContext context);
 
   ITestResult invokeTestMethod(

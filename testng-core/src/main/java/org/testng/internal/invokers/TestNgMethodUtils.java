@@ -74,12 +74,16 @@ class TestNgMethodUtils {
   }
 
   static ITestNGMethod[] filterBeforeTestMethods(
-      Object instance, ITestClass testClass, BiPredicate<ITestNGMethod, IClass> predicate) {
+      @Nullable Object instance,
+      ITestClass testClass,
+      BiPredicate<ITestNGMethod, IClass> predicate) {
     return filterMethods(instance, testClass, testClass.getBeforeTestMethods(), predicate);
   }
 
   static ITestNGMethod[] filterAfterTestMethods(
-      Object instance, ITestClass testClass, BiPredicate<ITestNGMethod, IClass> predicate) {
+      @Nullable Object instance,
+      ITestClass testClass,
+      BiPredicate<ITestNGMethod, IClass> predicate) {
     return filterMethods(instance, testClass, testClass.getAfterTestMethods(), predicate);
   }
 

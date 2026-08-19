@@ -2,6 +2,7 @@ package org.testng.reporters.util;
 
 import org.jspecify.annotations.Nullable;
 import org.testng.ITestNGMethod;
+import org.testng.internal.Utils;
 
 /**
  * Functionality to allow tools to analyse and subdivide stack traces.
@@ -26,7 +27,7 @@ public final class StackTraceTools {
     if (stack == null || method == null) {
       return -1;
     }
-    String cname = method.getTestClass().getName();
+    String cname = Utils.requireTestClassOf(method).getName();
     for (int x = stack.length - 1; x >= 0; x--) {
       if (cname.equals(stack[x].getClassName())
           && method.getMethodName().equals(stack[x].getMethodName())) {

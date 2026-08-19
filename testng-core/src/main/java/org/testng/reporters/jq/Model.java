@@ -11,6 +11,7 @@ import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Maps;
@@ -107,10 +108,11 @@ public class Model {
   }
 
   private void updateGroups(ISuite suite, ITestResult tr) {
-    String[] groups = tr.getMethod().getGroups();
+    ITestNGMethod method = Utils.requireMethodOf(tr);
+    String[] groups = method.getGroups();
     m_groupsBySuiteName.putAll(suite.getName(), Arrays.asList(groups));
     for (String group : groups) {
-      m_methodsByGroup.put(group, tr.getMethod().getMethodName());
+      m_methodsByGroup.put(group, method.getMethodName());
     }
   }
 
@@ -151,7 +153,8 @@ public class Model {
   }
 
   public static String getTestResultName(ITestResult tr) {
-    StringBuilder result = new StringBuilder(getMethodName(tr.getMethod().getMethodName()));
+    StringBuilder result =
+        new StringBuilder(getMethodName(Utils.requireMethodOf(tr).getMethodName()));
     Object[] parameters = tr.getParameters();
     if (parameters.length > 0) {
       result.append("(");

@@ -81,7 +81,7 @@ public class TestMethodArguments extends MethodArguments {
     private ITestNGMethod @Nullable [] afterMethods;
     private @Nullable ConfigurationGroupMethods groupMethods;
 
-    public Builder usingInstance(Object instance) {
+    public Builder usingInstance(@Nullable Object instance) {
       this.instance = instance;
       return this;
     }

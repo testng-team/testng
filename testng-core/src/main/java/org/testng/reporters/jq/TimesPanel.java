@@ -10,6 +10,7 @@ import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.XmlSuite;
 
@@ -53,7 +54,7 @@ public class TimesPanel extends BaseMultiSuitePanel {
 
     int index = 0;
     for (ITestResult tr : allTestResults) {
-      ITestNGMethod m = tr.getMethod();
+      ITestNGMethod m = Utils.requireMethodOf(tr);
       long time = tr.getEndMillis() - tr.getStartMillis();
       result
           .append("data.setCell(")
@@ -69,7 +70,7 @@ public class TimesPanel extends BaseMultiSuitePanel {
           .append("data.setCell(")
           .append(index)
           .append(", 2, '")
-          .append(m.getTestClass().getName())
+          .append(Utils.requireTestClassOf(m).getName())
           .append("')\n")
           .append("data.setCell(")
           .append(index)

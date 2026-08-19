@@ -12,7 +12,10 @@ public class IgnoreListener implements IAnnotationTransformer {
 
   @Override
   public void transform(
-      ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
+      ITestAnnotation annotation,
+      @Nullable Class testClass,
+      @Nullable Constructor testConstructor,
+      @Nullable Method testMethod) {
     transform(annotation, testClass, testConstructor, testMethod, null);
   }
 

@@ -90,10 +90,14 @@ public class MethodInvocationHelper {
       MethodInvocationHelper.invokeWithTimeout(config, tm, targetInstance, params, testResult);
       if (!testResult.isSuccess()) {
         // A time out happened
-        Throwable ex = testResult.getThrowable();
+        // invokeWithTimeout only leaves the result unsuccessful by recording what went wrong.
+        Throwable ex =
+            Objects.requireNonNull(
+                testResult.getThrowable(), "a failed invocation records what it failed with");
         testResult.setStatus(ITestResult.FAILURE);
-        testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
-        throw testResult.getThrowable();
+        Throwable cause = ex.getCause() == null ? ex : ex.getCause();
+        testResult.setThrowable(cause);
+        throw cause;
       }
     }
   }
@@ -309,7 +313,7 @@ public class MethodInvocationHelper {
       @Nullable IHookable hookable)
       throws InterruptedException, ThreadExecutionException {
     if (ThreadUtil.isTestNGThread()
-        && testResult.getTestContext().getCurrentXmlTest().getParallel()
+        && Utils.requireTestContextOf(testResult).getCurrentXmlTest().getParallel()
             != XmlSuite.ParallelMode.TESTS) {
       // We are already running in our own executor, don't create another one (or we will
       // lose the time out of the enclosing executor).

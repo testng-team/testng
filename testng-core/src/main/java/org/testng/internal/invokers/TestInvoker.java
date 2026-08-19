@@ -61,6 +61,7 @@ import org.testng.internal.RegexpExpectedExceptionsHolder;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.TestListenerHelper;
 import org.testng.internal.TestResult;
+import org.testng.internal.Utils;
 import org.testng.internal.invokers.GroupConfigMethodArguments.Builder;
 import org.testng.internal.invokers.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.thread.ThreadExecutionException;
@@ -107,7 +108,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   public List<ITestResult> invokeTestMethods(
       ITestNGMethod testMethod,
       ConfigurationGroupMethods groupMethods,
-      Object instance,
+      @Nullable Object instance,
       ITestContext context) {
     // Potential bug here if the test method was declared on a parent class
     if (testMethod.getTestClass() == null) {
@@ -510,7 +511,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         .filter(
             r -> {
               Object instance =
-                  Optional.ofNullable(r.getInstance()).orElse(r.getMethod().getInstance());
+                  Optional.ofNullable(r.getInstance())
+                      .orElse(Utils.requireMethodOf(r).getInstance());
               if (method.getGroupsDependedUpon().length == 0) {
                 // Consider equality of objects alone if we are NOT dealing with group dependency.
                 return instance == method.getInstance();
@@ -519,7 +521,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               // 1) It's on a different class or
               // 2) It's on the same class and on the same instance
               boolean unEqualTestClasses =
-                  !r.getTestClass().getRealClass().equals(method.getTestClass().getRealClass());
+                  !r.getTestClass()
+                      .getRealClass()
+                      .equals(Utils.requireTestClassOf(method).getRealClass());
               boolean sameInstance = instance == method.getInstance();
               return sameInstance || unEqualTestClasses;
             })
@@ -576,7 +580,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
    */
   private void invokeTimeOnlyConfigurations(
       ITestNGMethod testMethod, Map<String, String> parameters, boolean before) {
-    ITestClass testClass = testMethod.getTestClass();
+    ITestClass testClass = Utils.requireTestClassOf(testMethod);
     XmlSuite suite = m_testContext.getSuite().getXmlSuite();
     for (IObject.IdentifiableObject identifiable : IObject.objects(testClass, true)) {
       Object instance = identifiable.getInstance();
@@ -667,7 +671,12 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
           String key = Arrays.toString(testResult.getParameters());
           count = failure.counter.computeIfAbsent(key, k -> new AtomicInteger()).incrementAndGet();
         }
-        handleException(testResult.getThrowable(), testMethod, testResult, count);
+        handleException(
+            Objects.requireNonNull(
+                testResult.getThrowable(), "a failed result records what it failed with"),
+            testMethod,
+            testResult,
+            count);
       }
     }
   }
@@ -814,7 +823,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
           && hookableInstance != null
           && willfullyIgnored
           && testStatusRemainedUnchanged) {
-        TestNotInvokedException tn = new TestNotInvokedException(arguments.tm);
+        TestNotInvokedException tn = new TestNotInvokedException(arguments.getTestMethod());
         testResult.setThrowable(tn);
         setTestStatus(testResult, ITestResult.FAILURE);
       }

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.jspecify.annotations.Nullable;
 import org.testng.internal.IInstanceIdentity;
 import org.testng.internal.XmlMethodSelector;
 
@@ -46,7 +47,7 @@ public class ClassMethodMap {
    * @param instance The test instance
    * @return true if it is the last of its class
    */
-  public boolean removeAndCheckIfLast(ITestNGMethod m, Object instance) {
+  public boolean removeAndCheckIfLast(ITestNGMethod m, @Nullable Object instance) {
     // Look up by the method's own per-instance id so this matches the id-keyed map above (and never
     // instantiates anything); the passed instance is retained only for the diagnostic message.
     Collection<ITestNGMethod> l = classMap.get(IInstanceIdentity.getInstanceId(m));

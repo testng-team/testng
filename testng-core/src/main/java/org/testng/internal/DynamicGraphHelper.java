@@ -130,7 +130,7 @@ public final class DynamicGraphHelper {
 
     ListMultiMap<String, ITestNGMethod> methodsFromClass = Maps.newListMultiMap();
     for (ITestNGMethod m : methods) {
-      methodsFromClass.put(m.getTestClass().getName(), m);
+      methodsFromClass.put(Utils.requireTestClassOf(m).getName(), m);
     }
 
     final List<XmlClass> classesWithMethods =
@@ -159,7 +159,7 @@ public final class DynamicGraphHelper {
 
     ListMultiMap<ITestNGMethod, ITestNGMethod> result = Maps.newListMultiMap();
     for (ITestNGMethod m : methods) {
-      String name = m.getTestClass().getName();
+      String name = Utils.requireTestClassOf(m).getName();
       Integer index = indexedClasses1.get(name);
       // The index could be null if the classes listed in the XML are different
       // from the methods being run (e.g. the .xml only contains a factory that

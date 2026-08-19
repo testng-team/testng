@@ -186,11 +186,15 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       IConfigurationAnnotation configuration = (IConfigurationAnnotation) a;
       m_transformer.transform(configuration, testClass, testConstructor, testMethod);
     } else if (a instanceof IDataProviderAnnotation) {
-      m_transformer.transform((IDataProviderAnnotation) a, testMethod);
+      m_transformer.transform(
+          (IDataProviderAnnotation) a,
+          Objects.requireNonNull(testMethod, "a @DataProvider annotation is read off a method"));
     } else if (a instanceof IFactoryAnnotation) {
       m_transformer.transform((IFactoryAnnotation) a, testMethod);
     } else if (a instanceof IListenersAnnotation) {
-      m_transformer.transform((IListenersAnnotation) a, testClass);
+      m_transformer.transform(
+          (IListenersAnnotation) a,
+          Objects.requireNonNull(testClass, "a @Listeners annotation is read off a class"));
     }
   }
 

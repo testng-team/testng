@@ -73,6 +73,7 @@ public class TextReporter implements ITestListener {
     // Log Text
     Set<ITestResult> results = context.getFailedConfigurations().getAllResults();
     for (ITestResult tr : results) {
+      ITestNGMethod method = Utils.requireMethodOf(tr);
       Throwable ex = tr.getThrowable();
       String stackTrace = "";
       if (ex != null && m_verbose >= 2) {
@@ -81,20 +82,21 @@ public class TextReporter implements ITestListener {
 
       logResult(
           "FAILED CONFIGURATION",
-          Utils.detailedMethodName(tr.getMethod()),
-          tr.getMethod().getDescription(),
-          tr.getMethod().getAttributes(),
+          Utils.detailedMethodName(method),
+          method.getDescription(),
+          method.getAttributes(),
           stackTrace,
           reportedParametersOf(snapshots, tr));
     }
 
     results = context.getSkippedConfigurations().getAllResults();
     for (ITestResult tr : results) {
+      ITestNGMethod method = Utils.requireMethodOf(tr);
       logResult(
           "SKIPPED CONFIGURATION",
-          Utils.detailedMethodName(tr.getMethod()),
-          tr.getMethod().getDescription(),
-          tr.getMethod().getAttributes(),
+          Utils.detailedMethodName(method),
+          method.getDescription(),
+          method.getAttributes(),
           null,
           reportedParametersOf(snapshots, tr));
     }
@@ -162,11 +164,12 @@ public class TextReporter implements ITestListener {
       String status,
       ITestResult tr,
       @Nullable String stackTrace) {
+    ITestNGMethod method = Utils.requireMethodOf(tr);
     logResult(
         status,
-        tr.getMethod().getQualifiedName(),
-        tr.getMethod().getDescription(),
-        tr.getMethod().getAttributes(),
+        method.getQualifiedName(),
+        method.getDescription(),
+        method.getAttributes(),
         stackTrace,
         reportedParametersOf(snapshots, tr));
   }
@@ -215,7 +218,7 @@ public class TextReporter implements ITestListener {
   private void logResult(
       String status,
       String name,
-      String description,
+      @Nullable String description,
       CustomAttribute[] attributes,
       @Nullable String stackTrace,
       @Nullable ParameterSnapshot params) {

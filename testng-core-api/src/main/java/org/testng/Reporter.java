@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.jspecify.annotations.Nullable;
 import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.Utils;
 import org.testng.util.Strings;
@@ -41,7 +42,11 @@ public class Reporter {
   // valid TestResult objects.
   private static final ThreadLocal<List<String>> m_orphanedOutput = new InheritableThreadLocal<>();
 
-  public static void setCurrentTestResult(ITestResult m) {
+  /**
+   * @param m The result the current thread is reporting into, or {@code null} to clear it once the
+   *     invocation is over.
+   */
+  public static void setCurrentTestResult(@Nullable ITestResult m) {
     m_currentTestResult.set(m);
   }
 

@@ -15,6 +15,7 @@ import org.testng.IDataProviderMethod;
 import org.testng.IResultMap;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.CustomAttribute;
@@ -181,21 +182,21 @@ public class XMLSuiteResultWriter {
 
   private Properties getTestResultAttributes(ITestResult testResult) {
     Properties attributes = new Properties();
-    if (!testResult.getMethod().isTest()) {
+    ITestNGMethod method = Utils.requireMethodOf(testResult);
+    if (!method.isTest()) {
       attributes.setProperty(XMLReporterConfig.ATTR_IS_CONFIG, "true");
     }
-    attributes.setProperty(XMLReporterConfig.ATTR_NAME, testResult.getMethod().getMethodName());
+    attributes.setProperty(XMLReporterConfig.ATTR_NAME, method.getMethodName());
     String testInstanceName = testResult.getTestName();
     if (null != testInstanceName) {
       attributes.setProperty(XMLReporterConfig.ATTR_TEST_INSTANCE_NAME, testInstanceName);
     }
-    String description = testResult.getMethod().getDescription();
+    String description = method.getDescription();
     if (!Utils.isStringEmpty(description)) {
       attributes.setProperty(XMLReporterConfig.ATTR_DESC, description);
     }
 
-    attributes.setProperty(
-        XMLReporterConfig.ATTR_METHOD_SIG, removeClassName(testResult.getMethod().toString()));
+    attributes.setProperty(XMLReporterConfig.ATTR_METHOD_SIG, removeClassName(method.toString()));
 
     String startTime =
         TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(
@@ -210,27 +211,27 @@ public class XMLSuiteResultWriter {
     attributes.setProperty(XMLReporterConfig.ATTR_DURATION_MS, strDuration);
 
     if (config.isGenerateGroupsAttribute()) {
-      String groupNamesStr = Utils.arrayToString(testResult.getMethod().getGroups());
+      String groupNamesStr = Utils.arrayToString(method.getGroups());
       if (!Utils.isStringEmpty(groupNamesStr)) {
         attributes.setProperty(XMLReporterConfig.ATTR_GROUPS, groupNamesStr);
       }
     }
 
     if (config.isGenerateDependsOnMethods()) {
-      String dependsOnStr = Utils.arrayToString(testResult.getMethod().getMethodsDependedUpon());
+      String dependsOnStr = Utils.arrayToString(method.getMethodsDependedUpon());
       if (!Utils.isStringEmpty(dependsOnStr)) {
         attributes.setProperty(XMLReporterConfig.ATTR_DEPENDS_ON_METHODS, dependsOnStr);
       }
     }
 
     if (config.isGenerateDependsOnGroups()) {
-      String dependsOnStr = Utils.arrayToString(testResult.getMethod().getGroupsDependedUpon());
+      String dependsOnStr = Utils.arrayToString(method.getGroupsDependedUpon());
       if (!Utils.isStringEmpty(dependsOnStr)) {
         attributes.setProperty(XMLReporterConfig.ATTR_DEPENDS_ON_GROUPS, dependsOnStr);
       }
     }
 
-    IDataProviderMethod dp = testResult.getMethod().getDataProviderMethod();
+    IDataProviderMethod dp = method.getDataProviderMethod();
     if (dp != null) {
       String dataProvider = dp.getName();
       if (!Strings.isNullOrEmpty(dataProvider)) {
@@ -354,7 +355,7 @@ public class XMLSuiteResultWriter {
   }
 
   private void addTestMethodCustomAttributes(XMLStringBuffer xmlBuffer, ITestResult testResult) {
-    CustomAttribute[] attributes = testResult.getMethod().getAttributes();
+    CustomAttribute[] attributes = Utils.requireMethodOf(testResult).getAttributes();
     if (attributes == null || attributes.length == 0) {
       return;
     }

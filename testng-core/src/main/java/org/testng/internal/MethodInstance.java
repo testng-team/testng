@@ -23,7 +23,7 @@ public class MethodInstance implements IMethodInstance {
   }
 
   @Override
-  public Object getInstance() {
+  public @Nullable Object getInstance() {
     return m_method.getInstance();
   }
 
@@ -40,11 +40,14 @@ public class MethodInstance implements IMethodInstance {
         @Override
         public int compare(IMethodInstance o1, IMethodInstance o2) {
           // If the two methods are in different <test>
-          XmlTest test1 = o1.getMethod().getTestClass().getXmlTest();
-          XmlTest test2 = o2.getMethod().getTestClass().getXmlTest();
+          XmlTest test1 = Utils.requireTestClassOf(o1.getMethod()).getXmlTest();
+          XmlTest test2 = Utils.requireTestClassOf(o2.getMethod()).getXmlTest();
 
-          // If the two methods are not in the same <test>, we can't compare them
-          if (!java.util.Objects.equals(test1.getName(), test2.getName())) {
+          // If the two methods are not in the same <test>, we can't compare them. A method a
+          // @Factory produced has no <test> tag of its own, which reads the same way here.
+          String testName1 = test1 == null ? null : test1.getName();
+          String testName2 = test2 == null ? null : test2.getName();
+          if (!java.util.Objects.equals(testName1, testName2)) {
             return 0;
           }
 
@@ -52,8 +55,8 @@ public class MethodInstance implements IMethodInstance {
 
           // If the two methods are in the same <class>, compare them by their method
           // index, otherwise compare them with their class index.
-          XmlClass class1 = o1.getMethod().getTestClass().getXmlClass();
-          XmlClass class2 = o2.getMethod().getTestClass().getXmlClass();
+          XmlClass class1 = Utils.requireTestClassOf(o1.getMethod()).getXmlClass();
+          XmlClass class2 = Utils.requireTestClassOf(o2.getMethod()).getXmlClass();
 
           // This can happen if these classes came from a @Factory, in which case, they
           // don't have an associated XmlClass

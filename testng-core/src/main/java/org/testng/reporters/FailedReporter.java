@@ -103,8 +103,8 @@ public class FailedReporter implements IReporter {
   }
 
   private static MethodInvocationKey key(ITestResult it) {
-    return new MethodInvocationKey(
-        it.getMethod(), it.getParameters(), it.getMethod().getCurrentInvocationCount());
+    ITestNGMethod method = Utils.requireMethodOf(it);
+    return new MethodInvocationKey(method, it.getParameters(), method.getCurrentInvocationCount());
   }
 
   private static Map<Object, MethodInvocationKey> buildMap(Set<ITestResult> passed) {
@@ -116,7 +116,7 @@ public class FailedReporter implements IReporter {
   }
 
   private boolean isFlakyTest(Set<ITestResult> passed, ITestResult result) {
-    String ctxKey = result.getTestContext().getName();
+    String ctxKey = Utils.requireTestContextOf(result).getName();
     MethodInvocationKey individualKey = key(result);
     return keyCache.computeIfAbsent(ctxKey, k -> buildMap(passed)).containsKey(individualKey);
   }
@@ -140,12 +140,12 @@ public class FailedReporter implements IReporter {
     allTests.addAll(skippedTests);
     ITestNGMethod[] allTestMethods = context.getAllTestMethods();
     for (ITestResult failedTest : allTests) {
-      ITestNGMethod current = failedTest.getMethod();
+      ITestNGMethod current = Utils.requireMethodOf(failedTest);
       if (!current.isTest()) { // Don't count configuration methods
         continue;
       }
-      boolean repetitiveTest = failedTest.getMethod().getInvocationCount() > 0;
-      boolean isDataDriven = failedTest.getMethod().isDataDriven();
+      boolean repetitiveTest = current.getInvocationCount() > 0;
+      boolean isDataDriven = current.isDataDriven();
       if ((repetitiveTest || isDataDriven) && isFlakyTest(passedTests, failedTest)) {
         continue;
       }
@@ -177,7 +177,7 @@ public class FailedReporter implements IReporter {
       }
       if (methodsToReRun.contains(m)) {
         result.add(m);
-        getAllApplicableConfigs(relevantConfigs, m.getTestClass());
+        getAllApplicableConfigs(relevantConfigs, Utils.requireTestClassOf(m));
         getAllGroupApplicableConfigs(context, relevantConfigs, m);
       }
     }

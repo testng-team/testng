@@ -3,6 +3,7 @@ package org.testng.internal.invokers;
 import org.testng.IInvokedMethod;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.internal.Utils;
 
 public class InvokedMethod implements IInvokedMethod {
 
@@ -19,7 +20,7 @@ public class InvokedMethod implements IInvokedMethod {
    */
   @Override
   public boolean isTestMethod() {
-    return m_testResult.getMethod().isTest();
+    return Utils.requireMethodOf(m_testResult).isTest();
   }
 
   @Override
@@ -39,7 +40,7 @@ public class InvokedMethod implements IInvokedMethod {
    */
   @Override
   public boolean isConfigurationMethod() {
-    return TestNgMethodUtils.isConfigurationMethod(m_testResult.getMethod());
+    return TestNgMethodUtils.isConfigurationMethod(Utils.requireMethodOf(m_testResult));
   }
 
   /* (non-Javadoc)
@@ -47,7 +48,7 @@ public class InvokedMethod implements IInvokedMethod {
    */
   @Override
   public ITestNGMethod getTestMethod() {
-    return m_testResult.getMethod();
+    return Utils.requireMethodOf(m_testResult);
   }
 
   /* (non-Javadoc)

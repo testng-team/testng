@@ -2,6 +2,7 @@ package org.testng;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
@@ -27,7 +28,10 @@ public interface IAnnotationTransformer extends ITestNGListener {
    *     method (null otherwise).
    */
   default void transform(
-      ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
+      ITestAnnotation annotation,
+      @Nullable Class testClass,
+      @Nullable Constructor testConstructor,
+      @Nullable Method testMethod) {
     // not implemented
   }
 
@@ -47,9 +51,9 @@ public interface IAnnotationTransformer extends ITestNGListener {
    */
   default void transform(
       IConfigurationAnnotation annotation,
-      Class testClass,
-      Constructor testConstructor,
-      Method testMethod) {
+      @Nullable Class testClass,
+      @Nullable Constructor testConstructor,
+      @Nullable Method testMethod) {
     // not implemented
   }
 
@@ -67,9 +71,10 @@ public interface IAnnotationTransformer extends ITestNGListener {
    * Transform an IFactory annotation.
    *
    * @param annotation The annotation factory
-   * @param method The method annotated with the IFactory annotation.
+   * @param method The method annotated with the IFactory annotation, or {@code null} when the
+   *     annotation was found on a constructor.
    */
-  default void transform(IFactoryAnnotation annotation, Method method) {
+  default void transform(IFactoryAnnotation annotation, @Nullable Method method) {
     // not implemented
   }
 

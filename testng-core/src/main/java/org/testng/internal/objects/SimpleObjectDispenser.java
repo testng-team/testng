@@ -180,7 +180,8 @@ class SimpleObjectDispenser implements IObjectDispenser {
       parameters = new Object[] {xmlTest.getName()};
     }
     ct.setAccessible(true);
-    return factory.newInstance(ct, parameters);
+    return Objects.requireNonNull(
+        factory.newInstance(ct, parameters), "the object factory produced an instance");
   }
 
   private static Object computeParameters(
@@ -194,7 +195,8 @@ class SimpleObjectDispenser implements IObjectDispenser {
     }
     IObject.IdentifiableObject[] enclosingInstances = IObject.objects(enclosingIClass, false);
     if (enclosingInstances.length == 0) {
-      return factory.newInstance(ec.getConstructor(ec));
+      return Objects.requireNonNull(
+          factory.newInstance(ec.getConstructor(ec)), "the object factory produced an instance");
     }
     return enclosingInstances[0].getInstance();
   }

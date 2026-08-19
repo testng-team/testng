@@ -795,7 +795,7 @@ public class Parameters {
         findDataProvider(
             objectFactory,
             instance,
-            testMethod.getTestClass(),
+            Utils.requireTestClassOf(testMethod),
             testMethod.getConstructorOrMethod(),
             annotationFinder,
             methodParams.context);

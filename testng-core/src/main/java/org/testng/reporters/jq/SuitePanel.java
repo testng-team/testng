@@ -71,7 +71,7 @@ public class SuitePanel extends BasePanel {
     xsb.push(D, C, "method-content");
     xsb.push("a", "name", Model.getTestResultName(tr));
     xsb.pop("a");
-    xsb.addOptional(S, tr.getMethod().getMethodName(), C, "method-name");
+    xsb.addOptional(S, Utils.requireMethodOf(tr).getMethodName(), C, "method-name");
 
     // Parameters?
     if (tr.getParameters().length > 0) {
@@ -80,7 +80,7 @@ public class SuitePanel extends BasePanel {
       xsb.addOptional(S, "(" + text + ")", C, "parameters");
     }
 
-    CustomAttribute[] attributes = tr.getMethod().getAttributes();
+    CustomAttribute[] attributes = Utils.requireMethodOf(tr).getAttributes();
     if (attributes != null && attributes.length > 0) {
       String text =
           Arrays.stream(attributes)
@@ -97,7 +97,7 @@ public class SuitePanel extends BasePanel {
     }
 
     // Description?
-    String description = tr.getMethod().getDescription();
+    String description = Utils.requireMethodOf(tr).getDescription();
     if (!Strings.isNullOrEmpty(description)) {
       xsb.push("em");
       xsb.addString("(" + description + ")");

@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.jspecify.annotations.Nullable;
+
 /** Listener interface for events related to configuration methods. */
 public interface IConfigurationListener extends ITestNGListener {
 
@@ -16,9 +18,9 @@ public interface IConfigurationListener extends ITestNGListener {
    * Invoked whenever a configuration method succeeded.
    *
    * @param tr The test result
-   * @param tm The test method
+   * @param tm The test method, or {@code null} when the configuration method is not bound to one
    */
-  default void onConfigurationSuccess(ITestResult tr, ITestNGMethod tm) {
+  default void onConfigurationSuccess(ITestResult tr, @Nullable ITestNGMethod tm) {
     // not implemented
   }
 
@@ -35,9 +37,9 @@ public interface IConfigurationListener extends ITestNGListener {
    * Invoked whenever a configuration method failed.
    *
    * @param tr The test result
-   * @param tm The test method
+   * @param tm The test method, or {@code null} when the configuration method is not bound to one
    */
-  default void onConfigurationFailure(ITestResult tr, ITestNGMethod tm) {
+  default void onConfigurationFailure(ITestResult tr, @Nullable ITestNGMethod tm) {
     // not implemented
   }
 
@@ -54,9 +56,9 @@ public interface IConfigurationListener extends ITestNGListener {
    * Invoked whenever a configuration method was skipped.
    *
    * @param tr The test result
-   * @param tm The test method
+   * @param tm The test method, or {@code null} when the configuration method is not bound to one
    */
-  default void onConfigurationSkip(ITestResult tr, ITestNGMethod tm) {
+  default void onConfigurationSkip(ITestResult tr, @Nullable ITestNGMethod tm) {
     // not implemented
   }
 
@@ -73,9 +75,9 @@ public interface IConfigurationListener extends ITestNGListener {
    * Invoked before a configuration method is invoked.
    *
    * @param tr The test result
-   * @param tm The test method
+   * @param tm The test method, or {@code null} when the configuration method is not bound to one
    */
-  default void beforeConfiguration(ITestResult tr, ITestNGMethod tm) {
+  default void beforeConfiguration(ITestResult tr, @Nullable ITestNGMethod tm) {
     // not implemented
   }
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import org.jspecify.annotations.Nullable;
@@ -20,9 +21,9 @@ import org.testng.xml.XmlTest;
 public class LiteWeightTestNGMethod implements ITestNGMethod {
 
   private final Class<?> realClass;
-  private ITestClass testClass;
+  private @Nullable ITestClass testClass;
   private final String methodName;
-  private final Object instance;
+  private final @Nullable Object instance;
   private final long[] instanceHashCodes;
   private final String[] groups;
   private final String[] groupsDependedUpon;
@@ -32,7 +33,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   private final List<String> methodsDependedUpon = new ArrayList<>();
   private int priority;
   private int interceptedPriority;
-  private final XmlTest xmlTest;
+  private final @Nullable XmlTest xmlTest;
   private final String qualifiedName;
   private final boolean isBeforeTestConfiguration;
   private final boolean isAfterTestConfiguration;
@@ -55,7 +56,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   private long timeout;
   private int invocationCount;
   private final int successPercentage;
-  private String id;
+  private @Nullable String id;
   private long date;
   private final boolean isAlwaysRun;
   private int threadPoolSize;
@@ -123,7 +124,10 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
     dataProviderMethod =
         new IDataProviderMethod() {
           @Override
-          public Object getInstance() {
+          public @Nullable Object getInstance() {
+            if (dp == null) {
+              return null;
+            }
             return dp.getInstance();
           }
 
@@ -171,7 +175,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public ITestClass getTestClass() {
+  public @Nullable ITestClass getTestClass() {
     return testClass;
   }
 
@@ -186,7 +190,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public Object getInstance() {
+  public @Nullable Object getInstance() {
     return instance;
   }
 
@@ -321,7 +325,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public String getId() {
+  public @Nullable String getId() {
     return id;
   }
 
@@ -342,7 +346,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
 
   @Override
   public boolean canRunFromClass(IClass testClass) {
-    return getTestClass().getRealClass().isAssignableFrom(testClass.getRealClass());
+    return Utils.requireTestClassOf(this).getRealClass().isAssignableFrom(testClass.getRealClass());
   }
 
   @Override
@@ -485,7 +489,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public XmlTest getXmlTest() {
+  public @Nullable XmlTest getXmlTest() {
     return xmlTest;
   }
 
@@ -496,7 +500,12 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
 
   @Override
   public Map<String, String> findMethodParameters(XmlTest test) {
-    return XmlTestUtils.findMethodParameters(xmlTest, getTestClass().getName(), getMethodName());
+    // This wrapper answers from the <test> it snapshotted, not from the one it is handed.
+    ITestClass boundClass = getTestClass();
+    return XmlTestUtils.findMethodParameters(
+        Objects.requireNonNull(xmlTest, "a lite weight method snapshots the <test> it belongs to"),
+        boundClass == null ? null : boundClass.getName(),
+        getMethodName());
   }
 
   @Override
