@@ -10,6 +10,10 @@ Changed: GITHUB-3322: toXml() now declares the schema on <suite> instead of emit
 Changed: GITHUB-3322: Validating a suite against the schema requires a namespace-aware parser, which widens what counts as malformed: in a suite file that declares no doctype, an undeclared namespace prefix is now an error where it used to be read as part of the name. A suite declaring a doctype is unaffected, and testng.xml.validation=off restores the previous behaviour (Julien Herr)
 Changed: org.testng.internal.Utils.escapeHtml(String) and escapeUnicode(String) no longer accept null. Both used to answer null with null; they now throw a NullPointerException, and their return types are no longer nullable. No caller in TestNG passes null to either, and the null branch made the signature contradict itself once the package declares its nullness (Julien Herr)
 Changed: org.testng.reporters.XMLUtils.escape(String) no longer accepts null. It used to answer null with null; it now throws a NullPointerException, and its return type is no longer nullable. Nothing in TestNG ever called it with null, and nothing in TestNG calls it at all outside XMLUtils itself (Julien Herr)
+Fixed: org.testng.internal.TestNGMethod.clone() no longer throws a NullPointerException when the method has not been bound to a test class yet. It wrapped getTestClass() in a NoOpTestClass, which dereferences it on the spot; the absence is now propagated, which is what ConfigurationMethod.clone() already did (Julien Herr)
+Fixed: A configuration method that is not a @BeforeGroups or @AfterGroups method now reports an empty array from getBeforeGroups() and getAfterGroups() instead of null. TestNGMethodFinder wrote null into fields whose declaration says {}, and MethodGroupsHelper iterates them without testing (Julien Herr)
+Fixed: Sorting test methods by index no longer throws a NullPointerException when a <test> tag carries no name (Julien Herr)
+Fixed: A <package> tag that carries no name attribute is now reported the way an unreadable package already was, instead of raising a NullPointerException from inside PackageUtils.findClassesInPackage (Julien Herr)
 
 Possible backward incompatible changes:
 
