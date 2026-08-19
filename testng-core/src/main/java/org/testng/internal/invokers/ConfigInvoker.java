@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.jspecify.annotations.Nullable;
 import org.testng.ConfigurationNotInvokedException;
 import org.testng.IClass;
@@ -33,6 +35,7 @@ import org.testng.internal.ClassHelper;
 import org.testng.internal.ConfigurationMethod;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.IConfiguration;
+import org.testng.internal.IInstanceIdentity;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.Parameters;
@@ -57,10 +60,18 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   private boolean m_hasClassLevelFailures = false;
   private boolean m_hasTestMethodLevelFailures = false;
 
-  private final Set<ITestNGMethod> m_executedConfigMethods = ConcurrentHashMap.newKeySet();
-
   /** Group failures must be synced as the Invoker is accessed concurrently */
   private final Map<String, Boolean> m_beforegroupsFailures = new ConcurrentHashMap<>();
+
+  /**
+   * firstTimeOnly @BeforeMethod gates, keyed on the configuration, the test method and the test
+   * instance. The worker that claims a gate invokes that configuration; every other worker waits
+   * until that invocation has finished (success or failure) before it continues. Parallel
+   * data-provider workers share the same ITestNGMethod, so a set-only claim would let them start
+   * the test while the firstTimeOnly method is still running.
+   */
+  private final ConcurrentHashMap<Object, FirstTimeOnlyGate> m_firstTimeOnlyGates =
+      new ConcurrentHashMap<>();
 
   private final IConfigurationListener internalConfigurationListener;
 
@@ -258,6 +269,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       testResult.setStatus(ITestResult.STARTED);
 
       IConfigurationAnnotation configurationAnnotation = null;
+      FirstTimeOnlyGate ownedGate = null;
       try {
         Object inst = tm.getInstance();
         if (inst == null) {
@@ -314,6 +326,13 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           continue;
         }
 
+        if (isConfigMethodEligibleForScrutiny(tm) && arguments.getTestMethod() != null) {
+          ownedGate = claimFirstTimeOnlyExecution(tm, arguments.getTestMethod());
+          if (ownedGate == null) {
+            continue;
+          }
+        }
+
         log(3, "Invoking " + Utils.detailedMethodName(tm, true));
         if (arguments.getTestMethodResult() != null) {
           ((TestResult) arguments.getTestMethodResult()).setMethod(arguments.getTestMethod());
@@ -334,18 +353,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         runConfigurationListeners(testResult, arguments.getTestMethod(), true /* before */);
 
         Object newInstance = computeInstance(arguments.getInstance(), inst, tm);
-        boolean isFirstTimeOnlyConfigMethod = isConfigMethodEligibleForScrutiny(tm);
-        if (isFirstTimeOnlyConfigMethod) {
-          if (m_executedConfigMethods.add(arguments.getTestMethod())) {
-            invokeConfigurationMethod(newInstance, tm, parameters, testResult);
-          }
-        } else {
-          invokeConfigurationMethod(newInstance, tm, parameters, testResult);
-        }
+        invokeConfigurationMethod(newInstance, tm, parameters, testResult);
         copyAttributesFromNativelyInjectedTestResult(parameters, arguments.getTestMethodResult());
-        if (!isFirstTimeOnlyConfigMethod) {
-          runConfigurationListeners(testResult, arguments.getTestMethod(), false /* after */);
-        }
+        runConfigurationListeners(testResult, arguments.getTestMethod(), false /* after */);
         if (testResult.getStatus() == ITestResult.SKIP) {
           Throwable t = testResult.getThrowable();
           if (t != null) {
@@ -362,6 +372,10 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
             arguments.getInstance(),
             arguments.getSuite());
         copyAttributesFromNativelyInjectedTestResult(parameters, arguments.getTestMethodResult());
+      } finally {
+        if (ownedGate != null) {
+          ownedGate.complete();
+        }
       }
     } // for methods
   }
@@ -533,6 +547,68 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     }
     ConfigurationMethod cfg = (ConfigurationMethod) tm;
     return cfg.isFirstTimeOnly();
+  }
+
+  /**
+   * Claims a firstTimeOnly configuration so this worker invokes it, or waits until the owner has
+   * finished. Non-firstTimeOnly methods return {@code null} and should still run.
+   *
+   * @return the gate this worker must complete, or {@code null} when this worker should not invoke
+   */
+  private @Nullable FirstTimeOnlyGate claimFirstTimeOnlyExecution(
+      ITestNGMethod config, ITestNGMethod testMethod) {
+    if (!isConfigMethodEligibleForScrutiny(config)) {
+      return null;
+    }
+    FirstTimeOnlyGate gate =
+        m_firstTimeOnlyGates.computeIfAbsent(
+            firstTimeOnlyKey(config, testMethod), key -> new FirstTimeOnlyGate());
+    if (gate.tryClaim()) {
+      return gate;
+    }
+    gate.awaitQuietly();
+    return null;
+  }
+
+  private static Object firstTimeOnlyKey(ITestNGMethod config, ITestNGMethod testMethod) {
+    return Arrays.asList(
+        config.getQualifiedName(),
+        Arrays.asList(config.getParameterTypes()),
+        testMethod.getQualifiedName(),
+        Arrays.asList(testMethod.getParameterTypes()),
+        IInstanceIdentity.getInstanceId(testMethod));
+  }
+
+  /** One-shot barrier for a firstTimeOnly configuration on a given test instance. */
+  private static final class FirstTimeOnlyGate {
+    private final AtomicBoolean claimed = new AtomicBoolean();
+    private final CountDownLatch done = new CountDownLatch(1);
+
+    private boolean tryClaim() {
+      return claimed.compareAndSet(false, true);
+    }
+
+    private void awaitQuietly() {
+      boolean interrupted = false;
+      try {
+        while (true) {
+          try {
+            done.await();
+            return;
+          } catch (InterruptedException handled) {
+            interrupted = true;
+          }
+        }
+      } finally {
+        if (interrupted) {
+          Thread.currentThread().interrupt();
+        }
+      }
+    }
+
+    private void complete() {
+      done.countDown();
+    }
   }
 
   /** @return true if this class or a parent class failed to initialize. */
