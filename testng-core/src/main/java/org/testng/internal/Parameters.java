@@ -812,9 +812,9 @@ public class Parameters {
         allParameterNames.put(n, n);
       }
       Class<?> retryClass = dataProviderMethod.retryUsing();
-      boolean shouldRetry = !retryClass.equals(IRetryDataProvider.DisableDataProviderRetries.class);
+      boolean shouldRetry;
       IRetryDataProvider retry = null;
-      if (shouldRetry) {
+      if (!retryClass.equals(IRetryDataProvider.DisableDataProviderRetries.class)) {
         IObjectDispenser dispenser = Dispenser.newInstance(objectFactory);
         BasicAttributes basic = new BasicAttributes(testMethod.getTestClass(), retryClass);
         CreationAttributes attributes = new CreationAttributes(methodParams.context, basic, null);
@@ -851,7 +851,6 @@ public class Parameters {
             each.onDataProviderFailure(testMethod, methodParams.context, e);
           }
           if (retry != null) {
-            // Same condition as shouldRetry, which is true here exactly when retry was created.
             shouldRetry = retry.retry(dataProviderMethod);
             thrownException = e;
           } else {

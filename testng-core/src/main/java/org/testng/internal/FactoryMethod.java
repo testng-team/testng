@@ -92,14 +92,8 @@ public class FactoryMethod extends BaseTestMethod {
     Utils.checkReturnType(com.getMethod(), Object[].class, IInstanceInfo[].class);
     Class<?> declaringClass = com.getDeclaringClass();
     if (instance != null && !declaringClass.isAssignableFrom(instance.getClass())) {
-      Object mismatched = instance;
-      if (mismatched instanceof IParameterInfo) {
-        Object embedded = ((IParameterInfo) mismatched).getInstance();
-        if (embedded != null) {
-          mismatched = embedded;
-        }
-      }
-      Class<?> cls = mismatched.getClass();
+      Object embedded = IParameterInfo.embeddedInstance(instance);
+      Class<?> cls = (embedded != null ? embedded : instance).getClass();
       String msg =
           "Found a default constructor and also a Factory method when working with "
               + declaringClass.getName()
