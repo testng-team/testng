@@ -78,7 +78,7 @@ public class FactoryMethod extends BaseTestMethod {
   // constructor outside of this package.
   FactoryMethod(
       ConstructorOrMethod com,
-      IObject.IdentifiableObject identifiable,
+      IObject.@Nullable IdentifiableObject identifiable,
       IAnnotationFinder annotationFinder,
       ITestContext testContext,
       ITestObjectFactory objectFactory,

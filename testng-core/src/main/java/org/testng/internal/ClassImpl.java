@@ -30,17 +30,17 @@ public class ClassImpl implements IClass, IObject {
   private final List<IObject.IdentifiableObject> identifiableObjects = new ArrayList<>();
   private final Map<Class<?>, IClass> m_classes;
   private long @Nullable [] m_instanceHashCodes;
-  private final IObject.IdentifiableObject m_instance;
+  private final IObject.@Nullable IdentifiableObject m_instance;
   private final ITestObjectFactory m_objectFactory;
   private @Nullable String m_testName = null;
-  private final XmlClass m_xmlClass;
+  private final @Nullable XmlClass m_xmlClass;
   private final ITestContext m_testContext;
 
   public ClassImpl(
       ITestContext context,
       Class<?> cls,
-      XmlClass xmlClass,
-      IObject.IdentifiableObject instance,
+      @Nullable XmlClass xmlClass,
+      IObject.@Nullable IdentifiableObject instance,
       Map<Class<?>, IClass> classes,
       IAnnotationFinder annotationFinder,
       ITestObjectFactory objectFactory) {
@@ -51,8 +51,9 @@ public class ClassImpl implements IClass, IObject {
     m_annotationFinder = annotationFinder;
     m_instance = instance;
     m_objectFactory = objectFactory;
-    if (IObject.IdentifiableObject.unwrap(instance) instanceof ITest) {
-      m_testName = ((ITest) instance.getInstance()).getTestName();
+    Object unwrapped = IObject.IdentifiableObject.unwrap(instance);
+    if (unwrapped instanceof ITest) {
+      m_testName = ((ITest) unwrapped).getTestName();
     }
     if (m_testName == null) {
       ITestAnnotation annotation = m_annotationFinder.findAnnotation(cls, ITestAnnotation.class);
@@ -88,11 +89,12 @@ public class ClassImpl implements IClass, IObject {
   }
 
   @Override
-  public XmlClass getXmlClass() {
+  public @Nullable XmlClass getXmlClass() {
     return m_xmlClass;
   }
 
-  private IObject.IdentifiableObject getDefaultInstance(boolean create, String errMsgPrefix) {
+  private IObject.@Nullable IdentifiableObject getDefaultInstance(
+      boolean create, String errMsgPrefix) {
     if (m_defaultInstance == null) {
       if (m_instance != null) {
         m_defaultInstance = m_instance;
@@ -170,7 +172,9 @@ public class ClassImpl implements IClass, IObject {
       // derive a stable one from its unique instance id instead.
       return identifiable.getInstanceId().hashCode();
     }
-    return IParameterInfo.embeddedInstance(instance).hashCode();
+    return java.util.Objects.requireNonNull(
+            IParameterInfo.embeddedInstance(instance), "the factory instance is not available")
+        .hashCode();
   }
 
   private DetailedAttributes newDetailedAttributes(boolean create, String errMsgPrefix) {

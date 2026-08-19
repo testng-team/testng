@@ -6,6 +6,7 @@ import java.util.ServiceLoader;
 import javax.script.ScriptEngineFactory;
 import org.testng.TestNGException;
 import org.testng.xml.XmlScript;
+import java.util.Objects;
 
 public final class ScriptSelectorFactory {
 
@@ -39,6 +40,8 @@ public final class ScriptSelectorFactory {
               + "https://github.com/cbeust/testng/wiki/Supported-script-engines");
     }
 
-    return new ScriptMethodSelector(engineFactory.getScriptEngine(), script.getExpression());
+    return new ScriptMethodSelector(
+        engineFactory.getScriptEngine(),
+        Objects.requireNonNull(script.getExpression(), "the <script> tag carries no expression"));
   }
 }

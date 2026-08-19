@@ -165,12 +165,12 @@ public class Parameters {
   public static Object[] createConfigurationParameters(
       Method m,
       Map<String, String> params,
-      Object[] parameterValues,
-      ITestNGMethod currentTestMethod,
+      Object @Nullable [] parameterValues,
+      @Nullable ITestNGMethod currentTestMethod,
       IAnnotationFinder finder,
       XmlSuite xmlSuite,
       ITestContext ctx,
-      ITestResult testResult) {
+      @Nullable ITestResult testResult) {
     Method currentTestMeth =
         currentTestMethod != null ? currentTestMethod.getConstructorOrMethod().getMethod() : null;
 
