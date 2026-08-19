@@ -11,10 +11,8 @@ import org.testng.xml.XmlTest;
  * <p>A reporter reads a result long after the invocation is over, so a data provider that hands the
  * same mutable row to every invocation would otherwise be reported in its final state rather than
  * the state each invocation ran with. Since GITHUB-447 the answer has been to store a clone of
- * every {@link Cloneable} parameter. That rule is type-blind and predates the distinction between
- * the arguments a method was invoked with and the representation reporting needs; it lives here so
- * that it has a name and a single owner, not because generic cloning is the reporting model to
- * build on.
+ * every {@link Cloneable} parameter. That rule is type-blind: it applies to values TestNG injected
+ * as readily as to user data.
  *
  * <p>{@link XmlTest} is the one exception, and is kept by reference. TestNG injects it, so it is
  * not user data at all, and its {@code clone()} is a suite-building helper rather than a copy: it
@@ -33,12 +31,12 @@ final class LegacyParameterSnapshotter {
   static Object[] snapshot(Object[] parameters) {
     Object[] snapshot = new Object[parameters.length];
     for (int i = 0; i < parameters.length; i++) {
-      snapshot[i] = snapshot(parameters[i]);
+      snapshot[i] = snapshotParameter(parameters[i]);
     }
     return snapshot;
   }
 
-  private static Object snapshot(Object parameter) {
+  private static Object snapshotParameter(Object parameter) {
     if (!(parameter instanceof Cloneable) || parameter instanceof XmlTest) {
       return parameter;
     }

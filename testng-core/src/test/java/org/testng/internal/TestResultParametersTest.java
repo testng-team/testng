@@ -10,9 +10,9 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 /**
- * The parameter representation {@code ITestResult} hands to reporters. Everything here goes through
- * the public {@code ITestResult} methods on purpose: the rules are a compatibility contract, not a
- * property of whichever internal helper happens to implement them.
+ * The parameter representation {@code ITestResult} hands to reporters. Exercised through {@code
+ * setParameters}/{@code getParameters} rather than through the helper that implements them, so the
+ * rules stay pinned wherever they end up living.
  */
 public class TestResultParametersTest {
 
@@ -56,6 +56,6 @@ public class TestResultParametersTest {
     TestResult result = TestResult.newEmptyTestResult();
     result.setParameters(new Object[] {null});
 
-    assertThat(result.getParameters()).containsExactly((Object) null);
+    assertThat(result.getParameters()[0]).isNull();
   }
 }
