@@ -286,7 +286,9 @@ public final class Utils {
   }
 
   public static String defaultIfStringEmpty(@Nullable String s, String defaultValue) {
-    return isStringEmpty(s) ? defaultValue : s;
+    // Inlined rather than delegated to isStringEmpty: a nullness check hidden behind a call does
+    // not refine s on the other branch.
+    return s == null || s.isEmpty() ? defaultValue : s;
   }
 
   public static boolean isStringBlank(@Nullable String s) {

@@ -427,16 +427,17 @@ public class TestResult implements ITestResult {
       return Collections.unmodifiableList(skippedDueTo);
     }
     // Looks like we didn't have any configuration failures. So some upstream method perhaps failed.
-    if (requireMethod().getMethodsDependedUpon().length == 0) {
+    ITestNGMethod skippedMethod = requireMethod();
+    if (skippedMethod.getMethodsDependedUpon().length == 0) {
       // Maybe group dependencies exist ?
-      if (m_method.getGroupsDependedUpon().length == 0) {
+      if (skippedMethod.getGroupsDependedUpon().length == 0) {
         return Collections.emptyList();
       }
-      List<String> upstreamGroups = Arrays.asList(m_method.getGroupsDependedUpon());
+      List<String> upstreamGroups = Arrays.asList(skippedMethod.getGroupsDependedUpon());
       List<ITestResult> allFailures =
           Lists.merge(
-              m_context.getFailedTests().getAllResults(),
-              m_context.getFailedButWithinSuccessPercentageTests().getAllResults());
+              context.getFailedTests().getAllResults(),
+              context.getFailedButWithinSuccessPercentageTests().getAllResults());
       skippedDueTo =
           allFailures.stream()
               .map(ITestResult::getMethod)
@@ -451,13 +452,13 @@ public class TestResult implements ITestResult {
 
       return Collections.unmodifiableList(skippedDueTo);
     }
-    List<String> upstreamMethods = Arrays.asList(requireMethod().getMethodsDependedUpon());
+    List<String> upstreamMethods = Arrays.asList(skippedMethod.getMethodsDependedUpon());
 
     // So we have dependsOnMethod failures
     List<ITestResult> allFailures =
         Lists.merge(
-            m_context.getFailedTests().getAllResults(),
-            m_context.getFailedButWithinSuccessPercentageTests().getAllResults());
+            context.getFailedTests().getAllResults(),
+            context.getFailedButWithinSuccessPercentageTests().getAllResults());
     skippedDueTo =
         allFailures.stream()
             .map(ITestResult::getMethod)
