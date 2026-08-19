@@ -6,11 +6,11 @@ import org.testng.ITestListener
 class TestTimeListener : ITestListener {
     private var startTime: Long = 0
 
-    override fun onStart(context: ITestContext?) {
+    override fun onStart(context: ITestContext) {
         startTime = System.currentTimeMillis()
     }
 
-    override fun onFinish(context: ITestContext?) {
+    override fun onFinish(context: ITestContext) {
         testRunTime = System.currentTimeMillis() - startTime
     }
 
