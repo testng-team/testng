@@ -4,7 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.testng.IInjectorFactory;
 
 public class GuiceBackedInjectorFactory implements IInjectorFactory {

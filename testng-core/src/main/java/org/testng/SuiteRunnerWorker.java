@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
 import org.testng.collections.Objects;
 import org.testng.internal.Utils;
 import org.testng.internal.invokers.SuiteRunnerMap;
@@ -99,7 +98,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
   }
 
   @Override
-  public int compareTo(@Nonnull IWorker<ISuite> arg0) {
+  public int compareTo(IWorker<ISuite> arg0) {
     /*
      * Dummy Implementation
      *

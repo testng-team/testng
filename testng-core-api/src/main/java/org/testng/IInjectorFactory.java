@@ -3,7 +3,7 @@ package org.testng;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /** Allows customization of the {@link Injector} creation when working with dependency injection. */
 public interface IInjectorFactory {

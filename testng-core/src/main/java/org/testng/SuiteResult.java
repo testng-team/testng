@@ -1,6 +1,5 @@
 package org.testng;
 
-import javax.annotation.Nonnull;
 import org.testng.collections.Objects;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
@@ -26,7 +25,7 @@ class SuiteResult implements ISuiteResult, Comparable<SuiteResult> {
   }
 
   @Override
-  public int compareTo(@Nonnull SuiteResult other) {
+  public int compareTo(SuiteResult other) {
     int result = 0;
     try {
       String n1 = getTestContext().getName();
