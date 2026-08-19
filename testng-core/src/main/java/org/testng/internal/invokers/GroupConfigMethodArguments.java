@@ -41,7 +41,9 @@ public class GroupConfigMethodArguments extends Arguments {
   }
 
   public XmlSuite getSuite() {
-    return getTestMethod().getXmlTest().getSuite();
+    return Objects.requireNonNull(
+            getTestMethod().getXmlTest(), "a grouped configuration method belongs to a <test>")
+        .getSuite();
   }
 
   public static class Builder {
@@ -66,7 +68,7 @@ public class GroupConfigMethodArguments extends Arguments {
       return this;
     }
 
-    public Builder forInstance(Object instance) {
+    public Builder forInstance(@Nullable Object instance) {
       this.instance = instance;
       return this;
     }

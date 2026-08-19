@@ -4,6 +4,7 @@ import org.testng.ISuite;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Maps;
 import org.testng.collections.SetMultiMap;
+import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 
 public class IgnoredMethodsPanel extends BaseMultiSuitePanel {
@@ -28,7 +29,7 @@ public class IgnoredMethodsPanel extends BaseMultiSuitePanel {
     SetMultiMap<Class<?>, ITestNGMethod> map = Maps.newSetMultiMap();
 
     for (ITestNGMethod method : suite.getExcludedMethods()) {
-      map.put(method.getTestClass().getRealClass(), method);
+      map.put(Utils.requireTestClassOf(method).getRealClass(), method);
     }
 
     for (Class<?> c : map.keySet()) {

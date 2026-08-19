@@ -97,7 +97,7 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public Object getInstance() {
+  public @Nullable Object getInstance() {
     return m_method.getInstance();
   }
 
@@ -150,7 +150,7 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
+  public @Nullable IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
     return m_method.getRetryAnalyzer(result);
   }
 
@@ -170,7 +170,7 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public ITestClass getTestClass() {
+  public @Nullable ITestClass getTestClass() {
     return m_method.getTestClass();
   }
 
@@ -348,7 +348,7 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public XmlTest getXmlTest() {
+  public @Nullable XmlTest getXmlTest() {
     return m_method.getXmlTest();
   }
 

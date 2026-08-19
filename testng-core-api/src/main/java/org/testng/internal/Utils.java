@@ -18,9 +18,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
+import org.testng.ITestClass;
+import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.XMLStringBuffer;
@@ -444,6 +448,52 @@ public final class Utils {
     } else {
       return toString;
     }
+  }
+
+  /**
+   * The test method a result was produced for.
+   *
+   * <p>{@link ITestResult#getMethod()} answers {@code null} on the parameter carrier the invoker
+   * builds before it knows which invocation it is reporting; that carrier is replaced by a
+   * method-bearing result before any listener or reporter sees it, so every result that reaches one
+   * has a method. Use this rather than dereferencing the accessor, so that the day a carrier does
+   * escape it is named at the boundary instead of raising a bare {@code NullPointerException}
+   * somewhere further in.
+   *
+   * @param result The result to read the method of.
+   * @return The test method, never {@code null}.
+   */
+  /**
+   * The test class a method was bound to.
+   *
+   * <p>{@link ITestNGMethod#getTestClass()} answers {@code null} until the finder binds the method
+   * to its class, which happens before the method is scheduled; every method a runner, a reporter
+   * or a listener sees is bound. Use this rather than dereferencing the accessor, so that an
+   * unbound method is named at the boundary.
+   *
+   * @param method The method to read the test class of.
+   * @return The test class, never {@code null}.
+   */
+  /**
+   * The test context a result was produced in.
+   *
+   * <p>{@link ITestResult#getTestContext()} answers {@code null} for a result built outside a run
+   * -- the invoker always passes the context it is running under. Use this rather than
+   * dereferencing the accessor, so that a context-less result is named at the boundary.
+   *
+   * @param result The result to read the context of.
+   * @return The test context, never {@code null}.
+   */
+  public static ITestContext requireTestContextOf(ITestResult result) {
+    return Objects.requireNonNull(result.getTestContext(), "a reported result carries a context");
+  }
+
+  public static ITestClass requireTestClassOf(ITestNGMethod method) {
+    return Objects.requireNonNull(method.getTestClass(), "a scheduled method is bound to a class");
+  }
+
+  public static ITestNGMethod requireMethodOf(ITestResult result) {
+    return Objects.requireNonNull(result.getMethod(), "a reported result carries a test method");
   }
 
   public static String detailedMethodName(ITestNGMethod method, boolean fqn) {

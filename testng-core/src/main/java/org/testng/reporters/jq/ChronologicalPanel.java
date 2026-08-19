@@ -5,6 +5,7 @@ import org.testng.IInvokedMethod;
 import org.testng.ISuite;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 
 public class ChronologicalPanel extends BaseMultiSuitePanel {
@@ -40,13 +41,14 @@ public class ChronologicalPanel extends BaseMultiSuitePanel {
       ITestResult tr = im.getTestResult();
       String methodName = Model.getTestResultName(tr);
 
-      if (!m.getTestClass().getName().equals(currentClass)) {
+      String testClassName = Utils.requireTestClassOf(m).getName();
+      if (!testClassName.equals(currentClass)) {
         if (!"".equals(currentClass)) {
           xsb.pop(D);
         }
         xsb.push(D, C, "chronological-class");
-        xsb.addRequired(D, m.getTestClass().getName(), C, "chronological-class-name");
-        currentClass = m.getTestClass().getName();
+        xsb.addRequired(D, testClassName, C, "chronological-class-name");
+        currentClass = testClassName;
       }
       xsb.push(D, C, cls);
       if (tr.getStatus() == ITestResult.FAILURE) {

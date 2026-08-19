@@ -21,7 +21,7 @@ public class ResultMap implements IResultMap {
   @Override
   public Set<ITestResult> getResults(ITestNGMethod method) {
     return results.stream()
-        .filter(result -> result.getMethod().equals(method))
+        .filter(result -> method.equals(result.getMethod()))
         .collect(Collectors.toSet());
   }
 

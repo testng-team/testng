@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.jspecify.annotations.Nullable;
+
 /** The base class for all exceptions thrown by TestNG. */
 public class TestNGException extends RuntimeException {
 
@@ -9,7 +11,7 @@ public class TestNGException extends RuntimeException {
     super(t);
   }
 
-  public TestNGException(String string) {
+  public TestNGException(@Nullable String string) {
     super("\n" + string);
   }
 

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Listener interface that can be used to determine listener execution order. This interface will
@@ -21,7 +22,8 @@ import java.util.List;
  */
 @FunctionalInterface
 public interface ListenerComparator extends Comparator<ITestNGListener> {
-  static <T extends ITestNGListener> List<T> sort(List<T> list, ListenerComparator comparator) {
+  static <T extends ITestNGListener> List<T> sort(
+      List<T> list, @Nullable ListenerComparator comparator) {
     if (comparator == null) {
       return Collections.unmodifiableList(list);
     }
@@ -31,7 +33,7 @@ public interface ListenerComparator extends Comparator<ITestNGListener> {
   }
 
   static <T extends ITestNGListener> Collection<T> sort(
-      Collection<T> list, ListenerComparator comparator) {
+      Collection<T> list, @Nullable ListenerComparator comparator) {
     if (comparator == null) {
       return Collections.unmodifiableCollection(list);
     }

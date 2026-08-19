@@ -40,7 +40,7 @@ public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   }
 
   @Override
-  public ITestClass getTestClass() {
+  public @Nullable ITestClass getTestClass() {
     return testNGMethod.getTestClass();
   }
 
@@ -55,7 +55,7 @@ public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   }
 
   @Override
-  public Object getInstance() {
+  public @Nullable Object getInstance() {
     return testNGMethod.getInstance();
   }
 
@@ -80,7 +80,7 @@ public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   }
 
   @Override
-  public String getMissingGroup() {
+  public @Nullable String getMissingGroup() {
     return testNGMethod.getMissingGroup();
   }
 
@@ -190,7 +190,7 @@ public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   }
 
   @Override
-  public String getId() {
+  public @Nullable String getId() {
     return testNGMethod.getId();
   }
 
@@ -235,7 +235,7 @@ public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   }
 
   @Override
-  public String getDescription() {
+  public @Nullable String getDescription() {
     return testNGMethod.getDescription();
   }
 
@@ -280,7 +280,7 @@ public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   }
 
   @Override
-  public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
+  public @Nullable IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
     return testNGMethod.getRetryAnalyzer(result);
   }
 
@@ -360,7 +360,7 @@ public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   }
 
   @Override
-  public XmlTest getXmlTest() {
+  public @Nullable XmlTest getXmlTest() {
     return testNGMethod.getXmlTest();
   }
 

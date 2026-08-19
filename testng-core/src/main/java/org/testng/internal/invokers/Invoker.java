@@ -14,6 +14,7 @@ import org.testng.ITestNGMethod;
 import org.testng.SuiteRunState;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.Utils;
 
 /**
  * This class is responsible for invoking methods: - test methods - configuration methods - possibly
@@ -26,7 +27,7 @@ public class Invoker implements IInvoker {
       ITestNGMethod::canRunFromClass;
   /** Predicate to filter methods */
   static final BiPredicate<ITestNGMethod, IClass> SAME_CLASS =
-      (m, c) -> c == null || m.getTestClass().getName().equals(c.getName());
+      (m, c) -> c == null || Utils.requireTestClassOf(m).getName().equals(c.getName());
 
   private final TestInvoker m_testInvoker;
   private final ConfigInvoker m_configInvoker;

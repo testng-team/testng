@@ -103,7 +103,7 @@ public class TestResult implements ITestResult {
       long start,
       long end) {
     m_throwable = t;
-    m_instanceName = method.getTestClass().getName();
+    m_instanceName = Utils.requireTestClassOf(method).getName();
     if (null == m_throwable) {
       m_status = ITestResult.SUCCESS;
     }
@@ -135,8 +135,9 @@ public class TestResult implements ITestResult {
       }
       return;
     }
-    if (method.getTestClass().getTestName() != null) {
-      m_name = method.getTestClass().getTestName();
+    String boundName = Utils.requireTestClassOf(method).getTestName();
+    if (boundName != null) {
+      m_name = boundName;
       return;
     }
     String string = instance.toString();
@@ -170,8 +171,9 @@ public class TestResult implements ITestResult {
     if (instance instanceof ITest) {
       return ((ITest) instance).getTestName();
     }
-    if (m_method.getTestClass().getTestName() != null) {
-      return m_method.getTestClass().getTestName();
+    String boundTestName = Utils.requireTestClassOf(m_method).getTestName();
+    if (boundTestName != null) {
+      return boundTestName;
     }
     return null;
   }
@@ -222,7 +224,7 @@ public class TestResult implements ITestResult {
   /** @return Returns the testClass. */
   @Override
   public IClass getTestClass() {
-    return requireMethod().getTestClass();
+    return Utils.requireTestClassOf(requireMethod());
   }
 
   /** @return Returns the throwable. */
@@ -302,7 +304,8 @@ public class TestResult implements ITestResult {
 
   @Override
   public @Nullable Object getInstance() {
-    return IParameterInfo.embeddedInstance(requireMethod().getInstance());
+    Object instance = requireMethod().getInstance();
+    return instance == null ? null : IParameterInfo.embeddedInstance(instance);
   }
 
   @Override
@@ -314,7 +317,7 @@ public class TestResult implements ITestResult {
   }
 
   @Override
-  public Object getAttribute(String name) {
+  public @Nullable Object getAttribute(String name) {
     return m_attributes.getAttribute(name);
   }
 
@@ -329,7 +332,7 @@ public class TestResult implements ITestResult {
   }
 
   @Override
-  public Object removeAttribute(String name) {
+  public @Nullable Object removeAttribute(String name) {
     return m_attributes.removeAttribute(name);
   }
 
@@ -468,12 +471,12 @@ public class TestResult implements ITestResult {
   }
 
   private static boolean isGlobalFailure(ITestResult result) {
-    ITestNGMethod m = result.getMethod();
+    ITestNGMethod m = Utils.requireMethodOf(result);
     return m.isBeforeTestConfiguration() || m.isBeforeSuiteConfiguration();
   }
 
   private boolean isRelated(ITestResult result) {
-    ITestNGMethod m = result.getMethod();
+    ITestNGMethod m = Utils.requireMethodOf(result);
     if (!m.isBeforeClassConfiguration() && !m.isBeforeMethodConfiguration()) {
       return false;
     }
@@ -487,7 +490,7 @@ public class TestResult implements ITestResult {
   }
 
   private boolean belongToSameGroup(ITestResult result) {
-    ITestNGMethod m = result.getMethod();
+    ITestNGMethod m = Utils.requireMethodOf(result);
     if (!m.isBeforeGroupsConfiguration()) {
       return false;
     }
@@ -503,6 +506,12 @@ public class TestResult implements ITestResult {
   public static void copyAttributes(ITestResult source, ITestResult target) {
     source
         .getAttributeNames()
-        .forEach(name -> target.setAttribute(name, source.getAttribute(name)));
+        .forEach(
+            name -> {
+              Object value = source.getAttribute(name);
+              if (value != null) {
+                target.setAttribute(name, value);
+              }
+            });
   }
 }

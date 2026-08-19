@@ -100,7 +100,7 @@ public class ConfigMethodArguments extends MethodArguments {
       return this;
     }
 
-    public Builder usingInstance(Object instance) {
+    public Builder usingInstance(@Nullable Object instance) {
       this.instance = instance;
       return this;
     }

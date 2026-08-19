@@ -29,6 +29,7 @@ import org.testng.internal.KeyAwareAutoCloseableLock;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.TestMethodComparator;
 import org.testng.internal.TestMethodContainer;
+import org.testng.internal.Utils;
 import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.thread.IWorker;
 
@@ -152,7 +153,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
       if (canInvokeBeforeClassMethods()) {
         try (KeyAwareAutoCloseableLock.AutoReleasable ignored = lock.lockForObject(key)) {
-          invokeBeforeClassMethods(testMethod.getTestClass(), testMethodInstance);
+          invokeBeforeClassMethods(Utils.requireTestClassOf(testMethod), testMethodInstance);
         }
       }
 
@@ -161,7 +162,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         invokeTestMethods(testMethod, testMethod.getInstance());
       } finally {
         try (KeyAwareAutoCloseableLock.AutoReleasable ignored = lock.lockForObject(key)) {
-          invokeAfterClassMethods(testMethod.getTestClass(), testMethodInstance);
+          invokeAfterClassMethods(Utils.requireTestClassOf(testMethod), testMethodInstance);
         }
       }
     }
@@ -171,7 +172,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     return threadIdToRunOn != -1;
   }
 
-  protected void invokeTestMethods(ITestNGMethod tm, Object instance) {
+  protected void invokeTestMethods(ITestNGMethod tm, @Nullable Object instance) {
     // Potential bug here:  we look up the method index of tm among all
     // the test methods (not very efficient) but if this method appears
     // several times and these methods are run in parallel, the results

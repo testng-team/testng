@@ -10,7 +10,10 @@ public class DefaultAnnotationTransformer extends IgnoreListener implements IAnn
 
   @Override
   public void transform(
-      ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
+      ITestAnnotation annotation,
+      @Nullable Class testClass,
+      @Nullable Constructor testConstructor,
+      @Nullable Method testMethod) {
     super.transform(annotation, testClass, testConstructor, testMethod);
   }
 

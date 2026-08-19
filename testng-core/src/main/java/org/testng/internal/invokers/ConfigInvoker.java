@@ -260,7 +260,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
     for (ITestNGMethod tm : methods) {
       if (null == arguments.getTestClass()) {
-        arguments.setTestClass(tm.getTestClass());
+        arguments.setTestClass(Utils.requireTestClassOf(tm));
       }
       // Defaulted just above, so it is set from here on.
       IClass testClass = Objects.requireNonNull(arguments.getTestClass());

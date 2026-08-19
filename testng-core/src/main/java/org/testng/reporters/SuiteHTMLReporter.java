@@ -567,7 +567,7 @@ public class SuiteHTMLReporter implements IReporter {
 
       // Collect testClasses
       for (ITestNGMethod tm : methods) {
-        ITestClass tc = tm.getTestClass();
+        ITestClass tc = Utils.requireTestClassOf(tm);
         m_classes.put(tc.getRealClass().getName(), tc);
       }
     }
