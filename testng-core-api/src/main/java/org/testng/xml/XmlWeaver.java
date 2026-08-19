@@ -36,8 +36,7 @@ final class XmlWeaver {
       return instance;
     }
     Class<?> clazz = ClassHelper.forName(getClassName());
-    boolean isValid = clazz != null && IWeaveXml.class.isAssignableFrom(clazz);
-    if (!isValid) {
+    if (clazz == null || !IWeaveXml.class.isAssignableFrom(clazz)) {
       String msg =
           "In order for "
               + getClassName()
