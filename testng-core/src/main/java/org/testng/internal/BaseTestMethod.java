@@ -477,8 +477,8 @@ public abstract class BaseTestMethod
   }
 
   protected void initBeforeAfterGroups(
-      Class<? extends ITestOrConfiguration> annotationClass, String @Nullable [] groups) {
-    String[] groupsAtMethodLevel =
+      Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
+    String @Nullable [] groupsAtMethodLevel =
         calculateGroupsToUseConsideringValuesAndGroupValues(annotationClass, groups);
     // @BeforeGroups and @AfterGroups annotation cannot be used at Class level. So its always null
     setGroups(getStringArray(groupsAtMethodLevel, null));
