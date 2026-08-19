@@ -132,7 +132,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       throw new IllegalArgumentException(
           "Java @Annotation class for '" + annotationClass + "' not found.");
     }
-    Method m = tm.getConstructorOrMethod().getMethod();
+    Method m = tm.getConstructorOrMethod().requireMethod();
     Class<?> testClass = m.getDeclaringClass();
     if (tm instanceof BaseTestMethod && !((BaseTestMethod) tm).isInstanceInstantiated()) {
       // Lazy @Factory instance not created yet: a constructor factory produces exactly its

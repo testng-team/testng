@@ -65,8 +65,15 @@ public class XmlPackage {
 
   private List<XmlClass> initializeXmlClasses() {
     List<XmlClass> result = new ArrayList<>();
+    String name = m_name;
+    if (name == null) {
+      // A <package> tag carrying no name attribute. Reported the same way as an unreadable
+      // package below, rather than through the NullPointerException this used to raise.
+      Utils.log("XmlPackage", 1, "Ignoring a <package> tag that carries no name.");
+      return result;
+    }
     try {
-      String[] classes = PackageUtils.findClassesInPackage(m_name, m_include, m_exclude);
+      String[] classes = PackageUtils.findClassesInPackage(name, m_include, m_exclude);
 
       int index = 0;
       for (String className : classes) {
