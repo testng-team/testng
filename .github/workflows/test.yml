@@ -56,7 +56,7 @@ jobs:
       # The gate is the Gradle task itself, so this is reproducible locally with
       # ./gradlew rewriteDryRun -PfailOnRewriteDryRun=true
       - name: Check the OpenRewrite recipes leave nothing to do
-        uses: burrunan/gradle-cache-action@4b67497abd37a511d6c1dc6299bdd84ff39f7bf5 # v3
+        uses: burrunan/gradle-cache-action@404534c34a2faa40430357a3183522a845b04f3b # v3
         with:
           job-id: rewrite
           # Test sources are excluded from rewriting, so compiling them feeds nothing into the
@@ -134,7 +134,7 @@ jobs:
         run: echo "unique_id=$(date +%s)" >> $GITHUB_OUTPUT
       - name: Test
         id: run_test_cases
-        uses: burrunan/gradle-cache-action@4b67497abd37a511d6c1dc6299bdd84ff39f7bf5 # v3
+        uses: burrunan/gradle-cache-action@404534c34a2faa40430357a3183522a845b04f3b # v3
         with:
           job-id: jdk${{ matrix.java_version }}
           arguments: |
