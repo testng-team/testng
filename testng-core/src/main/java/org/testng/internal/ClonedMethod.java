@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import org.jspecify.annotations.Nullable;
@@ -20,7 +19,7 @@ import org.testng.xml.XmlTest;
 public class ClonedMethod implements ITestNGMethod {
 
   private final ITestNGMethod m_method;
-  private final Method m_javaMethod;
+  private final ConstructorOrMethod m_constructorOrMethod;
   private @Nullable String m_id;
   private int m_currentInvocationCount;
 
@@ -29,7 +28,7 @@ public class ClonedMethod implements ITestNGMethod {
 
   public ClonedMethod(ITestNGMethod method, Method javaMethod) {
     m_method = method;
-    m_javaMethod = javaMethod;
+    m_constructorOrMethod = new ConstructorOrMethod(javaMethod);
   }
 
   @Override
@@ -119,7 +118,7 @@ public class ClonedMethod implements ITestNGMethod {
 
   @Override
   public String getMethodName() {
-    return m_javaMethod.getName();
+    return m_constructorOrMethod.getName();
   }
 
   @Override
@@ -147,7 +146,7 @@ public class ClonedMethod implements ITestNGMethod {
 
   @Override
   public Class<?> getRealClass() {
-    return m_javaMethod.getDeclaringClass();
+    return m_constructorOrMethod.getDeclaringClass();
   }
 
   @Override
@@ -298,15 +297,12 @@ public class ClonedMethod implements ITestNGMethod {
 
   @Override
   public ClonedMethod clone() {
-    return new ClonedMethod(m_method, m_javaMethod);
+    return new ClonedMethod(m_method, m_constructorOrMethod.requireMethod());
   }
 
   @Override
   public String toString() {
-    // getConstructorOrMethod() answers null, so this has always thrown. Stated rather than hidden.
-    ConstructorOrMethod m =
-        Objects.requireNonNull(
-            getConstructorOrMethod(), "a ClonedMethod has no ConstructorOrMethod");
+    ConstructorOrMethod m = getConstructorOrMethod();
     String cls = m.getDeclaringClass().getName();
     return BaseTestMethod.stringify(cls, m).toString();
   }
@@ -357,8 +353,8 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public @Nullable ConstructorOrMethod getConstructorOrMethod() {
-    return null;
+  public ConstructorOrMethod getConstructorOrMethod() {
+    return m_constructorOrMethod;
   }
 
   @Override
