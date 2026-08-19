@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -196,7 +197,7 @@ public class TimeBombSkipException extends SkipException {
 
   /** The date this exception stops skipping; absent when it was built without one. */
   private Calendar requireExpireDate() {
-    return java.util.Objects.requireNonNull(m_expireDate, "the exception carries an expiry date");
+    return Objects.requireNonNull(m_expireDate, "the exception carries an expiry date");
   }
 
   @Override

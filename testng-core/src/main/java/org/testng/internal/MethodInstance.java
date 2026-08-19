@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
 import org.testng.IMethodInstance;
+import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Objects;
 import org.testng.xml.XmlClass;
@@ -40,8 +41,10 @@ public class MethodInstance implements IMethodInstance {
         @Override
         public int compare(IMethodInstance o1, IMethodInstance o2) {
           // If the two methods are in different <test>
-          XmlTest test1 = Utils.requireTestClassOf(o1.getMethod()).getXmlTest();
-          XmlTest test2 = Utils.requireTestClassOf(o2.getMethod()).getXmlTest();
+          ITestClass testClass1 = Utils.requireTestClassOf(o1.getMethod());
+          ITestClass testClass2 = Utils.requireTestClassOf(o2.getMethod());
+          XmlTest test1 = testClass1.getXmlTest();
+          XmlTest test2 = testClass2.getXmlTest();
 
           // If the two methods are not in the same <test>, we can't compare them. A method a
           // @Factory produced has no <test> tag of its own, which reads the same way here.
@@ -55,8 +58,8 @@ public class MethodInstance implements IMethodInstance {
 
           // If the two methods are in the same <class>, compare them by their method
           // index, otherwise compare them with their class index.
-          XmlClass class1 = Utils.requireTestClassOf(o1.getMethod()).getXmlClass();
-          XmlClass class2 = Utils.requireTestClassOf(o2.getMethod()).getXmlClass();
+          XmlClass class1 = testClass1.getXmlClass();
+          XmlClass class2 = testClass2.getXmlClass();
 
           // This can happen if these classes came from a @Factory, in which case, they
           // don't have an associated XmlClass

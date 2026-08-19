@@ -79,13 +79,6 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     return methods == null ? new ArrayList<>() : methods;
   }
 
-  /**
-   * The real class this TestClass was built for; {@code init} binds it before anything reads it.
-   */
-  private Class<?> realClass() {
-    return java.util.Objects.requireNonNull(m_testClass, "a TestClass is bound to its real class");
-  }
-
   private static final Logger LOG = Logger.getLogger(TestClass.class);
 
   protected TestClass(
@@ -187,28 +180,28 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   }
 
   private void initMethods() {
-    ITestNGMethod[] methods = testMethodFinder.getTestMethods(realClass(), xmlTest);
+    ITestNGMethod[] methods = testMethodFinder.getTestMethods(getRealClass(), xmlTest);
     m_testMethods = createTestMethods(methods);
 
     for (IdentifiableObject eachInstance : IObject.objects(iClass, false)) {
       m_beforeSuiteMethods =
           ConfigurationMethod.createSuiteConfigurationMethods(
               objectFactory,
-              testMethodFinder.getBeforeSuiteMethods(realClass()),
+              testMethodFinder.getBeforeSuiteMethods(getRealClass()),
               annotationFinder,
               true,
               eachInstance);
       m_afterSuiteMethods =
           ConfigurationMethod.createSuiteConfigurationMethods(
               objectFactory,
-              testMethodFinder.getAfterSuiteMethods(realClass()),
+              testMethodFinder.getAfterSuiteMethods(getRealClass()),
               annotationFinder,
               false,
               eachInstance);
       m_beforeTestConfMethods =
           ConfigurationMethod.createTestConfigurationMethods(
               objectFactory,
-              testMethodFinder.getBeforeTestConfigurationMethods(realClass()),
+              testMethodFinder.getBeforeTestConfigurationMethods(getRealClass()),
               annotationFinder,
               true,
               this.xmlTest,
@@ -216,7 +209,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
       m_afterTestConfMethods =
           ConfigurationMethod.createTestConfigurationMethods(
               objectFactory,
-              testMethodFinder.getAfterTestConfigurationMethods(realClass()),
+              testMethodFinder.getAfterTestConfigurationMethods(getRealClass()),
               annotationFinder,
               false,
               this.xmlTest,
@@ -224,7 +217,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
       m_beforeClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
               objectFactory,
-              testMethodFinder.getBeforeClassMethods(realClass()),
+              testMethodFinder.getBeforeClassMethods(getRealClass()),
               annotationFinder,
               true,
               xmlTest,
@@ -233,7 +226,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
       m_afterClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
               objectFactory,
-              testMethodFinder.getAfterClassMethods(realClass()),
+              testMethodFinder.getAfterClassMethods(getRealClass()),
               annotationFinder,
               false,
               xmlTest,
@@ -242,21 +235,21 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
       m_beforeGroupsMethods =
           ConfigurationMethod.createBeforeConfigurationMethods(
               objectFactory,
-              testMethodFinder.getBeforeGroupsConfigurationMethods(realClass()),
+              testMethodFinder.getBeforeGroupsConfigurationMethods(getRealClass()),
               annotationFinder,
               true,
               eachInstance);
       m_afterGroupsMethods =
           ConfigurationMethod.createAfterConfigurationMethods(
               objectFactory,
-              testMethodFinder.getAfterGroupsConfigurationMethods(realClass()),
+              testMethodFinder.getAfterGroupsConfigurationMethods(getRealClass()),
               annotationFinder,
               false,
               eachInstance);
       m_beforeTestMethods.addAll(
           ConfigurationMethod.createTestMethodConfigurationMethods(
               objectFactory,
-              testMethodFinder.getBeforeTestMethods(realClass()),
+              testMethodFinder.getBeforeTestMethods(getRealClass()),
               annotationFinder,
               true,
               xmlTest,
@@ -264,7 +257,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
       m_afterTestMethods.addAll(
           ConfigurationMethod.createTestMethodConfigurationMethods(
               objectFactory,
-              testMethodFinder.getAfterTestMethods(realClass()),
+              testMethodFinder.getAfterTestMethods(getRealClass()),
               annotationFinder,
               false,
               xmlTest,
@@ -280,14 +273,14 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     List<ITestNGMethod> vResult = new ArrayList<>();
     for (ITestNGMethod tm : methods) {
       ConstructorOrMethod m = tm.getConstructorOrMethod();
-      if (m.getDeclaringClass().isAssignableFrom(realClass())) {
+      if (m.getDeclaringClass().isAssignableFrom(getRealClass())) {
         for (IdentifiableObject o : IObject.objects(iClass, false)) {
-          log(4, "Adding method " + tm + " on TestClass " + realClass());
+          log(4, "Adding method " + tm + " on TestClass " + getRealClass());
           vResult.add(
               new TestNGMethod(objectFactory, m.requireMethod(), annotationFinder, xmlTest, o));
         }
       } else {
-        log(4, "Rejecting method " + tm + " for TestClass " + realClass());
+        log(4, "Rejecting method " + tm + " for TestClass " + getRealClass());
       }
     }
 
@@ -303,7 +296,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   }
 
   protected void dump() {
-    LOG.info("===== Test class\n" + realClass().getName());
+    LOG.info("===== Test class\n" + getRealClass().getName());
     for (ITestNGMethod m : m_beforeClassMethods) {
       LOG.info("  @BeforeClass " + m);
     }
@@ -324,7 +317,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(getClass()).add("name", realClass()).toString();
+    return Objects.toStringHelper(getClass()).add("name", getRealClass()).toString();
   }
 
   public IClass getIClass() {

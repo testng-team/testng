@@ -78,7 +78,7 @@ public interface ISuite extends IAttributes {
   /** @return The representation of the current XML suite file. */
   XmlSuite getXmlSuite();
 
-  void addListener(@Nullable ITestNGListener listener);
+  void addListener(ITestNGListener listener);
 
   @Nullable
   Injector getParentInjector();

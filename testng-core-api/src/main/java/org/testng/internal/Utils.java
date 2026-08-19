@@ -15,6 +15,7 @@ import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -463,6 +464,10 @@ public final class Utils {
    * @param result The result to read the method of.
    * @return The test method, never {@code null}.
    */
+  public static ITestNGMethod requireMethodOf(ITestResult result) {
+    return Objects.requireNonNull(result.getMethod(), "a reported result carries a test method");
+  }
+
   /**
    * The test class a method was bound to.
    *
@@ -474,6 +479,10 @@ public final class Utils {
    * @param method The method to read the test class of.
    * @return The test class, never {@code null}.
    */
+  public static ITestClass requireTestClassOf(ITestNGMethod method) {
+    return Objects.requireNonNull(method.getTestClass(), "a scheduled method is bound to a class");
+  }
+
   /**
    * The test context a result was produced in.
    *
@@ -484,6 +493,10 @@ public final class Utils {
    * @param result The result to read the context of.
    * @return The test context, never {@code null}.
    */
+  public static ITestContext requireTestContextOf(ITestResult result) {
+    return Objects.requireNonNull(result.getTestContext(), "a reported result carries a context");
+  }
+
   /**
    * The moment a test context finished.
    *
@@ -493,20 +506,8 @@ public final class Utils {
    * @param context The context to read the end date of.
    * @return The end date, never {@code null}.
    */
-  public static java.util.Date requireEndDateOf(ITestContext context) {
+  public static Date requireEndDateOf(ITestContext context) {
     return Objects.requireNonNull(context.getEndDate(), "a reported test context has finished");
-  }
-
-  public static ITestContext requireTestContextOf(ITestResult result) {
-    return Objects.requireNonNull(result.getTestContext(), "a reported result carries a context");
-  }
-
-  public static ITestClass requireTestClassOf(ITestNGMethod method) {
-    return Objects.requireNonNull(method.getTestClass(), "a scheduled method is bound to a class");
-  }
-
-  public static ITestNGMethod requireMethodOf(ITestResult result) {
-    return Objects.requireNonNull(result.getMethod(), "a reported result carries a test method");
   }
 
   public static String detailedMethodName(ITestNGMethod method, boolean fqn) {

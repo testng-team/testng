@@ -510,9 +510,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         .parallelStream()
         .filter(
             r -> {
+              Object resultInstance = r.getInstance();
               Object instance =
-                  Optional.ofNullable(r.getInstance())
-                      .orElse(Utils.requireMethodOf(r).getInstance());
+                  resultInstance != null ? resultInstance : Utils.requireMethodOf(r).getInstance();
               if (method.getGroupsDependedUpon().length == 0) {
                 // Consider equality of objects alone if we are NOT dealing with group dependency.
                 return instance == method.getInstance();

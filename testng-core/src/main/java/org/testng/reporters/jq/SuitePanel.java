@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.testng.ISuite;
+import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.Utils;
@@ -71,7 +72,8 @@ public class SuitePanel extends BasePanel {
     xsb.push(D, C, "method-content");
     xsb.push("a", "name", Model.getTestResultName(tr));
     xsb.pop("a");
-    xsb.addOptional(S, Utils.requireMethodOf(tr).getMethodName(), C, "method-name");
+    ITestNGMethod method = Utils.requireMethodOf(tr);
+    xsb.addOptional(S, method.getMethodName(), C, "method-name");
 
     // Parameters?
     if (tr.getParameters().length > 0) {
@@ -80,7 +82,7 @@ public class SuitePanel extends BasePanel {
       xsb.addOptional(S, "(" + text + ")", C, "parameters");
     }
 
-    CustomAttribute[] attributes = Utils.requireMethodOf(tr).getAttributes();
+    CustomAttribute[] attributes = method.getAttributes();
     if (attributes != null && attributes.length > 0) {
       String text =
           Arrays.stream(attributes)
@@ -97,7 +99,7 @@ public class SuitePanel extends BasePanel {
     }
 
     // Description?
-    String description = Utils.requireMethodOf(tr).getDescription();
+    String description = method.getDescription();
     if (!Strings.isNullOrEmpty(description)) {
       xsb.push("em");
       xsb.addString("(" + description + ")");

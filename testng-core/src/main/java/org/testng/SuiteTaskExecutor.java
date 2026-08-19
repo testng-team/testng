@@ -1,5 +1,6 @@
 package org.testng;
 
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -55,8 +56,7 @@ class SuiteTaskExecutor {
   public void awaitCompletion() {
     Utils.log("TestNG", 2, "Starting executor for all suites");
     try {
-      ExecutorService running =
-          java.util.Objects.requireNonNull(service, "execute() has started the pool");
+      ExecutorService running = Objects.requireNonNull(service, "execute() has started the pool");
       boolean ignored = running.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
       running.shutdownNow();
     } catch (InterruptedException handled) {

@@ -188,8 +188,8 @@ public class EmailableReporter2 implements IReporter {
         writeTableData(integerFormat.format(retriedTests), retriedTests > 0 ? "num attn" : "num");
         writeTableData(integerFormat.format(failedTests), failedTests > 0 ? "num attn" : "num");
         writeTableData(decimalFormat.format(duration), "num");
-        writeTableData(orEmpty(testResult.getIncludedGroups()));
-        writeTableData(orEmpty(testResult.getExcludedGroups()));
+        writeTableData(testResult.getIncludedGroups());
+        writeTableData(testResult.getExcludedGroups());
 
         writer().println("</tr>");
 
@@ -648,16 +648,12 @@ public class EmailableReporter2 implements IReporter {
     writer.print(">");
   }
 
-  /** Groups {@link TestResult}s by suite. */
   /** A &lt;test&gt; that carries no name renders as an empty cell rather than the text "null". */
-  private static String orEmpty(@Nullable String text) {
-    return text == null ? "" : text;
-  }
-
   private static String escapeHtmlOrEmpty(@Nullable String text) {
     return text == null ? "" : Utils.escapeHtml(text);
   }
 
+  /** Groups {@link TestResult}s by suite. */
   protected static class SuiteResult {
     private final String suiteName;
     private final List<TestResult> testResults = new ArrayList<>();
@@ -704,7 +700,7 @@ public class EmailableReporter2 implements IReporter {
     private final int skippedTestCount;
     private final int passedTestCount;
     private final long duration;
-    private final @Nullable String includedGroups;
+    private final String includedGroups;
     private final String excludedGroups;
 
     public TestResult(ITestContext context) {
@@ -862,11 +858,11 @@ public class EmailableReporter2 implements IReporter {
       return duration;
     }
 
-    public @Nullable String getIncludedGroups() {
+    public String getIncludedGroups() {
       return includedGroups;
     }
 
-    public @Nullable String getExcludedGroups() {
+    public String getExcludedGroups() {
       return excludedGroups;
     }
 

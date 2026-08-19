@@ -175,7 +175,7 @@ public class TestHTMLReporter implements ITestListener {
       pw.append("</td>\n");
 
       // Custom attributes
-      CustomAttribute[] attributes = Utils.requireMethodOf(tr).getAttributes();
+      CustomAttribute[] attributes = method.getAttributes();
       if (attributes != null && attributes.length > 0) {
         pw.append("<td>");
         String divId = "attributes-" + tr.hashCode();

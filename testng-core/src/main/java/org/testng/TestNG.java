@@ -538,7 +538,7 @@ public class TestNG {
     return result;
   }
 
-  private List<XmlSuite> createCommandLineSuitesForClasses(Class @Nullable [] classes) {
+  private List<XmlSuite> createCommandLineSuitesForClasses(Class[] classes) {
     //
     // See if any of the classes has an xmlSuite or xmlTest attribute.
     // If it does, create the appropriate XmlSuite, otherwise, create
@@ -546,10 +546,7 @@ public class TestNG {
     //
 
     XmlClass[] xmlClasses =
-        Arrays.stream(
-                Objects.requireNonNull(classes, "command line suites are built from a class list"))
-            .map(clazz -> new XmlClass(clazz, true))
-            .toArray(XmlClass[]::new);
+        Arrays.stream(classes).map(clazz -> new XmlClass(clazz, true)).toArray(XmlClass[]::new);
     Map<String, XmlSuite> suites = new HashMap<>();
     IAnnotationFinder finder = m_configuration.getAnnotationFinder();
 
@@ -933,10 +930,14 @@ public class TestNG {
 
   private void initializeCommandLineSuites() {
     if (m_commandLineTestClasses != null || m_commandLineMethods != null) {
-      if (null != m_commandLineMethods) {
-        m_cmdlineSuites = createCommandLineSuitesForMethods(m_commandLineMethods);
+      List<String> cliMethods = m_commandLineMethods;
+      Class<?>[] cliClasses = m_commandLineTestClasses;
+      if (null != cliMethods) {
+        m_cmdlineSuites = createCommandLineSuitesForMethods(cliMethods);
+      } else if (null != cliClasses) {
+        m_cmdlineSuites = createCommandLineSuitesForClasses(cliClasses);
       } else {
-        m_cmdlineSuites = createCommandLineSuitesForClasses(m_commandLineTestClasses);
+        return;
       }
 
       for (XmlSuite s : m_cmdlineSuites) {
@@ -1336,11 +1337,6 @@ public class TestNG {
     return new ArrayList<>(suiteRunnerMap.values());
   }
 
-  /** Every suite the map is walked over was put in it by {@code createSuiteRunners}. */
-  private static ISuite requireRunnerFor(SuiteRunnerMap map, XmlSuite suite) {
-    return Objects.requireNonNull(map.get(suite), "every suite has a runner in the map");
-  }
-
   private static void error(@Nullable String s) {
     LOGGER.error(s);
   }
@@ -1371,7 +1367,7 @@ public class TestNG {
     }
     SuiteRunnerWorker srw =
         new SuiteRunnerWorker(
-            requireRunnerFor(suiteRunnerMap, xmlSuite), suiteRunnerMap, verbose, defaultSuiteName);
+            suiteRunnerMap.require(xmlSuite), suiteRunnerMap, verbose, defaultSuiteName);
     srw.run();
   }
 
@@ -1388,11 +1384,11 @@ public class TestNG {
       IDynamicGraph<ISuite> suiteGraph /* OUT */,
       SuiteRunnerMap suiteRunnerMap,
       XmlSuite xmlSuite) {
-    ISuite parentSuiteRunner = requireRunnerFor(suiteRunnerMap, xmlSuite);
+    ISuite parentSuiteRunner = suiteRunnerMap.require(xmlSuite);
     suiteGraph.addNode(parentSuiteRunner);
     if (!xmlSuite.getChildSuites().isEmpty()) {
       for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
-        suiteGraph.addEdge(0, parentSuiteRunner, requireRunnerFor(suiteRunnerMap, childSuite));
+        suiteGraph.addEdge(0, parentSuiteRunner, suiteRunnerMap.require(childSuite));
         populateSuiteGraph(suiteGraph, suiteRunnerMap, childSuite);
       }
     }
@@ -1592,10 +1588,6 @@ public class TestNG {
       }
 
       setTestClasses(classes.toArray(new Class[0]));
-    }
-
-    if (cla.outputDirectory != null) {
-      setOutputDirectory(cla.outputDirectory);
     }
 
     if (cla.testNames != null) {
