@@ -73,7 +73,7 @@ class SimpleObjectDispenser implements IObjectDispenser {
       IAnnotationFinder finder,
       ITestObjectFactory objectFactory,
       boolean create,
-      String errorMsgPrefix) {
+      @Nullable String errorMsgPrefix) {
     T result = null;
 
     try {

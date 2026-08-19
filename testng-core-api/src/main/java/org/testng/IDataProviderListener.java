@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.jspecify.annotations.Nullable;
+
 /** A listener that gets invoked before and after a data provider is invoked by TestNG. */
 public interface IDataProviderListener extends ITestNGListener {
 
@@ -12,7 +14,9 @@ public interface IDataProviderListener extends ITestNGListener {
    * @param iTestContext - The current test context
    */
   default void beforeDataProviderExecution(
-      IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext) {
+      IDataProviderMethod dataProviderMethod,
+      ITestNGMethod method,
+      @Nullable ITestContext iTestContext) {
     // not implemented
   }
 
@@ -25,7 +29,9 @@ public interface IDataProviderListener extends ITestNGListener {
    * @param iTestContext - The current test context
    */
   default void afterDataProviderExecution(
-      IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext) {
+      IDataProviderMethod dataProviderMethod,
+      ITestNGMethod method,
+      @Nullable ITestContext iTestContext) {
     // not implemented
   }
 
@@ -39,7 +45,8 @@ public interface IDataProviderListener extends ITestNGListener {
    * @param t - The {@link RuntimeException} that embeds the actual exception. Use {@link
    *     RuntimeException#getCause()} to get to the actual exception.
    */
-  default void onDataProviderFailure(ITestNGMethod method, ITestContext ctx, RuntimeException t) {
+  default void onDataProviderFailure(
+      ITestNGMethod method, @Nullable ITestContext ctx, RuntimeException t) {
     // not implemented
   }
 }

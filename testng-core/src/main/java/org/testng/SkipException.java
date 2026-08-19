@@ -1,5 +1,6 @@
 package org.testng;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.internal.AutoCloseableLock;
 
 /**
@@ -13,7 +14,7 @@ public class SkipException extends RuntimeException {
 
   private static final long serialVersionUID = 4052142657885527260L;
 
-  private StackTraceElement[] m_stackTrace;
+  private StackTraceElement @Nullable [] m_stackTrace;
   private volatile boolean m_stackReduced;
 
   public SkipException(String skipMessage) {

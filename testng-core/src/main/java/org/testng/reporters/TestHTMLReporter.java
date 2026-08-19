@@ -332,7 +332,7 @@ public class TestHTMLReporter implements ITestListener {
           .append("<body>\n");
 
       Date startDate = testContext.getStartDate();
-      Date endDate = testContext.getEndDate();
+      Date endDate = Utils.requireEndDateOf(testContext);
       long duration = (endDate.getTime() - startDate.getTime()) / 1000;
       int passed =
           testContext.getPassedTests().size()

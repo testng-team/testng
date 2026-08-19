@@ -159,7 +159,7 @@ public class NoOpTestClass implements ITestClass, IObject {
   public void addObject(IdentifiableObject instance) {}
 
   @Override
-  public IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix) {
+  public IdentifiableObject[] getObjects(boolean create, @Nullable String errorMsgPrefix) {
     return m_instances;
   }
 

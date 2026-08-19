@@ -11,6 +11,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.regex.Pattern;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -127,7 +128,8 @@ public class JUnitXMLReporter implements IResultListener2 {
     attrs.setProperty(
         XMLConstants.ATTR_TIME,
         Double.toString(
-            (context.getEndDate().getTime() - context.getStartDate().getTime()) / 1000.0));
+            (Utils.requireEndDateOf(context).getTime() - context.getStartDate().getTime())
+                / 1000.0));
 
     attrs.setProperty(XMLConstants.ATTR_TIMESTAMP, formattedTime());
 
@@ -281,7 +283,7 @@ public class JUnitXMLReporter implements IResultListener2 {
    * @param context test context
    * @return unique name for the file associated with this test context.
    */
-  private String generateFileName(ITestContext context) {
+  private @Nullable String generateFileName(ITestContext context) {
     String fileName;
     String keyToSearch = context.getSuite().getName() + context.getName();
     if (m_fileNameMap.get(keyToSearch) == null) {

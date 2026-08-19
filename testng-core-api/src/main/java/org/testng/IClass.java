@@ -53,7 +53,7 @@ public interface IClass {
    * @deprecated - As of TestNG <code>v7.10.0</code>
    */
   @Deprecated
-  default Object[] getInstances(boolean create, String errorMsgPrefix) {
+  default Object[] getInstances(boolean create, @Nullable String errorMsgPrefix) {
     return getInstances(create);
   }
 

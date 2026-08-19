@@ -44,9 +44,9 @@ public class ReporterConfig {
     return sb.toString();
   }
 
-  public static @Nullable ReporterConfig deserialize(String inputString) {
+  public static @Nullable ReporterConfig deserialize(@Nullable String inputString) {
 
-    if (Utils.isStringEmpty(inputString)) {
+    if (inputString == null || Utils.isStringEmpty(inputString)) {
       return null;
     }
 

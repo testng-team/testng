@@ -180,7 +180,7 @@ public class EmailableReporter2 implements IReporter {
                 .append("<a href=\"#t")
                 .append(testIndex)
                 .append("\">")
-                .append(Utils.escapeHtml(testResult.getTestName()))
+                .append(escapeHtmlOrEmpty(testResult.getTestName()))
                 .append("</a>")
                 .toString());
         writeTableData(integerFormat.format(passedTests), "num");
@@ -188,8 +188,8 @@ public class EmailableReporter2 implements IReporter {
         writeTableData(integerFormat.format(retriedTests), retriedTests > 0 ? "num attn" : "num");
         writeTableData(integerFormat.format(failedTests), failedTests > 0 ? "num attn" : "num");
         writeTableData(decimalFormat.format(duration), "num");
-        writeTableData(testResult.getIncludedGroups());
-        writeTableData(testResult.getExcludedGroups());
+        writeTableData(orEmpty(testResult.getIncludedGroups()));
+        writeTableData(orEmpty(testResult.getExcludedGroups()));
 
         writer().println("</tr>");
 
@@ -253,7 +253,7 @@ public class EmailableReporter2 implements IReporter {
       for (TestResult testResult : suiteResult.getTestResults()) {
         writer.printf("<tbody id=\"t%d\">", testIndex);
 
-        String testName = Utils.escapeHtml(testResult.getTestName());
+        String testName = escapeHtmlOrEmpty(testResult.getTestName());
         int startIndex = scenarioIndex;
 
         scenarioIndex +=
@@ -413,7 +413,7 @@ public class EmailableReporter2 implements IReporter {
     for (SuiteResult suiteResult : suiteResults) {
       for (TestResult testResult : suiteResult.getTestResults()) {
         writer.print("<h2>");
-        writer.print(Utils.escapeHtml(testResult.getTestName()));
+        writer.print(escapeHtmlOrEmpty(testResult.getTestName()));
         writer.print("</h2>");
 
         scenarioIndex +=
@@ -649,6 +649,15 @@ public class EmailableReporter2 implements IReporter {
   }
 
   /** Groups {@link TestResult}s by suite. */
+  /** A &lt;test&gt; that carries no name renders as an empty cell rather than the text "null". */
+  private static String orEmpty(@Nullable String text) {
+    return text == null ? "" : text;
+  }
+
+  private static String escapeHtmlOrEmpty(@Nullable String text) {
+    return text == null ? "" : Utils.escapeHtml(text);
+  }
+
   protected static class SuiteResult {
     private final String suiteName;
     private final List<TestResult> testResults = new ArrayList<>();
@@ -683,7 +692,7 @@ public class EmailableReporter2 implements IReporter {
         Comparator.comparing((ITestResult o) -> o.getTestClass().getName())
             .thenComparing(o -> Utils.requireMethodOf(o).getMethodName());
 
-    private final String testName;
+    private final @Nullable String testName;
     private final List<ClassResult> failedConfigurationResults;
     private final List<ClassResult> failedTestResults;
     private final List<ClassResult> skippedConfigurationResults;
@@ -695,7 +704,7 @@ public class EmailableReporter2 implements IReporter {
     private final int skippedTestCount;
     private final int passedTestCount;
     private final long duration;
-    private final String includedGroups;
+    private final @Nullable String includedGroups;
     private final String excludedGroups;
 
     public TestResult(ITestContext context) {
@@ -722,7 +731,7 @@ public class EmailableReporter2 implements IReporter {
       skippedTestCount = skippedTests.size();
       passedTestCount = passedTests.size();
 
-      duration = context.getEndDate().getTime() - context.getStartDate().getTime();
+      duration = Utils.requireEndDateOf(context).getTime() - context.getStartDate().getTime();
 
       includedGroups = formatGroups(context.getIncludedGroups());
       excludedGroups = formatGroups(context.getExcludedGroups());
@@ -800,7 +809,7 @@ public class EmailableReporter2 implements IReporter {
       return classResults;
     }
 
-    public String getTestName() {
+    public @Nullable String getTestName() {
       return testName;
     }
 
@@ -853,11 +862,11 @@ public class EmailableReporter2 implements IReporter {
       return duration;
     }
 
-    public String getIncludedGroups() {
+    public @Nullable String getIncludedGroups() {
       return includedGroups;
     }
 
-    public String getExcludedGroups() {
+    public @Nullable String getExcludedGroups() {
       return excludedGroups;
     }
 

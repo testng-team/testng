@@ -94,7 +94,7 @@ public class ClassImpl implements IClass, IObject {
   }
 
   private IObject.@Nullable IdentifiableObject getDefaultInstance(
-      boolean create, String errMsgPrefix) {
+      boolean create, @Nullable String errMsgPrefix) {
     if (m_defaultInstance == null) {
       if (m_instance != null) {
         m_defaultInstance = m_instance;
@@ -103,7 +103,9 @@ public class ClassImpl implements IClass, IObject {
         if (factory instanceof DefaultTestObjectFactory) {
           factory = m_testContext.getSuite().getObjectFactory();
         }
-        IObjectDispenser dispenser = Dispenser.newInstance(factory);
+        IObjectDispenser dispenser =
+            Dispenser.newInstance(
+                java.util.Objects.requireNonNull(factory, "a suite carries an object factory"));
         BasicAttributes basic = new BasicAttributes(this, null);
         DetailedAttributes detailed = newDetailedAttributes(create, errMsgPrefix);
         CreationAttributes attributes = new CreationAttributes(m_testContext, basic, detailed);
@@ -122,7 +124,7 @@ public class ClassImpl implements IClass, IObject {
   }
 
   @Override
-  public Object[] getInstances(boolean create, String errorMsgPrefix) {
+  public Object[] getInstances(boolean create, @Nullable String errorMsgPrefix) {
     return Arrays.stream(getObjects(create, errorMsgPrefix))
         .map(IdentifiableObject::getInstance)
         .toArray(Object[]::new);
@@ -134,7 +136,7 @@ public class ClassImpl implements IClass, IObject {
   }
 
   @Override
-  public IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix) {
+  public IdentifiableObject[] getObjects(boolean create, @Nullable String errorMsgPrefix) {
     IdentifiableObject[] result = {};
 
     if (!identifiableObjects.isEmpty()) {
@@ -177,7 +179,7 @@ public class ClassImpl implements IClass, IObject {
         .hashCode();
   }
 
-  private DetailedAttributes newDetailedAttributes(boolean create, String errMsgPrefix) {
+  private DetailedAttributes newDetailedAttributes(boolean create, @Nullable String errMsgPrefix) {
     return new DetailedAttributes(
         m_class,
         m_classes,

@@ -513,7 +513,7 @@ public class MethodHelper {
   // TODO: This needs to be revisited so that, we dont update the parameter list "methodList"
   // but we are returning the values.
   public static void fixMethodsWithClass(
-      ITestNGMethod[] methods, ITestClass testCls, List<ITestNGMethod> methodList) {
+      ITestNGMethod[] methods, ITestClass testCls, @Nullable List<ITestNGMethod> methodList) {
     for (ITestNGMethod itm : methods) {
       itm.setTestClass(testCls);
 

@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A {@link SkipException} extension that transforms a skipped method into a failed method based on
@@ -24,7 +25,7 @@ public class TimeBombSkipException extends SkipException {
 
   private static final String FORMAT = "yyyy/MM/dd";
   private final SimpleDateFormat sdf = new SimpleDateFormat(FORMAT);
-  private Calendar m_expireDate;
+  private @Nullable Calendar m_expireDate;
   private DateFormat m_inFormat = sdf;
   private DateFormat m_outFormat = sdf;
 
@@ -193,6 +194,11 @@ public class TimeBombSkipException extends SkipException {
     }
   }
 
+  /** The date this exception stops skipping; absent when it was built without one. */
+  private Calendar requireExpireDate() {
+    return java.util.Objects.requireNonNull(m_expireDate, "the exception carries an expiry date");
+  }
+
   @Override
   public boolean isSkip() {
     if (null == m_expireDate) {
@@ -211,13 +217,13 @@ public class TimeBombSkipException extends SkipException {
   }
 
   @Override
-  public String getMessage() {
+  public @Nullable String getMessage() {
     if (isSkip()) {
       return super.getMessage();
     } else {
       return super.getMessage()
           + "; Test must have been enabled by: "
-          + m_outFormat.format(m_expireDate.getTime());
+          + m_outFormat.format(requireExpireDate().getTime());
     }
   }
 

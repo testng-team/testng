@@ -31,7 +31,8 @@ class SuiteResult implements ISuiteResult, Comparable<SuiteResult> {
     try {
       String n1 = getTestContext().getName();
       String n2 = other.getTestContext().getName();
-      result = n1.compareTo(n2);
+      result =
+          java.util.Objects.compare(n1, n2, java.util.Comparator.nullsFirst(String::compareTo));
     } catch (Exception ex) {
       Logger.getLogger(SuiteResult.class).error(ex.getMessage(), ex);
     }

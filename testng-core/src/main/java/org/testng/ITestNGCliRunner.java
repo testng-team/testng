@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Service provider interface backing {@link TestNG#main(String[])}. Implementations are discovered
  * with {@link java.util.ServiceLoader}, which keeps the command line parsing library out of {@code
@@ -29,7 +31,7 @@ public interface ITestNGCliRunner {
    * @throws TestNGException when {@code argv} cannot be parsed or does not select anything to run.
    *     The message is meant to be shown to the user as is.
    */
-  TestNG run(String[] argv, ITestListener listener);
+  TestNG run(String[] argv, @Nullable ITestListener listener);
 
   /**
    * Prints the command line usage banner. Callers treat a throw as "no banner available" and fall

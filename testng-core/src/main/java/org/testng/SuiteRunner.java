@@ -8,6 +8,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.internal.*;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.invokers.ConfigMethodArguments;
@@ -38,27 +39,27 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   private final Map<Class<? extends ISuiteListener>, ISuiteListener> listeners =
       new LinkedHashMap<>();
 
-  private String outputDir;
+  private @Nullable String outputDir;
   private final XmlSuite xmlSuite;
-  private Injector parentInjector;
+  private @Nullable Injector parentInjector;
 
   private final List<ITestListener> testListeners = new ArrayList<>();
   private final Map<Class<? extends IClassListener>, IClassListener> classListeners =
       new LinkedHashMap<>();
-  private final ITestRunnerFactory tmpRunnerFactory;
+  private final @Nullable ITestRunnerFactory tmpRunnerFactory;
   private final DataProviderHolder holder;
 
   private boolean useDefaultListeners = true;
 
   // The remote host where this suite was run, or null if run locally
-  private String remoteHost;
+  private @Nullable String remoteHost;
 
   // The configuration
   // Note: adjust test.multiplelisteners.SimpleReporter#generateReport test if renaming the field
   private final IConfiguration configuration;
 
-  private ITestObjectFactory objectFactory;
-  private Boolean skipFailedInvocationCounts = Boolean.FALSE;
+  private @Nullable ITestObjectFactory objectFactory;
+  private @Nullable Boolean skipFailedInvocationCounts = Boolean.FALSE;
   private final List<IReporter> reporters = new ArrayList<>();
 
   private final Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
@@ -73,7 +74,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       IConfiguration configuration,
       XmlSuite suite,
       String outputDir,
-      ITestRunnerFactory runnerFactory,
+      @Nullable ITestRunnerFactory runnerFactory,
       Comparator<ITestNGMethod> comparator) {
     this(configuration, suite, outputDir, runnerFactory, false, comparator);
   }
@@ -82,7 +83,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       IConfiguration configuration,
       XmlSuite suite,
       String outputDir,
-      ITestRunnerFactory runnerFactory,
+      @Nullable ITestRunnerFactory runnerFactory,
       boolean useDefaultListeners,
       Comparator<ITestNGMethod> comparator) {
     this(
@@ -103,12 +104,12 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       IConfiguration configuration,
       XmlSuite suite,
       String outputDir,
-      ITestRunnerFactory runnerFactory,
+      @Nullable ITestRunnerFactory runnerFactory,
       boolean useDefaultListeners,
-      List<IMethodInterceptor> methodInterceptors,
-      Collection<IInvokedMethodListener> invokedMethodListener,
+      @Nullable List<IMethodInterceptor> methodInterceptors,
+      @Nullable Collection<IInvokedMethodListener> invokedMethodListener,
       TestListenersContainer container,
-      Collection<IClassListener> classListeners,
+      @Nullable Collection<IClassListener> classListeners,
       DataProviderHolder holder,
       Comparator<ITestNGMethod> comparator) {
     if (comparator == null) {
@@ -126,21 +127,26 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     if (configuration.getObjectFactory() == null) {
       configuration.setObjectFactory(new ObjectFactoryImpl());
     }
+    ITestObjectFactory configuredFactory =
+        Objects.requireNonNull(
+            configuration.getObjectFactory(), "the configuration carries an object factory");
     if (suite.getObjectFactoryClass() == null) {
-      objectFactory = configuration.getObjectFactory();
+      objectFactory = configuredFactory;
     } else {
-      boolean create =
-          !configuration.getObjectFactory().getClass().equals(suite.getObjectFactoryClass());
+      boolean create = !configuredFactory.getClass().equals(suite.getObjectFactoryClass());
       final ITestObjectFactory suiteObjectFactory;
       if (create) {
         if (objectFactory == null) {
-          objectFactory = configuration.getObjectFactory();
+          objectFactory = configuredFactory;
         }
         // Dont keep creating the object factory repeatedly since our current object factory
         // Was already created based off of a suite level object factory.
-        suiteObjectFactory = objectFactory.newInstance(suite.getObjectFactoryClass());
+        suiteObjectFactory =
+            Objects.requireNonNull(
+                objectFactory.newInstance(suite.getObjectFactoryClass()),
+                "the object factory produced a suite level factory");
       } else {
-        suiteObjectFactory = configuration.getObjectFactory();
+        suiteObjectFactory = configuredFactory;
       }
       objectFactory =
           new ITestObjectFactory() {
@@ -149,7 +155,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
               try {
                 return suiteObjectFactory.newInstance(cls, parameters);
               } catch (Exception e) {
-                return configuration.getObjectFactory().newInstance(cls, parameters);
+                return configuredFactory.newInstance(cls, parameters);
               }
             }
 
@@ -158,16 +164,16 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
               try {
                 return suiteObjectFactory.newInstance(clsName, parameters);
               } catch (Exception e) {
-                return configuration.getObjectFactory().newInstance(clsName, parameters);
+                return configuredFactory.newInstance(clsName, parameters);
               }
             }
 
             @Override
-            public <T> T newInstance(Constructor<T> constructor, Object... parameters) {
+            public <T> @Nullable T newInstance(Constructor<T> constructor, Object... parameters) {
               try {
                 return suiteObjectFactory.newInstance(constructor, parameters);
               } catch (Exception e) {
-                return configuration.getObjectFactory().newInstance(constructor, parameters);
+                return configuredFactory.newInstance(constructor, parameters);
               }
             }
           };
@@ -238,7 +244,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     useDefaultListeners = reportResults;
   }
 
-  public ITestListener getExitCodeListener() {
+  public @Nullable ITestListener getExitCodeListener() {
     return exitCodeListener;
   }
 
@@ -276,7 +282,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
               configuration,
               testListeners.toArray(new ITestListener[0]),
               useDefaultListeners,
-              skipFailedInvocationCounts,
+              skipFailedInvocationCounts != null && skipFailedInvocationCounts,
               comparator,
               this);
     } else {
@@ -304,7 +310,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   @Override
-  public Injector getParentInjector() {
+  public @Nullable Injector getParentInjector() {
     return parentInjector;
   }
 
@@ -473,12 +479,14 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   /** @param reporter The ISuiteListener interested in reporting the result of the current suite. */
-  protected void addListener(ISuiteListener reporter) {
-    listeners.putIfAbsent(reporter.getClass(), reporter);
+  protected void addListener(@Nullable ISuiteListener reporter) {
+    if (reporter != null) {
+      listeners.putIfAbsent(reporter.getClass(), reporter);
+    }
   }
 
   @Override
-  public void addListener(ITestNGListener listener) {
+  public void addListener(@Nullable ITestNGListener listener) {
     if (listener instanceof IInvokedMethodListener) {
       IInvokedMethodListener invokedMethodListener = (IInvokedMethodListener) listener;
       invokedMethodListeners.put(invokedMethodListener.getClass(), invokedMethodListener);
@@ -532,7 +540,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
    * @see org.testng.ISuite#getParameter(java.lang.String)
    */
   @Override
-  public String getParameter(String parameterName) {
+  public @Nullable String getParameter(String parameterName) {
     return xmlSuite.getParameter(parameterName);
   }
 
@@ -565,7 +573,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   @Override
-  public ITestObjectFactory getObjectFactory() {
+  public @Nullable ITestObjectFactory getObjectFactory() {
     return objectFactory;
   }
 
@@ -728,7 +736,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   @Override
-  public String getHost() {
+  public @Nullable String getHost() {
     return remoteHost;
   }
 
@@ -745,7 +753,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   @Override
-  public Object getAttribute(String name) {
+  public @Nullable Object getAttribute(String name) {
     return attributes.getAttribute(name);
   }
 
@@ -760,7 +768,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   @Override
-  public Object removeAttribute(String name) {
+  public @Nullable Object removeAttribute(String name) {
     return attributes.removeAttribute(name);
   }
 
@@ -804,8 +812,11 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
               return results.stream();
             })
         .filter(tr -> tr.getMethod() instanceof IInvocationStatus)
-        .filter(tr -> ((IInvocationStatus) tr.getMethod()).getInvocationTime() > 0)
-        .map(tr -> new InvokedMethod(((IInvocationStatus) tr.getMethod()).getInvocationTime(), tr))
+        .filter(tr -> ((IInvocationStatus) Utils.requireMethodOf(tr)).getInvocationTime() > 0)
+        .map(
+            tr ->
+                new InvokedMethod(
+                    ((IInvocationStatus) Utils.requireMethodOf(tr)).getInvocationTime(), tr))
         .collect(Collectors.toList());
   }
 
@@ -824,7 +835,8 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       this(Collections.emptyList(), null);
     }
 
-    TestListenersContainer(List<ITestListener> listeners, ITestListener exitCodeListener) {
+    TestListenersContainer(
+        List<ITestListener> listeners, @Nullable ITestListener exitCodeListener) {
       this.listeners.addAll(listeners);
       this.exitCodeListener =
           Objects.requireNonNullElseGet(exitCodeListener, () -> new ITestListener() {});

@@ -711,7 +711,7 @@ public class SuiteHTMLReporter implements IReporter {
   }
 
   private void generateSuiteResult(
-      String suiteName, ISuiteResult sr, String cssClass, StringBuilder tableOfContents) {
+      @Nullable String suiteName, ISuiteResult sr, String cssClass, StringBuilder tableOfContents) {
     ITestContext tc = sr.getTestContext();
     int passed = tc.getPassedTests().size();
     int failed = tc.getFailedTests().size();

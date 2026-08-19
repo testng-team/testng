@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.util.Arrays;
 import java.util.Collection;
+import org.jspecify.annotations.Nullable;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -9,10 +10,10 @@ import org.testng.xml.XmlTest;
 /** Override the groups included in the XML file with groups specified on the command line. */
 public class OverrideProcessor implements IPostProcessor {
 
-  private final String[] m_groups;
-  private final String[] m_excludedGroups;
+  private final String @Nullable [] m_groups;
+  private final String @Nullable [] m_excludedGroups;
 
-  public OverrideProcessor(String[] groups, String[] excludedGroups) {
+  public OverrideProcessor(String @Nullable [] groups, String @Nullable [] excludedGroups) {
     m_groups = groups;
     m_excludedGroups = excludedGroups;
   }

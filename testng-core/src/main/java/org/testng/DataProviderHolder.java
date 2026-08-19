@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import org.jspecify.annotations.Nullable;
 import org.testng.internal.IConfiguration;
 
 /**
@@ -17,7 +18,7 @@ public class DataProviderHolder {
 
   private final Map<Class<?>, IDataProviderListener> listeners = new ConcurrentHashMap<>();
   private final Collection<IDataProviderInterceptor> interceptors = new HashSet<>();
-  private final ListenerComparator listenerComparator;
+  private final @Nullable ListenerComparator listenerComparator;
 
   public DataProviderHolder(IConfiguration configuration) {
     this.listenerComparator = Objects.requireNonNull(configuration).getListenerComparator();
