@@ -133,6 +133,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
     for (IMethodInstance testMethodInstance : m_methodInstances) {
       ITestNGMethod testMethod = testMethodInstance.getMethod();
+      ITestClass testClassOfMethod = Utils.requireTestClassOf(testMethod);
       Object key = IInstanceIdentity.getInstanceId(testMethod);
 
       // For a lazy @Factory instance this is the just-in-time construction point. Trigger creation
@@ -153,7 +154,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
       if (canInvokeBeforeClassMethods()) {
         try (KeyAwareAutoCloseableLock.AutoReleasable ignored = lock.lockForObject(key)) {
-          invokeBeforeClassMethods(Utils.requireTestClassOf(testMethod), testMethodInstance);
+          invokeBeforeClassMethods(testClassOfMethod, testMethodInstance);
         }
       }
 
@@ -162,7 +163,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         invokeTestMethods(testMethod, testMethod.getInstance());
       } finally {
         try (KeyAwareAutoCloseableLock.AutoReleasable ignored = lock.lockForObject(key)) {
-          invokeAfterClassMethods(Utils.requireTestClassOf(testMethod), testMethodInstance);
+          invokeAfterClassMethods(testClassOfMethod, testMethodInstance);
         }
       }
     }

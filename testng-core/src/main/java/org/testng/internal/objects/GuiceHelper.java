@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.function.BiPredicate;
 import java.util.stream.StreamSupport;
@@ -172,7 +173,7 @@ class GuiceHelper {
   }
 
   private static IInjectorFactory requireInjectorFactory(@Nullable IInjectorFactory factory) {
-    return java.util.Objects.requireNonNull(factory, "a running suite carries an injector factory");
+    return Objects.requireNonNull(factory, "a running suite carries an injector factory");
   }
 
   private Injector createInjector(

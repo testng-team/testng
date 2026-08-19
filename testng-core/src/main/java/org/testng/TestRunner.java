@@ -146,7 +146,7 @@ public class TestRunner
   private @Nullable String m_host;
 
   // Defined dynamically depending on <test preserve-order="true/false">
-  private List<IMethodInterceptor> m_methodInterceptors = new ArrayList<>();
+  private final List<IMethodInterceptor> m_methodInterceptors = new ArrayList<>();
 
   private @Nullable ClassMethodMap m_classMethodMap;
   private @Nullable TestNGClassFinder m_testClassFinder;
@@ -266,7 +266,7 @@ public class TestRunner
         preserveOrder
             ? new PreserveOrderMethodInterceptor()
             : new InstanceOrderingMethodInterceptor();
-    m_methodInterceptors = new ArrayList<>();
+    m_methodInterceptors.clear();
     // Add the built-in interceptor as the first interceptor. That way we let our users determine
     // the final order
     // by plugging in their own custom interceptors as well.
@@ -390,7 +390,10 @@ public class TestRunner
 
     // Instantiate all the listeners
     for (Class<? extends ITestNGListener> c : listenerClasses) {
-      addListener(factory.createListener(c));
+      ITestNGListener created = factory.createListener(c);
+      if (created != null) {
+        addListener(created);
+      }
     }
   }
 
@@ -623,12 +626,11 @@ public class TestRunner
 
   /** Both are dropped by {@link #forgetHeavyReferencesIfNeeded()} once the run is over. */
   private ClassMethodMap requireClassMethodMap() {
-    return java.util.Objects.requireNonNull(m_classMethodMap, "the run still holds its method map");
+    return Objects.requireNonNull(m_classMethodMap, "the run still holds its method map");
   }
 
   private ConfigurationGroupMethods requireGroupMethods() {
-    return java.util.Objects.requireNonNull(
-        m_groupMethods, "the run still holds its group methods");
+    return Objects.requireNonNull(m_groupMethods, "the run still holds its group methods");
   }
 
   private void forgetHeavyReferencesIfNeeded() {
@@ -881,7 +883,7 @@ public class TestRunner
           ListenerOrderDeterminer.order(m_testListeners, m_configuration.getListenerComparator())) {
         itl.onStart(this);
       }
-      requireExitCodeListener().onStart(this);
+      getExitCodeListener().onStart(this);
 
     } else {
       List<ITestListener> testListenersReversed =
@@ -890,7 +892,7 @@ public class TestRunner
       for (ITestListener itl : testListenersReversed) {
         itl.onFinish(this);
       }
-      requireExitCodeListener().onFinish(this);
+      getExitCodeListener().onFinish(this);
     }
     if (!isStart) {
       MethodHelper.clear(methods(this.getPassedConfigurations()));
@@ -1102,7 +1104,7 @@ public class TestRunner
     }
   }
 
-  public void addListener(@Nullable ITestNGListener listener) {
+  public void addListener(ITestNGListener listener) {
     if (listener instanceof IMethodInterceptor) {
       m_methodInterceptors.add((IMethodInterceptor) listener);
     }
@@ -1153,10 +1155,6 @@ public class TestRunner
     }
   }
 
-  private ITestListener requireExitCodeListener() {
-    return Objects.requireNonNull(exitCodeListener, "ExitCodeListener cannot be null.");
-  }
-
   private void setExitCodeListener(@Nullable ITestListener exitCodeListener) {
     this.exitCodeListener = exitCodeListener;
   }
@@ -1204,7 +1202,7 @@ public class TestRunner
       // So lets find the result based on the method and remove it off.
       m_configsToBeInvoked
           .getAllResults()
-          .removeIf(tr -> java.util.Objects.equals(tr.getMethod(), itr.getMethod()));
+          .removeIf(tr -> Objects.equals(tr.getMethod(), itr.getMethod()));
     }
   }
 

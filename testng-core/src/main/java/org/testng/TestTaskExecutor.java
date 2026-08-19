@@ -1,6 +1,7 @@
 package org.testng;
 
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -93,11 +94,10 @@ class TestTaskExecutor {
         // Shared global pool: wait for this test's graph to finish, but leave the pool running for
         // the other <test>s. It is disposed once, at the end of the run, via ObjectBag cleanup.
         boolean ignored =
-            java.util.Objects.requireNonNull(orchestrator, "execute() has started the graph")
+            Objects.requireNonNull(orchestrator, "execute() has started the graph")
                 .awaitCompletion(timeOut, TimeUnit.MILLISECONDS);
       } else {
-        ExecutorService running =
-            java.util.Objects.requireNonNull(service, "execute() has started the pool");
+        ExecutorService running = Objects.requireNonNull(service, "execute() has started the pool");
         boolean ignored = running.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
         running.shutdownNow();
       }

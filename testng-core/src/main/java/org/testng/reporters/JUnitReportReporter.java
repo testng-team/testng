@@ -305,7 +305,7 @@ public class JUnitReportReporter implements IReporter {
 
   private void addResults(Set<ITestResult> allResults, Map<Class<?>, Set<ITestResult>> out) {
     for (ITestResult tr : allResults) {
-      Class<?> cls = Utils.requireTestClassOf(Utils.requireMethodOf(tr)).getRealClass();
+      Class<?> cls = tr.getTestClass().getRealClass();
       Set<ITestResult> l = out.computeIfAbsent(cls, k -> new HashSet<>());
       l.add(tr);
     }

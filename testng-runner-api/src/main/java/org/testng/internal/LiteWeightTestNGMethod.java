@@ -346,7 +346,9 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
 
   @Override
   public boolean canRunFromClass(IClass testClass) {
-    return Utils.requireTestClassOf(this).getRealClass().isAssignableFrom(testClass.getRealClass());
+    return Objects.requireNonNull(this.testClass, "a scheduled method is bound to a class")
+        .getRealClass()
+        .isAssignableFrom(testClass.getRealClass());
   }
 
   @Override

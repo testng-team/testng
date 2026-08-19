@@ -120,9 +120,9 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
   }
 
   private static Map<String, String> getParameters(IMethodInstance im) {
+    ITestNGMethod method = im.getMethod();
     XmlTest xmlTest =
-        Objects.requireNonNull(
-            im.getMethod().getXmlTest(), "a scheduled method belongs to a <test>");
-    return im.getMethod().findMethodParameters(xmlTest);
+        Objects.requireNonNull(method.getXmlTest(), "a scheduled method belongs to a <test>");
+    return method.findMethodParameters(xmlTest);
   }
 }

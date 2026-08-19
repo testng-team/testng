@@ -47,10 +47,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
       Utils.log("TestNG", 0, "Running:\n" + allFiles);
     }
 
-    SuiteRunner suiteRunner =
-        (SuiteRunner)
-            java.util.Objects.requireNonNull(
-                suiteRunnerMap.get(xmlSuite), "every suite has a runner in the map");
+    SuiteRunner suiteRunner = (SuiteRunner) suiteRunnerMap.require(xmlSuite);
     suiteRunner.run();
 
     // TODO: this should be handled properly

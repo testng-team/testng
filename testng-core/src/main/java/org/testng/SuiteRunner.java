@@ -136,14 +136,11 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       boolean create = !configuredFactory.getClass().equals(suite.getObjectFactoryClass());
       final ITestObjectFactory suiteObjectFactory;
       if (create) {
-        if (objectFactory == null) {
-          objectFactory = configuredFactory;
-        }
         // Dont keep creating the object factory repeatedly since our current object factory
         // Was already created based off of a suite level object factory.
         suiteObjectFactory =
             Objects.requireNonNull(
-                objectFactory.newInstance(suite.getObjectFactoryClass()),
+                configuredFactory.newInstance(suite.getObjectFactoryClass()),
                 "the object factory produced a suite level factory");
       } else {
         suiteObjectFactory = configuredFactory;
@@ -244,7 +241,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     useDefaultListeners = reportResults;
   }
 
-  public @Nullable ITestListener getExitCodeListener() {
+  public ITestListener getExitCodeListener() {
     return exitCodeListener;
   }
 
@@ -484,7 +481,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   @Override
-  public void addListener(@Nullable ITestNGListener listener) {
+  public void addListener(ITestNGListener listener) {
     if (listener instanceof IInvokedMethodListener) {
       IInvokedMethodListener invokedMethodListener = (IInvokedMethodListener) listener;
       invokedMethodListeners.put(invokedMethodListener.getClass(), invokedMethodListener);

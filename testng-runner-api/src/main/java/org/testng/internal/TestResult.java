@@ -13,6 +13,7 @@ import org.testng.IAttributes;
 import org.testng.IClass;
 import org.testng.IFactoryInstance;
 import org.testng.ITest;
+import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -103,7 +104,8 @@ public class TestResult implements ITestResult {
       long start,
       long end) {
     m_throwable = t;
-    m_instanceName = Utils.requireTestClassOf(method).getName();
+    ITestClass boundClass = Utils.requireTestClassOf(method);
+    m_instanceName = boundClass.getName();
     if (null == m_throwable) {
       m_status = ITestResult.SUCCESS;
     }
@@ -171,11 +173,7 @@ public class TestResult implements ITestResult {
     if (instance instanceof ITest) {
       return ((ITest) instance).getTestName();
     }
-    String boundTestName = Utils.requireTestClassOf(m_method).getTestName();
-    if (boundTestName != null) {
-      return boundTestName;
-    }
-    return null;
+    return Utils.requireTestClassOf(m_method).getTestName();
   }
 
   @Override
