@@ -88,7 +88,7 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
     return dependencies(m_edges.to(node));
   }
 
-  private List<T> dependencies(Map<T, Integer> dependencies) {
+  private List<T> dependencies(@Nullable Map<T, Integer> dependencies) {
     return Optional.ofNullable(dependencies)
         .map(found -> new ArrayList<>(found.keySet()))
         .orElse(new ArrayList<>());

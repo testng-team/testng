@@ -91,7 +91,8 @@ public class Graph<T> {
 
   public void topologicalSort() {
     log("================ SORTING");
-    m_strictlySortedNodes = new ArrayList<>();
+    List<T> sorted = new ArrayList<>();
+    m_strictlySortedNodes = sorted;
     initializeIndependentNodes();
 
     //
@@ -131,13 +132,13 @@ public class Graph<T> {
         }
         throw new TestNGException(sb.toString());
       } else {
-        m_strictlySortedNodes.add(node.getObject());
+        sorted.add(node.getObject());
         removeFromNodes(nodes2, node);
       }
     }
 
     log("=============== DONE SORTING");
-    dumpSortedNodes();
+    dumpSortedNodes(sorted);
   }
 
   private void initializeIndependentNodes() {
@@ -155,9 +156,9 @@ public class Graph<T> {
     }
   }
 
-  private void dumpSortedNodes() {
+  private void dumpSortedNodes(List<T> sorted) {
     log("====== SORTED NODES");
-    for (T n : m_strictlySortedNodes) {
+    for (T n : sorted) {
       log("              " + n);
     }
     log("====== END SORTED NODES");
