@@ -142,8 +142,8 @@ public class TestNGMethodFinder implements ITestMethodFinder {
       boolean isAfterClass = false;
       boolean isBeforeTestMethod = false;
       boolean isAfterTestMethod = false;
-      String[] beforeGroups = null;
-      String[] afterGroups = null;
+      String[] beforeGroups = new String[0];
+      String[] afterGroups = new String[0];
 
       switch (configurationType) {
         case BEFORE_SUITE:
@@ -209,8 +209,8 @@ public class TestNGMethodFinder implements ITestMethodFinder {
             isBeforeTestMethod,
             isAfterTestMethod,
             ignoreFailure,
-            beforeGroups == null ? new String[0] : beforeGroups,
-            afterGroups == null ? new String[0] : afterGroups); /* @@@ */
+            beforeGroups,
+            afterGroups); /* @@@ */
       }
     }
 

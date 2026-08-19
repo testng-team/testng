@@ -876,13 +876,11 @@ public abstract class BaseTestMethod
 
   @Override
   public Map<String, String> findMethodParameters(XmlTest test) {
+    // No test class bound yet means no <class> tag can match, which XmlTestUtils answers with
+    // the suite and <test> parameters on their own.
     ITestClass testClass = getTestClass();
-    if (testClass == null) {
-      // No test class bound yet. No <class> tag can match, so XmlTestUtils would return the
-      // suite and <test> parameters unchanged - which getAllParameters already builds fresh.
-      return test.getAllParameters();
-    }
-    return XmlTestUtils.findMethodParameters(test, testClass.getName(), getMethodName());
+    return XmlTestUtils.findMethodParameters(
+        test, testClass == null ? null : testClass.getName(), getMethodName());
   }
 
   @Override
