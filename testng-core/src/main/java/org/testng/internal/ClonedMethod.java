@@ -87,7 +87,7 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public String getId() {
+  public @Nullable String getId() {
     return m_id;
   }
 

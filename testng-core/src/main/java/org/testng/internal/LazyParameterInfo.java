@@ -34,7 +34,7 @@ public class LazyParameterInfo implements IParameterInfo {
   }
 
   @Override
-  public Object getInstance() {
+  public @Nullable Object getInstance() {
     if (!instantiated) {
       synchronized (lock) {
         if (!instantiated) {
@@ -60,7 +60,7 @@ public class LazyParameterInfo implements IParameterInfo {
   }
 
   @Override
-  public Throwable getInstantiationFailure() {
+  public @Nullable Throwable getInstantiationFailure() {
     return failure;
   }
 

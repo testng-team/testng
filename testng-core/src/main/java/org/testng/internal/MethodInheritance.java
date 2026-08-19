@@ -67,7 +67,7 @@ public class MethodInheritance {
   }
 
   /** Look in map for a class that is a subclass of methodClass */
-  private static Class<?> findSubClass(
+  private static @Nullable Class<?> findSubClass(
       Map<Class<?>, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
     return map.keySet().stream()
         .parallel()

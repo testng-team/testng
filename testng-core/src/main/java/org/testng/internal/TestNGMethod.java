@@ -26,7 +26,7 @@ public class TestNGMethod extends BaseTestMethod {
   private int m_successPercentage = 100;
   private boolean isDataDriven = false;
   private CustomAttribute[] m_attributes = {};
-  private IDataProviderMethod dataProviderMethod = null;
+  private @Nullable IDataProviderMethod dataProviderMethod = null;
 
   /** Constructs a <code>TestNGMethod</code> */
   public TestNGMethod(
@@ -223,7 +223,7 @@ public class TestNGMethod extends BaseTestMethod {
   }
 
   @Override
-  public IDataProviderMethod getDataProviderMethod() {
+  public @Nullable IDataProviderMethod getDataProviderMethod() {
     return dataProviderMethod;
   }
 
