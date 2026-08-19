@@ -46,7 +46,11 @@ public enum MethodSorting implements Comparator<ITestNGMethod> {
       // sorting never forces a lazy @Factory instance to be created during collection.
       Object one = IInstanceIdentity.getInstanceId(a);
       Object two = IInstanceIdentity.getInstanceId(b);
-      if (one != null && two != null && IInstanceIdentity.isIdentityAware(one, two)) {
+      // getInstanceId answers the UUID for an identity aware method and the method itself
+      // otherwise, so the test belongs on what came back. Testing the inputs for
+      // IInstanceIdentity, as this did, could never hold: a UUID is not one, and a method that
+      // is one never reaches this branch as itself.
+      if (one instanceof UUID && two instanceof UUID) {
         return ((UUID) one).compareTo((UUID) two);
       }
       return Integer.compare(Objects.hashCode(one), Objects.hashCode(two));
