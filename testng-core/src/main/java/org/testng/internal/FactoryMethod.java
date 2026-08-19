@@ -27,22 +27,25 @@ import org.testng.annotations.Lazy;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.invokers.ParameterHolder;
 import org.testng.xml.XmlTest;
+import org.jspecify.annotations.Nullable;
+import java.util.Objects;
 
 /** This class represents a method annotated with @Factory */
 public class FactoryMethod extends BaseTestMethod {
 
-  private final IFactoryAnnotation factoryAnnotation;
-  private final Object m_instance;
+  private final @Nullable IFactoryAnnotation factoryAnnotation;
+  private final @Nullable Object m_instance;
   private final ITestContext m_testContext;
-  private String m_factoryCreationFailedMessage = null;
+  private @Nullable String m_factoryCreationFailedMessage = null;
   private final DataProviderHolder holder;
   private final boolean m_lazy;
 
-  public String getFactoryCreationFailedMessage() {
+  public @Nullable String getFactoryCreationFailedMessage() {
     return m_factoryCreationFailedMessage;
   }
 
-  private void init(Object instance, IAnnotationFinder annotationFinder, ConstructorOrMethod com) {
+  private void init(
+      @Nullable Object instance, IAnnotationFinder annotationFinder, ConstructorOrMethod com) {
     IListenersAnnotation annotation =
         annotationFinder.findAnnotation(com.getDeclaringClass(), IListenersAnnotation.class);
     if (annotation == null) {
@@ -89,10 +92,14 @@ public class FactoryMethod extends BaseTestMethod {
     Utils.checkReturnType(com.getMethod(), Object[].class, IInstanceInfo[].class);
     Class<?> declaringClass = com.getDeclaringClass();
     if (instance != null && !declaringClass.isAssignableFrom(instance.getClass())) {
-      if (instance instanceof IParameterInfo) {
-        instance = ((IParameterInfo) instance).getInstance();
+      Object mismatched = instance;
+      if (mismatched instanceof IParameterInfo) {
+        Object embedded = ((IParameterInfo) mismatched).getInstance();
+        if (embedded != null) {
+          mismatched = embedded;
+        }
       }
-      Class<?> cls = instance.getClass();
+      Class<?> cls = mismatched.getClass();
       String msg =
           "Found a default constructor and also a Factory method when working with "
               + declaringClass.getName()
@@ -208,7 +215,9 @@ public class FactoryMethod extends BaseTestMethod {
     Iterator<Object[]> parameterIterator = parameterHolder.parameters;
 
     try {
-      List<Integer> indices = factoryAnnotation.getIndices();
+      List<Integer> indices =
+          Objects.requireNonNull(factoryAnnotation, "no @Factory annotation on a factory method")
+              .getIndices();
       int position = 0;
       IFactory factory = new FactoryDescriptor(getConstructorOrMethod(), m_lazy);
       while (parameterIterator.hasNext()) {
