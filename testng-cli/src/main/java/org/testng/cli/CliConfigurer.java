@@ -129,7 +129,9 @@ public final class CliConfigurer {
         .map(it -> it.asSubclass(IExecutorServiceFactory.class))
         .ifPresent(testng::setExecutorServiceFactoryClass);
 
-    testng.setOutputDirectory(cli.outputDirectory);
+    if (cli.outputDirectory != null) {
+      testng.setOutputDirectory(cli.outputDirectory);
+    }
 
     String testClasses = cli.testClass;
     if (null != testClasses) {

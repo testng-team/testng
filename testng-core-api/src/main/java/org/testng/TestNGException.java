@@ -15,7 +15,7 @@ public class TestNGException extends RuntimeException {
     super("\n" + string);
   }
 
-  public TestNGException(String string, Throwable t) {
+  public TestNGException(@Nullable String string, Throwable t) {
     super("\n" + string, t);
   }
 }

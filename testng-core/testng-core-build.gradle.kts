@@ -22,7 +22,6 @@ tasks.withType<GroovyCompile>().configureEach {
 dependencies {
     api(projects.testngCoreApi)
     // Annotations have to be available on the compile classpath for the proper compilation
-    compileOnly("com.github.spotbugs:spotbugs:4.10.3")
 
     "guiceApi"(platform("com.google.inject:guice-bom:6.0.0"))
     "guiceApi"("com.google.inject:guice")
