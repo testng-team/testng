@@ -33,15 +33,6 @@ public interface IInstanceIdentity {
    * @return - The object's instance id when it is identity aware, {@link #NO_INSTANCE} when it is
    *     identity aware but carries no instance, and the object itself otherwise.
    */
-  /**
-   * @param objects - The objects to inspect
-   * @return - <code>true</code> if all the objects passed are of type {@link IInstanceIdentity}
-   */
-  static boolean isIdentityAware(Object... objects) {
-    return java.util.Arrays.stream(java.util.Objects.requireNonNull(objects))
-        .allMatch(it -> it instanceof IInstanceIdentity);
-  }
-
   static Object getInstanceId(Object object) {
     if (object instanceof IInstanceIdentity) {
       UUID instanceId = ((IInstanceIdentity) object).getInstanceId();
