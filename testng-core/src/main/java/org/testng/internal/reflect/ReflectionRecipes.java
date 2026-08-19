@@ -341,8 +341,8 @@ public final class ReflectionRecipes {
       final Set<InjectableParameter> filters,
       final Object[] args,
       final @Nullable Method injectionMethod,
-      final ITestContext context,
-      final ITestResult testResult) {
+      final @Nullable ITestContext context,
+      final @Nullable ITestResult testResult) {
     return nativelyInject(parameters, filters, args, injectionMethod, context, testResult);
   }
 
@@ -351,8 +351,8 @@ public final class ReflectionRecipes {
       final Set<InjectableParameter> filters,
       final Object[] args,
       final @Nullable Object injectionMethod,
-      final ITestContext context,
-      final ITestResult testResult) {
+      final @Nullable ITestContext context,
+      final @Nullable ITestResult testResult) {
     if (filters == null || filters.isEmpty()) {
       return args;
     }
@@ -445,8 +445,8 @@ public final class ReflectionRecipes {
       final Set<InjectableParameter> filters,
       final Object[] args,
       final Constructor<?> constructor,
-      final ITestContext context,
-      final ITestResult testResult) {
+      final @Nullable ITestContext context,
+      final @Nullable ITestResult testResult) {
     return nativelyInject(parameters, filters, args, constructor, context, testResult);
   }
 
