@@ -371,7 +371,7 @@ public class TestResult implements ITestResult {
   }
 
   @Override
-  public void setTestName(String name) {
+  public void setTestName(@Nullable String name) {
     m_name = name;
   }
 
