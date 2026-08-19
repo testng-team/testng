@@ -28,16 +28,16 @@ class JarFileUtils {
   private final boolean ignoreMissedTestNames;
   private final @Nullable List<String> testNames;
   private final List<XmlSuite> suites = new LinkedList<>();
-  private final XmlSuite.@Nullable ParallelMode mode;
+  private final XmlSuite.ParallelMode mode;
 
-  JarFileUtils(IPostProcessor processor, String xmlPathInJar, @Nullable List<String> testNames) {
+  JarFileUtils(IPostProcessor processor, String xmlPathInJar, List<String> testNames) {
     this(processor, xmlPathInJar, testNames, XmlSuite.ParallelMode.NONE);
   }
 
   JarFileUtils(
       IPostProcessor processor,
       String xmlPathInJar,
-      @Nullable List<String> testNames,
+      List<String> testNames,
       XmlSuite.@Nullable ParallelMode mode) {
     this(processor, xmlPathInJar, testNames, mode, false);
   }
@@ -45,7 +45,7 @@ class JarFileUtils {
   JarFileUtils(
       IPostProcessor processor,
       String xmlPathInJar,
-      @Nullable List<String> testNames,
+      List<String> testNames,
       boolean ignoreMissedTestNames) {
     this(processor, xmlPathInJar, testNames, XmlSuite.ParallelMode.NONE, ignoreMissedTestNames);
   }

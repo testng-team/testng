@@ -60,7 +60,7 @@ class GuiceHelper {
   }
 
   @Nullable
-  Injector getInjector(IClass iClass, @Nullable IInjectorFactory injectorFactory) {
+  Injector getInjector(IClass iClass, IInjectorFactory injectorFactory) {
     return getInjector(iClass.getRealClass(), injectorFactory);
   }
 

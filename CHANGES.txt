@@ -15,9 +15,44 @@ Changed: org.testng.internal.ClonedMethod.getConstructorOrMethod() returns the w
 Fixed: org.testng.internal.TestNGMethod.clone() no longer throws a NullPointerException when the method has not been bound to a test class yet. It wrapped getTestClass() in a NoOpTestClass, which dereferences it on the spot; the absence is now propagated, which is what ConfigurationMethod.clone() already did (Julien Herr)
 Fixed: A configuration method that is not a @BeforeGroups or @AfterGroups method now reports an empty array from getBeforeGroups() and getAfterGroups() instead of null. TestNGMethodFinder wrote null into fields whose declaration says {}, and MethodGroupsHelper iterates them without testing (Julien Herr)
 Fixed: Sorting test methods by index no longer throws a NullPointerException when a <test> tag carries no name (Julien Herr)
+Changed: org.testng is now declared @NullMarked, so every member of the published API states whether it can answer null. Thirty-six members widen to @Nullable because their implementations already answered null, and the rest promise not to. This is binary compatible and source compatible for Java; a Kotlin caller that dereferences one of the thirty-six without testing it stops compiling. They are listed under Possible backward incompatible changes below (Julien Herr)
+Fixed: org.testng.internal.MethodSorting.INSTANCES orders two invocations of the same method on different @Factory instances instead of leaving the decision to a hash code comparison. Its identity branch asked IInstanceIdentity.isIdentityAware about the ids it had just resolved rather than about the methods, which could never hold, so the branch had never run (Julien Herr)
+Fixed: org.testng.IAnnotationTransformer.transform(IFactoryAnnotation, Method) is now declared to accept a null method, which is what TestNG has always passed for a @Factory annotation found on a constructor (Julien Herr)
+Changed: org.testng.internal.MethodInstance.SORT_BY_INDEX no longer throws a NullPointerException when a method a @Factory produced belongs to no <test> tag. It answers that the two methods cannot be compared, which is what the neighbouring branch already answers for a missing <class> (Julien Herr)
+Changed: org.testng.internal.IInstanceIdentity.getInstanceId(Object) answers the new NO_INSTANCE token instead of null for a method that carries no instance, so the value can be used as a map key without every caller deciding what an absent key means. The grouping is unchanged: every method without an instance still lands in one bucket (Julien Herr)
 Fixed: A <package> tag that carries no name attribute is now reported the way an unreadable package already was, instead of raising a NullPointerException from inside PackageUtils.findClassesInPackage (Julien Herr)
 
 Possible backward incompatible changes:
+
+- org.testng is declared @NullMarked, and thirty-six members of it widen to @Nullable because that
+  is what their implementations already answered. ITestNGMethod.getTestClass, getInstance, getId,
+  getDescription, getMissingGroup, getXmlTest, getRetryAnalyzer, getDataProviderMethod and the
+  deprecated getFactoryMethodParamsInfo; ITestResult.getMethod, getName, getTestName, getInstance,
+  getInstanceName, getHost, getThrowable and getTestContext; IClass.getXmlTest, getXmlClass,
+  getTestName and getInstanceHashCodes; IAttributes.getAttribute and removeAttribute;
+  IDataProviderMethod.getInstance and getMethod; IMethodInstance.getInstance;
+  ITestClassFinder.getIClass; ITestNGListenerFactory.createListener;
+  ITestObjectFactory.newInstance(Constructor, Object...); ITestContext.getName, getEndDate,
+  getHost, getInjectorFactory and getParameter; ISuite.getHost, getParameter, getParentInjector and
+  getObjectFactory. A Java caller is unaffected. A Kotlin caller that dereferences one of them
+  without testing it stops compiling, and must add a test or a !!.
+- The same mark widens the parameters of IAnnotationTransformer.transform for ITestAnnotation and
+  IConfigurationAnnotation -- testClass, testConstructor and testMethod, of which the javadoc has
+  always said only one is non-null -- of the four IConfigurationListener callbacks that take an
+  ITestNGMethod, of the three IDataProviderListener callbacks and IDataProviderInterceptor.intercept
+  that take an ITestContext, of IModuleFactory.createModule, of IMethodSelector.includeMethod, and
+  of Reporter.setCurrentTestResult, which TestNG calls with null to clear the current result. A Java
+  implementation is unaffected. A Kotlin implementation whose override declares the parameter
+  non-null stops overriding and must add the question mark.
+- org.testng.internal.MethodSorting.INSTANCES, the default method order, produces a different order
+  for two invocations of the same method on different @Factory instances. Both the old and the new
+  order are arbitrary -- instance ids are random UUIDs -- so no run that did not already depend on
+  an arbitrary order is affected, but a run that pinned the old one will see it change.
+- org.testng.internal.IInstanceIdentity.getInstanceId(Object) answers IInstanceIdentity.NO_INSTANCE
+  rather than null for a method that carries no instance. Code testing the result for null must test
+  for the token instead. The package is internal and OSGi exported.
+- testng-core and testng-core-api no longer declare a compileOnly dependency on
+  com.github.spotbugs:spotbugs. Nothing in TestNG uses javax.annotation any more.
 
 - testng-failed.xml no longer records the index of a @Factory produced instance as an invocation-number. That attribute selects rows of a method's own data provider, which is the only thing TestNG ever reads it back as, so a factory powered failure produced a file that looked filtered and re-ran everything -- and, for a method that had a data provider of its own, re-ran the wrong rows because the factory index had overwritten the row index. The instance index now goes to the new factory-instances attribute of <include>, which is honoured on re-run. Tooling that parses testng-failed.xml to learn which factory instance failed must read factory-instances rather than invocation-numbers; a method with its own data provider now re-runs the rows that actually failed. A file generated by 7.13 and re-run by an older TestNG ignores the unknown attribute and re-runs every instance, which is what those versions already did. (GITHUB-3111, GITHUB-2517, GITHUB-2521)
 - The constructors of org.testng.internal.ParameterInfo and org.testng.internal.LazyParameterInfo now take an org.testng.internal.FactoryInstance instead of a loose index and parameter array. Both are implementation classes of an internal package; only code constructing them directly is affected. (GITHUB-3111)
