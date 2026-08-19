@@ -133,7 +133,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
     for (IMethodInstance testMethodInstance : m_methodInstances) {
       ITestNGMethod testMethod = testMethodInstance.getMethod();
-      Object key = Objects.requireNonNull(IInstanceIdentity.getInstanceId(testMethod));
+      Object key = IInstanceIdentity.getInstanceId(testMethod);
 
       // For a lazy @Factory instance this is the just-in-time construction point. Trigger creation
       // here so that a constructor failure is localized to this instance's method (reported as a

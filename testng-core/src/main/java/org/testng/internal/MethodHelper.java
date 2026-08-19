@@ -422,7 +422,7 @@ public class MethodHelper {
     // dependency graph never forces a lazy @Factory instance to be created during collection.
     return Arrays.stream(methods)
         .parallel()
-        .filter(m -> Objects.nonNull(IInstanceIdentity.getInstanceId(m)))
+        .filter(m -> IInstanceIdentity.getInstanceId(m) != IInstanceIdentity.NO_INSTANCE)
         .collect(Collectors.groupingBy(IInstanceIdentity::getInstanceId, Collectors.toList()));
   }
 
