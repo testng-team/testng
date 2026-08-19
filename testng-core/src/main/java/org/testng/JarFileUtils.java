@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import org.jspecify.annotations.Nullable;
 import org.testng.internal.Utils;
 import org.testng.util.Strings;
 import org.testng.xml.IPostProcessor;
@@ -25,26 +26,26 @@ class JarFileUtils {
   private final IPostProcessor processor;
   private final String xmlPathInJar;
   private final boolean ignoreMissedTestNames;
-  private final List<String> testNames;
+  private final @Nullable List<String> testNames;
   private final List<XmlSuite> suites = new LinkedList<>();
-  private final XmlSuite.ParallelMode mode;
+  private final XmlSuite.@Nullable ParallelMode mode;
 
-  JarFileUtils(IPostProcessor processor, String xmlPathInJar, List<String> testNames) {
+  JarFileUtils(IPostProcessor processor, String xmlPathInJar, @Nullable List<String> testNames) {
     this(processor, xmlPathInJar, testNames, XmlSuite.ParallelMode.NONE);
   }
 
   JarFileUtils(
       IPostProcessor processor,
       String xmlPathInJar,
-      List<String> testNames,
-      XmlSuite.ParallelMode mode) {
+      @Nullable List<String> testNames,
+      XmlSuite.@Nullable ParallelMode mode) {
     this(processor, xmlPathInJar, testNames, mode, false);
   }
 
   JarFileUtils(
       IPostProcessor processor,
       String xmlPathInJar,
-      List<String> testNames,
+      @Nullable List<String> testNames,
       boolean ignoreMissedTestNames) {
     this(processor, xmlPathInJar, testNames, XmlSuite.ParallelMode.NONE, ignoreMissedTestNames);
   }
@@ -52,8 +53,8 @@ class JarFileUtils {
   JarFileUtils(
       IPostProcessor processor,
       String xmlPathInJar,
-      List<String> testNames,
-      XmlSuite.ParallelMode mode,
+      @Nullable List<String> testNames,
+      XmlSuite.@Nullable ParallelMode mode,
       boolean ignoreMissedTestNames) {
     this.processor = processor;
     this.xmlPathInJar = xmlPathInJar;

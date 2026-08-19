@@ -54,7 +54,7 @@ public class XmlMethodSelector implements IMethodSelector {
 
   @Override
   public boolean includeMethod(
-      IMethodSelectorContext context, ITestNGMethod tm, boolean isTestMethod) {
+      @Nullable IMethodSelectorContext context, ITestNGMethod tm, boolean isTestMethod) {
 
     if (!m_isInitialized) {
       m_isInitialized = true;
@@ -350,7 +350,7 @@ public class XmlMethodSelector implements IMethodSelector {
     Utils.log("XmlMethodSelector", 4, s);
   }
 
-  public void setScript(XmlScript script) {
+  public void setScript(@Nullable XmlScript script) {
     scriptSelector = script == null ? null : ScriptSelectorFactory.getScriptSelector(script);
   }
 
@@ -369,7 +369,7 @@ public class XmlMethodSelector implements IMethodSelector {
     m_overrideIncludedMethods = overrideIncludedMethods;
   }
 
-  private void init(IMethodSelectorContext context) {
+  private void init(@Nullable IMethodSelectorContext context) {
     String[] groups = m_includedGroups.keySet().toArray(new String[0]);
     Set<String> groupClosure = new HashSet<>();
     Set<ITestNGMethod> methodClosure = new HashSet<>();

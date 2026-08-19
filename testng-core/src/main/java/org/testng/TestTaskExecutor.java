@@ -5,6 +5,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import org.jspecify.annotations.Nullable;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ObjectBag;
 import org.testng.internal.Utils;
@@ -17,15 +18,15 @@ import org.testng.xml.XmlTest;
 
 class TestTaskExecutor {
   private final BlockingQueue<Runnable> queue;
-  private final Comparator<ITestNGMethod> comparator;
+  private final @Nullable Comparator<ITestNGMethod> comparator;
   private final IDynamicGraph<ITestNGMethod> graph;
   private final XmlTest xmlTest;
   private final IThreadWorkerFactory<ITestNGMethod> factory;
   private final IConfiguration configuration;
   private final long timeOut;
 
-  private ExecutorService service;
-  private GraphOrchestrator<ITestNGMethod> orchestrator;
+  private @Nullable ExecutorService service;
+  private @Nullable GraphOrchestrator<ITestNGMethod> orchestrator;
   private boolean reUse;
 
   private static final Logger LOGGER = Logger.getLogger(TestTaskExecutor.class);
@@ -36,7 +37,7 @@ class TestTaskExecutor {
       IThreadWorkerFactory<ITestNGMethod> factory,
       BlockingQueue<Runnable> queue,
       IDynamicGraph<ITestNGMethod> graph,
-      Comparator<ITestNGMethod> comparator) {
+      @Nullable Comparator<ITestNGMethod> comparator) {
     this.configuration = configuration;
     this.xmlTest = xmlTest;
     this.factory = factory;
@@ -91,10 +92,14 @@ class TestTaskExecutor {
       if (reUse) {
         // Shared global pool: wait for this test's graph to finish, but leave the pool running for
         // the other <test>s. It is disposed once, at the end of the run, via ObjectBag cleanup.
-        boolean ignored = orchestrator.awaitCompletion(timeOut, TimeUnit.MILLISECONDS);
+        boolean ignored =
+            java.util.Objects.requireNonNull(orchestrator, "execute() has started the graph")
+                .awaitCompletion(timeOut, TimeUnit.MILLISECONDS);
       } else {
-        boolean ignored = service.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
-        service.shutdownNow();
+        ExecutorService running =
+            java.util.Objects.requireNonNull(service, "execute() has started the pool");
+        boolean ignored = running.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
+        running.shutdownNow();
       }
     } catch (InterruptedException handled) {
       LOGGER.error(handled.getMessage(), handled);

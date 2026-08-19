@@ -1,6 +1,7 @@
 package org.testng.internal.objects.pojo;
 
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import org.testng.IClass;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
@@ -13,7 +14,7 @@ public class DetailedAttributes {
   private final XmlTest xmlTest;
   private final IAnnotationFinder finder;
   private final boolean create;
-  private final String errorMsgPrefix;
+  private final @Nullable String errorMsgPrefix;
 
   public DetailedAttributes(
       Class<?> declaringClass,
@@ -21,7 +22,7 @@ public class DetailedAttributes {
       XmlTest xmlTest,
       IAnnotationFinder finder,
       boolean create,
-      String errorMsgPrefix) {
+      @Nullable String errorMsgPrefix) {
     this.declaringClass = declaringClass;
     this.classes = classes;
     this.xmlTest = xmlTest;
@@ -50,7 +51,7 @@ public class DetailedAttributes {
     return create;
   }
 
-  public String getErrorMsgPrefix() {
+  public @Nullable String getErrorMsgPrefix() {
     return errorMsgPrefix;
   }
 }

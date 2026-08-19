@@ -48,7 +48,10 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
       Utils.log("TestNG", 0, "Running:\n" + allFiles);
     }
 
-    SuiteRunner suiteRunner = (SuiteRunner) suiteRunnerMap.get(xmlSuite);
+    SuiteRunner suiteRunner =
+        (SuiteRunner)
+            java.util.Objects.requireNonNull(
+                suiteRunnerMap.get(xmlSuite), "every suite has a runner in the map");
     suiteRunner.run();
 
     // TODO: this should be handled properly
@@ -159,9 +162,9 @@ class SuiteResultCounts {
       ITestContext ctx = isr.getTestContext();
       int passes = ctx.getPassedTests().size();
       Map<String, Integer> segregated = seggregateSkippedTests(ctx);
-      int skipped = segregated.get(SKIPPED);
+      int skipped = segregated.getOrDefault(SKIPPED, 0);
       m_skipped += skipped;
-      int retried = segregated.get(RETRIED);
+      int retried = segregated.getOrDefault(RETRIED, 0);
       m_retries += retried;
       int failed =
           ctx.getFailedTests().size() + ctx.getFailedButWithinSuccessPercentageTests().size();

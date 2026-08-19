@@ -39,7 +39,7 @@ class GuiceHelper {
       Maps.newListMultiMap();
   private final String parentModule;
   private final String stageString;
-  private final String testName;
+  private final @Nullable String testName;
   private final @Nullable ITestContext context;
 
   private static final BiPredicate<Module, Module> CLASS_EQUALITY =
@@ -60,12 +60,12 @@ class GuiceHelper {
   }
 
   @Nullable
-  Injector getInjector(IClass iClass, IInjectorFactory injectorFactory) {
+  Injector getInjector(IClass iClass, @Nullable IInjectorFactory injectorFactory) {
     return getInjector(iClass.getRealClass(), injectorFactory);
   }
 
   @Nullable
-  Injector getInjector(Class<?> cls, IInjectorFactory injectorFactory) {
+  Injector getInjector(Class<?> cls, @Nullable IInjectorFactory injectorFactory) {
     Guice guice = AnnotationHelper.findAnnotationSuperClasses(Guice.class, cls);
     if (guice == null) {
       return null;
@@ -85,7 +85,7 @@ class GuiceHelper {
     return injector;
   }
 
-  private Injector getParentInjector(IInjectorFactory factory) {
+  private Injector getParentInjector(@Nullable IInjectorFactory factory) {
     // Reuse the previous parent injector, if any
     Injector injector = null;
     ISuite suite = null;
@@ -171,8 +171,14 @@ class GuiceHelper {
     return (Class<? extends Module>) parentModule;
   }
 
+  private static IInjectorFactory requireInjectorFactory(@Nullable IInjectorFactory factory) {
+    return java.util.Objects.requireNonNull(factory, "a running suite carries an injector factory");
+  }
+
   private Injector createInjector(
-      @Nullable Injector parent, IInjectorFactory injectorFactory, List<Module> moduleInstances) {
+      @Nullable Injector parent,
+      @Nullable IInjectorFactory injectorFactory,
+      List<Module> moduleInstances) {
     Stage stage = Stage.DEVELOPMENT;
     if (isStringNotEmpty(stageString)) {
       stage = Stage.valueOf(stageString);
@@ -183,10 +189,10 @@ class GuiceHelper {
     if (parent == null || getParentModuleClass() == null) {
       // there is no parent module in this suite defined therefore tree of injectors shouldn't
       // be created letting individual test modules to redefine bindings between each other
-      return injectorFactory.getInjector(null, stage, modules);
+      return requireInjectorFactory(injectorFactory).getInjector(null, stage, modules);
     }
 
-    return injectorFactory.getInjector(parent, stage, modules);
+    return requireInjectorFactory(injectorFactory).getInjector(parent, stage, modules);
   }
 
   private List<Module> getModules(Guice guice, Injector parentInjector, Class<?> testClass) {

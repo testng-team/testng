@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
+import org.jspecify.annotations.Nullable;
 import org.testng.SuiteRunner.TestListenersContainer;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.ClassHelper;
@@ -121,19 +122,19 @@ public class TestNG {
   /** The default name of the result's output directory (keep public, used by Eclipse). */
   public static final String DEFAULT_OUTPUTDIR = "test-output";
 
-  private static TestNG m_instance;
+  private static @Nullable TestNG m_instance;
 
-  private List<String> m_commandLineMethods;
+  private @Nullable List<String> m_commandLineMethods;
   protected List<XmlSuite> m_suites = new ArrayList<>();
-  private List<XmlSuite> m_cmdlineSuites;
+  private @Nullable List<XmlSuite> m_cmdlineSuites;
   private String m_outputDir = DEFAULT_OUTPUTDIR;
-  private String[] m_includedGroups;
-  private String[] m_excludedGroups;
+  private String @Nullable [] m_includedGroups;
+  private String @Nullable [] m_excludedGroups;
   protected boolean m_useDefaultListeners = true;
   private boolean m_failIfAllTestsSkipped = false;
   private final List<String> m_listenersToSkipFromBeingWiredIn = new ArrayList<>();
 
-  private ITestRunnerFactory m_testRunnerFactory;
+  private @Nullable ITestRunnerFactory m_testRunnerFactory;
 
   // These listeners can be overridden from the command line
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners =
@@ -152,9 +153,9 @@ public class TestNG {
 
   // Command line suite parameters
   private int m_threadCount = -1;
-  private XmlSuite.ParallelMode m_parallelMode = null;
-  private XmlSuite.FailurePolicy m_configFailurePolicy;
-  private Class<?>[] m_commandLineTestClasses;
+  private XmlSuite.@Nullable ParallelMode m_parallelMode = null;
+  private XmlSuite.@Nullable FailurePolicy m_configFailurePolicy;
+  private Class<?> @Nullable [] m_commandLineTestClasses;
 
   private String m_defaultSuiteName = DEFAULT_COMMAND_LINE_SUITE_NAME;
   private String m_defaultTestName = DEFAULT_COMMAND_LINE_TEST_NAME;
@@ -169,17 +170,17 @@ public class TestNG {
   private final Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
       m_invokedMethodListeners = new LinkedHashMap<>();
 
-  private Integer m_dataProviderThreadCount = null;
+  private @Nullable Integer m_dataProviderThreadCount = null;
 
-  private String m_jarPath;
+  private @Nullable String m_jarPath;
   /** The path of the testng.xml file inside the jar file */
   private String m_xmlPathInJar = CommandLineArgs.XML_PATH_IN_JAR_DEFAULT;
 
   private List<String> m_stringSuites = new ArrayList<>();
   private final List<Class<? extends ITestNGListener>> m_listenerClasses = new ArrayList<>();
 
-  private IHookable m_hookable;
-  private IConfigurable m_configurable;
+  private @Nullable IHookable m_hookable;
+  private @Nullable IConfigurable m_configurable;
 
   protected long m_end;
   protected long m_start;
@@ -191,7 +192,7 @@ public class TestNG {
   private boolean isSuiteInitialized = false;
   private final org.testng.internal.ExitCodeListener exitCodeListener =
       new org.testng.internal.ExitCodeListener();
-  private ExitCode exitCode;
+  private @Nullable ExitCode exitCode;
   private final Map<Class<? extends IExecutionVisualiser>, IExecutionVisualiser>
       m_executionVisualisers = new LinkedHashMap<>();
 
@@ -240,7 +241,7 @@ public class TestNG {
     if (exitCodeListener.noTestsFound()) {
       return ExitCode.HAS_NO_TEST;
     }
-    return exitCode.getExitCode();
+    return requireExitCode().getExitCode();
   }
 
   /**
@@ -283,7 +284,7 @@ public class TestNG {
     setListenerComparator(m_objectFactory.newInstance(listenerComparatorClass));
   }
 
-  public ListenerComparator getListenerComparator() {
+  public @Nullable ListenerComparator getListenerComparator() {
     return m_configuration.getListenerComparator();
   }
 
@@ -292,7 +293,7 @@ public class TestNG {
    *
    * @param jarPath - Path of the jar
    */
-  public void setTestJar(String jarPath) {
+  public void setTestJar(@Nullable String jarPath) {
     m_jarPath = jarPath;
   }
 
@@ -421,7 +422,9 @@ public class TestNG {
     }
 
     // We have a jar file and no XML file was specified: try to find an XML file inside the jar
-    File jarFile = new File(m_jarPath);
+    File jarFile =
+        new File(
+            Objects.requireNonNull(m_jarPath, "a jar suite is only read once -testjar was given"));
 
     JarFileUtils utils =
         new JarFileUtils(
@@ -535,7 +538,7 @@ public class TestNG {
     return result;
   }
 
-  private List<XmlSuite> createCommandLineSuitesForClasses(Class[] classes) {
+  private List<XmlSuite> createCommandLineSuitesForClasses(Class @Nullable [] classes) {
     //
     // See if any of the classes has an xmlSuite or xmlTest attribute.
     // If it does, create the appropriate XmlSuite, otherwise, create
@@ -543,7 +546,10 @@ public class TestNG {
     //
 
     XmlClass[] xmlClasses =
-        Arrays.stream(classes).map(clazz -> new XmlClass(clazz, true)).toArray(XmlClass[]::new);
+        Arrays.stream(
+                Objects.requireNonNull(classes, "command line suites are built from a class list"))
+            .map(clazz -> new XmlClass(clazz, true))
+            .toArray(XmlClass[]::new);
     Map<String, XmlSuite> suites = new HashMap<>();
     IAnnotationFinder finder = m_configuration.getAnnotationFinder();
 
@@ -568,7 +574,7 @@ public class TestNG {
       }
       XmlTest xmlTest = null;
       for (XmlTest xt : xmlSuite.getTests()) {
-        if (xt.getName().equals(testName)) {
+        if (testName.equals(xt.getName())) {
           xmlTest = xt;
           break;
         }
@@ -585,7 +591,7 @@ public class TestNG {
     return new ArrayList<>(suites.values());
   }
 
-  public void addMethodSelector(String className, int priority) {
+  public void addMethodSelector(@Nullable String className, int priority) {
     if (Strings.isNotNullAndNotEmpty(className)) {
       m_methodDescriptors.put(className, priority);
     }
@@ -676,7 +682,7 @@ public class TestNG {
    *
    * @param groups A list of group names separated by a comma.
    */
-  public void setExcludedGroups(String groups) {
+  public void setExcludedGroups(@Nullable String groups) {
     m_excludedGroups = Utils.split(groups, ",");
   }
 
@@ -685,7 +691,7 @@ public class TestNG {
    *
    * @param groups A list of group names separated by a comma.
    */
-  public void setGroups(String groups) {
+  public void setGroups(@Nullable String groups) {
     m_includedGroups = Utils.split(groups, ",");
   }
 
@@ -725,7 +731,10 @@ public class TestNG {
       return;
     }
     for (Class<? extends ITestNGListener> cls : classes) {
-      addListener(factory.createListener(cls));
+      ITestNGListener created = factory.createListener(cls);
+      if (created != null) {
+        addListener(created);
+      }
     }
   }
 
@@ -739,7 +748,10 @@ public class TestNG {
     for (Class<? extends ITestNGListener> cls : m_listenerClasses) {
       BasicAttributes basic = new BasicAttributes(null, cls);
       CreationAttributes attributes = new CreationAttributes(basic, context);
-      addListener((ITestNGListener) dispenser.dispense(attributes));
+      Object created = dispenser.dispense(attributes);
+      if (created != null) {
+        addListener((ITestNGListener) created);
+      }
     }
     m_listenerClasses.clear();
   }
@@ -852,17 +864,17 @@ public class TestNG {
   }
 
   /** If m_verbose gets set, it will override the verbose setting in testng.xml */
-  private Integer m_verbose = null;
+  private @Nullable Integer m_verbose = null;
 
   private final IAnnotationTransformer m_defaultAnnoProcessor = new DefaultAnnotationTransformer();
   private IAnnotationTransformer m_annotationTransformer = m_defaultAnnoProcessor;
 
-  private Boolean m_skipFailedInvocationCounts = false;
+  private @Nullable Boolean m_skipFailedInvocationCounts = false;
 
   private final List<IMethodInterceptor> m_methodInterceptors = new ArrayList<>();
 
   /** The list of test names to run from the given suite */
-  private List<String> m_testNames;
+  private @Nullable List<String> m_testNames;
 
   private boolean m_ignoreMissedTestNames;
 
@@ -873,7 +885,7 @@ public class TestNG {
   private boolean m_alwaysRun = Boolean.TRUE;
 
   private Boolean m_preserveOrder = XmlSuite.DEFAULT_PRESERVE_ORDER;
-  private Boolean m_groupByInstances;
+  private @Nullable Boolean m_groupByInstances;
   private boolean m_generateResultsPerSuite = false;
 
   private IConfiguration m_configuration;
@@ -974,9 +986,9 @@ public class TestNG {
   private static void initializeCommandLineSuitesGroups(
       XmlSuite s,
       boolean hasIncludedGroups,
-      String[] m_includedGroups,
+      String @Nullable [] m_includedGroups,
       boolean hasExcludedGroups,
-      String[] m_excludedGroups) {
+      String @Nullable [] m_excludedGroups) {
     if (hasIncludedGroups) {
       s.setIncludedGroups(Arrays.asList(m_includedGroups));
     }
@@ -1073,7 +1085,9 @@ public class TestNG {
       BasicAttributes basic = new BasicAttributes(null, listenerClass);
       CreationAttributes attribute = new CreationAttributes(basic, context);
       Object listener = dispenser.dispense(attribute);
-      addListener((ITestNGListener) listener);
+      if (listener != null) {
+        addListener((ITestNGListener) listener);
+      }
     }
 
     // Add the child suite listeners
@@ -1322,7 +1336,12 @@ public class TestNG {
     return new ArrayList<>(suiteRunnerMap.values());
   }
 
-  private static void error(String s) {
+  /** Every suite the map is walked over was put in it by {@code createSuiteRunners}. */
+  private static ISuite requireRunnerFor(SuiteRunnerMap map, XmlSuite suite) {
+    return Objects.requireNonNull(map.get(suite), "every suite has a runner in the map");
+  }
+
+  private static void error(@Nullable String s) {
     LOGGER.error(s);
   }
 
@@ -1352,7 +1371,7 @@ public class TestNG {
     }
     SuiteRunnerWorker srw =
         new SuiteRunnerWorker(
-            suiteRunnerMap.get(xmlSuite), suiteRunnerMap, verbose, defaultSuiteName);
+            requireRunnerFor(suiteRunnerMap, xmlSuite), suiteRunnerMap, verbose, defaultSuiteName);
     srw.run();
   }
 
@@ -1369,11 +1388,11 @@ public class TestNG {
       IDynamicGraph<ISuite> suiteGraph /* OUT */,
       SuiteRunnerMap suiteRunnerMap,
       XmlSuite xmlSuite) {
-    ISuite parentSuiteRunner = suiteRunnerMap.get(xmlSuite);
+    ISuite parentSuiteRunner = requireRunnerFor(suiteRunnerMap, xmlSuite);
     suiteGraph.addNode(parentSuiteRunner);
     if (!xmlSuite.getChildSuites().isEmpty()) {
       for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
-        suiteGraph.addEdge(0, parentSuiteRunner, suiteRunnerMap.get(childSuite));
+        suiteGraph.addEdge(0, parentSuiteRunner, requireRunnerFor(suiteRunnerMap, childSuite));
         populateSuiteGraph(suiteGraph, suiteRunnerMap, childSuite);
       }
     }
@@ -1505,7 +1524,7 @@ public class TestNG {
    *     of your choice. Scheduled for removal in 8.0.
    */
   @Deprecated
-  public static TestNG privateMain(String[] argv, ITestListener listener) {
+  public static TestNG privateMain(String[] argv, @Nullable ITestListener listener) {
     return CliRunners.required().run(argv, listener);
   }
 
@@ -1560,7 +1579,9 @@ public class TestNG {
         .map(it -> (IExecutorServiceFactory) it)
         .ifPresent(this::setExecutorServiceFactory);
 
-    setOutputDirectory(cla.outputDirectory);
+    if (cla.outputDirectory != null) {
+      setOutputDirectory(cla.outputDirectory);
+    }
 
     String testClasses = cla.testClass;
     if (null != testClasses) {
@@ -1573,7 +1594,9 @@ public class TestNG {
       setTestClasses(classes.toArray(new Class[0]));
     }
 
-    setOutputDirectory(cla.outputDirectory);
+    if (cla.outputDirectory != null) {
+      setOutputDirectory(cla.outputDirectory);
+    }
 
     if (cla.testNames != null) {
       setTestNames(Arrays.asList(cla.testNames.split(",")));
@@ -1744,7 +1767,7 @@ public class TestNG {
     // nop
   }
 
-  private static int parseInt(Object value) {
+  private static int parseInt(@Nullable Object value) {
     if (value == null) {
       return -1;
     }
@@ -1793,8 +1816,14 @@ public class TestNG {
     result.groups = (String) cmdLineArgs.get(CommandLineArgs.GROUPS);
     result.excludedGroups = (String) cmdLineArgs.get(CommandLineArgs.EXCLUDED_GROUPS);
     result.testJar = (String) cmdLineArgs.get(CommandLineArgs.TEST_JAR);
-    result.xmlPathInJar = (String) cmdLineArgs.get(CommandLineArgs.XML_PATH_IN_JAR);
-    result.mixed = (Boolean) cmdLineArgs.get(CommandLineArgs.MIXED);
+    String xmlPathInJarValue = (String) cmdLineArgs.get(CommandLineArgs.XML_PATH_IN_JAR);
+    if (xmlPathInJarValue != null) {
+      result.xmlPathInJar = xmlPathInJarValue;
+    }
+    Boolean mixedValue = (Boolean) cmdLineArgs.get(CommandLineArgs.MIXED);
+    if (mixedValue != null) {
+      result.mixed = mixedValue;
+    }
     Object tmpValue = cmdLineArgs.get(CommandLineArgs.INCLUDE_ALL_DATA_DRIVEN_TESTS_WHEN_SKIPPING);
     if (tmpValue != null) {
       result.includeAllDataDrivenTestsWhenSkipping = Boolean.parseBoolean(tmpValue.toString());
@@ -1892,11 +1921,11 @@ public class TestNG {
   }
 
   /** @param testNames Only run the specified tests from the suite. */
-  public void setTestNames(List<String> testNames) {
+  public void setTestNames(@Nullable List<String> testNames) {
     m_testNames = testNames;
   }
 
-  public void setSkipFailedInvocationCounts(Boolean skip) {
+  public void setSkipFailedInvocationCounts(@Nullable Boolean skip) {
     m_skipFailedInvocationCounts = skip;
   }
 
@@ -1911,7 +1940,7 @@ public class TestNG {
    * @param reporterConfigString the serialized reporter configuration.
    * @throws TestNGException if the named class is not an {@link IReporter}.
    */
-  public void addReporter(String reporterConfigString) {
+  public void addReporter(@Nullable String reporterConfigString) {
     ReporterConfig reporterConfig = ReporterConfig.deserialize(reporterConfigString);
     if (reporterConfig != null) {
       addReporter(reporterConfig);
@@ -1928,7 +1957,7 @@ public class TestNG {
   }
 
   /** Creates a reporter based on the configuration */
-  private IReporter newReporterInstance(ReporterConfig config) {
+  private @Nullable IReporter newReporterInstance(ReporterConfig config) {
 
     Class<?> reporterClass = ClassHelper.forName(config.getClassName());
     if (reporterClass == null) {
@@ -1979,22 +2008,27 @@ public class TestNG {
     }
   }
 
+  /** The outcome of the run; absent until {@link #run()} has produced one. */
+  private ExitCode requireExitCode() {
+    return Objects.requireNonNull(this.exitCode, "the run has not produced an exit code yet");
+  }
+
   /** @return true if at least one test failed. */
   public boolean hasFailure() {
-    return this.exitCode.hasFailure();
+    return requireExitCode().hasFailure();
   }
 
   /** @return true if at least one test failed within success percentage. */
   public boolean hasFailureWithinSuccessPercentage() {
-    return this.exitCode.hasFailureWithinSuccessPercentage();
+    return requireExitCode().hasFailureWithinSuccessPercentage();
   }
 
   /** @return true if at least one test was skipped. */
   public boolean hasSkip() {
-    return this.exitCode.hasSkip();
+    return requireExitCode().hasSkip();
   }
 
-  static void exitWithError(String msg) {
+  static void exitWithError(@Nullable String msg) {
     // Trimmed because TestNGException prefixes every message with a newline, which would show up
     // as a stray blank line ahead of the error.
     System.err.println(msg == null ? "" : msg.trim());
@@ -2045,7 +2079,7 @@ public class TestNG {
    *
    * @param failurePolicy the configuration failure policy
    */
-  public void setConfigFailurePolicy(XmlSuite.FailurePolicy failurePolicy) {
+  public void setConfigFailurePolicy(XmlSuite.@Nullable FailurePolicy failurePolicy) {
     m_configFailurePolicy = failurePolicy;
   }
 
@@ -2054,7 +2088,7 @@ public class TestNG {
    *
    * @return config failure policy
    */
-  public XmlSuite.FailurePolicy getConfigFailurePolicy() {
+  public XmlSuite.@Nullable FailurePolicy getConfigFailurePolicy() {
     return m_configFailurePolicy;
   }
 
@@ -2064,7 +2098,7 @@ public class TestNG {
    * @deprecated since 5.1
    */
   @Deprecated
-  public static TestNG getDefault() {
+  public static @Nullable TestNG getDefault() {
     return m_instance;
   }
 
@@ -2123,7 +2157,7 @@ public class TestNG {
   // ServiceLoader testing
   //
 
-  private URLClassLoader m_serviceLoaderClassLoader;
+  private @Nullable URLClassLoader m_serviceLoaderClassLoader;
   private final Map<Class<? extends ITestNGListener>, ITestNGListener> serviceLoaderListeners =
       new HashMap<>();
 

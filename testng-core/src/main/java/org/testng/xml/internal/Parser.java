@@ -85,7 +85,7 @@ public class Parser {
     m_inputStream = is;
   }
 
-  public void setPostProcessor(IPostProcessor processor) {
+  public void setPostProcessor(@Nullable IPostProcessor processor) {
     m_postProcessor = processor;
   }
 
@@ -235,8 +235,8 @@ public class Parser {
     return new ArrayList<>(parse());
   }
 
-  public static Collection<XmlSuite> parse(String suite, IPostProcessor processor)
-      throws IOException {
+  public static Collection<XmlSuite> parse(
+      @Nullable String suite, @Nullable IPostProcessor processor) throws IOException {
     return newParser(suite, processor).parse();
   }
 
@@ -255,7 +255,7 @@ public class Parser {
     return DEFAULT_FILE_PARSER.accept(fileName);
   }
 
-  private static Parser newParser(String path, IPostProcessor processor) {
+  private static Parser newParser(@Nullable String path, @Nullable IPostProcessor processor) {
     Parser result = new Parser(path);
     result.setPostProcessor(processor);
     return result;

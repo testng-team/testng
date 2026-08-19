@@ -271,7 +271,7 @@ public class XmlSuite implements Cloneable {
    *
    * @param parallel The parallel mode.
    */
-  public void setParallel(ParallelMode parallel) {
+  public void setParallel(@Nullable ParallelMode parallel) {
     m_parallel = parallel == null ? DEFAULT_PARALLEL : parallel;
   }
 

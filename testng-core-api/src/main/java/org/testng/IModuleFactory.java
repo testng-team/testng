@@ -1,6 +1,7 @@
 package org.testng;
 
 import com.google.inject.Module;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This interface is used by the moduleFactory attribute of the @Guice annotation. It allows users
@@ -13,5 +14,5 @@ public interface IModuleFactory {
    * @param testClass The test class
    * @return The Guice module that should be used to get an instance of this test class.
    */
-  Module createModule(ITestContext context, Class<?> testClass);
+  Module createModule(@Nullable ITestContext context, Class<?> testClass);
 }

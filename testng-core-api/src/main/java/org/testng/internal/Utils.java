@@ -484,6 +484,19 @@ public final class Utils {
    * @param result The result to read the context of.
    * @return The test context, never {@code null}.
    */
+  /**
+   * The moment a test context finished.
+   *
+   * <p>{@link ITestContext#getEndDate()} answers {@code null} while the &lt;test&gt; is still
+   * running; a reporter only ever sees a finished one.
+   *
+   * @param context The context to read the end date of.
+   * @return The end date, never {@code null}.
+   */
+  public static java.util.Date requireEndDateOf(ITestContext context) {
+    return Objects.requireNonNull(context.getEndDate(), "a reported test context has finished");
+  }
+
   public static ITestContext requireTestContextOf(ITestResult result) {
     return Objects.requireNonNull(result.getTestContext(), "a reported result carries a context");
   }

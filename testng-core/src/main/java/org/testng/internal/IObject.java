@@ -20,7 +20,7 @@ public interface IObject {
    *     issues. Can be empty.
    * @return - An array of {@link IdentifiableObject} objects
    */
-  IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix);
+  IdentifiableObject[] getObjects(boolean create, @Nullable String errorMsgPrefix);
 
   /** @return - An array representing the hash codes of the corresponding instances. */
   long[] getInstanceHashCodes();
@@ -55,7 +55,7 @@ public interface IObject {
    *     objects.
    */
   static IdentifiableObject[] objects(
-      @Nullable Object object, boolean create, String errorMsgPrefix) {
+      @Nullable Object object, boolean create, @Nullable String errorMsgPrefix) {
     return cast(object)
         .map(it -> it.getObjects(create, errorMsgPrefix))
         .orElse(new IdentifiableObject[] {});

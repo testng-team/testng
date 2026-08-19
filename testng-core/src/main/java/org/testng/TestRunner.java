@@ -23,6 +23,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.jspecify.annotations.Nullable;
 import org.testng.internal.Attributes;
 import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ClassBasedWrapper;
@@ -77,14 +78,14 @@ public class TestRunner
   private final Comparator<ITestNGMethod> comparator;
   private ISuite m_suite;
   private XmlTest m_xmlTest;
-  private String m_testName;
+  private @Nullable String m_testName;
   private IInjectorFactory m_injectorFactory;
   private ITestObjectFactory m_objectFactory;
 
-  private List<XmlClass> m_testClassesFromXml = null;
+  private List<XmlClass> m_testClassesFromXml;
 
-  private IInvoker m_invoker = null;
-  private IAnnotationFinder m_annotationFinder = null;
+  private IInvoker m_invoker;
+  private IAnnotationFinder m_annotationFinder;
 
   /** ITestListeners support. */
   private final List<ITestListener> m_testListeners = new ArrayList<>();
@@ -99,7 +100,7 @@ public class TestRunner
   private final DataProviderHolder holder;
 
   private Date m_startDate = new Date();
-  private Date m_endDate = null;
+  private @Nullable Date m_endDate = null;
   private final IContainer<ITestNGMethod> testMethodsContainer =
       new TestMethodContainer(this::computeAndGetAllTestMethods);
 
@@ -112,7 +113,7 @@ public class TestRunner
   // The XML method selector (groups/methods included/excluded in XML)
   private final XmlMethodSelector m_xmlMethodSelector = new XmlMethodSelector();
 
-  private ITestListener exitCodeListener;
+  private @Nullable ITestListener exitCodeListener;
 
   //
   // These next fields contain all the configuration methods found on this class.
@@ -128,7 +129,7 @@ public class TestRunner
   private ITestNGMethod[] m_beforeXmlTestMethods = {};
   private ITestNGMethod[] m_afterXmlTestMethods = {};
   private final List<ITestNGMethod> m_excludedMethods = new ArrayList<>();
-  private ConfigurationGroupMethods m_groupMethods = null;
+  private @Nullable ConfigurationGroupMethods m_groupMethods = null;
 
   // Meta groups
   private final Map<String, List<String>> m_metaGroups = new HashMap<>();
@@ -142,13 +143,13 @@ public class TestRunner
   private final RunInfo m_runInfo = new RunInfo(this::getCurrentXmlTest);
 
   // The host where this test was run, or null if run locally
-  private String m_host;
+  private @Nullable String m_host;
 
   // Defined dynamically depending on <test preserve-order="true/false">
-  private List<IMethodInterceptor> m_methodInterceptors;
+  private List<IMethodInterceptor> m_methodInterceptors = new ArrayList<>();
 
-  private ClassMethodMap m_classMethodMap;
-  private TestNGClassFinder m_testClassFinder;
+  private @Nullable ClassMethodMap m_classMethodMap;
+  private @Nullable TestNGClassFinder m_testClassFinder;
   private IConfiguration m_configuration;
 
   public enum PriorityWeight {
@@ -248,7 +249,9 @@ public class TestRunner
     m_host = suite.getHost();
     m_testClassesFromXml = test.getXmlClasses();
     m_injectorFactory = m_configuration.getInjectorFactory();
-    m_objectFactory = suite.getObjectFactory();
+    m_objectFactory =
+        Objects.requireNonNull(
+            suite.getObjectFactory(), "a running suite carries an object factory");
     setVerbose(test.getVerbose());
     if (suiteRunner == null) {
       if (suite instanceof ISuiteRunnerListener) {
@@ -387,8 +390,7 @@ public class TestRunner
 
     // Instantiate all the listeners
     for (Class<? extends ITestNGListener> c : listenerClasses) {
-      ITestNGListener listener = factory.createListener(c);
-      addListener(listener);
+      addListener(factory.createListener(c));
     }
   }
 
@@ -619,6 +621,16 @@ public class TestRunner
     }
   }
 
+  /** Both are dropped by {@link #forgetHeavyReferencesIfNeeded()} once the run is over. */
+  private ClassMethodMap requireClassMethodMap() {
+    return java.util.Objects.requireNonNull(m_classMethodMap, "the run still holds its method map");
+  }
+
+  private ConfigurationGroupMethods requireGroupMethods() {
+    return java.util.Objects.requireNonNull(
+        m_groupMethods, "the run still holds its group methods");
+  }
+
   private void forgetHeavyReferencesIfNeeded() {
     if (RuntimeBehavior.isMemoryFriendlyMode()) {
       testMethodsContainer.clearItems();
@@ -657,7 +669,7 @@ public class TestRunner
     }
   }
 
-  private static Comparator<ITestNGMethod> newComparator(boolean needPrioritySort) {
+  private static @Nullable Comparator<ITestNGMethod> newComparator(boolean needPrioritySort) {
     return needPrioritySort ? new TestMethodComparator() : null;
   }
 
@@ -685,7 +697,8 @@ public class TestRunner
               DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
           reference.set(ref);
         });
-    IDynamicGraph<ITestNGMethod> graph = reference.get();
+    IDynamicGraph<ITestNGMethod> graph =
+        Objects.requireNonNull(reference.get(), "the run computed its dependency graph");
 
     for (ITestNGMethod each : interceptedOrder) {
       if (each instanceof BaseTestMethod) {
@@ -773,11 +786,12 @@ public class TestRunner
     // Check if an interceptor had altered the effective test method count. If yes, then we need to
     // update our configurationGroupMethod object with that information.
     if (resultArray.length != testMethodsContainer.getItems().length) {
+      ConfigurationGroupMethods current = requireGroupMethods();
       m_groupMethods =
           new ConfigurationGroupMethods(
               new TestMethodContainer(() -> resultArray),
-              m_groupMethods.getBeforeGroupsMethods(),
-              m_groupMethods.getAfterGroupsMethods());
+              current.getBeforeGroupsMethods(),
+              current.getAfterGroupsMethods());
     }
 
     // If the user specified a method interceptor, whatever that returns is the order we're going
@@ -803,8 +817,8 @@ public class TestRunner
   public List<IWorker<ITestNGMethod>> createWorkers(List<ITestNGMethod> methods) {
     AbstractParallelWorker.Arguments args =
         new AbstractParallelWorker.Arguments.Builder()
-            .classMethodMap(this.m_classMethodMap)
-            .configMethods(this.m_groupMethods)
+            .classMethodMap(requireClassMethodMap())
+            .configMethods(requireGroupMethods())
             .finder(this.m_annotationFinder)
             .invoker(this.m_invoker)
             .methods(methods)
@@ -867,7 +881,7 @@ public class TestRunner
           ListenerOrderDeterminer.order(m_testListeners, m_configuration.getListenerComparator())) {
         itl.onStart(this);
       }
-      this.exitCodeListener.onStart(this);
+      requireExitCodeListener().onStart(this);
 
     } else {
       List<ITestListener> testListenersReversed =
@@ -876,7 +890,7 @@ public class TestRunner
       for (ITestListener itl : testListenersReversed) {
         itl.onFinish(this);
       }
-      this.exitCodeListener.onFinish(this);
+      requireExitCodeListener().onFinish(this);
     }
     if (!isStart) {
       MethodHelper.clear(methods(this.getPassedConfigurations()));
@@ -898,7 +912,7 @@ public class TestRunner
   // ITestContext
   //
   @Override
-  public String getName() {
+  public @Nullable String getName() {
     return m_testName;
   }
 
@@ -910,7 +924,7 @@ public class TestRunner
 
   /** @return Returns the endDate. */
   @Override
-  public Date getEndDate() {
+  public @Nullable Date getEndDate() {
     return m_endDate;
   }
 
@@ -963,7 +977,7 @@ public class TestRunner
   }
 
   @Override
-  public String getHost() {
+  public @Nullable String getHost() {
     return m_host;
   }
 
@@ -1088,7 +1102,7 @@ public class TestRunner
     }
   }
 
-  public void addListener(ITestNGListener listener) {
+  public void addListener(@Nullable ITestNGListener listener) {
     if (listener instanceof IMethodInterceptor) {
       m_methodInterceptors.add((IMethodInterceptor) listener);
     }
@@ -1139,7 +1153,11 @@ public class TestRunner
     }
   }
 
-  private void setExitCodeListener(ITestListener exitCodeListener) {
+  private ITestListener requireExitCodeListener() {
+    return Objects.requireNonNull(exitCodeListener, "ExitCodeListener cannot be null.");
+  }
+
+  private void setExitCodeListener(@Nullable ITestListener exitCodeListener) {
     this.exitCodeListener = exitCodeListener;
   }
 
@@ -1184,7 +1202,9 @@ public class TestRunner
     private void removeConfigurationResultAfterExecution(ITestResult itr) {
       // The remove method of ResultMap removes based on hashCode
       // So lets find the result based on the method and remove it off.
-      m_configsToBeInvoked.getAllResults().removeIf(tr -> tr.getMethod().equals(itr.getMethod()));
+      m_configsToBeInvoked
+          .getAllResults()
+          .removeIf(tr -> java.util.Objects.equals(tr.getMethod(), itr.getMethod()));
     }
   }
 
@@ -1204,7 +1224,7 @@ public class TestRunner
   private final IAttributes m_attributes = new Attributes();
 
   @Override
-  public Object getAttribute(String name) {
+  public @Nullable Object getAttribute(String name) {
     return m_attributes.getAttribute(name);
   }
 
@@ -1219,7 +1239,7 @@ public class TestRunner
   }
 
   @Override
-  public Object removeAttribute(String name) {
+  public @Nullable Object removeAttribute(String name) {
     return m_attributes.removeAttribute(name);
   }
 

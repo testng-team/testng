@@ -158,6 +158,6 @@ public class TimesPanel extends BaseMultiSuitePanel {
   }
 
   private static Long time(ITestContext ctx) {
-    return ctx.getEndDate().getTime() - ctx.getStartDate().getTime();
+    return Utils.requireEndDateOf(ctx).getTime() - ctx.getStartDate().getTime();
   }
 }

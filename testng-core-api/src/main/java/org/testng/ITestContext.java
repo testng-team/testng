@@ -2,6 +2,7 @@ package org.testng;
 
 import java.util.Collection;
 import java.util.Date;
+import org.jspecify.annotations.Nullable;
 import org.testng.xml.XmlTest;
 
 /**
@@ -14,12 +15,14 @@ import org.testng.xml.XmlTest;
 public interface ITestContext extends IAttributes {
 
   /** @return The name of this test. */
+  @Nullable
   String getName();
 
   /** @return When this test started running. */
   Date getStartDate();
 
   /** @return When this test stopped running. */
+  @Nullable
   Date getEndDate();
 
   /** @return A list of all the tests that run successfully. */
@@ -59,6 +62,7 @@ public interface ITestContext extends IAttributes {
    * @return The host where this test was run, or null if it was run locally. The returned string
    *     has the form: host:port
    */
+  @Nullable
   String getHost();
 
   /** @return All the methods that were not included in this test run. */
@@ -76,6 +80,7 @@ public interface ITestContext extends IAttributes {
   /** @return the current XmlTest. */
   XmlTest getCurrentXmlTest();
 
+  @Nullable
   default IInjectorFactory getInjectorFactory() {
     return null;
   }

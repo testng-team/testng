@@ -1,6 +1,7 @@
 package org.testng;
 
 import java.util.Iterator;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This interface helps define an interceptor for data providers. Implementations of this TestNG
@@ -25,5 +26,5 @@ public interface IDataProviderInterceptor extends ITestNGListener {
       Iterator<Object[]> original,
       IDataProviderMethod dataProviderMethod,
       ITestNGMethod method,
-      ITestContext iTestContext);
+      @Nullable ITestContext iTestContext);
 }

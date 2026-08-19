@@ -4,6 +4,7 @@ import com.google.inject.Injector;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlSuite;
 
@@ -21,6 +22,7 @@ public interface ISuite extends IAttributes {
   Map<String, ISuiteResult> getResults();
 
   /** @return The object factory used to create all test instances. */
+  @Nullable
   ITestObjectFactory getObjectFactory();
 
   /** @return The output directory used for the reports. */
@@ -37,6 +39,7 @@ public interface ISuite extends IAttributes {
    * @param parameterName The name of the parameter
    * @return The value of this parameter, or null if none was specified.
    */
+  @Nullable
   String getParameter(String parameterName);
 
   /**
@@ -59,6 +62,7 @@ public interface ISuite extends IAttributes {
    * @return The host where this suite was run, or null if it was run locally. The returned string
    *     has the form: host:port
    */
+  @Nullable
   String getHost();
 
   /**
@@ -74,8 +78,9 @@ public interface ISuite extends IAttributes {
   /** @return The representation of the current XML suite file. */
   XmlSuite getXmlSuite();
 
-  void addListener(ITestNGListener listener);
+  void addListener(@Nullable ITestNGListener listener);
 
+  @Nullable
   Injector getParentInjector();
 
   void setParentInjector(Injector injector);

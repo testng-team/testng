@@ -265,14 +265,17 @@ public class FactoryMethod extends BaseTestMethod {
               // we
               // snapshot the row to keep each instance bound to its own parameters.
               Object[] rowParameters = parameters.clone();
-              Constructor<?> constructor = com.getConstructor();
+              Constructor<?> constructor = com.requireConstructor();
               result.add(
                   new LazyParameterInfo(
                       new FactoryInstance(position, 0, rowParameters, factory),
                       com.getDeclaringClass(),
                       () -> m_objectFactory.newInstance(constructor, rowParameters)));
             } else {
-              Object instance = m_objectFactory.newInstance(com.getConstructor(), parameters);
+              Object instance =
+                  Objects.requireNonNull(
+                      m_objectFactory.newInstance(com.requireConstructor(), parameters),
+                      "the object factory produced a @Factory instance");
               result.add(
                   new ParameterInfo(
                       instance, new FactoryInstance(position, 0, parameters, factory)));

@@ -14,6 +14,7 @@ import org.testng.internal.BaseTestMethod;
 import org.testng.internal.IInstanceIdentity;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.RuntimeBehavior;
+import org.testng.internal.Utils;
 
 /** Helper class to keep track of dependencies. */
 public class DependencyMap {
@@ -170,7 +171,8 @@ public class DependencyMap {
       String currentMethodName, ITestNGMethod m) {
     int lastIndex = currentMethodName.lastIndexOf('.');
     if (lastIndex != -1) {
-      return m.getTestClass().getRealClass().getName() + currentMethodName.substring(lastIndex);
+      return Utils.requireTestClassOf(m).getRealClass().getName()
+          + currentMethodName.substring(lastIndex);
     }
     return currentMethodName;
   }

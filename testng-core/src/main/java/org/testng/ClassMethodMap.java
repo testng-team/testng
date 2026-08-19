@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.jspecify.annotations.Nullable;
 import org.testng.internal.IInstanceIdentity;
+import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
 
 /**
@@ -24,7 +25,8 @@ public class ClassMethodMap {
   private final Map<ITestClass, Set<Object>> beforeClassMethods = new ConcurrentHashMap<>();
   private final Map<ITestClass, Set<Object>> afterClassMethods = new ConcurrentHashMap<>();
 
-  public ClassMethodMap(List<ITestNGMethod> methods, XmlMethodSelector xmlMethodSelector) {
+  public ClassMethodMap(
+      List<ITestNGMethod> methods, @Nullable XmlMethodSelector xmlMethodSelector) {
     for (ITestNGMethod m : methods) {
       // Only add to the class map methods that are included in the
       // method selector. We can pass a null context here since the selector
@@ -59,7 +61,7 @@ public class ClassMethodMap {
     // It's the last method of this class if all the methods remaining in the list belong to a
     // different class
     for (ITestNGMethod tm : l) {
-      if (tm.getEnabled() && tm.getTestClass().equals(m.getTestClass())) {
+      if (tm.getEnabled() && Utils.requireTestClassOf(tm).equals(m.getTestClass())) {
         return false;
       }
     }

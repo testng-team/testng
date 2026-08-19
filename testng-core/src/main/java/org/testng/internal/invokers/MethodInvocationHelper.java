@@ -66,7 +66,7 @@ public class MethodInvocationHelper {
   private static final long TIMEOUT_STARTUP_POLL_MILLIS = 10;
 
   protected static Object invokeMethodNoCheckedException(
-      Method thisMethod, Object instance, List<Object> parameters) {
+      Method thisMethod, @Nullable Object instance, List<Object> parameters) {
     try {
       return invokeMethod(thisMethod, instance, parameters);
     } catch (InvocationTargetException | IllegalAccessException e) {
@@ -102,12 +102,14 @@ public class MethodInvocationHelper {
     }
   }
 
-  protected static Object invokeMethod(Method thisMethod, Object instance, List<Object> parameters)
+  protected static Object invokeMethod(
+      Method thisMethod, @Nullable Object instance, List<Object> parameters)
       throws InvocationTargetException, IllegalAccessException {
     return invokeMethod(thisMethod, instance, parameters.toArray(new Object[0]));
   }
 
-  protected static Object invokeMethod(Method thisMethod, Object instance, Object[] parameters)
+  protected static Object invokeMethod(
+      Method thisMethod, @Nullable Object instance, Object[] parameters)
       throws InvocationTargetException, IllegalAccessException {
     Utils.checkInstanceOrStatic(instance, thisMethod);
 
@@ -169,7 +171,7 @@ public class MethodInvocationHelper {
 
   @SuppressWarnings("unchecked")
   public static CloseableIterator<Object[]> invokeDataProvider(
-      Object instance,
+      @Nullable Object instance,
       Method dataProvider,
       ITestNGMethod method,
       ITestContext testContext,

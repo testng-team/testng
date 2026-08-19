@@ -3,6 +3,7 @@ package org.testng;
 import java.util.Iterator;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
+import org.jspecify.annotations.Nullable;
 import org.testng.log4testng.Logger;
 
 /**
@@ -23,19 +24,19 @@ final class CliRunners {
           + "(along with its parsing library), or drive TestNG through the org.testng.TestNG Java "
           + "API instead.";
 
-  private static volatile ITestNGCliRunner cached;
+  private static volatile @Nullable ITestNGCliRunner cached;
 
   /**
    * Why the last lookup came back empty. A provider that is present but fails to load reports the
    * very same "nothing found" outcome as a provider that is simply absent, so the cause has to be
    * carried along or the diagnostic tells people to install what they already installed.
    */
-  private static volatile Throwable lastFailure;
+  private static volatile @Nullable Throwable lastFailure;
 
   private CliRunners() {}
 
   /** @return the installed runner, or {@code null} when none is available. */
-  static ITestNGCliRunner find() {
+  static @Nullable ITestNGCliRunner find() {
     ITestNGCliRunner local = cached;
     if (local != null) {
       return local;
@@ -74,7 +75,7 @@ final class CliRunners {
     return runner;
   }
 
-  private static ITestNGCliRunner load(ClassLoader loader) {
+  private static @Nullable ITestNGCliRunner load(ClassLoader loader) {
     try {
       Iterator<ITestNGCliRunner> it = ServiceLoader.load(ITestNGCliRunner.class, loader).iterator();
       if (!it.hasNext()) {

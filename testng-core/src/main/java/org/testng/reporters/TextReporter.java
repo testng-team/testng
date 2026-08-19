@@ -24,9 +24,9 @@ public class TextReporter implements ITestListener {
   private static final String LINE = "\n===============================================\n";
 
   private final int m_verbose;
-  private final String m_testName;
+  private final @Nullable String m_testName;
 
-  public TextReporter(String testName, int verbose) {
+  public TextReporter(@Nullable String testName, int verbose) {
     m_testName = testName;
     m_verbose = verbose;
   }

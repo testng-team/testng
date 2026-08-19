@@ -839,7 +839,9 @@ public class Parameters {
               MethodInvocationHelper.invokeDataProvider(
                   dataProviderMethod
                       .getInstance(), /* a test instance or null if the data provider is static*/
-                  dataProviderMethod.getMethod(),
+                  Objects.requireNonNull(
+                      dataProviderMethod.getMethod(),
+                      "the data provider still holds its method while it yields rows"),
                   testMethod,
                   methodParams.requireContext(),
                   fedInstance,
