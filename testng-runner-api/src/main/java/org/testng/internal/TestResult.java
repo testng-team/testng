@@ -1,7 +1,5 @@
 package org.testng.internal;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -299,23 +297,7 @@ public class TestResult implements ITestResult {
 
   @Override
   public void setParameters(Object[] parameters) {
-    m_parameters = new Object[parameters.length];
-    for (int i = 0; i < parameters.length; i++) {
-      // Copy parameter if possible because user may change it later
-      if (parameters[i] instanceof Cloneable) {
-        try {
-          Method clone = parameters[i].getClass().getDeclaredMethod("clone");
-          m_parameters[i] = clone.invoke(parameters[i]);
-        } catch (NoSuchMethodException
-            | InvocationTargetException
-            | IllegalAccessException
-            | SecurityException e) {
-          m_parameters[i] = parameters[i];
-        }
-      } else {
-        m_parameters[i] = parameters[i];
-      }
-    }
+    m_parameters = LegacyParameterSnapshotter.snapshot(parameters);
   }
 
   @Override
