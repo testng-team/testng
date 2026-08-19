@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Input context for MethodMatchers.
@@ -15,7 +16,7 @@ public class MethodMatcherContext {
   private final Parameter[] methodParameter;
   private final Object[] arguments;
   private final ITestContext testContext;
-  private final ITestResult testResult;
+  private final @Nullable ITestResult testResult;
 
   /**
    * Constructs a context for MethodMatchers.
@@ -29,7 +30,7 @@ public class MethodMatcherContext {
       final Method method,
       final Object[] arguments,
       final ITestContext testContext,
-      final ITestResult testResult) {
+      final @Nullable ITestResult testResult) {
     this.method = method;
     this.methodParameter = ReflectionRecipes.getMethodParameters(method);
     this.arguments = arguments;
@@ -53,7 +54,7 @@ public class MethodMatcherContext {
     return testContext;
   }
 
-  public ITestResult getTestResult() {
+  public @Nullable ITestResult getTestResult() {
     return testResult;
   }
 }

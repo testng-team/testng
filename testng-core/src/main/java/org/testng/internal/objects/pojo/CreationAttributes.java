@@ -13,7 +13,7 @@ public class CreationAttributes {
   private final @Nullable GuiceContext suiteContext;
 
   public CreationAttributes(
-      ITestContext ctx, BasicAttributes basic, @Nullable DetailedAttributes detailed) {
+      @Nullable ITestContext ctx, BasicAttributes basic, @Nullable DetailedAttributes detailed) {
     this.basic = basic;
     this.detailed = detailed;
     this.context = ctx;

@@ -7,7 +7,8 @@ import org.testng.annotations.IDataProviderAnnotation;
 /** Represents an @{@link org.testng.annotations.DataProvider} annotated method. */
 class DataProviderMethodRemovable extends DataProviderMethod {
 
-  DataProviderMethodRemovable(Object instance, Method method, IDataProviderAnnotation annotation) {
+  DataProviderMethodRemovable(
+      @Nullable Object instance, Method method, IDataProviderAnnotation annotation) {
     super(instance, method, annotation);
   }
 

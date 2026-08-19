@@ -49,6 +49,10 @@ public class ConstructorOrMethod {
     return member instanceof Method ? (Method) member : null;
   }
 
+  /**
+   * @return the wrapped member if it is a constructor, or {@code null} if it is a method. Prefer
+   *     {@link #requireConstructor()} unless the null is what you are testing for.
+   */
   public @Nullable Constructor<?> getConstructor() {
     return member instanceof Constructor ? (Constructor<?>) member : null;
   }
@@ -66,6 +70,21 @@ public class ConstructorOrMethod {
       return (Method) member;
     }
     throw new NullPointerException("Expected a method, but " + member + " is a constructor");
+  }
+
+  /**
+   * The wrapped member as a {@link Constructor}, for the callers that have already established it
+   * is not a method.
+   *
+   * @return the wrapped constructor
+   * @throws NullPointerException if this wrapper holds a method -- the same failure the call sites
+   *     saw before, with a message instead of a bare dereference
+   */
+  public Constructor<?> requireConstructor() {
+    if (member instanceof Constructor) {
+      return (Constructor<?>) member;
+    }
+    throw new NullPointerException("Expected a constructor, but " + member + " is a method");
   }
 
   /**
