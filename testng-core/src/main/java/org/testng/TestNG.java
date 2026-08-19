@@ -1921,7 +1921,7 @@ public class TestNG {
   }
 
   /** @param testNames Only run the specified tests from the suite. */
-  public void setTestNames(@Nullable List<String> testNames) {
+  public void setTestNames(List<String> testNames) {
     m_testNames = testNames;
   }
 

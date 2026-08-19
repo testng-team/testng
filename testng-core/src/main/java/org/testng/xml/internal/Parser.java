@@ -235,8 +235,8 @@ public class Parser {
     return new ArrayList<>(parse());
   }
 
-  public static Collection<XmlSuite> parse(
-      @Nullable String suite, @Nullable IPostProcessor processor) throws IOException {
+  public static Collection<XmlSuite> parse(@Nullable String suite, IPostProcessor processor)
+      throws IOException {
     return newParser(suite, processor).parse();
   }
 

@@ -59,7 +59,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   private final IConfiguration configuration;
 
   private @Nullable ITestObjectFactory objectFactory;
-  private @Nullable Boolean skipFailedInvocationCounts = Boolean.FALSE;
+  private Boolean skipFailedInvocationCounts = Boolean.FALSE;
   private final List<IReporter> reporters = new ArrayList<>();
 
   private final Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
@@ -74,7 +74,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       IConfiguration configuration,
       XmlSuite suite,
       String outputDir,
-      @Nullable ITestRunnerFactory runnerFactory,
+      ITestRunnerFactory runnerFactory,
       Comparator<ITestNGMethod> comparator) {
     this(configuration, suite, outputDir, runnerFactory, false, comparator);
   }
@@ -106,7 +106,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       String outputDir,
       @Nullable ITestRunnerFactory runnerFactory,
       boolean useDefaultListeners,
-      @Nullable List<IMethodInterceptor> methodInterceptors,
+      List<IMethodInterceptor> methodInterceptors,
       @Nullable Collection<IInvokedMethodListener> invokedMethodListener,
       TestListenersContainer container,
       @Nullable Collection<IClassListener> classListeners,
@@ -282,7 +282,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
               configuration,
               testListeners.toArray(new ITestListener[0]),
               useDefaultListeners,
-              skipFailedInvocationCounts != null && skipFailedInvocationCounts,
+              skipFailedInvocationCounts,
               comparator,
               this);
     } else {
@@ -479,10 +479,8 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   /** @param reporter The ISuiteListener interested in reporting the result of the current suite. */
-  protected void addListener(@Nullable ISuiteListener reporter) {
-    if (reporter != null) {
-      listeners.putIfAbsent(reporter.getClass(), reporter);
-    }
+  protected void addListener(ISuiteListener reporter) {
+    listeners.putIfAbsent(reporter.getClass(), reporter);
   }
 
   @Override
