@@ -172,7 +172,7 @@ public class TestNGClassFinder extends BaseClassFinder {
       IConfiguration configuration, IClass ic, ConstructorOrMethod factoryMethod) {
     IObject.IdentifiableObject[] theseInstances = IObject.objects(ic, false);
 
-    IObject.@Nullable IdentifiableObject instance =
+    IObject.IdentifiableObject instance =
         theseInstances.length != 0 ? theseInstances[0] : null;
     FactoryMethod fm =
         new FactoryMethod(
@@ -197,7 +197,7 @@ public class TestNGClassFinder extends BaseClassFinder {
         throw new TestNGException(
             "The factory " + fm + " returned a null instance" + "at index " + i);
       }
-      @Nullable Class<?> oneMoreClass;
+      Class<?> oneMoreClass;
       if (o.isLazilyInitialized()) {
         // Lazy (constructor) factory: the produced class is the declaring class, known without
         // instantiating the instance. Never an IInstanceInfo (those keep the eager path below).
