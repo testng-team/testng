@@ -110,8 +110,8 @@ public class DependencyMap {
     // Check for the presence of an instance via the per-instance id so a lazy @Factory instance is
     // not created just to resolve dependencies during collection.
     boolean result =
-        IInstanceIdentity.getInstanceId(derivedClassMethod) != null
-            || IInstanceIdentity.getInstanceId(baseClassMethod) != null;
+        IInstanceIdentity.getInstanceId(derivedClassMethod) != IInstanceIdentity.NO_INSTANCE
+            || IInstanceIdentity.getInstanceId(baseClassMethod) != IInstanceIdentity.NO_INSTANCE;
     boolean params = baseClassMethod.getFactoryInstance().isPresent();
 
     if (result && params && RuntimeBehavior.enforceThreadAffinity()) {
@@ -139,10 +139,10 @@ public class DependencyMap {
 
   private static boolean isSameInstance(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    boolean nonNullInstances =
-        IInstanceIdentity.getInstanceId(derivedClassMethod) != null
-            && IInstanceIdentity.getInstanceId(baseClassMethod) != null;
-    if (!nonNullInstances) {
+    boolean bothCarryAnInstance =
+        IInstanceIdentity.getInstanceId(derivedClassMethod) != IInstanceIdentity.NO_INSTANCE
+            && IInstanceIdentity.getInstanceId(baseClassMethod) != IInstanceIdentity.NO_INSTANCE;
+    if (!bothCarryAnInstance) {
       return false;
     }
     Class<?> baseClass = instanceClassOf(baseClassMethod);
