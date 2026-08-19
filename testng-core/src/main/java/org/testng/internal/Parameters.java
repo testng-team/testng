@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
@@ -60,7 +61,6 @@ import org.testng.internal.reflect.ReflectionRecipes;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-import java.util.Objects;
 
 /** Methods that bind parameters declared in testng.xml to actual values used to invoke methods. */
 public class Parameters {

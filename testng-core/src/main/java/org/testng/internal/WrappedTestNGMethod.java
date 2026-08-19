@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import org.jspecify.annotations.Nullable;
 import org.testng.IClass;
 import org.testng.IFactoryInstance;
 import org.testng.IRetryAnalyzer;
@@ -13,7 +14,6 @@ import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.xml.XmlTest;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a proxy for an actual instance of {@link ITestNGMethod} but with the exception that it

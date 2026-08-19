@@ -2,11 +2,11 @@ package org.testng.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ServiceLoader;
 import javax.script.ScriptEngineFactory;
 import org.testng.TestNGException;
 import org.testng.xml.XmlScript;
-import java.util.Objects;
 
 public final class ScriptSelectorFactory {
 

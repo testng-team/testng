@@ -8,13 +8,13 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jspecify.annotations.Nullable;
 import org.testng.IDynamicGraph;
 import org.testng.IExecutionVisualiser;
-import java.util.Objects;
 
 /** Representation of the graph of methods. */
 public class DynamicGraph<T> implements IDynamicGraph<T> {

@@ -9,7 +9,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import org.jspecify.annotations.Nullable;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
 import org.testng.IDataProviderListener;
@@ -27,8 +29,6 @@ import org.testng.annotations.Lazy;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.invokers.ParameterHolder;
 import org.testng.xml.XmlTest;
-import org.jspecify.annotations.Nullable;
-import java.util.Objects;
 
 /** This class represents a method annotated with @Factory */
 public class FactoryMethod extends BaseTestMethod {
