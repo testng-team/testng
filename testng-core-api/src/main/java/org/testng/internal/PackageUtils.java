@@ -30,6 +30,18 @@ import org.testng.internal.protocols.UnhandledIOException;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class PackageUtils {
+  /**
+   * The classpath fragments {@code testng.test.classpath} names, normalised once and cached.
+   *
+   * <p>Written by {@link #getTestClasspath()} without a lock, and read from every package scan --
+   * which parallel suites run concurrently. {@code volatile} is what makes the array safe to
+   * publish: without it a reader may see the reference while the element writes that filled it are
+   * still invisible, and observe an array of nulls. That is not a crash but a silent wrong answer,
+   * because {@code matchTestClasspath} would concatenate {@code "null"} into every comparison,
+   * match nothing, and drop classes from the scan with no error anywhere. Two threads racing to
+   * build it is harmless: the fragments derive from a system property, so both compute the same
+   * value and either one may win.
+   */
   private static volatile String @Nullable [] testClassPaths;
 
   /** The additional class loaders to find classes in. */
