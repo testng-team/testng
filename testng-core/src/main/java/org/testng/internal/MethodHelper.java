@@ -58,7 +58,7 @@ public class MethodHelper {
       boolean unique,
       List<ITestNGMethod> outExcludedMethods,
       Comparator<ITestNGMethod> comparator) {
-    AtomicReference<ITestNGMethod[]> results = new AtomicReference<>(new ITestNGMethod[0]);
+    AtomicReference<ITestNGMethod[]> results = new AtomicReference<>();
     List<ITestNGMethod> includedMethods = new ArrayList<>();
     TimeUtils.computeAndShowTime(
         "MethodGroupsHelper.collectMethodsByGroup()",
