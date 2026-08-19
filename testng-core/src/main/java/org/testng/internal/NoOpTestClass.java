@@ -128,12 +128,12 @@ public class NoOpTestClass implements ITestClass, IObject {
 
   /** @see org.testng.internal.IObject#getInstanceHashCodes() */
   @Override
-  public long[] getInstanceHashCodes() {
+  public long @Nullable [] getInstanceHashCodes() {
     return m_instanceHashes;
   }
 
   @Override
-  public Object[] getInstances(boolean reuse) {
+  public Object @Nullable [] getInstances(boolean reuse) {
     return m_instances;
   }
 
@@ -173,7 +173,7 @@ public class NoOpTestClass implements ITestClass, IObject {
   }
 
   @Override
-  public XmlClass getXmlClass() {
+  public @Nullable XmlClass getXmlClass() {
     return m_xmlClass;
   }
 }

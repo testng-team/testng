@@ -46,7 +46,11 @@ public class Graph<T> {
   }
 
   public Set<T> getPredecessors(T node) {
-    return findNode(node).getPredecessors().keySet();
+    Node<T> n = findNode(node);
+    if (null == n) {
+      throw new TestNGException("Non-existing node: " + node);
+    }
+    return n.getPredecessors().keySet();
   }
 
   public boolean isIndependent(T object) {
@@ -81,7 +85,7 @@ public class Graph<T> {
   }
 
   /** @return All the nodes that have an order with each other, sorted in one of the valid sorts. */
-  public List<T> getStrictlySortedNodes() {
+  public @Nullable List<T> getStrictlySortedNodes() {
     return m_strictlySortedNodes;
   }
 

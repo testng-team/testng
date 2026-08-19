@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Implementation of the Tarjan algorithm to find and display a cycle in a graph.
@@ -18,7 +17,7 @@ public class Tarjan<T> {
   private final ArrayDeque<T> stack;
   Map<T, Integer> visitedNodes = new HashMap<>();
   Map<T, Integer> m_lowlinks = new HashMap<>();
-  private @Nullable List<T> m_cycle;
+  private List<T> m_cycle = new ArrayList<>();
 
   public Tarjan(Graph<T> graph, T start) {
     stack = new ArrayDeque<>();

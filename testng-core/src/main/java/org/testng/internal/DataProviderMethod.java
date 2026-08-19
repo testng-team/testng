@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.testng.IDataProviderMethod;
 import org.testng.IRetryDataProvider;
 import org.testng.annotations.IDataProviderAnnotation;
@@ -9,8 +10,8 @@ import org.testng.annotations.IDataProviderAnnotation;
 /** Represents an @{@link org.testng.annotations.DataProvider} annotated method. */
 class DataProviderMethod implements IDataProviderMethod {
 
-  protected Object instance;
-  protected Method method;
+  protected @Nullable Object instance;
+  protected @Nullable Method method;
   private final IDataProviderAnnotation annotation;
 
   DataProviderMethod(Object instance, Method method, IDataProviderAnnotation annotation) {
@@ -20,12 +21,12 @@ class DataProviderMethod implements IDataProviderMethod {
   }
 
   @Override
-  public Object getInstance() {
+  public @Nullable Object getInstance() {
     return instance;
   }
 
   @Override
-  public Method getMethod() {
+  public @Nullable Method getMethod() {
     return method;
   }
 
