@@ -32,7 +32,7 @@ public interface IObject {
    * @param object - The object that should be inspected for its compatibility with {@link IObject}.
    * @return - An array representing the hash codes of the corresponding instances.
    */
-  static long[] instanceHashCodes(Object object) {
+  static long[] instanceHashCodes(@Nullable Object object) {
     return cast(object).map(IObject::getInstanceHashCodes).orElse(new long[] {});
   }
 
@@ -65,7 +65,7 @@ public interface IObject {
    * @return - If the incoming object is an instance of {@link IObject} then the cast instance is
    *     wrapped within {@link Optional} else it would be an {@link Optional#empty()}
    */
-  static Optional<IObject> cast(Object object) {
+  static Optional<IObject> cast(@Nullable Object object) {
     if (object instanceof IObject) {
       return Optional.of((IObject) object);
     }

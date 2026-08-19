@@ -35,22 +35,18 @@ public class TestNGMethod extends BaseTestMethod {
       IAnnotationFinder finder,
       XmlTest xmlTest,
       IObject.@Nullable IdentifiableObject instance) {
-    this(objectFactory, method, finder, true, xmlTest, instance);
+    this(objectFactory, method, finder, instance);
+    init(xmlTest);
   }
 
+  /** Builds the method without initialising it from an {@link XmlTest}; {@link #clone()} copies
+   * the state across itself. */
   private TestNGMethod(
       ITestObjectFactory objectFactory,
       Method method,
       IAnnotationFinder finder,
-      boolean initialize,
-      XmlTest xmlTest,
       IObject.@Nullable IdentifiableObject instance) {
     super(objectFactory, method.getName(), new ConstructorOrMethod(method), finder, instance);
-    setXmlTest(xmlTest);
-
-    if (initialize) {
-      init(xmlTest);
-    }
   }
 
   /** {@inheritDoc} */
@@ -176,14 +172,17 @@ public class TestNGMethod extends BaseTestMethod {
             m_objectFactory,
             getConstructorOrMethod().requireMethod(),
             getAnnotationFinder(),
-            false,
-            getXmlTest(),
-            new IObject.IdentifiableObject(getInstance(), getInstanceId()));
+            cloneInstance());
+    clone.setXmlTest(getXmlTest());
     ITestClass tc = getTestClass();
-    NoOpTestClass testClass = new NoOpTestClass(tc);
-    testClass.setBeforeTestMethods(clone(tc.getBeforeTestMethods()));
-    testClass.setAfterTestMethod(clone(tc.getAfterTestMethods()));
-    clone.m_testClass = testClass;
+    if (tc != null) {
+      // Wrapping a test class this method has not been bound to yet would have thrown here.
+      // ConfigurationMethod.clone() already propagates the absence rather than wrapping it.
+      NoOpTestClass testClass = new NoOpTestClass(tc);
+      testClass.setBeforeTestMethods(clone(tc.getBeforeTestMethods()));
+      testClass.setAfterTestMethod(clone(tc.getAfterTestMethods()));
+      clone.m_testClass = testClass;
+    }
     clone.setDate(getDate());
     clone.setGroups(getGroups());
     clone.setGroupsDependedUpon(getGroupsDependedUpon(), Collections.emptyList());

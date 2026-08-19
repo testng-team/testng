@@ -90,7 +90,7 @@ public abstract class BaseTestMethod
   private int m_interceptedPriority;
 
   private @Nullable XmlTest m_xmlTest;
-  private final IObject.IdentifiableObject m_instance;
+  private final IObject.@Nullable IdentifiableObject m_instance;
 
   private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = new ConcurrentHashMap<>();
   protected final ITestObjectFactory m_objectFactory;
@@ -100,7 +100,7 @@ public abstract class BaseTestMethod
       String methodName,
       ConstructorOrMethod com,
       IAnnotationFinder annotationFinder,
-      IObject.IdentifiableObject instance) {
+      IObject.@Nullable IdentifiableObject instance) {
     m_objectFactory = objectFactory;
     m_methodClass = com.getDeclaringClass();
     m_method = com;
@@ -133,7 +133,7 @@ public abstract class BaseTestMethod
 
   /** {@inheritDoc} */
   @Override
-  public void setTestClass(ITestClass tc) {
+  public void setTestClass(@Nullable ITestClass tc) {
     if (tc == null) {
       throw new IllegalArgumentException("test class cannot be null");
     }
@@ -175,7 +175,7 @@ public abstract class BaseTestMethod
   }
 
   @Override
-  public UUID getInstanceId() {
+  public @Nullable UUID getInstanceId() {
     return Optional.ofNullable(m_instance)
         .map(IObject.IdentifiableObject::getInstanceId)
         .orElse(null);
@@ -185,6 +185,19 @@ public abstract class BaseTestMethod
   @Override
   public long[] getInstanceHashCodes() {
     return IObject.instanceHashCodes(m_testClass);
+  }
+
+  /**
+   * The instance wrapper a clone of this method should carry: the same identity, or {@code null}
+   * when this method carries no instance at all.
+   */
+  protected IObject.@Nullable IdentifiableObject cloneInstance() {
+    Object instance = getInstance();
+    UUID instanceId = getInstanceId();
+    if (instance == null || instanceId == null) {
+      return null;
+    }
+    return new IObject.IdentifiableObject(instance, instanceId);
   }
 
   /**
@@ -464,7 +477,7 @@ public abstract class BaseTestMethod
   }
 
   protected void initBeforeAfterGroups(
-      Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
+      Class<? extends ITestOrConfiguration> annotationClass, String @Nullable [] groups) {
     String[] groupsAtMethodLevel =
         calculateGroupsToUseConsideringValuesAndGroupValues(annotationClass, groups);
     // @BeforeGroups and @AfterGroups annotation cannot be used at Class level. So its always null
@@ -472,8 +485,8 @@ public abstract class BaseTestMethod
     initRestOfGroupDependencies(annotationClass);
   }
 
-  private String[] calculateGroupsToUseConsideringValuesAndGroupValues(
-      Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
+  private String @Nullable [] calculateGroupsToUseConsideringValuesAndGroupValues(
+      Class<? extends ITestOrConfiguration> annotationClass, String @Nullable [] groups) {
     if (groups == null || groups.length == 0) {
       ITestOrConfiguration annotation =
           getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
@@ -521,7 +534,7 @@ public abstract class BaseTestMethod
     setMethodsDependedUpon(methodsDependedUpon);
   }
 
-  private static Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
+  private static Map<String, Set<String>> calculateXmlGroupDependencies(@Nullable XmlTest xmlTest) {
     Map<String, Set<String>> result = new HashMap<>();
     if (xmlTest == null) {
       return result;
@@ -654,7 +667,7 @@ public abstract class BaseTestMethod
 
   /** {@inheritDoc} */
   @Override
-  public void setMissingGroup(String group) {
+  public void setMissingGroup(@Nullable String group) {
     m_missingGroup = group;
   }
 
@@ -669,7 +682,7 @@ public abstract class BaseTestMethod
   public void setThreadPoolSize(int threadPoolSize) {}
 
   @Override
-  public void setDescription(String description) {
+  public void setDescription(@Nullable String description) {
     m_description = description;
   }
 
@@ -847,7 +860,7 @@ public abstract class BaseTestMethod
     return m_xmlTest;
   }
 
-  public void setXmlTest(XmlTest xmlTest) {
+  public void setXmlTest(@Nullable XmlTest xmlTest) {
     m_xmlTest = xmlTest;
   }
 
@@ -863,7 +876,13 @@ public abstract class BaseTestMethod
 
   @Override
   public Map<String, String> findMethodParameters(XmlTest test) {
-    return XmlTestUtils.findMethodParameters(test, getTestClass().getName(), getMethodName());
+    ITestClass testClass = getTestClass();
+    if (testClass == null) {
+      // No test class bound yet. No <class> tag can match, so XmlTestUtils would return the
+      // suite and <test> parameters unchanged - which getAllParameters already builds fresh.
+      return test.getAllParameters();
+    }
+    return XmlTestUtils.findMethodParameters(test, testClass.getName(), getMethodName());
   }
 
   @Override
@@ -873,7 +892,7 @@ public abstract class BaseTestMethod
 
   @Override
   @Deprecated
-  public IParameterInfo getFactoryMethodParamsInfo() {
+  public @Nullable IParameterInfo getFactoryMethodParamsInfo() {
     return getFactoryParameterInfo();
   }
 
@@ -916,7 +935,7 @@ public abstract class BaseTestMethod
     return Optional.ofNullable(tr.getParameters()).orElse(new Object[0]).length == 0;
   }
 
-  private IRetryAnalyzer computeRetryAnalyzerInstanceToUse(ITestResult tr) {
+  private @Nullable IRetryAnalyzer computeRetryAnalyzerInstanceToUse(ITestResult tr) {
     if (m_retryAnalyzer != null) {
       return m_retryAnalyzer;
     }

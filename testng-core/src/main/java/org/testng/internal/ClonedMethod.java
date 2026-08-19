@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import org.jspecify.annotations.Nullable;
@@ -127,7 +128,7 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public String getMissingGroup() {
+  public @Nullable String getMissingGroup() {
     return null;
   }
 
@@ -302,7 +303,10 @@ public class ClonedMethod implements ITestNGMethod {
 
   @Override
   public String toString() {
-    ConstructorOrMethod m = getConstructorOrMethod();
+    // getConstructorOrMethod() answers null, so this has always thrown. Stated rather than hidden.
+    ConstructorOrMethod m =
+        Objects.requireNonNull(
+            getConstructorOrMethod(), "a ClonedMethod has no ConstructorOrMethod");
     String cls = m.getDeclaringClass().getName();
     return BaseTestMethod.stringify(cls, m).toString();
   }
@@ -353,7 +357,7 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public ConstructorOrMethod getConstructorOrMethod() {
+  public @Nullable ConstructorOrMethod getConstructorOrMethod() {
     return null;
   }
 
