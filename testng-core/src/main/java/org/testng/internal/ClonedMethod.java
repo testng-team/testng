@@ -266,7 +266,7 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setId(String id) {
+  public void setId(@Nullable String id) {
     m_id = id;
   }
 

@@ -6,7 +6,14 @@ import org.jspecify.annotations.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 
-class FilteredParameters implements Iterator<Object[]> {
+/**
+ * Hides the parameter rows an {@code indices} restriction excludes, by answering {@code null} for
+ * them rather than skipping them: the consumers count the skipped rows to keep the reported
+ * parameter index aligned with the data provider's own numbering. See {@code MethodRunner:47} and
+ * {@code MethodRunner:121}, which increment {@code parametersIndex} on each null, and {@code
+ * FactoryMethod:216}.
+ */
+class FilteredParameters implements Iterator<Object @Nullable []> {
 
   private int index = 0;
   private boolean hasWarn = false;
