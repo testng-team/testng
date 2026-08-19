@@ -14,8 +14,7 @@ class DataProviderMethod implements IDataProviderMethod {
   protected @Nullable Method method;
   private final IDataProviderAnnotation annotation;
 
-  DataProviderMethod(
-      @Nullable Object instance, Method method, IDataProviderAnnotation annotation) {
+  DataProviderMethod(@Nullable Object instance, Method method, IDataProviderAnnotation annotation) {
     this.instance = instance;
     this.method = method;
     this.annotation = annotation;

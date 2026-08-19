@@ -3,6 +3,7 @@ package org.testng.internal.invokers;
 import static org.testng.internal.Parameters.MethodParameters;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 import org.testng.DataProviderHolder;
@@ -17,7 +18,6 @@ import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
-import java.util.Objects;
 
 class ParameterHandler {
   private final @Nullable ITestObjectFactory objectFactory;

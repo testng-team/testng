@@ -39,8 +39,10 @@ public class TestNGMethod extends BaseTestMethod {
     init(xmlTest);
   }
 
-  /** Builds the method without initialising it from an {@link XmlTest}; {@link #clone()} copies
-   * the state across itself. */
+  /**
+   * Builds the method without initialising it from an {@link XmlTest}; {@link #clone()} copies the
+   * state across itself.
+   */
   private TestNGMethod(
       ITestObjectFactory objectFactory,
       Method method,

@@ -3,9 +3,9 @@ package org.testng.internal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
-import org.jspecify.annotations.Nullable;
 
 public interface ITestClassConfigInfo {
 

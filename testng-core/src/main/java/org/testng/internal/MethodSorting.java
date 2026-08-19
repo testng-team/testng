@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.UUID;
 import org.testng.IFactoryInstance;
 import org.testng.ITestNGMethod;
-import org.jspecify.annotations.Nullable;
 
 public enum MethodSorting implements Comparator<ITestNGMethod> {
   METHOD_NAMES("methods") {

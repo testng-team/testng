@@ -2,9 +2,9 @@ package org.testng.internal.reflect;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Input context for MethodMatchers.

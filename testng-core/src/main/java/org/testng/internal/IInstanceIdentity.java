@@ -11,7 +11,8 @@ public interface IInstanceIdentity {
    * @return - A <code>{@link UUID}</code> that represents a unique id which is associated with
    *     every test class object, or {@code null} when the implementation carries no instance.
    */
-  @Nullable UUID getInstanceId();
+  @Nullable
+  UUID getInstanceId();
 
   static @Nullable Object getInstanceId(Object object) {
     if (object instanceof IInstanceIdentity) {
