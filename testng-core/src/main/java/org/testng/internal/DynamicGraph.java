@@ -259,6 +259,7 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
       return edges == null ? null : Collections.unmodifiableMap(edges);
     }
 
+    @Nullable
     Map<T, Integer> to(T node) {
       Map<T, Integer> edges = m_incomingEdges.get(node);
       return edges == null ? null : Collections.unmodifiableMap(edges);
@@ -272,7 +273,7 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
      * @param to - the to edge
      * @return the weight of the reversed edge or null if edge does not exist
      */
-    private Integer findReversedEdge(T from, T to) {
+    private @Nullable Integer findReversedEdge(T from, T to) {
       Map<T, Integer> edges = m_outgoingEdges.get(to);
       return edges == null ? null : edges.get(from);
     }

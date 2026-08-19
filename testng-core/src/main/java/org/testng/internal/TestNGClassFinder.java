@@ -42,7 +42,7 @@ public class TestNGClassFinder extends BaseClassFinder {
 
   private @Nullable String m_factoryCreationFailedMessage = null;
 
-  public String getFactoryCreationFailedMessage() {
+  public @Nullable String getFactoryCreationFailedMessage() {
     return m_factoryCreationFailedMessage;
   }
 

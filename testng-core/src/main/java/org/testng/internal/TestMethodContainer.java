@@ -44,8 +44,10 @@ public final class TestMethodContainer implements IContainer<ITestNGMethod> {
     if (isCleared) {
       return;
     }
-    Arrays.fill(methods, null);
-    methods = null;
+    if (methods != null) {
+      Arrays.fill(methods, null);
+      methods = null;
+    }
     isCleared = true;
   }
 }

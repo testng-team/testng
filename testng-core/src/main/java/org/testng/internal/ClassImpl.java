@@ -63,7 +63,7 @@ public class ClassImpl implements IClass, IObject {
   }
 
   @Override
-  public String getTestName() {
+  public @Nullable String getTestName() {
     return m_testName;
   }
 
@@ -78,7 +78,7 @@ public class ClassImpl implements IClass, IObject {
   }
 
   @Override
-  public long[] getInstanceHashCodes() {
+  public long @Nullable [] getInstanceHashCodes() {
     return m_instanceHashCodes;
   }
 
