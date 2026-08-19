@@ -22,7 +22,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
 
   protected abstract C createValue();
 
-  public boolean put(K key, V method) {
+  public boolean put(@Nullable K key, V method) {
     AtomicBoolean exists = new AtomicBoolean(true);
     return m_objects
             .computeIfAbsent(
@@ -35,7 +35,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
         && exists.get();
   }
 
-  public C get(K key) {
+  public C get(@Nullable K key) {
     return m_objects.computeIfAbsent(key, k -> createValue());
   }
 
@@ -43,7 +43,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
     return new HashSet<>(m_objects.keySet());
   }
 
-  public boolean containsKey(K k) {
+  public boolean containsKey(@Nullable K k) {
     return m_objects.containsKey(k);
   }
 
@@ -68,7 +68,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
     return m_objects.size();
   }
 
-  public boolean remove(K key, V value) {
+  public boolean remove(@Nullable K key, V value) {
     return get(key).remove(value);
   }
 
@@ -78,7 +78,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
    * @param key the key to drop.
    * @return the values that were held, or {@code null} when the key was not present.
    */
-  public @Nullable C removeAll(K key) {
+  public @Nullable C removeAll(@Nullable K key) {
     return m_objects.remove(key);
   }
 
@@ -90,7 +90,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
     return m_objects.values();
   }
 
-  public boolean putAll(K k, Collection<? extends V> values) {
+  public boolean putAll(@Nullable K k, Collection<? extends V> values) {
     boolean result = false;
     for (V v : values) {
       result = put(k, v) || result;

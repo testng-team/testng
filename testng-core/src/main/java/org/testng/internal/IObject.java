@@ -42,7 +42,7 @@ public interface IObject {
    * @return - An array (can be empty is instance compatibility fails) of {@link IdentifiableObject}
    *     objects.
    */
-  static IdentifiableObject[] objects(Object object, boolean create) {
+  static IdentifiableObject[] objects(@Nullable Object object, boolean create) {
     return objects(object, create, "");
   }
 
@@ -54,7 +54,8 @@ public interface IObject {
    * @return - An array (can be empty is instance compatibility fails) of {@link IdentifiableObject}
    *     objects.
    */
-  static IdentifiableObject[] objects(Object object, boolean create, String errorMsgPrefix) {
+  static IdentifiableObject[] objects(
+      @Nullable Object object, boolean create, String errorMsgPrefix) {
     return cast(object)
         .map(it -> it.getObjects(create, errorMsgPrefix))
         .orElse(new IdentifiableObject[] {});

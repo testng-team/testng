@@ -17,6 +17,7 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlSuite.ParallelMode;
 import org.testng.xml.XmlTest;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class DynamicGraphHelper {
 
@@ -33,7 +34,7 @@ public final class DynamicGraphHelper {
     // Keep track of whether we have group dependencies. If we do, preserve-order needs
     // to be ignored since group dependencies create inter-class dependencies which can
     // end up creating cycles when combined with preserve-order.
-    final AtomicReference<Boolean> hasDependencies = new AtomicReference<>(false);
+    final AtomicBoolean hasDependencies = new AtomicBoolean(false);
     Arrays.stream(methods)
         .forEach(
             m -> {

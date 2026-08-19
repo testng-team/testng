@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.jspecify.annotations.Nullable;
 import org.testng.IDynamicGraph;
 import org.testng.IExecutionVisualiser;
+import java.util.Objects;
 
 /** Representation of the graph of methods. */
 public class DynamicGraph<T> implements IDynamicGraph<T> {
@@ -309,9 +310,9 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
 
       int lowestWeight = Integer.MAX_VALUE;
       for (T node : intersection) {
-        Map<T, Integer> weightMap = m_outgoingEdges.get(node);
-
+        // The intersection was taken against this very key set, so the lookup cannot miss.
         // Not catching NoSuchElementException, because that would indicate our graph is corrupt.
+        Map<T, Integer> weightMap = Objects.requireNonNull(m_outgoingEdges.get(node));
         lowestWeight = Math.min(lowestWeight, Collections.min(weightMap.values()));
       }
       return lowestWeight;

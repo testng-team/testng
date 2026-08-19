@@ -81,21 +81,26 @@ public class ConfigurationGroupMethods {
 
     Set<String> methodGroups = new HashSet<>(Arrays.asList(testMethod.getGroups()));
     try (AutoCloseableLock ignore = afterGroups.lock()) {
-      if (m_afterGroupsMap == null) {
-        m_afterGroupsMap = initializeAfterGroupsMap();
+      Map<String, List<ITestNGMethod>> afterGroupsMap = m_afterGroupsMap;
+      if (afterGroupsMap == null) {
+        afterGroupsMap = initializeAfterGroupsMap();
+        m_afterGroupsMap = afterGroupsMap;
       }
 
+      Map<String, List<ITestNGMethod>> groupsMap = afterGroupsMap;
       return methodGroups.stream()
-          .filter(t -> isLastMethodForGroup(t, testMethod))
+          .filter(t -> isLastMethodForGroup(groupsMap, t, testMethod))
           .map(t -> retrieve(afterGroupsThatHaveAlreadyRun, m_afterGroupsMethods, t))
           .flatMap(Collection::stream)
-          .filter(t -> isAfterGroupAllowedToRunAfterTestMethod(t, methodGroups))
+          .filter(t -> isAfterGroupAllowedToRunAfterTestMethod(groupsMap, t, methodGroups))
           .collect(Collectors.toList());
     }
   }
 
   private boolean isAfterGroupAllowedToRunAfterTestMethod(
-      ITestNGMethod afterGroupMethod, Set<String> testMethodGroups) {
+      Map<String, List<ITestNGMethod>> afterGroupsMap,
+      ITestNGMethod afterGroupMethod,
+      Set<String> testMethodGroups) {
     String[] afterGroupMethodGroups = afterGroupMethod.getAfterGroups();
     if (afterGroupMethodGroups.length == 1
         || testMethodGroups.containsAll(Arrays.asList(afterGroupMethodGroups))) {
@@ -105,7 +110,7 @@ public class ConfigurationGroupMethods {
         .allMatch(
             t ->
                 testMethodGroups.contains(t)
-                    || !CollectionUtils.hasElements(m_afterGroupsMap.get(t)));
+                    || !CollectionUtils.hasElements(afterGroupsMap.get(t)));
   }
 
   public void removeBeforeGroups(String[] groups) {
@@ -130,8 +135,9 @@ public class ConfigurationGroupMethods {
    * @return true if the passed method is the last to run for the group. This method is used to
    *     figure out when is the right time to invoke afterGroups methods.
    */
-  private boolean isLastMethodForGroup(String group, ITestNGMethod method) {
-    List<ITestNGMethod> methodsInGroup = m_afterGroupsMap.get(group);
+  private boolean isLastMethodForGroup(
+      Map<String, List<ITestNGMethod>> afterGroupsMap, String group, ITestNGMethod method) {
+    List<ITestNGMethod> methodsInGroup = afterGroupsMap.get(group);
 
     if (null == methodsInGroup || methodsInGroup.isEmpty()) {
       return true;

@@ -32,8 +32,8 @@ public abstract class BaseClassFinder implements ITestClassFinder {
   protected IClass findOrCreateIClass(
       ITestContext context,
       Class<?> cls,
-      XmlClass xmlClass,
-      IObject.IdentifiableObject instance,
+      @Nullable XmlClass xmlClass,
+      IObject.@Nullable IdentifiableObject instance,
       IAnnotationFinder annotationFinder,
       ITestObjectFactory objectFactory) {
 

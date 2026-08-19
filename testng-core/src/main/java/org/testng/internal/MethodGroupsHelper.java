@@ -20,6 +20,8 @@ import org.testng.annotations.ITestOrConfiguration;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
+import org.jspecify.annotations.Nullable;
+import java.util.Objects;
 
 /** Collections of helper methods to help deal with test methods */
 public class MethodGroupsHelper {
@@ -41,7 +43,7 @@ public class MethodGroupsHelper {
       boolean unique) {
     for (ITestNGMethod tm : methods) {
       boolean in = false;
-      Method m = tm.getConstructorOrMethod().getMethod();
+      Method m = tm.getConstructorOrMethod().requireMethod();
       //
       // @Test method
       //
@@ -60,7 +62,10 @@ public class MethodGroupsHelper {
       // @Configuration method
       //
       else {
-        IConfigurationAnnotation annotation = AnnotationHelper.findConfiguration(finder, m);
+        IConfigurationAnnotation annotation =
+            Objects.requireNonNull(
+                AnnotationHelper.findConfiguration(finder, m),
+                "a configuration method always carries a @Before/@After annotation");
         if (annotation.getAlwaysRun()) {
           if (!unique || MethodGroupsHelper.isMethodAlreadyNotPresent(outIncludedMethods, tm)) {
             in = true;
@@ -85,7 +90,7 @@ public class MethodGroupsHelper {
   }
 
   private static boolean includeMethod(
-      ITestOrConfiguration annotation,
+      @Nullable ITestOrConfiguration annotation,
       RunInfo runInfo,
       ITestNGMethod tm,
       boolean forTests,
@@ -215,7 +220,8 @@ public class MethodGroupsHelper {
     outGroups.addAll(runningGroups.keySet());
   }
 
-  private static ITestNGMethod findMethodNamed(String tm, List<ITestNGMethod> allMethods) {
+  private static @Nullable ITestNGMethod findMethodNamed(
+      String tm, List<ITestNGMethod> allMethods) {
     return allMethods.stream()
         .filter(m -> m.getQualifiedName().equals(tm))
         .findFirst()

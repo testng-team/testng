@@ -58,7 +58,7 @@ public class MethodHelper {
       boolean unique,
       List<ITestNGMethod> outExcludedMethods,
       Comparator<ITestNGMethod> comparator) {
-    AtomicReference<ITestNGMethod[]> results = new AtomicReference<>();
+    AtomicReference<ITestNGMethod[]> results = new AtomicReference<>(new ITestNGMethod[0]);
     List<ITestNGMethod> includedMethods = new ArrayList<>();
     TimeUtils.computeAndShowTime(
         "MethodGroupsHelper.collectMethodsByGroup()",
@@ -77,7 +77,7 @@ public class MethodHelper {
             results.set(
                 sortMethods(forTests, includedMethods, comparator)
                     .toArray(new ITestNGMethod[] {})));
-    return results.get();
+    return Objects.requireNonNull(results.get(), "the sorted methods were never published");
   }
 
   /**
@@ -225,7 +225,8 @@ public class MethodHelper {
    * @param testngMethod TestNG method
    * @param regExp regex representing a method and/or related class name
    */
-  private static Method findMethodByName(ITestNGMethod testngMethod, String regExp) {
+  private static @Nullable Method findMethodByName(
+      ITestNGMethod testngMethod, @Nullable String regExp) {
     if (regExp == null) {
       return null;
     }
@@ -275,7 +276,7 @@ public class MethodHelper {
     return null == test || test.getEnabled();
   }
 
-  public static boolean isAlwaysRun(IConfigurationAnnotation configurationAnnotation) {
+  public static boolean isAlwaysRun(@Nullable IConfigurationAnnotation configurationAnnotation) {
     if (null == configurationAnnotation) {
       return false;
     }
@@ -340,11 +341,11 @@ public class MethodHelper {
       String[] methodsDependedUpon = m.getMethodsDependedUpon();
       if (methodsDependedUpon.length > 0) {
         ITestNGMethod[] methodsNamed;
+        Object instanceId = IInstanceIdentity.getInstanceId(m);
         // Method has instance
-        if (IInstanceIdentity.getInstanceId(m) != null) {
-          // Get other methods with the same instance
-          List<ITestNGMethod> instanceMethods =
-              testInstances.get(IInstanceIdentity.getInstanceId(m));
+        List<ITestNGMethod> instanceMethods =
+            instanceId == null ? null : testInstances.get(instanceId);
+        if (instanceMethods != null) {
           try {
             // Search for other methods that depends upon with the same instance
             methodsNamed = MethodHelper.findDependedUponMethods(m, instanceMethods);
@@ -566,7 +567,8 @@ public class MethodHelper {
         || tm.isAfterMethodConfiguration();
   }
 
-  protected static String calculateMethodCanonicalName(Class<?> methodClass, String methodName) {
+  protected static @Nullable String calculateMethodCanonicalName(
+      Class<?> methodClass, String methodName) {
     Set<Method> methods = ClassHelper.getAvailableMethods(methodClass); // TESTNG-139
     return methods.stream()
         .filter(method -> methodName.equals(method.getName()))

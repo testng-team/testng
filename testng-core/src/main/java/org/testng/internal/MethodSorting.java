@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.testng.IFactoryInstance;
 import org.testng.ITestNGMethod;
+import org.jspecify.annotations.Nullable;
 
 public enum MethodSorting implements Comparator<ITestNGMethod> {
   METHOD_NAMES("methods") {
@@ -46,7 +47,7 @@ public enum MethodSorting implements Comparator<ITestNGMethod> {
       // sorting never forces a lazy @Factory instance to be created during collection.
       Object one = IInstanceIdentity.getInstanceId(a);
       Object two = IInstanceIdentity.getInstanceId(b);
-      if (IInstanceIdentity.isIdentityAware(one, two)) {
+      if (one != null && two != null && IInstanceIdentity.isIdentityAware(one, two)) {
         return ((UUID) one).compareTo((UUID) two);
       }
       return Integer.compare(Objects.hashCode(one), Objects.hashCode(two));
