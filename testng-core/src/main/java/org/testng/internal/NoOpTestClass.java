@@ -25,15 +25,15 @@ public class NoOpTestClass implements ITestClass, IObject {
   protected ITestNGMethod[] m_beforeGroupsMethods = new ITestNGMethod[0];
   protected List<ITestNGMethod> m_afterGroupsMethods = new ArrayList<>();
 
-  private final IdentifiableObject @Nullable [] m_instances;
-  private final long @Nullable [] m_instanceHashes;
+  private final IdentifiableObject[] m_instances;
+  private final long[] m_instanceHashes;
 
   private final @Nullable XmlTest m_xmlTest;
   private final @Nullable XmlClass m_xmlClass;
 
   protected NoOpTestClass() {
-    m_instances = null;
-    m_instanceHashes = null;
+    m_instances = new IdentifiableObject[0];
+    m_instanceHashes = new long[0];
     m_xmlTest = null;
     m_xmlClass = null;
   }
@@ -128,23 +128,28 @@ public class NoOpTestClass implements ITestClass, IObject {
 
   /** @see org.testng.internal.IObject#getInstanceHashCodes() */
   @Override
-  public long @Nullable [] getInstanceHashCodes() {
+  public long[] getInstanceHashCodes() {
     return m_instanceHashes;
   }
 
   @Override
-  public Object @Nullable [] getInstances(boolean reuse) {
+  public Object[] getInstances(boolean reuse) {
     return m_instances;
   }
 
   @Override
   public String getName() {
-    return m_testClass.getName();
+    return getRealClass().getName();
   }
 
   @Override
   public Class<?> getRealClass() {
-    return m_testClass;
+    Class<?> testClass = m_testClass;
+    if (testClass == null) {
+      throw new IllegalStateException(
+          "setTestClass has not been called on " + getClass().getName());
+    }
+    return testClass;
   }
 
   @Override
