@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
@@ -25,7 +26,6 @@ import org.testng.annotations.IObjectFactoryAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
-import java.util.Objects;
 
 /**
  * This class creates an ITestClass from a test class.
@@ -172,8 +172,7 @@ public class TestNGClassFinder extends BaseClassFinder {
       IConfiguration configuration, IClass ic, ConstructorOrMethod factoryMethod) {
     IObject.IdentifiableObject[] theseInstances = IObject.objects(ic, false);
 
-    IObject.IdentifiableObject instance =
-        theseInstances.length != 0 ? theseInstances[0] : null;
+    IObject.IdentifiableObject instance = theseInstances.length != 0 ? theseInstances[0] : null;
     FactoryMethod fm =
         new FactoryMethod(
             factoryMethod,
