@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.testng.internal.thread.ThreadTimeoutException;
 
 /**
@@ -32,7 +33,11 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
 
   void setStatus(int status);
 
-  /** @return The test method this result represents. */
+  /**
+   * @return The test method this result represents, or {@code null} while the result has not been
+   *     bound to one.
+   */
+  @Nullable
   ITestNGMethod getMethod();
 
   /** @return The parameters this method was invoked with. */
@@ -47,9 +52,10 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    * @return The throwable that was thrown while running the method, or null if no exception was
    *     thrown.
    */
+  @Nullable
   Throwable getThrowable();
 
-  void setThrowable(Throwable throwable);
+  void setThrowable(@Nullable Throwable throwable);
 
   /** @return the start date for this test, in milliseconds. */
   long getStartMillis();
@@ -59,7 +65,11 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
 
   void setEndMillis(long millis);
 
-  /** @return The name of this TestResult, typically identical to the name of the method. */
+  /**
+   * @return The name of this TestResult, typically identical to the name of the method, or {@code
+   *     null} while the result has not been bound to a method.
+   */
+  @Nullable
   String getName();
 
   /** @return true if if this test run is a SUCCESS */
@@ -69,9 +79,14 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    * @return The host where this suite was run, or null if it was run locally. The returned string
    *     has the form: host:port
    */
+  @Nullable
   String getHost();
 
-  /** @return The instance on which this method was run. */
+  /**
+   * @return The instance on which this method was run, or {@code null} when the method carries no
+   *     instance.
+   */
+  @Nullable
   Object getInstance();
 
   /**
@@ -97,15 +112,24 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    * @return The test name if this result's related instance implements ITest or
    *     use @Test(testName=...), null otherwise.
    */
+  @Nullable
   String getTestName();
 
+  /**
+   * @return The name of the instance this method was run on, or {@code null} when it carries none.
+   */
+  @Nullable
   String getInstanceName();
 
-  /** @return the {@link ITestContext} for this test result. */
+  /**
+   * @return the {@link ITestContext} for this test result, or {@code null} when the result was
+   *     built outside a test context.
+   */
+  @Nullable
   ITestContext getTestContext();
 
   /** @param name - The new name to be used as a test name */
-  void setTestName(String name);
+  void setTestName(@Nullable String name);
 
   /**
    * @return - <code>true</code> if the test was retried again by an implementation of {@link

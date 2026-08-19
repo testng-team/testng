@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * This class is used by TestNG to locate the test classes.
  *
@@ -18,7 +20,9 @@ public interface ITestClassFinder {
    * Return the IClass for a given class
    *
    * @param cls The class
-   * @return The related <code>IClass</code>
+   * @return The related <code>IClass</code>, or {@code null} when this finder holds none for that
+   *     class.
    */
+  @Nullable
   IClass getIClass(Class<?> cls);
 }

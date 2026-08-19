@@ -2,6 +2,7 @@ package org.testng;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /** Represents the attributes of a {@link org.testng.annotations.DataProvider} annotated method. */
 public interface IDataProviderMethod {
@@ -9,12 +10,16 @@ public interface IDataProviderMethod {
    * @return - The instance to which the data provider belongs to. <code>null</code> if the data
    *     provider is a static one.
    */
+  @Nullable
   Object getInstance();
 
   /**
    * @return - A {@link Method} object that represents the actual {@literal @}{@link
-   *     org.testng.annotations.DataProvider} method.
+   *     org.testng.annotations.DataProvider} method, or {@code null} once TestNG has released it --
+   *     which it does as soon as the data provider has yielded its rows, so that the method and its
+   *     instance do not outlive the run.
    */
+  @Nullable
   Method getMethod();
 
   /** @return The name of this DataProvider. */

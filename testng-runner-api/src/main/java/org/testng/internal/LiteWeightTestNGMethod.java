@@ -26,7 +26,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   private final long[] instanceHashCodes;
   private final String[] groups;
   private final String[] groupsDependedUpon;
-  private String missingGroup;
+  private @Nullable String missingGroup;
   private final String[] beforeGroups;
   private final String[] afterGroups;
   private final List<String> methodsDependedUpon = new ArrayList<>();
@@ -60,7 +60,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   private final boolean isAlwaysRun;
   private int threadPoolSize;
   private final boolean enabled;
-  private String description;
+  private @Nullable String description;
   private final int currentInvocationCount;
   private int parameterInvocationCount;
   private final boolean hasMoreInvocation;
@@ -211,12 +211,12 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public String getMissingGroup() {
+  public @Nullable String getMissingGroup() {
     return missingGroup;
   }
 
   @Override
-  public void setMissingGroup(String group) {
+  public void setMissingGroup(@Nullable String group) {
     this.missingGroup = group;
   }
 
@@ -366,12 +366,12 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public String getDescription() {
+  public @Nullable String getDescription() {
     return description;
   }
 
   @Override
-  public void setDescription(String description) {
+  public void setDescription(@Nullable String description) {
     this.description = description;
   }
 

@@ -67,7 +67,7 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setDescription(String description) {
+  public void setDescription(@Nullable String description) {
     m_method.setDescription(description);
   }
 
@@ -276,7 +276,7 @@ public class ClonedMethod implements ITestNGMethod {
   public void setInvocationCount(int count) {}
 
   @Override
-  public void setMissingGroup(String group) {}
+  public void setMissingGroup(@Nullable String group) {}
 
   @Override
   public void setParameterInvocationCount(int n) {}

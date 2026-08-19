@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.IParameterInfo;
@@ -23,6 +24,11 @@ public interface ITestNGMethod extends Cloneable {
    */
   Class getRealClass();
 
+  /**
+   * @return The test class this method is bound to, or {@code null} while it has not been bound to
+   *     one yet.
+   */
+  @Nullable
   ITestClass getTestClass();
 
   /**
@@ -39,6 +45,11 @@ public interface ITestNGMethod extends Cloneable {
    */
   String getMethodName();
 
+  /**
+   * @return The instance this method will be invoked on, or {@code null} when the method carries no
+   *     instance.
+   */
+  @Nullable
   Object getInstance();
 
   /**
@@ -58,10 +69,11 @@ public interface ITestNGMethod extends Cloneable {
    */
   String[] getGroupsDependedUpon();
 
-  /** @return If a group was not found. */
+  /** @return The group that was not found, or {@code null} when every group was found. */
+  @Nullable
   String getMissingGroup();
 
-  void setMissingGroup(String group);
+  void setMissingGroup(@Nullable String group);
 
   String[] getBeforeGroups();
 
@@ -145,7 +157,8 @@ public interface ITestNGMethod extends Cloneable {
   /** @return the success percentage for this method (between 0 and 100). */
   int getSuccessPercentage();
 
-  /** @return The id of the thread this method was run in. */
+  /** @return The id of the thread this method was run in, or {@code null} before it has run. */
+  @Nullable
   String getId();
 
   void setId(String id);
@@ -170,9 +183,11 @@ public interface ITestNGMethod extends Cloneable {
 
   boolean getEnabled();
 
+  /** @return The description of this method, or {@code null} when it declares none. */
+  @Nullable
   String getDescription();
 
-  void setDescription(String description);
+  void setDescription(@Nullable String description);
 
   void incrementCurrentInvocationCount();
 
@@ -188,6 +203,11 @@ public interface ITestNGMethod extends Cloneable {
 
   ITestNGMethod clone();
 
+  /**
+   * @param result The result to pick a retry analyzer for.
+   * @return The retry analyzer for that result, or {@code null} when the method declares none.
+   */
+  @Nullable
   IRetryAnalyzer getRetryAnalyzer(ITestResult result);
 
   void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz);
@@ -240,7 +260,8 @@ public interface ITestNGMethod extends Cloneable {
 
   void setInterceptedPriority(int priority);
 
-  /** @return the XmlTest this method belongs to. */
+  /** @return the XmlTest this method belongs to, or {@code null} when it belongs to none. */
+  @Nullable
   XmlTest getXmlTest();
 
   ConstructorOrMethod getConstructorOrMethod();
@@ -264,11 +285,13 @@ public interface ITestNGMethod extends Cloneable {
 
   /**
    * @return - A {@link IParameterInfo} object that represents details about the parameters
-   *     associated with the factory method.
+   *     associated with the factory method, or {@code null} when no factory produced the test
+   *     class.
    * @deprecated - As of TestNG <code>v7.13.0</code>. It exposes a type from an internal package;
    *     use {@link #getFactoryInstance()} instead.
    */
   @Deprecated
+  @Nullable
   default IParameterInfo getFactoryMethodParamsInfo() {
     return null;
   }
@@ -296,6 +319,7 @@ public interface ITestNGMethod extends Cloneable {
    * @return - An {@link IDataProviderMethod} for a data provider powered test method and <code>null
    * </code> otherwise.
    */
+  @Nullable
   default IDataProviderMethod getDataProviderMethod() {
     return null;
   }
