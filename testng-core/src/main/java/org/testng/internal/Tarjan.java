@@ -24,6 +24,11 @@ public class Tarjan<T> {
     run(graph, start);
   }
 
+  /** Every node this is asked for has been given a lowlink by {@link #run} on the way in. */
+  private int lowlinkOf(T node) {
+    return Objects.requireNonNull(m_lowlinks.get(node), "no lowlink recorded for the node");
+  }
+
   private void run(Graph<T> graph, T start) {
     visitedNodes.put(start, m_index);
     m_lowlinks.put(start, m_index);
@@ -33,10 +38,10 @@ public class Tarjan<T> {
     for (T predecessor : graph.getPredecessors(start)) {
       if (!visitedNodes.containsKey(predecessor)) {
         run(graph, predecessor);
-        int min = Math.min(m_lowlinks.get(start), m_lowlinks.get(predecessor));
+        int min = Math.min(lowlinkOf(start), lowlinkOf(predecessor));
         m_lowlinks.put(start, min);
       } else if (stack.contains(predecessor)) {
-        int min = Math.min(m_lowlinks.get(start), visitedNodes.get(predecessor));
+        int min = Math.min(lowlinkOf(start), Objects.requireNonNull(visitedNodes.get(predecessor)));
         m_lowlinks.put(start, min);
       }
     }

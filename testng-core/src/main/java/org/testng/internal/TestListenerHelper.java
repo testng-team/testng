@@ -149,7 +149,7 @@ public final class TestListenerHelper {
 
   /** @deprecated - This method stands deprecated as of TestNG version <code>7.10.0</code> */
   @Deprecated
-  public static ITestNGListenerFactory createListenerFactory(
+  public static @Nullable ITestNGListenerFactory createListenerFactory(
       ITestObjectFactory objectFactory,
       TestNGClassFinder finder,
       Class<? extends ITestNGListenerFactory> factoryClass,
@@ -178,7 +178,7 @@ public final class TestListenerHelper {
 
   public static class ListenerHolder {
     private final List<Class<? extends ITestNGListener>> listenerClasses = new ArrayList<>();
-    private Class<? extends ITestNGListenerFactory> listenerFactoryClass;
+    private @Nullable Class<? extends ITestNGListenerFactory> listenerFactoryClass;
 
     @SuppressWarnings("unchecked")
     public void addListener(Class<? extends ITestNGListener> c) {
@@ -213,7 +213,7 @@ public final class TestListenerHelper {
       return listenerClasses;
     }
 
-    public Class<? extends ITestNGListenerFactory> getListenerFactoryClass() {
+    public @Nullable Class<? extends ITestNGListenerFactory> getListenerFactoryClass() {
       return listenerFactoryClass;
     }
   }

@@ -25,6 +25,7 @@ import org.testng.annotations.IObjectFactoryAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
+import java.util.Objects;
 
 /**
  * This class creates an ITestClass from a test class.
@@ -63,7 +64,11 @@ public class TestNGClassFinder extends BaseClassFinder {
     // Find all the new classes and their corresponding instances
     Set<Class<?>> allClasses = cim.getClasses();
 
-    objectFactory = createObjectFactory(allClasses, configuration.getObjectFactory());
+    objectFactory =
+        createObjectFactory(
+            allClasses,
+            Objects.requireNonNull(
+                configuration.getObjectFactory(), "no object factory is configured"));
 
     for (Class<?> cls : allClasses) {
       processClass(cim, instanceMap, configuration, cls);
@@ -167,7 +172,8 @@ public class TestNGClassFinder extends BaseClassFinder {
       IConfiguration configuration, IClass ic, ConstructorOrMethod factoryMethod) {
     IObject.IdentifiableObject[] theseInstances = IObject.objects(ic, false);
 
-    IObject.IdentifiableObject instance = theseInstances.length != 0 ? theseInstances[0] : null;
+    IObject.@Nullable IdentifiableObject instance =
+        theseInstances.length != 0 ? theseInstances[0] : null;
     FactoryMethod fm =
         new FactoryMethod(
             factoryMethod,
@@ -191,7 +197,7 @@ public class TestNGClassFinder extends BaseClassFinder {
         throw new TestNGException(
             "The factory " + fm + " returned a null instance" + "at index " + i);
       }
-      Class<?> oneMoreClass;
+      @Nullable Class<?> oneMoreClass;
       if (o.isLazilyInitialized()) {
         // Lazy (constructor) factory: the produced class is the declaring class, known without
         // instantiating the instance. Never an IInstanceInfo (those keep the eager path below).
@@ -205,10 +211,10 @@ public class TestNGClassFinder extends BaseClassFinder {
           oneMoreClass = ii.getInstanceClass();
         } else {
           addInstance(new IObject.IdentifiableObject(o));
-          oneMoreClass = objToInspect.getClass();
+          oneMoreClass = objToInspect == null ? null : objToInspect.getClass();
         }
       }
-      if (!classExists(oneMoreClass)) {
+      if (oneMoreClass != null && !classExists(oneMoreClass)) {
         moreClasses.addClass(oneMoreClass);
       }
       i++;

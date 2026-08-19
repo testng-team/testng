@@ -100,8 +100,9 @@ public class MethodInheritance {
         l.add(method);
       } else {
         Class<?> subClass = findSubClass(map, methodClass);
-        if (null != subClass) {
-          l = map.get(subClass);
+        List<ITestNGMethod> subClassMethods = subClass == null ? null : map.get(subClass);
+        if (null != subClassMethods) {
+          l = subClassMethods;
           l.add(method);
           map.remove(subClass);
           map.put(methodClass, l);

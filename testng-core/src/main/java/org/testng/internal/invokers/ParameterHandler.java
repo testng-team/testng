@@ -17,6 +17,7 @@ import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
+import java.util.Objects;
 
 class ParameterHandler {
   private final @Nullable ITestObjectFactory objectFactory;
@@ -71,7 +72,7 @@ class ParameterHandler {
           MethodParameters.newInstance(parameters, testMethod, testContext);
       ParameterHolder paramHolder =
           Parameters.handleParameters(
-              objectFactory,
+              Objects.requireNonNull(objectFactory, "no object factory is configured"),
               testMethod,
               allParameterNames,
               instance,

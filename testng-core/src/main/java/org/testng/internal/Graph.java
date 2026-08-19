@@ -33,7 +33,7 @@ public class Graph<T> {
   //  A map of nodes that are not the predecessors of any node
   // (not needed for the algorithm but convenient to calculate
   // the parallel/sequential lists in TestNG).
-  private Map<T, Node<T>> m_independentNodes = null;
+  private @Nullable Map<T, Node<T>> m_independentNodes = null;
 
   public Graph(Comparator<Node<T>> comparator) {
     this.comparator = comparator;
@@ -54,7 +54,7 @@ public class Graph<T> {
   }
 
   public boolean isIndependent(T object) {
-    return m_independentNodes.containsKey(object);
+    return initializeIndependentNodes().containsKey(object);
   }
 
   private @Nullable Node<T> findNode(T object) {
@@ -68,9 +68,9 @@ public class Graph<T> {
     } else {
       node.addPredecessor(predecessor);
       // Remove these two nodes from the independent list
-      initializeIndependentNodes();
-      m_independentNodes.remove(predecessor);
-      m_independentNodes.remove(tm);
+      Map<T, Node<T>> independentNodes = initializeIndependentNodes();
+      independentNodes.remove(predecessor);
+      independentNodes.remove(tm);
       log(() -> "  REMOVED " + predecessor + " FROM INDEPENDENT OBJECTS");
     }
   }
@@ -81,7 +81,7 @@ public class Graph<T> {
 
   /** @return All the nodes that don't have any order with each other. */
   public Set<T> getIndependentNodes() {
-    return m_independentNodes.keySet();
+    return initializeIndependentNodes().keySet();
   }
 
   /** @return All the nodes that have an order with each other, sorted in one of the valid sorts. */
@@ -141,9 +141,10 @@ public class Graph<T> {
     dumpSortedNodes(sorted);
   }
 
-  private void initializeIndependentNodes() {
-    if (null == m_independentNodes) {
-      m_independentNodes =
+  private Map<T, Node<T>> initializeIndependentNodes() {
+    Map<T, Node<T>> independentNodes = m_independentNodes;
+    if (null == independentNodes) {
+      independentNodes =
           new ArrayList<>(m_nodes.values())
               .stream()
                   .sorted(comparator)
@@ -153,7 +154,9 @@ public class Graph<T> {
                           Function.identity(),
                           (a, b) -> a,
                           Maps::newLinkedHashMap));
+      m_independentNodes = independentNodes;
     }
+    return independentNodes;
   }
 
   private void dumpSortedNodes(List<T> sorted) {

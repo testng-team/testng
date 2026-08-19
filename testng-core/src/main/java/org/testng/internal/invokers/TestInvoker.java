@@ -159,7 +159,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             if (next == null) {
               continue;
             }
-            Method m = testMethod.getConstructorOrMethod().getMethod();
+            Method m = testMethod.getConstructorOrMethod().requireMethod();
             Object[] parameterValues = Parameters.injectParameters(next, m, context);
             ITestResult result =
                 registerSkippedTestResult(
@@ -767,7 +767,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         ((IInvocationStatus) arguments.getTestMethod()).setInvokedAt(invokedMethod.getDate());
       }
 
-      Method thisMethod = arguments.getTestMethod().getConstructorOrMethod().getMethod();
+      Method thisMethod = arguments.getTestMethod().getConstructorOrMethod().requireMethod();
 
       if (RuntimeBehavior.isDryRun()) {
         setTestStatus(testResult, ITestResult.SUCCESS);
