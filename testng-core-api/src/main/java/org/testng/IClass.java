@@ -1,5 +1,6 @@
 package org.testng;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
@@ -9,13 +10,22 @@ public interface IClass {
   /** @return this test class name. This is the name of the corresponding Java class. */
   String getName();
 
-  /** @return the &lt;test&gt; tag this class was found in. */
+  /**
+   * @return the &lt;test&gt; tag this class was found in, or {@code null} when it was not found in
+   *     one.
+   */
+  @Nullable
   XmlTest getXmlTest();
 
-  /** @return the *lt;class&gt; tag this class was found in. */
+  /**
+   * @return the *lt;class&gt; tag this class was found in, or {@code null} when it was not found in
+   *     one.
+   */
+  @Nullable
   XmlClass getXmlClass();
 
   /** @return its test name if this class implements org.testng.ITest, null otherwise. */
+  @Nullable
   String getTestName();
 
   /** @return the Java class corresponding to this IClass. */
@@ -49,7 +59,7 @@ public interface IClass {
 
   /** @deprecated - As of TestNG <code>v7.10.0</code> */
   @Deprecated
-  long[] getInstanceHashCodes();
+  long @Nullable [] getInstanceHashCodes();
 
   /**
    * @param instance - The instance to be added.

@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 import org.testng.collections.Objects;
 import org.testng.internal.ConfigurationMethod;
 import org.testng.internal.ConstructorOrMethod;
@@ -67,12 +68,12 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   }
 
   @Override
-  public List<ITestNGMethod> getInstanceBeforeClassMethods(UUID instanceId) {
+  public List<ITestNGMethod> getInstanceBeforeClassMethods(@Nullable UUID instanceId) {
     return beforeClassConfig.get(instanceId);
   }
 
   @Override
-  public List<ITestNGMethod> getInstanceAfterClassMethods(UUID instanceId) {
+  public List<ITestNGMethod> getInstanceAfterClassMethods(@Nullable UUID instanceId) {
     return afterClassConfig.get(instanceId);
   }
 

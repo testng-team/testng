@@ -85,7 +85,7 @@ public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   }
 
   @Override
-  public void setMissingGroup(String group) {
+  public void setMissingGroup(@Nullable String group) {
     testNGMethod.setMissingGroup(group);
   }
 
@@ -240,7 +240,7 @@ public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   }
 
   @Override
-  public void setDescription(String description) {
+  public void setDescription(@Nullable String description) {
     testNGMethod.setDescription(description);
   }
 

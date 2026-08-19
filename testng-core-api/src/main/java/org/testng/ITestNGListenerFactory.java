@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A factory used to create instances of ITestNGListener. Users can implement this interface in any
  * of their test classes but there can be only one such instance.
@@ -13,5 +15,6 @@ public interface ITestNGListenerFactory {
    * @param listenerClass The class of listener to create
    * @return The created listener
    */
+  @Nullable
   ITestNGListener createListener(Class<? extends ITestNGListener> listenerClass);
 }
