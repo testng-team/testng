@@ -158,8 +158,8 @@ public class ReportTest extends SimpleBaseTest {
     assertThat(Reporter.getOutput()).hasSize(2);
   }
 
-  @Test(description = "GITHUB-1090")
-  public void github1090() {
+  @Test(description = "GITHUB-447")
+  public void mutableDataProviderParameterIsSnapshotted() {
     TestNG tng = create(GitHub447Sample.class);
     GitHub447Listener reporter = new GitHub447Listener();
     tng.addListener(reporter);
