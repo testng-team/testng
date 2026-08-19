@@ -281,6 +281,7 @@
       <class name="test.inject.NativeInjectionTest" />
       <class name="test.inject.Github1298Test"/>
       <class name="test.inject.Github1649Test"/>
+      <class name="test.inject.issue1994.IssueTest"/>
     </classes>
   </test>
 
@@ -764,6 +765,7 @@
       <class name="org.testng.internal.ConstructorOrMethodTest"/>
       <class name="org.testng.internal.ExecutableCacheTest"/>
       <class name="org.testng.internal.ClassHelperTest"/>
+      <class name="org.testng.internal.TestResultParametersTest"/>
       <class name="org.testng.internal.objects.InstanceCreatorTest"/>
       <class name="org.testng.util.StringsTest"/>
       <class name="test.issue1430.TestFileToClass"/>
