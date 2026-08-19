@@ -8,6 +8,7 @@ import org.testng.collections.Objects;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
+import org.jspecify.annotations.Nullable;
 
 public class MethodInstance implements IMethodInstance {
   private final ITestNGMethod m_method;
@@ -43,7 +44,7 @@ public class MethodInstance implements IMethodInstance {
           XmlTest test2 = o2.getMethod().getTestClass().getXmlTest();
 
           // If the two methods are not in the same <test>, we can't compare them
-          if (!test1.getName().equals(test2.getName())) {
+          if (!java.util.Objects.equals(test1.getName(), test2.getName())) {
             return 0;
           }
 
@@ -83,7 +84,8 @@ public class MethodInstance implements IMethodInstance {
           return result;
         }
 
-        private XmlInclude findXmlInclude(List<XmlInclude> includedMethods, String methodName) {
+        private @Nullable XmlInclude findXmlInclude(
+            List<XmlInclude> includedMethods, String methodName) {
           for (XmlInclude xi : includedMethods) {
             if (xi.getName().equals(methodName)) {
               return xi;

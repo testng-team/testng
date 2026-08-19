@@ -209,8 +209,8 @@ public class TestNGMethodFinder implements ITestMethodFinder {
             isBeforeTestMethod,
             isAfterTestMethod,
             ignoreFailure,
-            beforeGroups,
-            afterGroups); /* @@@ */
+            beforeGroups == null ? new String[0] : beforeGroups,
+            afterGroups == null ? new String[0] : afterGroups); /* @@@ */
       }
     }
 

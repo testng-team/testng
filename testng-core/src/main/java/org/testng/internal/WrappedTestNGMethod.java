@@ -13,6 +13,7 @@ import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.xml.XmlTest;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a proxy for an actual instance of {@link ITestNGMethod} but with the exception that it
@@ -23,7 +24,7 @@ public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   private final ITestNGMethod testNGMethod;
   private final int multiplicationFactor = new Random().nextInt();
 
-  private final UUID uuid;
+  private final @Nullable UUID uuid;
 
   public WrappedTestNGMethod(ITestNGMethod testNGMethod) {
     this.testNGMethod = testNGMethod;
@@ -379,7 +380,7 @@ public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   }
 
   @Override
-  public UUID getInstanceId() {
+  public @Nullable UUID getInstanceId() {
     return uuid;
   }
 

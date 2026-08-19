@@ -492,7 +492,7 @@ public class ConfigurationMethod extends BaseTestMethod {
             getBeforeGroups(),
             getAfterGroups(),
             false /* do not call init() */,
-            new IObject.IdentifiableObject(getInstance(), getInstanceId()));
+            cloneInstance());
     clone.m_testClass = getTestClass();
     clone.setDate(getDate());
     clone.setGroups(getGroups());
