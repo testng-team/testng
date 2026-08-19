@@ -24,7 +24,7 @@ Fixed: A <package> tag that carries no name attribute is now reported the way an
 
 Possible backward incompatible changes:
 
-- org.testng is declared @NullMarked, and thirty-six members of it widen to @Nullable because that
+- org.testng is declared @NullMarked, and thirty-seven members of it answer @Nullable because that
   is what their implementations already answered. ITestNGMethod.getTestClass, getInstance, getId,
   getDescription, getMissingGroup, getXmlTest, getRetryAnalyzer, getDataProviderMethod and the
   deprecated getFactoryMethodParamsInfo; ITestResult.getMethod, getName, getTestName, getInstance,
@@ -33,15 +33,16 @@ Possible backward incompatible changes:
   IDataProviderMethod.getInstance and getMethod; IMethodInstance.getInstance;
   ITestClassFinder.getIClass; ITestNGListenerFactory.createListener;
   ITestObjectFactory.newInstance(Constructor, Object...); ITestContext.getName, getEndDate,
-  getHost, getInjectorFactory and getParameter; ISuite.getHost, getParameter, getParentInjector and
+  getHost and getInjectorFactory; ISuite.getHost, getParameter, getParentInjector and
   getObjectFactory. A Java caller is unaffected. A Kotlin caller that dereferences one of them
   without testing it stops compiling, and must add a test or a !!.
 - The same mark widens the parameters of IAnnotationTransformer.transform for ITestAnnotation and
   IConfigurationAnnotation -- testClass, testConstructor and testMethod, of which the javadoc has
   always said only one is non-null -- of the four IConfigurationListener callbacks that take an
   ITestNGMethod, of the three IDataProviderListener callbacks and IDataProviderInterceptor.intercept
-  that take an ITestContext, of IModuleFactory.createModule, of IMethodSelector.includeMethod, and
-  of Reporter.setCurrentTestResult, which TestNG calls with null to clear the current result. A Java
+  that take an ITestContext, of IModuleFactory.createModule, of IMethodSelector.includeMethod, of IClass.getInstances'
+  error message prefix, and of Reporter.setCurrentTestResult, which TestNG calls with null to clear
+  the current result. A Java
   implementation is unaffected. A Kotlin implementation whose override declares the parameter
   non-null stops overriding and must add the question mark.
 - org.testng.internal.MethodSorting.INSTANCES, the default method order, produces a different order
