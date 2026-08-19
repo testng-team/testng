@@ -60,6 +60,7 @@ import org.testng.internal.reflect.ReflectionRecipes;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import java.util.Objects;
 
 /** Methods that bind parameters declared in testng.xml to actual values used to invoke methods. */
 public class Parameters {
@@ -190,7 +191,7 @@ public class Parameters {
         name);
   }
 
-  private static Class<? extends Annotation> retrieveConfigAnnotation(Method m) {
+  private static @Nullable Class<? extends Annotation> retrieveConfigAnnotation(Method m) {
     return annotationList.stream()
         .filter(annotation -> m.getAnnotation(annotation) != null)
         .findAny()
@@ -402,7 +403,7 @@ public class Parameters {
     if (method.getMethod() != null) {
       return ReflectionRecipes.getMethodParameters(method.getMethod());
     }
-    return ReflectionRecipes.getConstructorParameters(method.getConstructor());
+    return ReflectionRecipes.getConstructorParameters(method.requireConstructor());
   }
 
   private static boolean canInject(String annotation) {
@@ -509,13 +510,13 @@ public class Parameters {
     return builder.toString();
   }
 
-  private static IDataProviderMethod findDataProvider(
+  private static @Nullable IDataProviderMethod findDataProvider(
       ITestObjectFactory objectFactory,
-      Object instance,
+      @Nullable Object instance,
       ITestClass clazz,
       ConstructorOrMethod m,
       IAnnotationFinder finder,
-      ITestContext context) {
+      @Nullable ITestContext context) {
     IDataProviderMethod result = null;
 
     IDataProvidable dp = findDataProviderInfo(clazz, m, finder);
@@ -562,11 +563,11 @@ public class Parameters {
    * Find the data provider info (data provider name and class) on either @Test(dataProvider),
    * <code>@Factory(dataProvider)</code> on a method or @Factory(dataProvider) on a constructor.
    */
-  private static IDataProvidable findDataProviderInfo(
+  private static @Nullable IDataProvidable findDataProviderInfo(
       ITestClass clazz, ConstructorOrMethod m, IAnnotationFinder finder) {
     if (m.getMethod() == null) {
       // @Factory(dataProvider) on a constructor
-      return AnnotationHelper.findFactory(finder, m.getConstructor());
+      return AnnotationHelper.findFactory(finder, m.requireConstructor());
     }
 
     // @Test(dataProvider) on a method
@@ -629,15 +630,15 @@ public class Parameters {
   }
 
   /** Find a method that has a @DataProvider(name=name) */
-  private static IDataProviderMethod findDataProvider(
+  private static @Nullable IDataProviderMethod findDataProvider(
       ITestObjectFactory objectFactory,
-      Object instance,
+      @Nullable Object instance,
       ITestClass clazz,
       IAnnotationFinder finder,
       String name,
-      Class<?> dataProviderClass,
+      @Nullable Class<?> dataProviderClass,
       boolean isDynamicDataProvider,
-      ITestContext context) {
+      @Nullable ITestContext context) {
     IDataProviderMethod result = null;
 
     Class<?> cls = clazz.getRealClass();
@@ -650,8 +651,7 @@ public class Parameters {
 
     for (Method m : ClassHelper.getAvailableMethods(cls)) {
       IDataProviderAnnotation dp = finder.findAnnotation(m, IDataProviderAnnotation.class);
-      boolean proceed = null != dp && name.equals(getDataProviderName(dp, m));
-      if (!proceed) {
+      if (dp == null || !name.equals(getDataProviderName(dp, m))) {
         continue;
       }
       Object instanceToUse = instance;
@@ -692,7 +692,7 @@ public class Parameters {
     if (consMethod.getMethod() != null) {
       return finder.findOptionalValues(consMethod.getMethod());
     }
-    return finder.findOptionalValues(consMethod.getConstructor());
+    return finder.findOptionalValues(consMethod.requireConstructor());
   }
 
   private static Object[] createParameters(
@@ -751,11 +751,11 @@ public class Parameters {
       ITestObjectFactory objectFactory,
       ITestNGMethod testMethod,
       Map<String, String> allParameterNames,
-      Object instance,
+      @Nullable Object instance,
       MethodParameters methodParams,
       XmlSuite xmlSuite,
       IAnnotationFinder annotationFinder,
-      Object fedInstance,
+      @Nullable Object fedInstance,
       DataProviderHolder holder) {
     return handleParameters(
         objectFactory,
@@ -780,11 +780,11 @@ public class Parameters {
       ITestObjectFactory objectFactory,
       ITestNGMethod testMethod,
       Map<String, String> allParameterNames,
-      Object instance,
+      @Nullable Object instance,
       MethodParameters methodParams,
       XmlSuite xmlSuite,
       IAnnotationFinder annotationFinder,
-      Object fedInstance,
+      @Nullable Object fedInstance,
       DataProviderHolder holder,
       String annotationName) {
     /*
@@ -818,7 +818,11 @@ public class Parameters {
         IObjectDispenser dispenser = Dispenser.newInstance(objectFactory);
         BasicAttributes basic = new BasicAttributes(testMethod.getTestClass(), retryClass);
         CreationAttributes attributes = new CreationAttributes(methodParams.context, basic, null);
-        retry = (IRetryDataProvider) dispenser.dispense(attributes);
+        retry =
+            (IRetryDataProvider)
+                Objects.requireNonNull(
+                    dispenser.dispense(attributes),
+                    "could not instantiate the data provider retry analyzer");
       }
 
       CloseableIterator<Object[]> initParams = null;
@@ -837,7 +841,7 @@ public class Parameters {
                       .getInstance(), /* a test instance or null if the data provider is static*/
                   dataProviderMethod.getMethod(),
                   testMethod,
-                  methodParams.context,
+                  methodParams.requireContext(),
                   fedInstance,
                   annotationFinder);
           shouldRetry = false;
@@ -846,7 +850,8 @@ public class Parameters {
           for (IDataProviderListener each : holder.getListeners()) {
             each.onDataProviderFailure(testMethod, methodParams.context, e);
           }
-          if (shouldRetry) {
+          if (retry != null) {
+            // Same condition as shouldRetry, which is true here exactly when retry was created.
             shouldRetry = retry.retry(dataProviderMethod);
             thrownException = e;
           } else {
@@ -870,7 +875,8 @@ public class Parameters {
       // FilteredParameters and any interceptors, so the resource can be released later - including
       // if the setup below (listeners / filtering / interceptors) throws before a ParameterHolder
       // takes ownership of it.
-      CloseableIterator<Object[]> closeableSource = initParams;
+      CloseableIterator<Object[]> closeableSource =
+          Objects.requireNonNull(initParams, "the data provider produced no iterator");
       try {
         for (IDataProviderListener dataProviderListener : holder.getListeners()) {
           dataProviderListener.afterDataProviderExecution(
@@ -884,7 +890,7 @@ public class Parameters {
 
         Iterator<Object[]> filteredParameters =
             new FilteredParameters(
-                initParams, testMethod, dataProviderMethod.getName(), allIndices);
+                closeableSource, testMethod, dataProviderMethod.getName(), allIndices);
 
         testMethod.setMoreInvocationChecker(filteredParameters::hasNext);
         for (IDataProviderInterceptor interceptor : holder.getInterceptors()) {
@@ -1001,15 +1007,25 @@ public class Parameters {
       parameterValues = pv;
       testResult = tr;
     }
+
+    /**
+     * The test context, for the callees that dereference it. The two-argument constructor builds
+     * parameters for a constructor injection, which happens before any context exists.
+     */
+    ITestContext requireContext() {
+      return Objects.requireNonNull(context, "these method parameters carry no test context");
+    }
   }
 
   private static final class ImmutableDataProvidable implements IDataProvidable {
     private final String dataProvider;
-    private final Class<?> dataProviderClass;
+    private final @Nullable Class<?> dataProviderClass;
     private final String dataProviderDynamicClass;
 
     private ImmutableDataProvidable(
-        String dataProvider, Class<?> dataProviderClass, String dataProviderDynamicClass) {
+        String dataProvider,
+        @Nullable Class<?> dataProviderClass,
+        String dataProviderDynamicClass) {
       this.dataProvider = dataProvider;
       this.dataProviderClass = dataProviderClass;
       this.dataProviderDynamicClass =
@@ -1025,12 +1041,12 @@ public class Parameters {
     public void setDataProvider(String v) {}
 
     @Override
-    public Class<?> getDataProviderClass() {
+    public @Nullable Class<?> getDataProviderClass() {
       return dataProviderClass;
     }
 
     @Override
-    public void setDataProviderClass(Class<?> v) {}
+    public void setDataProviderClass(@Nullable Class<?> v) {}
 
     @Override
     public String getDataProviderDynamicClass() {

@@ -169,7 +169,7 @@ public class MethodInvocationHelper {
       Method dataProvider,
       ITestNGMethod method,
       ITestContext testContext,
-      Object fedInstance,
+      @Nullable Object fedInstance,
       IAnnotationFinder annotationFinder) {
     List<Object> parameters =
         getParameters(dataProvider, method, testContext, fedInstance, annotationFinder);
@@ -206,7 +206,7 @@ public class MethodInvocationHelper {
       Method dataProvider,
       ITestNGMethod method,
       ITestContext testContext,
-      Object fedInstance,
+      @Nullable Object fedInstance,
       IAnnotationFinder annotationFinder) {
     // Go through all the parameters declared on this Data Provider and
     // make sure we have at most one Method and one ITestContext.
