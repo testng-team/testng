@@ -1,8 +1,8 @@
 Current (7.13.0)
 Fixed: GITHUB-1994: The XmlTest injected into a configuration or test method is now kept by reference in ITestResult.getParameters() instead of being cloned. XmlTest.clone() builds its copy with new XmlTest(suite), and that constructor registers the copy in the suite, so snapshotting the parameter appended a phantom <test> to the suite that was running -- once per invocation that received one. XmlTest.clone() itself is unchanged, so an IAlterSuiteListener can still use it to add a test. The reflective clone-if-Cloneable rule that backs the historical ITestResult parameter representation moved out of TestResult into its own internal component, unchanged for every other parameter type (Julien Herr)
 Changed: org.testng.ITestContext.getInjectorFactory() answers the new IInjectorFactory.NONE token instead of null for a context that names no factory, so it no longer answers null at all. Three GuiceHelper signatures carried the absence down to an assertion whose message named a case it could not see: the only factories TestNG builds come from Configuration, which initialises its own and never clears it (Julien Herr)
-Changed: org.testng.ITestResult.getMethod() and getName() no longer answer null, and setTestName no longer accepts null. The only result that had no method was the parameter carrier the invoker built before it knew which invocation it was reporting, and that carrier now carries the method from construction. Thirty-eight places in TestNG asserted the method was there through org.testng.internal.Utils.requireMethodOf and not one of them tested it; that helper is removed, its assertion having become the compiler's job (Julien Herr)
-Fixed: The result an invocation starts from carries its test method from the moment it is created, rather than being handed one by ConfigInvoker a few statements later. A @BeforeMethod that declares an ITestResult parameter is given that carrier, and used to see getName() and getInstanceName() answer null; both now answer what the reported result answers. The carrier still knows nothing about the outcome: its status stays CREATED, its millis stay zero and it carries no test context. In memory friendly mode it keeps holding the live method rather than the lightweight snapshot, because that is the method a configuration method reaches through it to mutate (Julien Herr)
+Changed: org.testng.ITestResult.getMethod(), getName() and getInstanceName() no longer answer null, and setTestName no longer accepts null. The only result that had no method was the parameter carrier the invoker built before it knew which invocation it was reporting, and that carrier now carries the method from construction. Thirty-eight places in TestNG asserted the method was there through org.testng.internal.Utils.requireMethodOf and not one of them tested it; that helper is removed, its assertion having become the compiler's job (Julien Herr)
+Fixed: The result an invocation starts from carries its test method from the moment it is created, rather than being handed one by ConfigInvoker a few statements later. A @BeforeMethod that declares an ITestResult parameter is given that carrier, and used to see getName() and getInstanceName() answer null; both now answer the method and class names. The carrier is named when it is built, which is before the configuration method runs, so a class whose ITest.getTestName() is only set in that configuration method still reports the older name on the carrier and the newer one on the reported result. The carrier still knows nothing about the outcome: its status stays CREATED, its millis stay zero and it carries no test context. In memory friendly mode it keeps holding the live method rather than the lightweight snapshot, because that is the method a configuration method reaches through it to mutate (Julien Herr)
 Changed: A <test> built without going through a constructor -- which is how the YAML parser builds one -- now carries the same "Default XmlTest name <uuid>" the XML and the programmatic paths have always had, so org.testng.xml.XmlTest.getName() and org.testng.ITestContext.getName() no longer answer null. Nineteen places dereferenced that name: two of them keyed a ConcurrentHashMap in FailedReporter, which throws on a null key, and XmlSuite.toXml() fed it to Properties.setProperty, which rejects a null value. Two nameless tests in one YAML suite used to be rejected as duplicates named "null"; they now carry different names and both run (Julien Herr)
 New: org.testng.internal.Utils.durationOf(ITestContext) answers how long a <test> ran in milliseconds, folding the end-minus-start expression that four reporters each spelled out. It asserts the context has finished, which is what all four already did through requireEndDateOf (Julien Herr)
 Fixed: GITHUB-3358, GITHUB-3359: every applicable @BeforeMethod(firstTimeOnly = true) now runs once, including a child method after a parent one, under a parallel data provider, and for overloaded @Test methods that share a name. The previous per-test-method token skipped later firstTimeOnly configurations and hid their failures. Parallel workers now wait for that firstTimeOnly method to finish before they continue, so a later data-provider row cannot start while the configuration is still running. After-configuration listeners now fire for a firstTimeOnly method that actually ran (Burak Kalaycı)
@@ -34,14 +34,14 @@ Possible backward incompatible changes:
 - org.testng.ITestContext.getInjectorFactory() is declared non-null and its default answers
   IInjectorFactory.NONE. Code testing the result for null must test for the token instead. A custom
   ITestContext that never overrode it used to fail a @Guice test class with a NullPointerException
-  naming the missing factory, and now fails it with the UnsupportedOperationException
-  IInjectorFactory.getInjector raises by default; a context that names a factory, which is every
+  naming the missing factory, and now fails it with an UnsupportedOperationException
+  from IInjectorFactory.NONE naming the same cause; a context that names a factory, which is every
   context TestNG itself builds, is unaffected. A Kotlin class implementing ITestContext whose
   getInjectorFactory() override answers a nullable type stops compiling.
-- org.testng.ITestResult.getMethod() and getName() are declared non-null and setTestName(String) no
-  longer accepts null. A Java caller reading either is unaffected; one passing null to setTestName
+- org.testng.ITestResult.getMethod(), getName() and getInstanceName() are declared non-null and
+  setTestName(String) no longer accepts null. A Java caller reading any of them is unaffected; one passing null to setTestName
   used to leave the result nameless and now gets a NullPointerException. A Kotlin class implementing
-  ITestResult whose getMethod() or getName() override answers a nullable type, or whose setTestName
+  ITestResult whose getMethod(), getName() or getInstanceName() override answers a nullable type, or whose setTestName
   override declares String?, stops compiling. org.testng.internal.Utils.requireMethodOf(ITestResult)
   is removed; call ITestResult.getMethod() directly.
 - org.testng.internal.TestResult can no longer be built without a test method.
@@ -56,14 +56,16 @@ Possible backward incompatible changes:
   ITestContext whose getName() override answers String?. A suite parsed from YAML whose test
   declared no name now reports "Default XmlTest name <uuid>" where it used to report nothing, so
   the report files named after that test, and testng-failed.xml, change name for that suite. Two
-  nameless tests in one suite are no longer rejected as duplicates named "null".
+  nameless tests in one suite are no longer rejected as duplicates named "null". A YAML document
+  whose test declares a "name:" key with no value is the one way the reader could still reach the
+  setter with null, and is now rejected there rather than leaving the test nameless; the XML reader
+  has always rejected the same document.
 - org.testng is declared @NullMarked, and these members answer @Nullable because that is what their
   implementations already answered. A Java caller is unaffected. A Kotlin caller that dereferences
   one of them without testing it stops compiling, and must add a test or a !!.
   - ITestNGMethod: getTestClass, getInstance, getId, getDescription, getMissingGroup, getXmlTest,
     getRetryAnalyzer, getDataProviderMethod and the deprecated getFactoryMethodParamsInfo
-  - ITestResult: getTestName, getInstance, getInstanceName, getHost, getThrowable and
-    getTestContext
+  - ITestResult: getTestName, getInstance, getHost, getThrowable and getTestContext
   - IClass: getXmlTest, getXmlClass, getTestName and getInstanceHashCodes
   - IAttributes: getAttribute and removeAttribute
   - IDataProviderMethod: getInstance and getMethod

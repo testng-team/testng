@@ -16,7 +16,7 @@ public final class RuntimeBehavior {
   public static final String TESTNG_USE_UNSECURED_URL = "testng.dtd.http";
   public static final String XML_VALIDATION_MODE = "testng.xml.validation";
   public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
-  private static final String MEMORY_FRIENDLY_MODE = "testng.memory.friendly";
+  public static final String MEMORY_FRIENDLY_MODE = "testng.memory.friendly";
   public static final String STRICTLY_HONOUR_PARALLEL_MODE = "testng.strict.parallel";
   public static final String TESTNG_DEFAULT_VERBOSE = "testng.default.verbose";
   public static final String IGNORE_CALLBACK_INVOCATION_SKIPS = "testng.ignore.callback.skip";

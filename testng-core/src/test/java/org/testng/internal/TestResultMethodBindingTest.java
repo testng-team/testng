@@ -4,8 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.testng.ITest;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.annotations.Test;
 
 public class TestResultMethodBindingTest {
@@ -21,11 +23,11 @@ public class TestResultMethodBindingTest {
   public void theParameterCarrierHoldsTheLiveMethodInMemoryFriendlyMode() {
     ITestNGMethod method = methodBoundToAClass();
 
-    System.setProperty("testng.memory.friendly", "true");
+    System.setProperty(RuntimeBehavior.MEMORY_FRIENDLY_MODE, "true");
     try {
       assertThat(TestResult.newTestResult(method, new Object[0], 0).getMethod()).isSameAs(method);
     } finally {
-      System.clearProperty("testng.memory.friendly");
+      System.clearProperty(RuntimeBehavior.MEMORY_FRIENDLY_MODE);
     }
   }
 
@@ -38,10 +40,46 @@ public class TestResultMethodBindingTest {
     assertThat(carrier.getName()).isEqualTo("testMethod");
     assertThat(carrier.getInstanceName()).isEqualTo("testClass");
     // The carrier still knows nothing about the outcome.
-    assertThat(carrier.getStatus()).isEqualTo(org.testng.ITestResult.CREATED);
+    assertThat(carrier.getStatus()).isEqualTo(ITestResult.CREATED);
     assertThat(carrier.getStartMillis()).isZero();
     assertThat(carrier.getEndMillis()).isZero();
     assertThat(carrier.getTestContext()).isNull();
+  }
+
+  /** The naming block moved out of init() into the constructor; these are its other branches. */
+  @Test
+  public void anITestInstanceNamesTheResult() {
+    ITestNGMethod method = methodBoundToAClass();
+    when(method.getInstance()).thenReturn((ITest) () -> "named by ITest");
+
+    assertThat(TestResult.newTestResultFor(method).getName()).isEqualTo("named by ITest");
+  }
+
+  @Test
+  public void aBoundTestNameNamesTheResult() {
+    ITestNGMethod method = methodBoundToAClass();
+    when(method.getInstance()).thenReturn(new Object());
+    when(Utils.requireTestClassOf(method).getTestName()).thenReturn("named by @Test");
+
+    assertThat(TestResult.newTestResultFor(method).getName()).isEqualTo("named by @Test");
+  }
+
+  @Test
+  public void anOverriddenToStringRefinesBothNames() {
+    ITestNGMethod method = methodBoundToAClass();
+    when(method.getInstance())
+        .thenReturn(
+            new Object() {
+              @Override
+              public String toString() {
+                return "shard-3";
+              }
+            });
+
+    TestResult result = TestResult.newTestResultFor(method);
+
+    assertThat(result.getName()).isEqualTo("testMethod on shard-3");
+    assertThat(result.getInstanceName()).isEqualTo("shard-3");
   }
 
   private static ITestNGMethod methodBoundToAClass() {

@@ -17,7 +17,20 @@ public interface IInjectorFactory {
    * token keeps the answer present, and a suite that reaches it has declared no factory and no
    * {@code @Guice} class either, so nothing ever asks it for an injector.
    */
-  IInjectorFactory NONE = new IInjectorFactory() {};
+  IInjectorFactory NONE =
+      new IInjectorFactory() {
+        @Override
+        public Injector getInjector(@Nullable Injector parent, Stage stage, Module... modules) {
+          throw new UnsupportedOperationException(
+              "This ITestContext names no injector factory, so it cannot inject a @Guice test"
+                  + " class. Override getInjectorFactory(), or run the class through a suite.");
+        }
+
+        @Override
+        public String toString() {
+          return "NONE";
+        }
+      };
 
   /**
    * @param parent - Parent {@link com.google.inject.Injector} instance that was built with parent
