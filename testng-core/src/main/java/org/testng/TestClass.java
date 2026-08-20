@@ -2,6 +2,7 @@ package org.testng;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,14 +70,12 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
 
   @Override
   public List<ITestNGMethod> getInstanceBeforeClassMethods(@Nullable UUID instanceId) {
-    List<ITestNGMethod> methods = beforeClassConfig.get(instanceId);
-    return methods == null ? new ArrayList<>() : methods;
+    return beforeClassConfig.getOrDefault(instanceId, Collections.emptyList());
   }
 
   @Override
   public List<ITestNGMethod> getInstanceAfterClassMethods(@Nullable UUID instanceId) {
-    List<ITestNGMethod> methods = afterClassConfig.get(instanceId);
-    return methods == null ? new ArrayList<>() : methods;
+    return afterClassConfig.getOrDefault(instanceId, Collections.emptyList());
   }
 
   private static final Logger LOG = Logger.getLogger(TestClass.class);
@@ -180,28 +179,29 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   }
 
   private void initMethods() {
-    ITestNGMethod[] methods = testMethodFinder.getTestMethods(getRealClass(), xmlTest);
+    Class<?> realClass = getRealClass();
+    ITestNGMethod[] methods = testMethodFinder.getTestMethods(realClass, xmlTest);
     m_testMethods = createTestMethods(methods);
 
     for (IdentifiableObject eachInstance : IObject.objects(iClass, false)) {
       m_beforeSuiteMethods =
           ConfigurationMethod.createSuiteConfigurationMethods(
               objectFactory,
-              testMethodFinder.getBeforeSuiteMethods(getRealClass()),
+              testMethodFinder.getBeforeSuiteMethods(realClass),
               annotationFinder,
               true,
               eachInstance);
       m_afterSuiteMethods =
           ConfigurationMethod.createSuiteConfigurationMethods(
               objectFactory,
-              testMethodFinder.getAfterSuiteMethods(getRealClass()),
+              testMethodFinder.getAfterSuiteMethods(realClass),
               annotationFinder,
               false,
               eachInstance);
       m_beforeTestConfMethods =
           ConfigurationMethod.createTestConfigurationMethods(
               objectFactory,
-              testMethodFinder.getBeforeTestConfigurationMethods(getRealClass()),
+              testMethodFinder.getBeforeTestConfigurationMethods(realClass),
               annotationFinder,
               true,
               this.xmlTest,
@@ -209,7 +209,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
       m_afterTestConfMethods =
           ConfigurationMethod.createTestConfigurationMethods(
               objectFactory,
-              testMethodFinder.getAfterTestConfigurationMethods(getRealClass()),
+              testMethodFinder.getAfterTestConfigurationMethods(realClass),
               annotationFinder,
               false,
               this.xmlTest,
@@ -217,7 +217,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
       m_beforeClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
               objectFactory,
-              testMethodFinder.getBeforeClassMethods(getRealClass()),
+              testMethodFinder.getBeforeClassMethods(realClass),
               annotationFinder,
               true,
               xmlTest,
@@ -226,7 +226,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
       m_afterClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
               objectFactory,
-              testMethodFinder.getAfterClassMethods(getRealClass()),
+              testMethodFinder.getAfterClassMethods(realClass),
               annotationFinder,
               false,
               xmlTest,
@@ -235,21 +235,21 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
       m_beforeGroupsMethods =
           ConfigurationMethod.createBeforeConfigurationMethods(
               objectFactory,
-              testMethodFinder.getBeforeGroupsConfigurationMethods(getRealClass()),
+              testMethodFinder.getBeforeGroupsConfigurationMethods(realClass),
               annotationFinder,
               true,
               eachInstance);
       m_afterGroupsMethods =
           ConfigurationMethod.createAfterConfigurationMethods(
               objectFactory,
-              testMethodFinder.getAfterGroupsConfigurationMethods(getRealClass()),
+              testMethodFinder.getAfterGroupsConfigurationMethods(realClass),
               annotationFinder,
               false,
               eachInstance);
       m_beforeTestMethods.addAll(
           ConfigurationMethod.createTestMethodConfigurationMethods(
               objectFactory,
-              testMethodFinder.getBeforeTestMethods(getRealClass()),
+              testMethodFinder.getBeforeTestMethods(realClass),
               annotationFinder,
               true,
               xmlTest,
@@ -257,7 +257,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
       m_afterTestMethods.addAll(
           ConfigurationMethod.createTestMethodConfigurationMethods(
               objectFactory,
-              testMethodFinder.getAfterTestMethods(getRealClass()),
+              testMethodFinder.getAfterTestMethods(realClass),
               annotationFinder,
               false,
               xmlTest,
@@ -270,17 +270,18 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
    * class).
    */
   private ITestNGMethod[] createTestMethods(ITestNGMethod[] methods) {
+    Class<?> realClass = getRealClass();
     List<ITestNGMethod> vResult = new ArrayList<>();
     for (ITestNGMethod tm : methods) {
       ConstructorOrMethod m = tm.getConstructorOrMethod();
-      if (m.getDeclaringClass().isAssignableFrom(getRealClass())) {
+      if (m.getDeclaringClass().isAssignableFrom(realClass)) {
         for (IdentifiableObject o : IObject.objects(iClass, false)) {
-          log(4, "Adding method " + tm + " on TestClass " + getRealClass());
+          log(4, "Adding method " + tm + " on TestClass " + realClass);
           vResult.add(
               new TestNGMethod(objectFactory, m.requireMethod(), annotationFinder, xmlTest, o));
         }
       } else {
-        log(4, "Rejecting method " + tm + " for TestClass " + getRealClass());
+        log(4, "Rejecting method " + tm + " for TestClass " + realClass);
       }
     }
 

@@ -1,7 +1,6 @@
 package org.testng;
 
 import java.util.List;
-import org.jspecify.annotations.Nullable;
 
 /**
  * This interface is used to augment or replace TestNG's algorithm to decide whether a test method
@@ -18,8 +17,7 @@ public interface IMethodSelector {
    * @param isTestMethod true if this is a @Test method, false if it's a configuration method
    * @return true if this method should be included in the test run, false otherwise
    */
-  boolean includeMethod(
-      @Nullable IMethodSelectorContext context, ITestNGMethod method, boolean isTestMethod);
+  boolean includeMethod(IMethodSelectorContext context, ITestNGMethod method, boolean isTestMethod);
 
   /**
    * Invoked when all the test methods are known so that the method selector can perform additional

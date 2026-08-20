@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -58,7 +57,6 @@ public class MethodHelper {
       boolean unique,
       List<ITestNGMethod> outExcludedMethods,
       Comparator<ITestNGMethod> comparator) {
-    AtomicReference<ITestNGMethod[]> results = new AtomicReference<>();
     List<ITestNGMethod> includedMethods = new ArrayList<>();
     TimeUtils.computeAndShowTime(
         "MethodGroupsHelper.collectMethodsByGroup()",
@@ -71,13 +69,9 @@ public class MethodHelper {
                 runInfo,
                 finder,
                 unique));
-    TimeUtils.computeAndShowTime(
+    return TimeUtils.computeAndShowTime(
         "MethodGroupsHelper.sortMethods()",
-        () ->
-            results.set(
-                sortMethods(forTests, includedMethods, comparator)
-                    .toArray(new ITestNGMethod[] {})));
-    return Objects.requireNonNull(results.get(), "the sorted methods were never published");
+        () -> sortMethods(forTests, includedMethods, comparator).toArray(new ITestNGMethod[] {}));
   }
 
   /**
@@ -341,10 +335,9 @@ public class MethodHelper {
       String[] methodsDependedUpon = m.getMethodsDependedUpon();
       if (methodsDependedUpon.length > 0) {
         ITestNGMethod[] methodsNamed;
-        Object instanceId = IInstanceIdentity.getInstanceId(m);
-        // Method has instance
-        List<ITestNGMethod> instanceMethods =
-            instanceId == null ? null : testInstances.get(instanceId);
+        // sortMethodsByInstance keeps NO_INSTANCE out of the map, so a method that carries no
+        // instance simply misses here.
+        List<ITestNGMethod> instanceMethods = testInstances.get(IInstanceIdentity.getInstanceId(m));
         if (instanceMethods != null) {
           try {
             // Search for other methods that depends upon with the same instance
@@ -422,7 +415,7 @@ public class MethodHelper {
     // dependency graph never forces a lazy @Factory instance to be created during collection.
     return Arrays.stream(methods)
         .parallel()
-        .filter(m -> IInstanceIdentity.getInstanceId(m) != IInstanceIdentity.NO_INSTANCE)
+        .filter(IInstanceIdentity::carriesInstance)
         .collect(Collectors.groupingBy(IInstanceIdentity::getInstanceId, Collectors.toList()));
   }
 

@@ -932,13 +932,11 @@ public class TestNG {
     if (m_commandLineTestClasses != null || m_commandLineMethods != null) {
       List<String> cliMethods = m_commandLineMethods;
       Class<?>[] cliClasses = m_commandLineTestClasses;
-      if (null != cliMethods) {
-        m_cmdlineSuites = createCommandLineSuitesForMethods(cliMethods);
-      } else if (null != cliClasses) {
-        m_cmdlineSuites = createCommandLineSuitesForClasses(cliClasses);
-      } else {
-        return;
-      }
+      m_cmdlineSuites =
+          cliMethods != null
+              ? createCommandLineSuitesForMethods(cliMethods)
+              : createCommandLineSuitesForClasses(
+                  Objects.requireNonNull(cliClasses, "one of the two command line inputs is set"));
 
       for (XmlSuite s : m_cmdlineSuites) {
         for (XmlTest t : s.getTests()) {
@@ -973,32 +971,22 @@ public class TestNG {
   private void initializeCommandLineSuitesGroups() {
     // If groups were specified on the command line, they should override groups
     // specified in the XML file
-    boolean hasIncludedGroups = null != m_includedGroups && m_includedGroups.length > 0;
-    boolean hasExcludedGroups = null != m_excludedGroups && m_excludedGroups.length > 0;
     List<XmlSuite> suites = m_cmdlineSuites != null ? m_cmdlineSuites : m_suites;
-    if (hasIncludedGroups || hasExcludedGroups) {
-      for (XmlSuite s : suites) {
-        initializeCommandLineSuitesGroups(
-            s, hasIncludedGroups, m_includedGroups, hasExcludedGroups, m_excludedGroups);
-      }
+    for (XmlSuite s : suites) {
+      initializeCommandLineSuitesGroups(s, m_includedGroups, m_excludedGroups);
     }
   }
 
   private static void initializeCommandLineSuitesGroups(
-      XmlSuite s,
-      boolean hasIncludedGroups,
-      String @Nullable [] m_includedGroups,
-      boolean hasExcludedGroups,
-      String @Nullable [] m_excludedGroups) {
-    if (hasIncludedGroups) {
-      s.setIncludedGroups(Arrays.asList(m_includedGroups));
+      XmlSuite s, String @Nullable [] included, String @Nullable [] excluded) {
+    if (included != null && included.length > 0) {
+      s.setIncludedGroups(Arrays.asList(included));
     }
-    if (hasExcludedGroups) {
-      s.setExcludedGroups(Arrays.asList(m_excludedGroups));
+    if (excluded != null && excluded.length > 0) {
+      s.setExcludedGroups(Arrays.asList(excluded));
     }
     for (XmlSuite child : s.getChildSuites()) {
-      initializeCommandLineSuitesGroups(
-          child, hasIncludedGroups, m_includedGroups, hasExcludedGroups, m_excludedGroups);
+      initializeCommandLineSuitesGroups(child, included, excluded);
     }
   }
 
@@ -1808,14 +1796,11 @@ public class TestNG {
     result.groups = (String) cmdLineArgs.get(CommandLineArgs.GROUPS);
     result.excludedGroups = (String) cmdLineArgs.get(CommandLineArgs.EXCLUDED_GROUPS);
     result.testJar = (String) cmdLineArgs.get(CommandLineArgs.TEST_JAR);
-    String xmlPathInJarValue = (String) cmdLineArgs.get(CommandLineArgs.XML_PATH_IN_JAR);
-    if (xmlPathInJarValue != null) {
-      result.xmlPathInJar = xmlPathInJarValue;
-    }
-    Boolean mixedValue = (Boolean) cmdLineArgs.get(CommandLineArgs.MIXED);
-    if (mixedValue != null) {
-      result.mixed = mixedValue;
-    }
+    result.xmlPathInJar =
+        (String)
+            cmdLineArgs.getOrDefault(
+                CommandLineArgs.XML_PATH_IN_JAR, CommandLineArgs.XML_PATH_IN_JAR_DEFAULT);
+    result.mixed = (Boolean) cmdLineArgs.getOrDefault(CommandLineArgs.MIXED, Boolean.FALSE);
     Object tmpValue = cmdLineArgs.get(CommandLineArgs.INCLUDE_ALL_DATA_DRIVEN_TESTS_WHEN_SKIPPING);
     if (tmpValue != null) {
       result.includeAllDataDrivenTestsWhenSkipping = Boolean.parseBoolean(tmpValue.toString());
