@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -104,8 +106,7 @@ public class ClassImpl implements IClass, IObject {
           factory = m_testContext.getSuite().getObjectFactory();
         }
         IObjectDispenser dispenser =
-            Dispenser.newInstance(
-                java.util.Objects.requireNonNull(factory, "a suite carries an object factory"));
+            Dispenser.newInstance(requireNonNull(factory, "a suite carries an object factory"));
         BasicAttributes basic = new BasicAttributes(this, null);
         DetailedAttributes detailed = newDetailedAttributes(create, errMsgPrefix);
         CreationAttributes attributes = new CreationAttributes(m_testContext, basic, detailed);
@@ -174,7 +175,7 @@ public class ClassImpl implements IClass, IObject {
       // derive a stable one from its unique instance id instead.
       return identifiable.getInstanceId().hashCode();
     }
-    return java.util.Objects.requireNonNull(
+    return requireNonNull(
             IParameterInfo.embeddedInstance(instance), "the factory instance is not available")
         .hashCode();
   }
