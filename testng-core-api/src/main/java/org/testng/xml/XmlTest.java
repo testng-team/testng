@@ -18,7 +18,13 @@ public class XmlTest implements Cloneable {
   public static final int DEFAULT_TIMEOUT_MS = Integer.MAX_VALUE;
 
   private @Nullable XmlSuite m_suite;
-  private @Nullable String m_name;
+
+  /**
+   * Initialised here rather than in {@link #init(XmlSuite, int)} so that every construction path
+   * carries a name, including the no-argument constructor the YAML parser builds tests through.
+   */
+  private String m_name = defaultName();
+
   private Integer m_verbose = XmlSuite.DEFAULT_VERBOSE;
   private int m_threadCount = -1;
 
@@ -63,9 +69,12 @@ public class XmlTest implements Cloneable {
     m_suite = suite;
     m_suite.getTests().add(this);
     m_index = index;
-    // no two tests in the same suite should have the same name.
-    // so, make the default test name unique
-    m_name = "Default XmlTest name " + UUID.randomUUID();
+  }
+
+  // no two tests in the same suite should have the same name.
+  // so, make the default test name unique
+  private static String defaultName() {
+    return "Default XmlTest name " + UUID.randomUUID();
   }
 
   // For YAML
@@ -149,12 +158,12 @@ public class XmlTest implements Cloneable {
   }
 
   /** @return Returns the name. */
-  public @Nullable String getName() {
+  public String getName() {
     return m_name;
   }
 
   /** @param name The name to set. */
-  public void setName(@Nullable String name) {
+  public void setName(String name) {
     m_name = name;
   }
 
@@ -502,7 +511,7 @@ public class XmlTest implements Cloneable {
                 : m_xmlGroups.getRun().getIncludes().hashCode());
     result = prime * result + (m_xmlGroups == null ? 0 : m_xmlGroups.getDefines().hashCode());
     result = prime * result + (m_methodSelectors == null ? 0 : m_methodSelectors.hashCode());
-    result = prime * result + (m_name == null ? 0 : m_name.hashCode());
+    result = prime * result + m_name.hashCode();
     result = prime * result + (m_parallel == null ? 0 : m_parallel.hashCode());
     result = prime * result + (m_parameters == null ? 0 : m_parameters.hashCode());
     result = prime * result + (m_preserveOrder == null ? 0 : m_preserveOrder.hashCode());
@@ -571,11 +580,7 @@ public class XmlTest implements Cloneable {
     } else if (!m_methodSelectors.equals(other.m_methodSelectors)) {
       return XmlSuite.f();
     }
-    if (m_name == null) {
-      if (other.m_name != null) {
-        return XmlSuite.f();
-      }
-    } else if (!m_name.equals(other.m_name)) {
+    if (!m_name.equals(other.m_name)) {
       return XmlSuite.f();
     }
     if (m_parallel == null) {

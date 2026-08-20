@@ -77,7 +77,7 @@ public class TestRunner
   private final Comparator<ITestNGMethod> comparator;
   private ISuite m_suite;
   private XmlTest m_xmlTest;
-  private @Nullable String m_testName;
+  private String m_testName;
   private IInjectorFactory m_injectorFactory;
   private ITestObjectFactory m_objectFactory;
 
@@ -908,7 +908,7 @@ public class TestRunner
   // ITestContext
   //
   @Override
-  public @Nullable String getName() {
+  public String getName() {
     return m_testName;
   }
 

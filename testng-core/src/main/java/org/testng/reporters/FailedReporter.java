@@ -78,11 +78,7 @@ public class FailedReporter implements IReporter {
       XmlTest current = testContext.getCurrentXmlTest();
       failedSuite
           .getTests()
-          .removeIf(
-              it ->
-                  !shouldWriteIntoFile
-                      && Objects.requireNonNull(it.getName(), "<test> has no name")
-                          .equals(current.getName()));
+          .removeIf(it -> !shouldWriteIntoFile && it.getName().equals(current.getName()));
       clearKeyCache(testContext);
     }
 

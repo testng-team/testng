@@ -40,7 +40,7 @@ class GuiceHelper {
       Maps.newListMultiMap();
   private final String parentModule;
   private final String stageString;
-  private final @Nullable String testName;
+  private final String testName;
   private final @Nullable ITestContext context;
 
   private static final BiPredicate<Module, Module> CLASS_EQUALITY =

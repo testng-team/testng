@@ -1,5 +1,6 @@
 Current (7.13.0)
 Fixed: GITHUB-1994: The XmlTest injected into a configuration or test method is now kept by reference in ITestResult.getParameters() instead of being cloned. XmlTest.clone() builds its copy with new XmlTest(suite), and that constructor registers the copy in the suite, so snapshotting the parameter appended a phantom <test> to the suite that was running -- once per invocation that received one. XmlTest.clone() itself is unchanged, so an IAlterSuiteListener can still use it to add a test. The reflective clone-if-Cloneable rule that backs the historical ITestResult parameter representation moved out of TestResult into its own internal component, unchanged for every other parameter type (Julien Herr)
+Changed: A <test> built without going through a constructor -- which is how the YAML parser builds one -- now carries the same "Default XmlTest name <uuid>" the XML and the programmatic paths have always had, so org.testng.xml.XmlTest.getName() and org.testng.ITestContext.getName() no longer answer null. Nineteen places dereferenced that name: two of them keyed a ConcurrentHashMap in FailedReporter, which throws on a null key, and XmlSuite.toXml() fed it to Properties.setProperty, which rejects a null value. Two nameless tests in one YAML suite used to be rejected as duplicates named "null"; they now carry different names and both run (Julien Herr)
 New: org.testng.internal.Utils.durationOf(ITestContext) answers how long a <test> ran in milliseconds, folding the end-minus-start expression that four reporters each spelled out. It asserts the context has finished, which is what all four already did through requireEndDateOf (Julien Herr)
 Fixed: GITHUB-3358, GITHUB-3359: every applicable @BeforeMethod(firstTimeOnly = true) now runs once, including a child method after a parent one, under a parallel data provider, and for overloaded @Test methods that share a name. The previous per-test-method token skipped later firstTimeOnly configurations and hid their failures. Parallel workers now wait for that firstTimeOnly method to finish before they continue, so a later data-provider row cannot start while the configuration is still running. After-configuration listeners now fire for a firstTimeOnly method that actually ran (Burak Kalaycı)
 Fixed: GITHUB-3385: XmlTest.addIncludedGroup now creates a missing <run> the same way addExcludedGroup and XmlSuite already do, so setGroups(new XmlGroups()) or addMetaGroup no longer throw NullPointerException. XmlTest.equals also compares a missing <run> instead of throwing when only the other side lacks one (Burak Kalaycı)
@@ -27,6 +28,14 @@ Fixed: A <package> tag that carries no name attribute is now reported the way an
 
 Possible backward incompatible changes:
 
+- org.testng.xml.XmlTest.getName() and org.testng.ITestContext.getName() are declared non-null, and
+  XmlTest.setName(String) no longer accepts null. A Java caller reading the name is unaffected; one
+  passing null to setName now gets a NullPointerException where it used to store null. A Kotlin
+  caller assigning null to XmlTest.name stops compiling, as does a Kotlin class implementing
+  ITestContext whose getName() override answers String?. A suite parsed from YAML whose test
+  declared no name now reports "Default XmlTest name <uuid>" where it used to report nothing, so
+  the report files named after that test, and testng-failed.xml, change name for that suite. Two
+  nameless tests in one suite are no longer rejected as duplicates named "null".
 - org.testng is declared @NullMarked, and these members answer @Nullable because that is what their
   implementations already answered. A Java caller is unaffected. A Kotlin caller that dereferences
   one of them without testing it stops compiling, and must add a test or a !!.
@@ -41,7 +50,7 @@ Possible backward incompatible changes:
   - ITestClassFinder: getIClass
   - ITestNGListenerFactory: createListener
   - ITestObjectFactory: newInstance(Constructor, Object...)
-  - ITestContext: getName, getEndDate, getHost and getInjectorFactory
+  - ITestContext: getEndDate, getHost and getInjectorFactory
   - ISuite: getHost, getParameter, getParentInjector and getObjectFactory
 - The same mark widens the parameters of IAnnotationTransformer.transform for ITestAnnotation and
   IConfigurationAnnotation -- testClass, testConstructor and testMethod, of which the javadoc has

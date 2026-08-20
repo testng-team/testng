@@ -14,7 +14,7 @@ public class TestContextJustForTesting implements ITestContext {
 
   @Override
   public String getName() {
-    return null;
+    throw new UnsupportedOperationException("This stub is only ever matched by type");
   }
 
   @Override
