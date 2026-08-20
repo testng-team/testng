@@ -21,10 +21,11 @@ public class XmlTest implements Cloneable {
   private @Nullable XmlSuite m_suite;
 
   /**
-   * Initialised here rather than in {@link #init(XmlSuite, int)} so that every construction path
-   * carries a name, including the no-argument constructor the YAML parser builds tests through.
+   * No two tests in the same suite should have the same name, so the default is unique. Set on the
+   * field rather than in {@link #init(XmlSuite, int)} so that every construction path carries a
+   * name, including the no-argument constructor the YAML parser builds tests through.
    */
-  private String m_name = defaultName();
+  private String m_name = "Default XmlTest name " + UUID.randomUUID();
 
   private Integer m_verbose = XmlSuite.DEFAULT_VERBOSE;
   private int m_threadCount = -1;
@@ -70,12 +71,6 @@ public class XmlTest implements Cloneable {
     m_suite = suite;
     m_suite.getTests().add(this);
     m_index = index;
-  }
-
-  // no two tests in the same suite should have the same name.
-  // so, make the default test name unique
-  private static String defaultName() {
-    return "Default XmlTest name " + UUID.randomUUID();
   }
 
   // For YAML

@@ -89,24 +89,24 @@ public class TestResultMethodBindingTest {
   @Test
   public void anITestInstanceKeepsTheClassAsItsInstanceName() {
     ITestNGMethod method = methodBoundToAClass();
-    when(method.getInstance()).thenReturn(new RenderingITest());
+    when(method.getInstance())
+        .thenReturn(
+            new ITest() {
+              @Override
+              public String getTestName() {
+                return "named by ITest";
+              }
+
+              @Override
+              public String toString() {
+                return "shard-3";
+              }
+            });
 
     TestResult result = TestResult.newTestResultFor(method);
 
     assertThat(result.getName()).isEqualTo("named by ITest");
     assertThat(result.getInstanceName()).isEqualTo("testClass");
-  }
-
-  private static class RenderingITest implements ITest {
-    @Override
-    public String getTestName() {
-      return "named by ITest";
-    }
-
-    @Override
-    public String toString() {
-      return "shard-3";
-    }
   }
 
   private static ITestNGMethod methodBoundToAClass() {

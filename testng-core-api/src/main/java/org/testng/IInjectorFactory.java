@@ -22,8 +22,8 @@ public interface IInjectorFactory {
         @Override
         public Injector getInjector(@Nullable Injector parent, Stage stage, Module... modules) {
           throw new UnsupportedOperationException(
-              "This ITestContext names no injector factory, so it cannot inject a @Guice test"
-                  + " class. Override getInjectorFactory(), or run the class through a suite.");
+              "This ITestContext names no injector factory. Override getInjectorFactory() to"
+                  + " inject a @Guice test class through it.");
         }
 
         @Override
