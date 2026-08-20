@@ -79,8 +79,8 @@ public interface ITestContext extends IAttributes {
   /** @return the current XmlTest. */
   XmlTest getCurrentXmlTest();
 
-  @Nullable
+  /** @return the factory that builds this context's Guice injectors. */
   default IInjectorFactory getInjectorFactory() {
-    return null;
+    return IInjectorFactory.NONE;
   }
 }
