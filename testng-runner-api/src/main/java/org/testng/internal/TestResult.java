@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,7 +39,7 @@ public class TestResult implements ITestResult {
   private String m_name;
   private @Nullable String m_host;
   private Object[] m_parameters = {};
-  private @Nullable String m_instanceName;
+  private String m_instanceName;
   private @Nullable ITestContext m_context;
   private int m_parameterIndex = -1;
   private boolean m_wasRetried;
@@ -152,10 +154,12 @@ public class TestResult implements ITestResult {
     if (boundName != null) {
       return boundName;
     }
-    String string = instance.toString();
-    // Only display toString() if it's been overridden by the user
+    // Only display toString() if it's been overridden by the user. Ask the declaring class rather
+    // than comparing two Method objects: Method.equals compares exactly that, plus a name and a
+    // signature that are fixed here, and this way the instance is never stringified for nothing.
     try {
-      if (!Object.class.getMethod("toString").equals(instance.getClass().getMethod("toString"))) {
+      if (instance.getClass().getMethod("toString").getDeclaringClass() != Object.class) {
+        String string = instance.toString();
         m_instanceName = string.startsWith("class ") ? string.substring("class ".length()) : string;
         return method.getMethodName() + " on " + m_instanceName;
       }
@@ -341,13 +345,13 @@ public class TestResult implements ITestResult {
   }
 
   @Override
-  public @Nullable String getInstanceName() {
+  public String getInstanceName() {
     return m_instanceName;
   }
 
   @Override
   public void setTestName(String name) {
-    m_name = name;
+    m_name = requireNonNull(name, "a test result carries a name");
   }
 
   private void initParameterIndex(int index) {

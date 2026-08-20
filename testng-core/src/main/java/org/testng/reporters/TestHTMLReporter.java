@@ -331,7 +331,6 @@ public class TestHTMLReporter implements ITestListener {
           .append("<body>\n");
 
       long durationMillis = Utils.durationOf(testContext);
-      long duration = durationMillis / 1000;
       int passed =
           testContext.getPassedTests().size()
               + testContext.getFailedButWithinSuccessPercentageTests().size();
@@ -363,7 +362,7 @@ public class TestHTMLReporter implements ITestListener {
           .append("</tr>\n")
           .append(hostLine)
           .append("<tr><td>Total time:</td><td>")
-          .append(Long.toString(duration))
+          .append(Long.toString(durationMillis / 1000))
           .append(" seconds (")
           .append(Long.toString(durationMillis))
           .append(" ms)</td>\n")

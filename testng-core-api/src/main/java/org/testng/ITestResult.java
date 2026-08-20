@@ -107,10 +107,7 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
   @Nullable
   String getTestName();
 
-  /**
-   * @return The name of the instance this method was run on, or {@code null} when it carries none.
-   */
-  @Nullable
+  /** @return The name of the instance this method was run on. */
   String getInstanceName();
 
   /**

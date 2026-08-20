@@ -112,7 +112,7 @@ public class TestResultJustForTesting implements ITestResult {
 
   @Override
   public String getInstanceName() {
-    return null;
+    throw new UnsupportedOperationException("This stub is only ever matched by type");
   }
 
   @Override

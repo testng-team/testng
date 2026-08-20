@@ -180,13 +180,10 @@ class GuiceHelper {
     moduleInstances.forEach(this::addGuiceModule);
     Module[] modules = moduleInstances.toArray(new Module[0]);
 
-    if (parent == null || getParentModuleClass() == null) {
-      // there is no parent module in this suite defined therefore tree of injectors shouldn't
-      // be created letting individual test modules to redefine bindings between each other
-      return injectorFactory.getInjector(null, stage, modules);
-    }
-
-    return injectorFactory.getInjector(parent, stage, modules);
+    // No parent module in this suite means no tree of injectors, so that individual test modules
+    // can redefine bindings between each other.
+    Injector effectiveParent = getParentModuleClass() == null ? null : parent;
+    return injectorFactory.getInjector(effectiveParent, stage, modules);
   }
 
   private List<Module> getModules(Guice guice, Injector parentInjector, Class<?> testClass) {

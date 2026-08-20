@@ -180,7 +180,7 @@ public class EmailableReporter2 implements IReporter {
                 .append("<a href=\"#t")
                 .append(testIndex)
                 .append("\">")
-                .append(escapeHtmlOrEmpty(testResult.getTestName()))
+                .append(Utils.escapeHtml(testResult.getTestName()))
                 .append("</a>")
                 .toString());
         writeTableData(integerFormat.format(passedTests), "num");
@@ -253,7 +253,7 @@ public class EmailableReporter2 implements IReporter {
       for (TestResult testResult : suiteResult.getTestResults()) {
         writer.printf("<tbody id=\"t%d\">", testIndex);
 
-        String testName = escapeHtmlOrEmpty(testResult.getTestName());
+        String testName = Utils.escapeHtml(testResult.getTestName());
         int startIndex = scenarioIndex;
 
         scenarioIndex +=
@@ -413,7 +413,7 @@ public class EmailableReporter2 implements IReporter {
     for (SuiteResult suiteResult : suiteResults) {
       for (TestResult testResult : suiteResult.getTestResults()) {
         writer.print("<h2>");
-        writer.print(escapeHtmlOrEmpty(testResult.getTestName()));
+        writer.print(Utils.escapeHtml(testResult.getTestName()));
         writer.print("</h2>");
 
         scenarioIndex +=
@@ -648,11 +648,6 @@ public class EmailableReporter2 implements IReporter {
     writer.print(">");
   }
 
-  /** A &lt;test&gt; that carries no name renders as an empty cell rather than the text "null". */
-  private static String escapeHtmlOrEmpty(@Nullable String text) {
-    return text == null ? "" : Utils.escapeHtml(text);
-  }
-
   /** Groups {@link TestResult}s by suite. */
   protected static class SuiteResult {
     private final String suiteName;
@@ -688,7 +683,7 @@ public class EmailableReporter2 implements IReporter {
         Comparator.comparing((ITestResult o) -> o.getTestClass().getName())
             .thenComparing(o -> o.getMethod().getMethodName());
 
-    private final @Nullable String testName;
+    private final String testName;
     private final List<ClassResult> failedConfigurationResults;
     private final List<ClassResult> failedTestResults;
     private final List<ClassResult> skippedConfigurationResults;
@@ -805,7 +800,7 @@ public class EmailableReporter2 implements IReporter {
       return classResults;
     }
 
-    public @Nullable String getTestName() {
+    public String getTestName() {
       return testName;
     }
 

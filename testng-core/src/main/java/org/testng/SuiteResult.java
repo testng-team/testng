@@ -1,7 +1,6 @@
 package org.testng;
 
 import org.testng.collections.Objects;
-import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
 /** This class logs the result of an entire Test Suite (defined by a property file). */
@@ -27,14 +26,7 @@ class SuiteResult implements ISuiteResult, Comparable<SuiteResult> {
 
   @Override
   public int compareTo(SuiteResult other) {
-    int result = 0;
-    try {
-      result = getTestContext().getName().compareTo(other.getTestContext().getName());
-    } catch (Exception ex) {
-      Logger.getLogger(SuiteResult.class).error(ex.getMessage(), ex);
-    }
-
-    return result;
+    return getTestContext().getName().compareTo(other.getTestContext().getName());
   }
 
   /** Returns the test context name. {@inheritDoc} */

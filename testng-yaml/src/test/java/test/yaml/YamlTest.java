@@ -192,6 +192,20 @@ public class YamlTest extends SimpleBaseTest {
     assertThat(suites.get(0).getTests()).extracting(XmlTest::getName).doesNotHaveDuplicates();
   }
 
+  /**
+   * A {@code name:} key present but empty is the one way YAML can still reach {@link
+   * XmlTest#setName} with null, and it is rejected rather than silently leaving the test nameless.
+   * The XML reader already rejects the same document, with its own message.
+   */
+  @Test
+  public void aTestDeclaringAnEmptyNameIsRejected() {
+    String yaml = "name: EmptyNameSuite\ntests:\n  - name:\n";
+
+    assertThatThrownBy(() -> parseYaml("emptyName.yaml", yaml))
+        .hasRootCauseInstanceOf(NullPointerException.class)
+        .hasRootCauseMessage("a <test> tag carries a name");
+  }
+
   private static XmlSuite parseYaml(String fileName, String yaml) throws FileNotFoundException {
     byte[] bytes = yaml.getBytes(StandardCharsets.UTF_8);
     return Yaml.parse(fileName, new ByteArrayInputStream(bytes), false);

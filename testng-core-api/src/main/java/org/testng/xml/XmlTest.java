@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -164,7 +165,10 @@ public class XmlTest implements Cloneable {
 
   /** @param name The name to set. */
   public void setName(String name) {
-    m_name = name;
+    // The YAML reader drives this setter, and a "name:" key with no value hands it null, which
+    // would defeat the default the field initialiser guarantees. The XML reader already rejects
+    // that document outright.
+    m_name = Objects.requireNonNull(name, "a <test> tag carries a name");
   }
 
   /** @param v - Verbosity level. */

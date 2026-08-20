@@ -150,14 +150,10 @@ public class TimesPanel extends BaseMultiSuitePanel {
     Optional<ITestContext> maxValue =
         suite.getResults().values().stream()
             .map(ISuiteResult::getTestContext)
-            .max(Comparator.comparing(TimesPanel::time));
+            .max(Comparator.comparingLong(Utils::durationOf));
     if (maxValue.isPresent()) {
-      return time(maxValue.get());
+      return Utils.durationOf(maxValue.get());
     }
     return result;
-  }
-
-  private static Long time(ITestContext ctx) {
-    return Utils.durationOf(ctx);
   }
 }
