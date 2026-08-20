@@ -1,4 +1,4 @@
-package org.testng.reporters;
+package org.testng.internal.reporters;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,14 +13,15 @@ import org.testng.internal.Utils;
  * <p>This is reporting state, not the arguments TestNG invoked the method with. It holds no
  * reference to the invocation objects, so nothing that happens afterwards -- a data provider
  * handing the same mutable row to every invocation, a test mutating what it was given -- can change
- * what the reporter later prints. Keeping the rendering rather than a copy of the object is
+ * what a reporter later prints. Keeping the rendering rather than a copy of the object is
  * deliberate: it asks nothing of the user's type, where the historical {@code
  * LegacyParameterSnapshotter} needs it to honour {@link Cloneable}.
  *
  * <p>The price is that {@link Object#toString()} runs as the invocation starts rather than when the
- * report is written. See {@link ParameterSnapshots#capture} for what happens when it throws.
+ * report is written. See {@link ParameterSnapshots#captureIfAbsent} for what happens when it
+ * throws.
  */
-final class ParameterSnapshot {
+public final class ParameterSnapshot {
 
   private final int suppliedCount;
   private final int expectedCount;
@@ -37,7 +38,7 @@ final class ParameterSnapshot {
    * @param parameterTypes - The types the method declares, which decide how a value is rendered.
    * @return - The rendering of those values, or {@code null} when there is nothing to report.
    */
-  static @Nullable ParameterSnapshot of(
+  public static @Nullable ParameterSnapshot of(
       Object @Nullable [] parameters, Class<?> @Nullable [] parameterTypes) {
     if (parameters == null || parameterTypes == null || parameters.length == 0) {
       return null;
@@ -60,20 +61,20 @@ final class ParameterSnapshot {
    * Whether the invocation received a different number of values than the method declares, which a
    * reporter reports instead of the values -- there are none to report.
    */
-  boolean hasCountMismatch() {
+  public boolean hasCountMismatch() {
     return suppliedCount != expectedCount;
   }
 
-  int suppliedCount() {
+  public int suppliedCount() {
     return suppliedCount;
   }
 
-  int expectedCount() {
+  public int expectedCount() {
     return expectedCount;
   }
 
   /** The rendered values in invocation order. Empty when {@link #hasCountMismatch()}. */
-  List<String> renderedValues() {
+  public List<String> renderedValues() {
     return renderedValues;
   }
 }

@@ -11,9 +11,11 @@ import org.testng.annotations.Test;
 import org.testng.reporters.issue2725.TestClassSample;
 import org.testng.reporters.snapshot.ConfigurationParameterSample;
 import org.testng.reporters.snapshot.NonCloneableParameterSample;
+import org.testng.reporters.snapshot.OverlappingContextsSample;
 import org.testng.reporters.snapshot.ParallelParameterSample;
 import org.testng.reporters.snapshot.RenderingSample;
 import org.testng.reporters.snapshot.SkippedDataDrivenSample;
+import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 import test.reports.GitHub447Sample;
 
@@ -71,6 +73,22 @@ public class TextReporterTest extends SimpleBaseTest {
       assertThat(content).contains("report(row-" + row + ")");
     }
     assertThat(content).doesNotContain("report(mutated)");
+  }
+
+  @Test(
+      description =
+          "Contexts that overlap each report their own values: one finishing takes nothing from the"
+              + " other")
+  public void parallelContextsDoNotShareSnapshots() {
+    XmlSuite suite = createXmlSuite("overlapping-contexts");
+    suite.setParallel(XmlSuite.ParallelMode.TESTS);
+    createXmlTest(suite, "first", OverlappingContextsSample.class);
+    createXmlTest(suite, "second", OverlappingContextsSample.class);
+
+    assertThat(report(create(suite)))
+        .contains("report(first-context)")
+        .contains("report(second-context)")
+        .doesNotContain("report(mutated)");
   }
 
   @Test(
