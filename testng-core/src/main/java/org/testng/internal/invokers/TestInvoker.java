@@ -748,8 +748,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     //
     try {
       testResult =
-          TestResult.newTestResultFrom(
-              testResult, arguments.getTestMethod(), m_testContext, System.currentTimeMillis());
+          TestResult.newTestResultFrom(testResult, m_testContext, System.currentTimeMillis());
       // Recreate the invoked method object again, because we now have a new test result object
       invokedMethod = new InvokedMethod(invokedMethod.getDate(), testResult);
 

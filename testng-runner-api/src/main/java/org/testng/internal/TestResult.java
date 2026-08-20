@@ -107,9 +107,10 @@ public class TestResult implements ITestResult {
     return result;
   }
 
+  /** The result that reports on the invocation the given carrier was built for. */
   public static TestResult newTestResultFrom(
-      TestResult result, ITestNGMethod method, @Nullable ITestContext ctx, long start) {
-    TestResult testResult = new TestResult(method, true);
+      TestResult result, @Nullable ITestContext ctx, long start) {
+    TestResult testResult = new TestResult(result.getMethod(), true);
     testResult.setParameters(result.getParameters());
     testResult.initParameterIndex(result.getParameterIndex());
     testResult.setHost(result.getHost());
@@ -126,6 +127,26 @@ public class TestResult implements ITestResult {
     m_startMillis = start;
     m_endMillis = end;
     m_context = ctx;
+    warnAboutUnnamedITest();
+  }
+
+  /**
+   * Only a result that reports on an invocation says so when the instance implements {@link ITest}
+   * but did not name itself. The parameter carrier stays quiet: it is built before the
+   * configuration methods run, so an instance that names itself in one of them -- which is the
+   * usual place -- has not been asked yet.
+   */
+  private void warnAboutUnnamedITest() {
+    Object instance = m_method.getInstance();
+    if (!(instance instanceof ITest)
+        || ((ITest) instance).getTestName() != null
+        || Utils.getVerbose() <= 1) {
+      return;
+    }
+    System.err.println(
+        String.format(
+            "Warning: [%s] implementation on class [%s] returned null. Defaulting to method name",
+            ITest.class.getName(), instance.getClass().getName()));
   }
 
   /**
@@ -160,17 +181,7 @@ public class TestResult implements ITestResult {
     }
     if (instance instanceof ITest) {
       String testName = ((ITest) instance).getTestName();
-      if (testName != null) {
-        return testName;
-      }
-      if (Utils.getVerbose() > 1) {
-        String msg =
-            String.format(
-                "Warning: [%s] implementation on class [%s] returned null. Defaulting to method name",
-                ITest.class.getName(), instance.getClass().getName());
-        System.err.println(msg);
-      }
-      return method.getMethodName();
+      return testName != null ? testName : method.getMethodName();
     }
     String boundName = m_testClass.getTestName();
     if (boundName != null) {

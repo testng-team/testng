@@ -173,7 +173,7 @@ public class YamlTest extends SimpleBaseTest {
    */
   @Test
   public void aTestDeclaringNoNameCarriesTheDefaultName() throws IOException {
-    XmlSuite suite = parseSuiteFile("unnamedTest.yaml").iterator().next();
+    XmlSuite suite = parseSuiteFile("twoUnnamedTests.yaml").iterator().next();
 
     assertThat(suite.getTests().get(0).getName()).startsWith("Default XmlTest name ");
   }
@@ -194,17 +194,25 @@ public class YamlTest extends SimpleBaseTest {
   }
 
   /**
-   * A {@code name:} key present but empty is the one way YAML can still reach {@link
-   * XmlTest#setName} with null, and it is rejected rather than silently leaving the test nameless.
-   * The XML reader already rejects the same document, with its own message.
+   * A {@code name:} key that is present but empty, or blank, is a malformed document rather than an
+   * unnamed test -- which is what the XML reader has always answered for the same input. The {@code
+   * requireNonNull} inside {@link XmlTest#setName} stays the last resort for a programmatic caller;
+   * the reader names the error in the reader's own terms.
    */
-  @Test
-  public void aTestDeclaringAnEmptyNameIsRejected() {
-    String yaml = "name: EmptyNameSuite\ntests:\n  - name:\n";
+  @Test(dataProvider = "namelessTests")
+  public void aTestDeclaringNoUsableNameIsRejected(String document) {
+    assertThatThrownBy(() -> parseYaml("nameless.yaml", document))
+        .isInstanceOf(TestNGException.class)
+        .hasMessageContaining("A <test> of a YAML suite must carry a name");
+  }
 
-    assertThatThrownBy(() -> parseYaml("emptyName.yaml", yaml))
-        .hasRootCauseInstanceOf(NullPointerException.class)
-        .hasRootCauseMessage("a <test> tag carries a name");
+  @DataProvider
+  public Object[][] namelessTests() {
+    return new Object[][] {
+      {"name: S\ntests:\n  - name:\n"},
+      {"name: S\ntests:\n  - name: ''\n"},
+      {"name: S\ntests:\n  - name: '   '\n"},
+    };
   }
 
   private static XmlSuite parseYaml(String fileName, String yaml) throws FileNotFoundException {

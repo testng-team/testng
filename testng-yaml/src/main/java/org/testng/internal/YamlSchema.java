@@ -130,7 +130,17 @@ final class YamlSchema {
 
   static SchemaType<XmlTest> test() {
     return new SchemaType<>(XmlTest.class, "test")
-        .key("name", String.class, XmlTest::setName)
+        .key(
+            "name",
+            String.class,
+            (XmlTest test, String value) -> {
+              // The same rule the XML reader applies, reported the same way: a "name:" key with no
+              // value, or a blank one, is a malformed document rather than an unnamed test.
+              if (value == null || value.trim().isEmpty()) {
+                throw new TestNGException("A <test> of a YAML suite must carry a name");
+              }
+              test.setName(value);
+            })
         .key("verbose", Integer.class, XmlTest::setVerbose)
         .key(
             "parallel",
