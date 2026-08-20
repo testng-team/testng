@@ -334,9 +334,6 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         }
 
         log(3, "Invoking " + Utils.detailedMethodName(tm, true));
-        if (arguments.getTestMethodResult() != null) {
-          ((TestResult) arguments.getTestMethodResult()).setMethod(arguments.getTestMethod());
-        }
 
         parameters =
             Parameters.createConfigurationParameters(

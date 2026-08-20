@@ -83,6 +83,7 @@
       <class name="test.GraphTest"/>
       <class name="org.testng.internal.DynamicGraphTest"/>
       <class name="org.testng.internal.MethodSortingTest"/>
+      <class name="org.testng.internal.TestResultMethodBindingTest"/>
       <class name="org.testng.internal.invokers.ParameterHandlerTest"/>
       <class name="org.testng.internal.TestListenerHelperTest"/>
       <class name="org.testng.internal.GroupsHelperTest"/>
@@ -281,6 +282,7 @@
       <class name="test.inject.NoInjectionTest" />
       <class name="test.inject.NativeInjectionTest" />
       <class name="test.inject.Github1298Test"/>
+      <class name="test.inject.ConfigurationResultCarriesItsMethodTest"/>
       <class name="test.inject.Github1649Test"/>
       <class name="test.inject.issue1994.IssueTest"/>
     </classes>
