@@ -86,6 +86,25 @@ public final class ParameterSnapshots {
   }
 
   /**
+   * The same, for a reporter that has a suite rather than a store: a suite without one is a suite
+   * whose snapshots nobody is going to take, which is not the reporter's business.
+   *
+   * <p>Call it from {@link org.testng.ITestListener#onStart(org.testng.ITestContext)}, which is
+   * early enough: a context starts before its own {@code @BeforeTest} configurations and before any
+   * of its invocations. The only thing announced earlier is a suite level configuration method, and
+   * those are handed no injected value at all -- only {@code @Parameters} strings, which read the
+   * same whenever they are rendered.
+   *
+   * @param suite - The suite about to run the invocations the caller will report.
+   */
+  public static void requestCaptureFor(@Nullable ISuite suite) {
+    ParameterSnapshots snapshots = of(suite);
+    if (snapshots != null) {
+      snapshots.requestCapture();
+    }
+  }
+
+  /**
    * Captures what {@code result} was invoked with, unless it already has been. Must be called from
    * a lifecycle point the invocation has not run past yet.
    *
@@ -129,12 +148,37 @@ public final class ParameterSnapshots {
   }
 
   /**
-   * Drops what was captured for a result no reporter will print -- a configuration method that
-   * succeeded, which is announced like any other but listed by nobody. Guarded like {@link
-   * #captureIfAbsent}: {@code @BeforeMethod} / {@code @AfterMethod} invocations are the most
-   * frequent events in a run, and there is nothing to drop when nothing is being captured.
+   * What a reporter prints for a result: the values its invocation ran with, as TestNG captured
+   * them when it started.
    *
-   * @param result - The result that will not be reported.
+   * <p>Falls back to the result's own representation for the invocations announced before they were
+   * given their values, which leaves nothing to capture: the results {@code
+   * reportAllDataDrivenTestsAsSkipped} parameterizes after announcing them, and a configuration
+   * method skipped before its parameters were computed. Those keep reading through {@link
+   * ITestResult#getParameters()}, exactly as every result did before -- as does a result from a
+   * suite that has no snapshots at all.
+   *
+   * @param snapshots - The store of the suite being reported, or {@code null} if it has none.
+   * @param result - The result being reported.
+   * @return - Its rendering, or {@code null} when there is nothing to report.
+   */
+  public static @Nullable ParameterSnapshot reportedParametersOf(
+      @Nullable ParameterSnapshots snapshots, ITestResult result) {
+    ParameterSnapshot captured = snapshots != null ? snapshots.find(result) : null;
+    return captured != null
+        ? captured
+        : ParameterSnapshot.of(result.getParameters(), result.getMethod().getParameterTypes());
+  }
+
+  /**
+   * Drops what was captured for a result nothing will be reported about anymore -- a configuration
+   * method that succeeded, which no reporter lists once the run is over. It is the caller's
+   * business to know that the live reporters are done with it; see {@link
+   * ParameterSnapshotRecorder#onConfigurationSuccess}. Guarded like {@link #captureIfAbsent}:
+   * {@code @BeforeMethod} / {@code @AfterMethod} invocations are the most frequent events in a run,
+   * and there is nothing to drop when nothing is being captured.
+   *
+   * @param result - The result nothing will be reported about anymore.
    */
   public void discard(ITestResult result) {
     if (!captureRequested) {

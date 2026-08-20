@@ -207,9 +207,10 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
               this.holder);
 
       // One recorder for the whole suite, on every runner. Registered through the narrow methods
-      // rather than addListener(), which would fan it back out over the suite.
-      tr.addTestListener(parameterSnapshotRecorder);
-      tr.addConfigurationListener(parameterSnapshotRecorder);
+      // rather than addListener(), which would fan it back out over the suite, and ahead of the
+      // listeners the runner was given: they are the ones that read what it records.
+      tr.addInternalTestListener(parameterSnapshotRecorder);
+      tr.addInternalConfigurationListener(parameterSnapshotRecorder);
 
       //
       // Install the method interceptor, if any was passed

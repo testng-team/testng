@@ -2,10 +2,6 @@ package org.testng.reporters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.reporters.issue2725.TestClassSample;
@@ -110,17 +106,6 @@ public class TextReporterTest extends SimpleBaseTest {
   }
 
   private static String report(TestNG testng) {
-    PrintStream currentStream = System.out;
-    final Charset charset = StandardCharsets.UTF_8;
-    try {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      PrintStream ps = new PrintStream(baos, true, charset);
-      System.setOut(ps);
-      testng.addListener(new TextReporter("Example_Test", 2));
-      testng.run();
-      return baos.toString(charset);
-    } finally {
-      System.setOut(currentStream);
-    }
+    return ReportedOutput.of(testng, new TextReporter("Example_Test", 2));
   }
 }

@@ -34,19 +34,11 @@ public class TextReporter implements ITestListener {
   /**
    * Below verbose 2 this reporter prints nothing, so it asks for the suite's snapshots only when it
    * will read them.
-   *
-   * <p>Early enough: a context starts before its own {@code @BeforeTest} configurations and before
-   * any of its invocations. The only thing announced earlier is a suite level configuration method,
-   * and those are handed no injected value at all -- only {@code @Parameters} strings, which read
-   * the same whenever they are rendered.
    */
   @Override
   public void onStart(ITestContext context) {
     if (logsResults()) {
-      ParameterSnapshots snapshots = ParameterSnapshots.of(context.getSuite());
-      if (snapshots != null) {
-        snapshots.requestCapture();
-      }
+      ParameterSnapshots.requestCaptureFor(context.getSuite());
     }
   }
 
@@ -86,7 +78,7 @@ public class TextReporter implements ITestListener {
           method.getDescription(),
           method.getAttributes(),
           stackTrace,
-          reportedParametersOf(snapshots, tr));
+          ParameterSnapshots.reportedParametersOf(snapshots, tr));
     }
 
     results = context.getSkippedConfigurations().getAllResults();
@@ -98,7 +90,7 @@ public class TextReporter implements ITestListener {
           method.getDescription(),
           method.getAttributes(),
           null,
-          reportedParametersOf(snapshots, tr));
+          ParameterSnapshots.reportedParametersOf(snapshots, tr));
     }
 
     results = context.getPassedTests().getAllResults();
@@ -171,25 +163,7 @@ public class TextReporter implements ITestListener {
         method.getDescription(),
         method.getAttributes(),
         stackTrace,
-        reportedParametersOf(snapshots, tr));
-  }
-
-  /**
-   * The values an invocation ran with, as TestNG captured them when it started.
-   *
-   * <p>Falls back to the result's own representation for the invocations announced before they were
-   * given their values, which leaves nothing to capture: the results {@code
-   * reportAllDataDrivenTestsAsSkipped} parameterizes after announcing them, and a configuration
-   * method skipped before its parameters were computed. Those keep reading through {@link
-   * org.testng.ITestResult#getParameters()}, exactly as every result did before -- as does a result
-   * from a suite that has no snapshots at all.
-   */
-  private @Nullable ParameterSnapshot reportedParametersOf(
-      @Nullable ParameterSnapshots snapshots, ITestResult tr) {
-    ParameterSnapshot captured = snapshots != null ? snapshots.find(tr) : null;
-    return captured != null
-        ? captured
-        : ParameterSnapshot.of(tr.getParameters(), tr.getMethod().getParameterTypes());
+        ParameterSnapshots.reportedParametersOf(snapshots, tr));
   }
 
   private void logExceptions(
