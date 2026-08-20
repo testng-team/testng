@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
+import org.testng.IConfigurationListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
@@ -17,12 +18,13 @@ import org.testng.annotations.CustomAttribute;
 import org.testng.internal.Utils;
 
 /** A simple reporter that collects the results and prints them on standard out. */
-public class TextReporter implements ITestListener {
+public class TextReporter implements ITestListener, IConfigurationListener {
 
   private static final String LINE = "\n===============================================\n";
 
   private final int m_verbose;
   private final String m_testName;
+  private final ParameterSnapshots m_parameterSnapshots = new ParameterSnapshots();
 
   public TextReporter(String testName, int verbose) {
     m_testName = testName;
@@ -30,10 +32,47 @@ public class TextReporter implements ITestListener {
   }
 
   @Override
-  public void onFinish(ITestContext context) {
-    if (m_verbose >= 2) {
-      logResults(context);
+  public void onTestStart(ITestResult tr) {
+    captureParameters(tr);
+  }
+
+  @Override
+  public void beforeConfiguration(ITestResult tr) {
+    captureParameters(tr);
+  }
+
+  @Override
+  public void onConfigurationSuccess(ITestResult tr) {
+    // Only failed and skipped configurations are listed, so this one is never going to be printed.
+    m_parameterSnapshots.discard(tr);
+  }
+
+  /**
+   * Both lifecycle points run before the method body does, so what is captured here is what the
+   * invocation started with, whatever it later does to those values.
+   */
+  private void captureParameters(ITestResult tr) {
+    if (logsResults()) {
+      // Otherwise this reporter prints nothing, and rendering a value would run the user's
+      // toString() for output nobody asked for.
+      m_parameterSnapshots.capture(tr);
     }
+  }
+
+  @Override
+  public void onFinish(ITestContext context) {
+    try {
+      if (logsResults()) {
+        logResults(context);
+      }
+    } finally {
+      m_parameterSnapshots.discard(context);
+    }
+  }
+
+  /** Whether this reporter is verbose enough to print anything, and so to capture anything. */
+  private boolean logsResults() {
+    return m_verbose >= 2;
   }
 
   private static List<ITestNGMethod> resultsToMethods(Collection<ITestResult> results) {
@@ -56,8 +95,7 @@ public class TextReporter implements ITestListener {
           tr.getMethod().getDescription(),
           tr.getMethod().getAttributes(),
           stackTrace,
-          tr.getParameters(),
-          tr.getMethod().getParameterTypes());
+          reportedParametersOf(tr));
     }
 
     results = context.getSkippedConfigurations().getAllResults();
@@ -68,8 +106,7 @@ public class TextReporter implements ITestListener {
           tr.getMethod().getDescription(),
           tr.getMethod().getAttributes(),
           null,
-          tr.getParameters(),
-          tr.getMethod().getParameterTypes());
+          reportedParametersOf(tr));
     }
 
     results = context.getPassedTests().getAllResults();
@@ -137,8 +174,23 @@ public class TextReporter implements ITestListener {
         tr.getMethod().getDescription(),
         tr.getMethod().getAttributes(),
         stackTrace,
-        tr.getParameters(),
-        tr.getMethod().getParameterTypes());
+        reportedParametersOf(tr));
+  }
+
+  /**
+   * The values an invocation ran with, as this reporter saw them when it started.
+   *
+   * <p>Falls back to the result's own representation for the invocations announced before they were
+   * given their values, which leaves nothing to capture: the results {@code
+   * reportAllDataDrivenTestsAsSkipped} parameterizes after announcing them, and a configuration
+   * method skipped before its parameters were computed. Those keep reading through {@link
+   * org.testng.ITestResult#getParameters()}, exactly as every result did before.
+   */
+  private @Nullable ParameterSnapshot reportedParametersOf(ITestResult tr) {
+    ParameterSnapshot captured = m_parameterSnapshots.find(tr);
+    return captured != null
+        ? captured
+        : ParameterSnapshot.of(tr.getParameters(), tr.getMethod().getParameterTypes());
   }
 
   private void logExceptions(String status, List<ITestResult> results) {
@@ -165,33 +217,25 @@ public class TextReporter implements ITestListener {
       String description,
       CustomAttribute[] attributes,
       @Nullable String stackTrace,
-      Object[] params,
-      Class<?>[] paramTypes) {
+      @Nullable ParameterSnapshot params) {
     StringBuilder msg = new StringBuilder(name);
 
-    if (null != params && params.length > 0) {
+    if (null != params) {
       msg.append("(");
 
       // The error might be a data provider parameter mismatch, so make
       // a special case here
-      if (params.length != paramTypes.length) {
+      if (params.hasCountMismatch()) {
         msg.append(name)
             .append(": Wrong number of arguments were passed by ")
             .append("the Data Provider: found ")
-            .append(params.length)
+            .append(params.suppliedCount())
             .append(" but ")
             .append("expected ")
-            .append(paramTypes.length)
+            .append(params.expectedCount())
             .append(")");
       } else {
-        for (int i = 0; i < params.length; i++) {
-          if (i > 0) {
-            msg.append(", ");
-          }
-          msg.append(Utils.toString(params[i], paramTypes[i]));
-        }
-
-        msg.append(")");
+        msg.append(String.join(", ", params.renderedValues())).append(")");
       }
     }
     if (!Utils.isStringEmpty(description)) {
