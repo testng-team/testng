@@ -510,6 +510,19 @@ public final class Utils {
     return Objects.requireNonNull(context.getEndDate(), "a reported test context has finished");
   }
 
+  /**
+   * How long a &lt;test&gt; ran, in milliseconds.
+   *
+   * <p>Asserts through {@link #requireEndDateOf(ITestContext)} that the context has finished, which
+   * is what every reporter asking for a duration already did.
+   *
+   * @param context The context to measure.
+   * @return The elapsed milliseconds between the start and the end of the context.
+   */
+  public static long durationOf(ITestContext context) {
+    return requireEndDateOf(context).getTime() - context.getStartDate().getTime();
+  }
+
   public static String detailedMethodName(ITestNGMethod method, boolean fqn) {
     String tempName = annotationFormFor(method);
     if (!tempName.isEmpty()) {

@@ -727,7 +727,7 @@ public class EmailableReporter2 implements IReporter {
       skippedTestCount = skippedTests.size();
       passedTestCount = passedTests.size();
 
-      duration = Utils.requireEndDateOf(context).getTime() - context.getStartDate().getTime();
+      duration = Utils.durationOf(context);
 
       includedGroups = formatGroups(context.getIncludedGroups());
       excludedGroups = formatGroups(context.getExcludedGroups());

@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import org.jspecify.annotations.Nullable;
@@ -331,9 +330,8 @@ public class TestHTMLReporter implements ITestListener {
           .append("</head>\n")
           .append("<body>\n");
 
-      Date startDate = testContext.getStartDate();
-      Date endDate = Utils.requireEndDateOf(testContext);
-      long duration = (endDate.getTime() - startDate.getTime()) / 1000;
+      long durationMillis = Utils.durationOf(testContext);
+      long duration = durationMillis / 1000;
       int passed =
           testContext.getPassedTests().size()
               + testContext.getFailedButWithinSuccessPercentageTests().size();
@@ -367,7 +365,7 @@ public class TestHTMLReporter implements ITestListener {
           .append("<tr><td>Total time:</td><td>")
           .append(Long.toString(duration))
           .append(" seconds (")
-          .append(Long.toString(endDate.getTime() - startDate.getTime()))
+          .append(Long.toString(durationMillis))
           .append(" ms)</td>\n")
           .append("</tr><tr>\n")
           .append("<td>Included groups:</td><td>")
