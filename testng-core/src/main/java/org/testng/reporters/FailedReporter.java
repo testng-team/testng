@@ -99,7 +99,7 @@ public class FailedReporter implements IReporter {
   }
 
   private static MethodInvocationKey key(ITestResult it) {
-    ITestNGMethod method = Utils.requireMethodOf(it);
+    ITestNGMethod method = it.getMethod();
     return new MethodInvocationKey(method, it.getParameters(), method.getCurrentInvocationCount());
   }
 
@@ -136,7 +136,7 @@ public class FailedReporter implements IReporter {
     allTests.addAll(skippedTests);
     ITestNGMethod[] allTestMethods = context.getAllTestMethods();
     for (ITestResult failedTest : allTests) {
-      ITestNGMethod current = Utils.requireMethodOf(failedTest);
+      ITestNGMethod current = failedTest.getMethod();
       if (!current.isTest()) { // Don't count configuration methods
         continue;
       }

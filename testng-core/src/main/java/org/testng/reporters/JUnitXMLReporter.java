@@ -191,7 +191,7 @@ public class JUnitXMLReporter implements IResultListener2 {
   private void createElement(XMLStringBuffer doc, ITestResult tr) {
 
     long elapsedTimeMillis = tr.getEndMillis() - tr.getStartMillis();
-    ITestNGMethod method = Utils.requireMethodOf(tr);
+    ITestNGMethod method = tr.getMethod();
     Properties attrs = getPropertiesFor(method, elapsedTimeMillis);
     if (method.isTest()) {
       attrs.setProperty(XMLConstants.ATTR_NAME, tr.getName());

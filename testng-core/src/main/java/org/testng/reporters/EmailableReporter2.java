@@ -336,7 +336,7 @@ public class EmailableReporter2 implements IReporter {
           int resultsCount = results.size();
 
           ITestResult firstResult = results.iterator().next();
-          String methodName = Utils.escapeHtml(Utils.requireMethodOf(firstResult).getMethodName());
+          String methodName = Utils.escapeHtml(firstResult.getMethod().getMethodName());
           long start = firstResult.getStartMillis();
           long duration = firstResult.getEndMillis() - start;
 
@@ -441,7 +441,7 @@ public class EmailableReporter2 implements IReporter {
 
         String label =
             Utils.escapeHtml(
-                className + "#" + Utils.requireMethodOf(results.iterator().next()).getMethodName());
+                className + "#" + results.iterator().next().getMethod().getMethodName());
         for (ITestResult result : results) {
           writeScenario(scenarioIndex, label, result);
           scenarioIndex++;
@@ -467,7 +467,7 @@ public class EmailableReporter2 implements IReporter {
     boolean hasRows = dumpParametersInfo("Factory Parameter", result.getFactoryParameters());
     int parameterCount = parameters == null ? 0 : parameters.length;
     hasRows = dumpParametersInfo("Parameter", result.getParameters());
-    dumpAttributesInfo(Utils.requireMethodOf(result).getAttributes());
+    dumpAttributesInfo(result.getMethod().getAttributes());
 
     // Write reporter messages (if any)
     List<String> reporterMessages = Reporter.getOutput(result);
@@ -686,7 +686,7 @@ public class EmailableReporter2 implements IReporter {
     /** Orders test results by class name and then by method name (in lexicographic order). */
     protected static final Comparator<ITestResult> RESULT_COMPARATOR =
         Comparator.comparing((ITestResult o) -> o.getTestClass().getName())
-            .thenComparing(o -> Utils.requireMethodOf(o).getMethodName());
+            .thenComparing(o -> o.getMethod().getMethodName());
 
     private final @Nullable String testName;
     private final List<ClassResult> failedConfigurationResults;
@@ -764,7 +764,7 @@ public class EmailableReporter2 implements IReporter {
         resultsPerMethod.add(result);
 
         String previousClassName = result.getTestClass().getName();
-        String previousMethodName = Utils.requireMethodOf(result).getMethodName();
+        String previousMethodName = result.getMethod().getMethodName();
         while (resultsIterator.hasNext()) {
           result = resultsIterator.next();
 
@@ -781,9 +781,9 @@ public class EmailableReporter2 implements IReporter {
             resultsPerClass = new ArrayList<>();
 
             previousClassName = className;
-            previousMethodName = Utils.requireMethodOf(result).getMethodName();
+            previousMethodName = result.getMethod().getMethodName();
           } else {
-            String methodName = Utils.requireMethodOf(result).getMethodName();
+            String methodName = result.getMethod().getMethodName();
             if (!previousMethodName.equals(methodName)) {
               if (resultsPerMethod.isEmpty()) {
                 throw new IllegalStateException("Results per method should NOT have been empty");

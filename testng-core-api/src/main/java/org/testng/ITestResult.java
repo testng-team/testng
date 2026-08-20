@@ -33,11 +33,7 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
 
   void setStatus(int status);
 
-  /**
-   * @return The test method this result represents, or {@code null} while the result has not been
-   *     bound to one.
-   */
-  @Nullable
+  /** @return The test method this result represents. */
   ITestNGMethod getMethod();
 
   /** @return The parameters this method was invoked with. */
@@ -65,11 +61,7 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
 
   void setEndMillis(long millis);
 
-  /**
-   * @return The name of this TestResult, typically identical to the name of the method, or {@code
-   *     null} while the result has not been bound to a method.
-   */
-  @Nullable
+  /** @return The name of this TestResult, typically identical to the name of the method. */
   String getName();
 
   /** @return true if if this test run is a SUCCESS */
@@ -105,7 +97,7 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    * @since 7.13.0
    */
   default Optional<IFactoryInstance> getFactoryInstance() {
-    return Optional.ofNullable(getMethod()).flatMap(ITestNGMethod::getFactoryInstance);
+    return getMethod().getFactoryInstance();
   }
 
   /**
@@ -129,7 +121,7 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
   ITestContext getTestContext();
 
   /** @param name - The new name to be used as a test name */
-  void setTestName(@Nullable String name);
+  void setTestName(String name);
 
   /**
    * @return - <code>true</code> if the test was retried again by an implementation of {@link

@@ -513,7 +513,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             r -> {
               Object resultInstance = r.getInstance();
               Object instance =
-                  resultInstance != null ? resultInstance : Utils.requireMethodOf(r).getInstance();
+                  resultInstance != null ? resultInstance : r.getMethod().getInstance();
               if (method.getGroupsDependedUpon().length == 0) {
                 // Consider equality of objects alone if we are NOT dealing with group dependency.
                 return instance == method.getInstance();

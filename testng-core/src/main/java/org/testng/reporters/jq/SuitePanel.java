@@ -72,7 +72,7 @@ public class SuitePanel extends BasePanel {
     xsb.push(D, C, "method-content");
     xsb.push("a", "name", Model.getTestResultName(tr));
     xsb.pop("a");
-    ITestNGMethod method = Utils.requireMethodOf(tr);
+    ITestNGMethod method = tr.getMethod();
     xsb.addOptional(S, method.getMethodName(), C, "method-name");
 
     // Parameters?

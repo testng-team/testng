@@ -309,7 +309,7 @@ open class SimpleBaseTest {
         /** Compare a list of ITestResult with a list of String method names,  */
         @JvmStatic
         protected fun assertTestResultsEqual(results: List<ITestResult>, methods: List<String>) {
-            results.map { it.method!!.methodName }
+            results.map { it.method.methodName }
                 .toList()
                 .run {
                     assertThat(this).containsAll(methods)
@@ -373,7 +373,7 @@ open class SimpleBaseTest {
             val methods = testResultList.stream()
                 .map { r: ITestResult ->
                     AbstractMap.SimpleEntry(
-                        r.method!!.qualifiedName, r.throwable
+                        r.method.qualifiedName, r.throwable
                     )
                 }
                 .map { (key, value): AbstractMap.SimpleEntry<String?, Throwable?> ->

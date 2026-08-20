@@ -54,7 +54,7 @@ public class TimesPanel extends BaseMultiSuitePanel {
 
     int index = 0;
     for (ITestResult tr : allTestResults) {
-      ITestNGMethod m = Utils.requireMethodOf(tr);
+      ITestNGMethod m = tr.getMethod();
       long time = tr.getEndMillis() - tr.getStartMillis();
       result
           .append("data.setCell(")
