@@ -58,7 +58,7 @@ public class ConfigurationTest extends ConfigurationBaseTest {
     assertThat(asList(1, 2, 3, 4, 5)).isEqualTo(SuiteTestSample.m_order);
   }
 
-  @Test
+  @Test(description = "GITHUB-2743")
   public void testSuiteRunnerWithDefaultConfiguration() {
     TestNG testNG = create(SuiteRunnerIssueTestSample.class);
     testNG.run();

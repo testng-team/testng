@@ -29,7 +29,7 @@ public class SuiteRunnerIssueTestSample {
     XmlTest test = new XmlTest(suite);
     test.setName("ChildTests");
     List<XmlClass> classes = new ArrayList<>();
-    classes.add(new XmlClass("test.configuration.issue2743.SuiteRunnerIssueTestSample"));
+    classes.add(new XmlClass(SuiteRunnerIssueNestedSample.class));
     test.setXmlClasses(classes);
 
     final IConfiguration configuration = new Configuration();
