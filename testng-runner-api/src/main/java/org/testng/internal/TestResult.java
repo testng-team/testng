@@ -1,7 +1,5 @@
 package org.testng.internal;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,14 +27,14 @@ public class TestResult implements ITestResult {
 
   private static final Object[] NO_FACTORY_PARAMETERS = {};
 
-  private @Nullable ITestNGMethod m_method = null;
+  private final ITestNGMethod m_method;
   private List<ITestNGMethod> skippedDueTo = new ArrayList<>();
   private boolean skipAnalysed = false;
   private int m_status = CREATED;
   private @Nullable Throwable m_throwable = null;
   private long m_startMillis = 0;
   private long m_endMillis = 0;
-  private @Nullable String m_name = null;
+  private @Nullable String m_name;
   private @Nullable String m_host;
   private Object[] m_parameters = {};
   private @Nullable String m_instanceName;
@@ -46,16 +44,31 @@ public class TestResult implements ITestResult {
   private final IAttributes m_attributes = new Attributes();
   private final String id = UUID.randomUUID().toString();
 
-  private TestResult() {
-    // defeat instantiation. We have factory methods.
+  /**
+   * @param method The method this result reports on.
+   * @param liteWeightInMemoryFriendlyMode Whether the method may be snapshotted into a {@link
+   *     LiteWeightTestNGMethod} when memory friendly mode is on. A reported result holds the
+   *     snapshot; the carrier {@link #newTestResult(ITestNGMethod, Object[], int)} builds holds the
+   *     live method, because a configuration method that declares an {@link ITestResult} parameter
+   *     is handed that carrier and mutates the method through it.
+   */
+  private TestResult(ITestNGMethod method, boolean liteWeightInMemoryFriendlyMode) {
+    ITestClass boundClass = Utils.requireTestClassOf(method);
+    m_method =
+        liteWeightInMemoryFriendlyMode && RuntimeBehavior.isMemoryFriendlyMode()
+            ? new LiteWeightTestNGMethod(method)
+            : method;
+    m_instanceName = boundClass.getName();
+    m_name = computeName(method, boundClass);
   }
 
-  public static TestResult newEmptyTestResult() {
-    return new TestResult();
-  }
-
-  public static TestResult newTestResult(Object[] parameters, int index) {
-    TestResult result = newEmptyTestResult();
+  /**
+   * The parameter carrier the invoker builds before it starts reporting: it knows the method and
+   * the arguments, and nothing about the outcome. Its status stays {@link ITestResult#CREATED}, its
+   * millis stay zero and it carries no context until {@link #newTestResultFrom} replaces it.
+   */
+  public static TestResult newTestResult(ITestNGMethod method, Object[] parameters, int index) {
+    TestResult result = new TestResult(method, false);
     result.setParameters(parameters);
     result.initParameterIndex(index);
     return result;
@@ -67,69 +80,65 @@ public class TestResult implements ITestResult {
 
   public static TestResult newContextAwareTestResult(
       ITestNGMethod method, @Nullable ITestContext ctx) {
-    TestResult result = newEmptyTestResult();
+    TestResult result = new TestResult(method, true);
     long time = System.currentTimeMillis();
-    result.init(method, ctx, null, time, 0L);
+    result.init(ctx, null, time, 0L);
     return result;
   }
 
   public static TestResult newTestResultWithCauseAs(
       ITestNGMethod method, @Nullable ITestContext ctx, Throwable t) {
-    TestResult result = newEmptyTestResult();
+    TestResult result = new TestResult(method, true);
     long time = System.currentTimeMillis();
-    result.init(method, ctx, t, time, time);
+    result.init(ctx, t, time, time);
     return result;
   }
 
   public static TestResult newEndTimeAwareTestResult(
       ITestNGMethod method, @Nullable ITestContext ctx, @Nullable Throwable t, long start) {
-    TestResult result = newEmptyTestResult();
+    TestResult result = new TestResult(method, true);
     long time = System.currentTimeMillis();
-    result.init(method, ctx, t, start, time);
+    result.init(ctx, t, start, time);
     return result;
   }
 
   public static TestResult newTestResultFrom(
       TestResult result, ITestNGMethod method, @Nullable ITestContext ctx, long start) {
-    TestResult testResult =
-        TestResult.newTestResult(result.getParameters(), result.getParameterIndex());
+    TestResult testResult = new TestResult(method, true);
+    testResult.setParameters(result.getParameters());
+    testResult.initParameterIndex(result.getParameterIndex());
     testResult.setHost(result.getHost());
-    testResult.init(method, ctx, null, start, 0L);
+    testResult.init(ctx, null, start, 0L);
     TestResult.copyAttributes(result, testResult);
     return testResult;
   }
 
-  private void init(
-      ITestNGMethod method,
-      @Nullable ITestContext ctx,
-      @Nullable Throwable t,
-      long start,
-      long end) {
+  private void init(@Nullable ITestContext ctx, @Nullable Throwable t, long start, long end) {
     m_throwable = t;
-    ITestClass boundClass = Utils.requireTestClassOf(method);
-    m_instanceName = boundClass.getName();
     if (null == m_throwable) {
       m_status = ITestResult.SUCCESS;
     }
     m_startMillis = start;
     m_endMillis = end;
-    m_method = RuntimeBehavior.isMemoryFriendlyMode() ? new LiteWeightTestNGMethod(method) : method;
     m_context = ctx;
+  }
 
+  /**
+   * The name of a result: either the method name, {@link ITest#getTestName()} or the instance's
+   * {@code toString()} if it has been overridden. Refines {@link #m_instanceName} in that last
+   * case, which is why it is called from the constructor rather than folded into it.
+   */
+  private String computeName(ITestNGMethod method, ITestClass boundClass) {
     Object instance = method.getInstance();
 
-    // Calculate the name: either the method name, ITest#getTestName or
-    // toString() if it's been overridden.
     if (instance == null) {
-      m_name = method.getMethodName();
-      return;
+      return method.getMethodName();
     }
     if (instance instanceof ITest) {
-      m_name = ((ITest) instance).getTestName();
-      if (m_name != null) {
-        return;
+      String testName = ((ITest) instance).getTestName();
+      if (testName != null) {
+        return testName;
       }
-      m_name = method.getMethodName();
       if (Utils.getVerbose() > 1) {
         String msg =
             String.format(
@@ -137,24 +146,23 @@ public class TestResult implements ITestResult {
                 ITest.class.getName(), instance.getClass().getName());
         System.err.println(msg);
       }
-      return;
+      return method.getMethodName();
     }
     String boundName = boundClass.getTestName();
     if (boundName != null) {
-      m_name = boundName;
-      return;
+      return boundName;
     }
     String string = instance.toString();
     // Only display toString() if it's been overridden by the user
-    m_name = method.getMethodName();
     try {
       if (!Object.class.getMethod("toString").equals(instance.getClass().getMethod("toString"))) {
         m_instanceName = string.startsWith("class ") ? string.substring("class ".length()) : string;
-        m_name = m_name + " on " + m_instanceName;
+        return method.getMethodName() + " on " + m_instanceName;
       }
     } catch (NoSuchMethodException ignore) {
       // ignore
     }
+    return method.getMethodName();
   }
 
   @Override
@@ -168,9 +176,6 @@ public class TestResult implements ITestResult {
    */
   @Override
   public @Nullable String getTestName() {
-    if (this.m_method == null) {
-      return null;
-    }
     Object instance = this.m_method.getInstance();
     if (instance instanceof ITest) {
       return ((ITest) instance).getTestName();
@@ -187,21 +192,6 @@ public class TestResult implements ITestResult {
   @Override
   public @Nullable ITestNGMethod getMethod() {
     return m_method;
-  }
-
-  /**
-   * The method this result belongs to, for the members that only make sense on a result built
-   * through one of the method-aware factories. {@link #newTestResult(Object[], int)} deliberately
-   * builds a carrier that has no method, and those members are not reachable on it.
-   */
-  private ITestNGMethod requireMethod() {
-    return requireNonNull(
-        m_method, "This TestResult carries parameters only; it has no test method");
-  }
-
-  /** @param method The method to set. */
-  public void setMethod(@Nullable ITestNGMethod method) {
-    m_method = method;
   }
 
   /** @return Returns the status. */
@@ -224,7 +214,7 @@ public class TestResult implements ITestResult {
   /** @return Returns the testClass. */
   @Override
   public IClass getTestClass() {
-    return Utils.requireTestClassOf(requireMethod());
+    return Utils.requireTestClassOf(m_method);
   }
 
   /** @return Returns the throwable. */
@@ -304,13 +294,13 @@ public class TestResult implements ITestResult {
 
   @Override
   public @Nullable Object getInstance() {
-    Object instance = requireMethod().getInstance();
+    Object instance = m_method.getInstance();
     return instance == null ? null : IParameterInfo.embeddedInstance(instance);
   }
 
   @Override
   public Object[] getFactoryParameters() {
-    return requireMethod()
+    return m_method
         .getFactoryInstance()
         .map(IFactoryInstance::getParameters)
         .orElse(NO_FACTORY_PARAMETERS);
@@ -412,7 +402,7 @@ public class TestResult implements ITestResult {
       return Collections.unmodifiableList(skippedDueTo);
     }
     // Looks like we didn't have any configuration failures. So some upstream method perhaps failed.
-    ITestNGMethod skippedMethod = requireMethod();
+    ITestNGMethod skippedMethod = m_method;
     if (skippedMethod.getMethodsDependedUpon().length == 0) {
       // Maybe group dependencies exist ?
       if (skippedMethod.getGroupsDependedUpon().length == 0) {
@@ -494,7 +484,7 @@ public class TestResult implements ITestResult {
     if (!m.isBeforeGroupsConfiguration()) {
       return false;
     }
-    String[] myGroups = requireMethod().getGroups();
+    String[] myGroups = m_method.getGroups();
     if (myGroups.length == 0 || m.getGroups().length == 0) {
       return false;
     }

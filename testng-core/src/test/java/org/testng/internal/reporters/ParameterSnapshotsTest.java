@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.annotations.Test;
@@ -92,13 +93,14 @@ public class ParameterSnapshotsTest {
   private static ITestResult resultOf(Object... parameters) {
     Class<?>[] parameterTypes = new Class<?>[parameters.length];
     Arrays.fill(parameterTypes, Object.class);
+    ITestClass testClass = mock(ITestClass.class);
+    when(testClass.getName()).thenReturn("testClass");
     ITestNGMethod method = mock(ITestNGMethod.class);
     when(method.getParameterTypes()).thenReturn(parameterTypes);
+    when(method.getMethodName()).thenReturn("testMethod");
+    when(method.getTestClass()).thenReturn(testClass);
 
-    TestResult result = TestResult.newEmptyTestResult();
-    result.setMethod(method);
-    result.setParameters(parameters);
-    return result;
+    return TestResult.newTestResult(method, parameters, 0);
   }
 
   /** The same result, seen through an {@link ITestResult} that says it equals any other. */

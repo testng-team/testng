@@ -699,7 +699,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // template object the invocation loop starts from never reaches this method.
     Object[] parameterValues = Objects.requireNonNull(arguments.getParameterValues());
     TestResult testResult =
-        TestResult.newTestResult(parameterValues, arguments.getParametersIndex());
+        TestResult.newTestResult(
+            arguments.getTestMethod(), parameterValues, arguments.getParametersIndex());
     testResult.setHost(m_testContext.getHost());
 
     GroupConfigMethodArguments cfgArgs =

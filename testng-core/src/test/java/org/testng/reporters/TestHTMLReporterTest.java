@@ -25,8 +25,7 @@ public class TestHTMLReporterTest {
     when(testNGMethod.getMethodName()).thenReturn("testMethod");
     when(testNGMethod.getTestClass()).thenReturn(testClass);
 
-    TestResult testResult = TestResult.newEmptyTestResult();
-    testResult.setMethod(testNGMethod);
+    TestResult testResult = TestResult.newTestResultFor(testNGMethod);
 
     testResult.setParameters(new Object[] {new ThrowingOnToString()});
 
