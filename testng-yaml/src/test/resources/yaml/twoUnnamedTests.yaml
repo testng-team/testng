@@ -1,0 +1,6 @@
+name: TwoUnnamedTestsSuite
+tests:
+  - classes:
+      - name: test.yaml.SampleOne
+  - classes:
+      - name: test.yaml.SampleTwo

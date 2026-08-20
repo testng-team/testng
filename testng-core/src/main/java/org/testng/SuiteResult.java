@@ -1,15 +1,11 @@
 package org.testng;
 
-import java.util.Comparator;
 import org.testng.collections.Objects;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
 /** This class logs the result of an entire Test Suite (defined by a property file). */
 class SuiteResult implements ISuiteResult, Comparable<SuiteResult> {
-
-  /** A &lt;test&gt; that carries no name sorts ahead of the ones that do. */
-  private static final Comparator<String> NAME_ORDER = Comparator.nullsFirst(String::compareTo);
 
   private final XmlSuite m_suite;
   private final ITestContext m_testContext;
@@ -33,9 +29,7 @@ class SuiteResult implements ISuiteResult, Comparable<SuiteResult> {
   public int compareTo(SuiteResult other) {
     int result = 0;
     try {
-      String n1 = getTestContext().getName();
-      String n2 = other.getTestContext().getName();
-      result = NAME_ORDER.compare(n1, n2);
+      result = getTestContext().getName().compareTo(other.getTestContext().getName());
     } catch (Exception ex) {
       Logger.getLogger(SuiteResult.class).error(ex.getMessage(), ex);
     }

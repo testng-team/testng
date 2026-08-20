@@ -37,7 +37,7 @@ public class FakeTestContext implements ITestContext {
 
   @Override
   public String getName() {
-    return null;
+    return "fake";
   }
 
   @Override

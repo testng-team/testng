@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.testng.TestNGException;
@@ -22,6 +23,7 @@ import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.testng.xml.internal.Parser;
+import org.testng.xml.internal.XmlSuiteUtils;
 import test.SimpleBaseTest;
 
 public class YamlTest extends SimpleBaseTest {
@@ -160,6 +162,34 @@ public class YamlTest extends SimpleBaseTest {
     for (int i = 0; i < tests.size(); i++) {
       assertThat(tests.get(i).getIndex()).isEqualTo(i);
     }
+  }
+
+  /**
+   * The YAML parser builds an {@link XmlTest} through the no-argument constructor, which is the one
+   * path that used to skip the default name, so a {@code tests:} entry declaring no {@code name:}
+   * produced a test whose name was null. No other parser can: the XML reader rejects a &lt;test&gt;
+   * with no name attribute outright.
+   */
+  @Test
+  public void aTestDeclaringNoNameCarriesTheDefaultName() throws IOException {
+    XmlSuite suite = parseSuiteFile("unnamedTest.yaml").iterator().next();
+
+    assertThat(suite.getTests().get(0).getName()).startsWith("Default XmlTest name ");
+  }
+
+  /**
+   * Two nameless tests used to collide on the null name and be rejected as duplicates called
+   * "null"; they now carry different defaults, which is what two nameless &lt;test&gt; tags built
+   * any other way have always carried.
+   */
+  @Test
+  public void twoTestsDeclaringNoNameAreNotDuplicates() throws IOException {
+    List<XmlSuite> suites = new ArrayList<>(parseSuiteFile("twoUnnamedTests.yaml"));
+
+    // Used to raise "Two tests in the same suite [TwoUnnamedTestsSuite] cannot have the same
+    // name: null".
+    XmlSuiteUtils.validateIfSuitesContainDuplicateTests(suites);
+    assertThat(suites.get(0).getTests()).extracting(XmlTest::getName).doesNotHaveDuplicates();
   }
 
   private static XmlSuite parseYaml(String fileName, String yaml) throws FileNotFoundException {

@@ -15,7 +15,6 @@ import org.testng.xml.XmlTest;
 public interface ITestContext extends IAttributes {
 
   /** @return The name of this test. */
-  @Nullable
   String getName();
 
   /** @return When this test started running. */

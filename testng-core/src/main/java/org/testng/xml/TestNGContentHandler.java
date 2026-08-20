@@ -506,7 +506,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       if (isStringBlank(testName)) {
         throw new TestNGException("The <test> tag must define the name attribute");
       }
-      test.setName(attributes.getValue("name"));
+      test.setName(testName);
       String verbose = attributes.getValue("verbose");
       if (null != verbose) {
         test.setVerbose(Integer.parseInt(verbose));

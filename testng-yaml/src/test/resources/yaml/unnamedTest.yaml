@@ -1,0 +1,4 @@
+name: UnnamedTestSuite
+tests:
+  - classes:
+      - name: test.yaml.Sample
