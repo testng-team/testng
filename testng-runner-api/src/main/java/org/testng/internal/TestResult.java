@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -193,7 +195,7 @@ public class TestResult implements ITestResult {
    * builds a carrier that has no method, and those members are not reachable on it.
    */
   private ITestNGMethod requireMethod() {
-    return java.util.Objects.requireNonNull(
+    return requireNonNull(
         m_method, "This TestResult carries parameters only; it has no test method");
   }
 
