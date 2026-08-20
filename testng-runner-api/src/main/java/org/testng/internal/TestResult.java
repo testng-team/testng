@@ -30,6 +30,7 @@ public class TestResult implements ITestResult {
   private static final Object[] NO_FACTORY_PARAMETERS = {};
 
   private final ITestNGMethod m_method;
+  private final ITestClass m_testClass;
   private List<ITestNGMethod> skippedDueTo = new ArrayList<>();
   private boolean skipAnalysed = false;
   private int m_status = CREATED;
@@ -39,7 +40,9 @@ public class TestResult implements ITestResult {
   private String m_name;
   private @Nullable String m_host;
   private Object[] m_parameters = {};
+  /** Seeded from the bound class, refined by {@link #computeName} when the instance renders. */
   private String m_instanceName;
+
   private @Nullable ITestContext m_context;
   private int m_parameterIndex = -1;
   private boolean m_wasRetried;
@@ -55,13 +58,13 @@ public class TestResult implements ITestResult {
    *     is handed that carrier and mutates the method through it.
    */
   private TestResult(ITestNGMethod method, boolean liteWeightInMemoryFriendlyMode) {
-    ITestClass boundClass = Utils.requireTestClassOf(method);
+    m_testClass = Utils.requireTestClassOf(method);
     m_method =
         liteWeightInMemoryFriendlyMode && RuntimeBehavior.isMemoryFriendlyMode()
             ? new LiteWeightTestNGMethod(method)
             : method;
-    m_instanceName = boundClass.getName();
-    m_name = computeName(method, boundClass);
+    m_instanceName = m_testClass.getName();
+    m_name = computeName(method);
   }
 
   /**
@@ -126,11 +129,30 @@ public class TestResult implements ITestResult {
   }
 
   /**
-   * The name of a result: either the method name, {@link ITest#getTestName()} or the instance's
-   * {@code toString()} if it has been overridden. Refines {@link #m_instanceName} in that last
-   * case, which is why it is called from the constructor rather than folded into it.
+   * How the instance renders itself, when it says so: {@code toString()} is only worth displaying
+   * if the user has overridden it. Asks the declaring class rather than comparing two {@link
+   * java.lang.reflect.Method} objects -- their equality compares exactly that, plus a name and a
+   * signature that are fixed here -- so that an instance is never stringified for nothing.
+   *
+   * @return The rendering, or {@code null} when the instance does not override {@code toString()}.
    */
-  private String computeName(ITestNGMethod method, ITestClass boundClass) {
+  private static @Nullable String overriddenToStringOf(Object instance) {
+    try {
+      if (instance.getClass().getMethod("toString").getDeclaringClass() == Object.class) {
+        return null;
+      }
+    } catch (NoSuchMethodException ignore) {
+      return null;
+    }
+    String string = instance.toString();
+    return string.startsWith("class ") ? string.substring("class ".length()) : string;
+  }
+
+  /**
+   * The name of a result: either the method name, {@link ITest#getTestName()}, the name the class
+   * was bound under, or the method name qualified by how the instance renders itself.
+   */
+  private String computeName(ITestNGMethod method) {
     Object instance = method.getInstance();
 
     if (instance == null) {
@@ -150,21 +172,14 @@ public class TestResult implements ITestResult {
       }
       return method.getMethodName();
     }
-    String boundName = boundClass.getTestName();
+    String boundName = m_testClass.getTestName();
     if (boundName != null) {
       return boundName;
     }
-    // Only display toString() if it's been overridden by the user. Ask the declaring class rather
-    // than comparing two Method objects: Method.equals compares exactly that, plus a name and a
-    // signature that are fixed here, and this way the instance is never stringified for nothing.
-    try {
-      if (instance.getClass().getMethod("toString").getDeclaringClass() != Object.class) {
-        String string = instance.toString();
-        m_instanceName = string.startsWith("class ") ? string.substring("class ".length()) : string;
-        return method.getMethodName() + " on " + m_instanceName;
-      }
-    } catch (NoSuchMethodException ignore) {
-      // ignore
+    String rendering = overriddenToStringOf(instance);
+    if (rendering != null) {
+      m_instanceName = rendering;
+      return method.getMethodName() + " on " + rendering;
     }
     return method.getMethodName();
   }
@@ -184,7 +199,7 @@ public class TestResult implements ITestResult {
     if (instance instanceof ITest) {
       return ((ITest) instance).getTestName();
     }
-    return Utils.requireTestClassOf(m_method).getTestName();
+    return m_testClass.getTestName();
   }
 
   @Override
@@ -218,7 +233,7 @@ public class TestResult implements ITestResult {
   /** @return Returns the testClass. */
   @Override
   public IClass getTestClass() {
-    return Utils.requireTestClassOf(m_method);
+    return m_testClass;
   }
 
   /** @return Returns the throwable. */

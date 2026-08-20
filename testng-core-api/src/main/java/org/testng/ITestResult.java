@@ -112,7 +112,8 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
 
   /**
    * @return the {@link ITestContext} for this test result, or {@code null} when the result was
-   *     built outside a test context.
+   *     built outside a test context, as the parameter carrier a configuration method is handed is:
+   *     it is built before the invocation it reports on is bound to one.
    */
   @Nullable
   ITestContext getTestContext();

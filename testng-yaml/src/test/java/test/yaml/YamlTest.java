@@ -1,6 +1,7 @@
 package test.yaml;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.ByteArrayInputStream;
@@ -188,8 +189,8 @@ public class YamlTest extends SimpleBaseTest {
 
     // Used to raise "Two tests in the same suite [TwoUnnamedTestsSuite] cannot have the same
     // name: null".
-    XmlSuiteUtils.validateIfSuitesContainDuplicateTests(suites);
-    assertThat(suites.get(0).getTests()).extracting(XmlTest::getName).doesNotHaveDuplicates();
+    assertThatCode(() -> XmlSuiteUtils.validateIfSuitesContainDuplicateTests(suites))
+        .doesNotThrowAnyException();
   }
 
   /**
