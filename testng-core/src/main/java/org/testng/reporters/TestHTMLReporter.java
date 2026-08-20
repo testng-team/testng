@@ -88,7 +88,7 @@ public class TestHTMLReporter implements ITestListener {
       pw.append("<tr>\n");
 
       // Test method
-      ITestNGMethod method = Utils.requireMethodOf(tr);
+      ITestNGMethod method = tr.getMethod();
 
       String name = method.getMethodName();
       pw.append("<td title='")
@@ -424,8 +424,8 @@ public class TestHTMLReporter implements ITestListener {
 
     @Override
     public int compare(ITestResult o1, ITestResult o2) {
-      String c1 = Utils.requireMethodOf(o1).getMethodName();
-      String c2 = Utils.requireMethodOf(o2).getMethodName();
+      String c1 = o1.getMethod().getMethodName();
+      String c2 = o2.getMethod().getMethodName();
       return c1.compareTo(c2);
     }
   }
@@ -434,8 +434,8 @@ public class TestHTMLReporter implements ITestListener {
 
     @Override
     public int compare(ITestResult o1, ITestResult o2) {
-      ITestNGMethod tm1 = Utils.requireMethodOf(o1);
-      ITestNGMethod tm2 = Utils.requireMethodOf(o2);
+      ITestNGMethod tm1 = o1.getMethod();
+      ITestNGMethod tm2 = o2.getMethod();
       return annotationValue(tm2) - annotationValue(tm1);
     }
 

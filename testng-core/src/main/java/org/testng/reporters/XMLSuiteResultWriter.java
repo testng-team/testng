@@ -188,7 +188,7 @@ public class XMLSuiteResultWriter {
 
   private Properties getTestResultAttributes(ITestResult testResult) {
     Properties attributes = new Properties();
-    ITestNGMethod method = Utils.requireMethodOf(testResult);
+    ITestNGMethod method = testResult.getMethod();
     if (!method.isTest()) {
       attributes.setProperty(XMLReporterConfig.ATTR_IS_CONFIG, "true");
     }
@@ -361,7 +361,7 @@ public class XMLSuiteResultWriter {
   }
 
   private void addTestMethodCustomAttributes(XMLStringBuffer xmlBuffer, ITestResult testResult) {
-    CustomAttribute[] attributes = Utils.requireMethodOf(testResult).getAttributes();
+    CustomAttribute[] attributes = testResult.getMethod().getAttributes();
     if (attributes == null || attributes.length == 0) {
       return;
     }

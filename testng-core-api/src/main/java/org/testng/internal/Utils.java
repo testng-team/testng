@@ -452,23 +452,6 @@ public final class Utils {
   }
 
   /**
-   * The test method a result was produced for.
-   *
-   * <p>{@link ITestResult#getMethod()} answers {@code null} on the parameter carrier the invoker
-   * builds before it knows which invocation it is reporting; that carrier is replaced by a
-   * method-bearing result before any listener or reporter sees it, so every result that reaches one
-   * has a method. Use this rather than dereferencing the accessor, so that the day a carrier does
-   * escape it is named at the boundary instead of raising a bare {@code NullPointerException}
-   * somewhere further in.
-   *
-   * @param result The result to read the method of.
-   * @return The test method, never {@code null}.
-   */
-  public static ITestNGMethod requireMethodOf(ITestResult result) {
-    return Objects.requireNonNull(result.getMethod(), "a reported result carries a test method");
-  }
-
-  /**
    * The test class a method was bound to.
    *
    * <p>{@link ITestNGMethod#getTestClass()} answers {@code null} until the finder binds the method

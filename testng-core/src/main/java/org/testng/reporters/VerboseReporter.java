@@ -179,7 +179,7 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
     } else {
       sb.append(": ");
     }
-    ITestNGMethod tm = Utils.requireMethodOf(itr);
+    ITestNGMethod tm = itr.getMethod();
     int identLevel = sb.length();
     sb.append(getMethodDeclaration(tm));
     Object[] params = itr.getParameters();

@@ -34,7 +34,7 @@ public class TestResult implements ITestResult {
   private @Nullable Throwable m_throwable = null;
   private long m_startMillis = 0;
   private long m_endMillis = 0;
-  private @Nullable String m_name;
+  private String m_name;
   private @Nullable String m_host;
   private Object[] m_parameters = {};
   private @Nullable String m_instanceName;
@@ -184,13 +184,13 @@ public class TestResult implements ITestResult {
   }
 
   @Override
-  public @Nullable String getName() {
+  public String getName() {
     return m_name;
   }
 
   /** @return Returns the method. */
   @Override
-  public @Nullable ITestNGMethod getMethod() {
+  public ITestNGMethod getMethod() {
     return m_method;
   }
 
@@ -346,7 +346,7 @@ public class TestResult implements ITestResult {
   }
 
   @Override
-  public void setTestName(@Nullable String name) {
+  public void setTestName(String name) {
     m_name = name;
   }
 
@@ -461,12 +461,12 @@ public class TestResult implements ITestResult {
   }
 
   private static boolean isGlobalFailure(ITestResult result) {
-    ITestNGMethod m = Utils.requireMethodOf(result);
+    ITestNGMethod m = result.getMethod();
     return m.isBeforeTestConfiguration() || m.isBeforeSuiteConfiguration();
   }
 
   private boolean isRelated(ITestResult result) {
-    ITestNGMethod m = Utils.requireMethodOf(result);
+    ITestNGMethod m = result.getMethod();
     if (!m.isBeforeClassConfiguration() && !m.isBeforeMethodConfiguration()) {
       return false;
     }
@@ -480,7 +480,7 @@ public class TestResult implements ITestResult {
   }
 
   private boolean belongToSameGroup(ITestResult result) {
-    ITestNGMethod m = Utils.requireMethodOf(result);
+    ITestNGMethod m = result.getMethod();
     if (!m.isBeforeGroupsConfiguration()) {
       return false;
     }

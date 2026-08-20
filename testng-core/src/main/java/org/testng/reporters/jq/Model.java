@@ -108,7 +108,7 @@ public class Model {
   }
 
   private void updateGroups(ISuite suite, ITestResult tr) {
-    ITestNGMethod method = Utils.requireMethodOf(tr);
+    ITestNGMethod method = tr.getMethod();
     String[] groups = method.getGroups();
     m_groupsBySuiteName.putAll(suite.getName(), Arrays.asList(groups));
     for (String group : groups) {
@@ -153,8 +153,7 @@ public class Model {
   }
 
   public static String getTestResultName(ITestResult tr) {
-    StringBuilder result =
-        new StringBuilder(getMethodName(Utils.requireMethodOf(tr).getMethodName()));
+    StringBuilder result = new StringBuilder(getMethodName(tr.getMethod().getMethodName()));
     Object[] parameters = tr.getParameters();
     if (parameters.length > 0) {
       result.append("(");

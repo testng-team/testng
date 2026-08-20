@@ -73,7 +73,7 @@ public class TextReporter implements ITestListener {
     // Log Text
     Set<ITestResult> results = context.getFailedConfigurations().getAllResults();
     for (ITestResult tr : results) {
-      ITestNGMethod method = Utils.requireMethodOf(tr);
+      ITestNGMethod method = tr.getMethod();
       Throwable ex = tr.getThrowable();
       String stackTrace = "";
       if (ex != null && m_verbose >= 2) {
@@ -91,7 +91,7 @@ public class TextReporter implements ITestListener {
 
     results = context.getSkippedConfigurations().getAllResults();
     for (ITestResult tr : results) {
-      ITestNGMethod method = Utils.requireMethodOf(tr);
+      ITestNGMethod method = tr.getMethod();
       logResult(
           "SKIPPED CONFIGURATION",
           Utils.detailedMethodName(method),
@@ -164,7 +164,7 @@ public class TextReporter implements ITestListener {
       String status,
       ITestResult tr,
       @Nullable String stackTrace) {
-    ITestNGMethod method = Utils.requireMethodOf(tr);
+    ITestNGMethod method = tr.getMethod();
     logResult(
         status,
         method.getQualifiedName(),
@@ -189,7 +189,7 @@ public class TextReporter implements ITestListener {
     ParameterSnapshot captured = snapshots != null ? snapshots.find(tr) : null;
     return captured != null
         ? captured
-        : ParameterSnapshot.of(tr.getParameters(), Utils.requireMethodOf(tr).getParameterTypes());
+        : ParameterSnapshot.of(tr.getParameters(), tr.getMethod().getParameterTypes());
   }
 
   private void logExceptions(

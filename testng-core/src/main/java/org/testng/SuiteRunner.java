@@ -806,11 +806,8 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
               return results.stream();
             })
         .filter(tr -> tr.getMethod() instanceof IInvocationStatus)
-        .filter(tr -> ((IInvocationStatus) Utils.requireMethodOf(tr)).getInvocationTime() > 0)
-        .map(
-            tr ->
-                new InvokedMethod(
-                    ((IInvocationStatus) Utils.requireMethodOf(tr)).getInvocationTime(), tr))
+        .filter(tr -> ((IInvocationStatus) tr.getMethod()).getInvocationTime() > 0)
+        .map(tr -> new InvokedMethod(((IInvocationStatus) tr.getMethod()).getInvocationTime(), tr))
         .collect(Collectors.toList());
   }
 

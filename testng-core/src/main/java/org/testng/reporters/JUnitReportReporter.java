@@ -51,7 +51,7 @@ public class JUnitReportReporter implements IReporter {
         addResults(tc.getSkippedTests().getAllResults(), results);
         addResults(tc.getFailedConfigurations().getAllResults(), results);
         for (ITestResult tr : tc.getPassedConfigurations().getAllResults()) {
-          ITestNGMethod configMethod = Utils.requireMethodOf(tr);
+          ITestNGMethod configMethod = tr.getMethod();
           if (configMethod.isBeforeMethodConfiguration()) {
             befores.put(tr.getInstance(), tr);
           }
@@ -173,7 +173,7 @@ public class JUnitReportReporter implements IReporter {
 
   private static Collection<ITestResult> sort(Set<ITestResult> results) {
     List<ITestResult> sortedResults = new ArrayList<>(results);
-    sortedResults.sort(Comparator.comparingInt(o -> Utils.requireMethodOf(o).getPriority()));
+    sortedResults.sort(Comparator.comparingInt(o -> o.getMethod().getPriority()));
     return Collections.unmodifiableList(sortedResults);
   }
 
@@ -276,7 +276,7 @@ public class JUnitReportReporter implements IReporter {
   }
 
   protected String getTestName(ITestResult tr) {
-    return Utils.requireMethodOf(tr).getMethodName();
+    return tr.getMethod().getMethodName();
   }
 
   private String formatTime(float time) {

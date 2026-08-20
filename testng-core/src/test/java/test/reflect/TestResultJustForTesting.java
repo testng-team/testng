@@ -27,7 +27,7 @@ public class TestResultJustForTesting implements ITestResult {
 
   @Override
   public ITestNGMethod getMethod() {
-    return null;
+    throw new UnsupportedOperationException("This stub is only ever matched by type");
   }
 
   @Override
@@ -66,7 +66,7 @@ public class TestResultJustForTesting implements ITestResult {
 
   @Override
   public String getName() {
-    return null;
+    throw new UnsupportedOperationException("This stub is only ever matched by type");
   }
 
   @Override
