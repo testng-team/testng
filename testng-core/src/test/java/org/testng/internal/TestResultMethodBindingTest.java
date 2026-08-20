@@ -59,7 +59,7 @@ public class TestResultMethodBindingTest {
   public void aBoundTestNameNamesTheResult() {
     ITestNGMethod method = methodBoundToAClass();
     when(method.getInstance()).thenReturn(new Object());
-    when(Utils.requireTestClassOf(method).getTestName()).thenReturn("named by @Test");
+    when(method.getTestClass().getTestName()).thenReturn("named by @Test");
 
     assertThat(TestResult.newTestResultFor(method).getName()).isEqualTo("named by @Test");
   }
@@ -80,6 +80,33 @@ public class TestResultMethodBindingTest {
 
     assertThat(result.getName()).isEqualTo("testMethod on shard-3");
     assertThat(result.getInstanceName()).isEqualTo("shard-3");
+  }
+
+  /**
+   * Only the last branch renders the instance into the instance name. An {@link ITest} names the
+   * result itself, so an overridden toString() on the same object must not reach the instance name.
+   */
+  @Test
+  public void anITestInstanceKeepsTheClassAsItsInstanceName() {
+    ITestNGMethod method = methodBoundToAClass();
+    when(method.getInstance()).thenReturn(new RenderingITest());
+
+    TestResult result = TestResult.newTestResultFor(method);
+
+    assertThat(result.getName()).isEqualTo("named by ITest");
+    assertThat(result.getInstanceName()).isEqualTo("testClass");
+  }
+
+  private static class RenderingITest implements ITest {
+    @Override
+    public String getTestName() {
+      return "named by ITest";
+    }
+
+    @Override
+    public String toString() {
+      return "shard-3";
+    }
   }
 
   private static ITestNGMethod methodBoundToAClass() {

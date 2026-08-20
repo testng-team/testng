@@ -1,13 +1,10 @@
 package org.testng.reporters.jq;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
-import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.internal.Utils;
@@ -147,13 +144,10 @@ public class TimesPanel extends BaseMultiSuitePanel {
     if (!testsInParallel) {
       return result;
     }
-    Optional<ITestContext> maxValue =
-        suite.getResults().values().stream()
-            .map(ISuiteResult::getTestContext)
-            .max(Comparator.comparingLong(Utils::durationOf));
-    if (maxValue.isPresent()) {
-      return Utils.durationOf(maxValue.get());
-    }
-    return result;
+    return suite.getResults().values().stream()
+        .map(ISuiteResult::getTestContext)
+        .mapToLong(Utils::durationOf)
+        .max()
+        .orElse(result);
   }
 }

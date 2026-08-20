@@ -469,8 +469,9 @@ public final class Utils {
   /**
    * The test context a result was produced in.
    *
-   * <p>{@link ITestResult#getTestContext()} answers {@code null} for a result built outside a run
-   * -- the invoker always passes the context it is running under. Use this rather than
+   * <p>{@link ITestResult#getTestContext()} answers {@code null} for a result built outside a run,
+   * and on the parameter carrier a configuration method is handed, which is built before the
+   * invocation is reported. Every result a reporter sees has one. Use this rather than
    * dereferencing the accessor, so that a context-less result is named at the boundary.
    *
    * @param result The result to read the context of.
