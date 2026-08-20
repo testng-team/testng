@@ -16,6 +16,7 @@ Fixed: org.testng.internal.TestNGMethod.clone() no longer throws a NullPointerEx
 Fixed: A configuration method that is not a @BeforeGroups or @AfterGroups method now reports an empty array from getBeforeGroups() and getAfterGroups() instead of null. TestNGMethodFinder wrote null into fields whose declaration says {}, and MethodGroupsHelper iterates them without testing (Julien Herr)
 Fixed: Sorting test methods by index no longer throws a NullPointerException when a <test> tag carries no name (Julien Herr)
 Changed: org.testng is now declared @NullMarked, so every member of the published API states whether it can answer null. Thirty-seven members widen to @Nullable because their implementations already answered null, and the rest promise not to. This is binary compatible and source compatible for Java; a Kotlin caller that dereferences one of the thirty-seven without testing it stops compiling. They are listed under Possible backward incompatible changes below (Julien Herr)
+Changed: org.testng is now declared @NullMarked, so every member of the published API states whether it can answer null. The members that widen to @Nullable do so because their implementations already answered null, and the rest promise not to. This is binary compatible and source compatible for Java; a Kotlin caller that dereferences one of them without testing it stops compiling. They are listed under Possible backward incompatible changes below (Julien Herr)
 Fixed: org.testng.internal.MethodSorting.INSTANCES orders two invocations of the same method on different @Factory instances instead of leaving the decision to a hash code comparison. Its identity branch asked IInstanceIdentity.isIdentityAware about the ids it had just resolved rather than about the methods, which could never hold, so the branch had never run (Julien Herr)
 Fixed: org.testng.IAnnotationTransformer.transform(IFactoryAnnotation, Method) is now declared to accept a null method, which is what TestNG has always passed for a @Factory annotation found on a constructor (Julien Herr)
 Changed: org.testng.internal.MethodInstance.SORT_BY_INDEX no longer throws a NullPointerException when a method a @Factory produced belongs to no <test> tag. It answers that the two methods cannot be compared, which is what the neighbouring branch already answers for a missing <class> (Julien Herr)
@@ -25,18 +26,22 @@ Fixed: A <package> tag that carries no name attribute is now reported the way an
 
 Possible backward incompatible changes:
 
-- org.testng is declared @NullMarked, and thirty-seven members of it answer @Nullable because that
-  is what their implementations already answered. ITestNGMethod.getTestClass, getInstance, getId,
-  getDescription, getMissingGroup, getXmlTest, getRetryAnalyzer, getDataProviderMethod and the
-  deprecated getFactoryMethodParamsInfo; ITestResult.getMethod, getName, getTestName, getInstance,
-  getInstanceName, getHost, getThrowable and getTestContext; IClass.getXmlTest, getXmlClass,
-  getTestName and getInstanceHashCodes; IAttributes.getAttribute and removeAttribute;
-  IDataProviderMethod.getInstance and getMethod; IMethodInstance.getInstance;
-  ITestClassFinder.getIClass; ITestNGListenerFactory.createListener;
-  ITestObjectFactory.newInstance(Constructor, Object...); ITestContext.getName, getEndDate,
-  getHost and getInjectorFactory; ISuite.getHost, getParameter, getParentInjector and
-  getObjectFactory. A Java caller is unaffected. A Kotlin caller that dereferences one of them
-  without testing it stops compiling, and must add a test or a !!.
+- org.testng is declared @NullMarked, and these members answer @Nullable because that is what their
+  implementations already answered. A Java caller is unaffected. A Kotlin caller that dereferences
+  one of them without testing it stops compiling, and must add a test or a !!.
+  - ITestNGMethod: getTestClass, getInstance, getId, getDescription, getMissingGroup, getXmlTest,
+    getRetryAnalyzer, getDataProviderMethod and the deprecated getFactoryMethodParamsInfo
+  - ITestResult: getMethod, getName, getTestName, getInstance, getInstanceName, getHost,
+    getThrowable and getTestContext
+  - IClass: getXmlTest, getXmlClass, getTestName and getInstanceHashCodes
+  - IAttributes: getAttribute and removeAttribute
+  - IDataProviderMethod: getInstance and getMethod
+  - IMethodInstance: getInstance
+  - ITestClassFinder: getIClass
+  - ITestNGListenerFactory: createListener
+  - ITestObjectFactory: newInstance(Constructor, Object...)
+  - ITestContext: getName, getEndDate, getHost and getInjectorFactory
+  - ISuite: getHost, getParameter, getParentInjector and getObjectFactory
 - The same mark widens the parameters of IAnnotationTransformer.transform for ITestAnnotation and
   IConfigurationAnnotation -- testClass, testConstructor and testMethod, of which the javadoc has
   always said only one is non-null -- of the four IConfigurationListener callbacks that take an
