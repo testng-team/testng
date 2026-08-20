@@ -25,35 +25,7 @@ public enum MethodSorting implements Comparator<ITestNGMethod> {
   INSTANCES("instances") {
     @Override
     public int compare(ITestNGMethod o1, ITestNGMethod o2) {
-      Comparator<ITestNGMethod> comparator =
-          Comparator.comparingInt(ITestNGMethod::getPriority)
-              .thenComparing(method -> method.getRealClass().getName())
-              .thenComparing(ITestNGMethod::getMethodName)
-              .thenComparing(Object::toString)
-              .thenComparing(
-                  method ->
-                      method
-                          .getFactoryInstance()
-                          .map(IFactoryInstance::getParameters)
-                          .map(Arrays::toString)
-                          .orElse(""))
-              .thenComparing(this::objectEquality);
-      return comparator.compare(o1, o2);
-    }
-
-    private int objectEquality(ITestNGMethod a, ITestNGMethod b) {
-      // Use the method's own per-instance id rather than its (possibly lazy) instance, so that
-      // sorting never forces a lazy @Factory instance to be created during collection.
-      Object one = IInstanceIdentity.getInstanceId(a);
-      Object two = IInstanceIdentity.getInstanceId(b);
-      // getInstanceId answers the UUID for an identity aware method and the method itself
-      // otherwise, so the test belongs on what came back. Testing the inputs for
-      // IInstanceIdentity, as this did, could never hold: a UUID is not one, and a method that
-      // is one never reaches this branch as itself.
-      if (one instanceof UUID && two instanceof UUID) {
-        return ((UUID) one).compareTo((UUID) two);
-      }
-      return Integer.compare(Objects.hashCode(one), Objects.hashCode(two));
+      return BY_INSTANCE.compare(o1, o2);
     }
 
     @Override
@@ -72,6 +44,44 @@ public enum MethodSorting implements Comparator<ITestNGMethod> {
       return "No_Sorting";
     }
   };
+
+  /**
+   * The order {@link #INSTANCES} applies, held once rather than rebuilt on every comparison: a
+   * comparator chain allocates one wrapper per stage, and a sort asks for one comparison per pair.
+   *
+   * <p>It lives on the enum rather than inside the {@code INSTANCES} body because a constant body
+   * is an anonymous class, which cannot hold a static member before Java 16. Only {@link
+   * #compare(ITestNGMethod, ITestNGMethod)} reads it, so the constants being initialised before the
+   * static fields does not matter.
+   */
+  private static final Comparator<ITestNGMethod> BY_INSTANCE =
+      Comparator.comparingInt(ITestNGMethod::getPriority)
+          .thenComparing(method -> method.getRealClass().getName())
+          .thenComparing(ITestNGMethod::getMethodName)
+          .thenComparing(Object::toString)
+          .thenComparing(
+              method ->
+                  method
+                      .getFactoryInstance()
+                      .map(IFactoryInstance::getParameters)
+                      .map(Arrays::toString)
+                      .orElse(""))
+          .thenComparing(MethodSorting::objectEquality);
+
+  private static int objectEquality(ITestNGMethod a, ITestNGMethod b) {
+    // Use the method's own per-instance id rather than its (possibly lazy) instance, so that
+    // sorting never forces a lazy @Factory instance to be created during collection.
+    Object one = IInstanceIdentity.getInstanceId(a);
+    Object two = IInstanceIdentity.getInstanceId(b);
+    // getInstanceId answers the UUID for an identity aware method and the method itself
+    // otherwise, so the test belongs on what came back. Testing the inputs for
+    // IInstanceIdentity, as this did, could never hold: a UUID is not one, and a method that
+    // is one never reaches this branch as itself.
+    if (one instanceof UUID && two instanceof UUID) {
+      return ((UUID) one).compareTo((UUID) two);
+    }
+    return Integer.compare(Objects.hashCode(one), Objects.hashCode(two));
+  }
 
   MethodSorting(String value) {
     this.value = value;
