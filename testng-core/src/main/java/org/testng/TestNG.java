@@ -48,6 +48,7 @@ import org.testng.internal.objects.Dispenser;
 import org.testng.internal.objects.IObjectDispenser;
 import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.internal.objects.pojo.CreationAttributes;
+import org.testng.internal.reporters.ParameterSnapshots;
 import org.testng.internal.thread.graph.SuiteWorkerFactory;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.EmailableReporter2;
@@ -1144,7 +1145,12 @@ public class TestNG {
 
     if (null != suiteRunners) {
       suiteRunners.forEach(ObjectBag::cleanup);
-      generateReports(suiteRunners);
+      try {
+        generateReports(suiteRunners);
+      } finally {
+        // The reporters are the last thing that can read a reporting snapshot.
+        suiteRunners.forEach(ParameterSnapshots::detachFrom);
+      }
     }
 
     runExecutionListeners(false /* finish */);

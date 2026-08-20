@@ -775,6 +775,8 @@
   <test name="Reporters">
     <classes>
       <class name="org.testng.reporters.jq.TimesPanelTest" />
+      <class name="org.testng.internal.reporters.ParameterSnapshotsTest" />
+      <class name="org.testng.internal.reporters.ParameterSnapshotLifecycleTest" />
     </classes>
   </test>
 

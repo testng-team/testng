@@ -9,68 +9,55 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
-import org.testng.IConfigurationListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.Utils;
+import org.testng.internal.reporters.ParameterSnapshot;
+import org.testng.internal.reporters.ParameterSnapshots;
 
 /** A simple reporter that collects the results and prints them on standard out. */
-public class TextReporter implements ITestListener, IConfigurationListener {
+public class TextReporter implements ITestListener {
 
   private static final String LINE = "\n===============================================\n";
 
   private final int m_verbose;
   private final String m_testName;
-  private final ParameterSnapshots m_parameterSnapshots = new ParameterSnapshots();
 
   public TextReporter(String testName, int verbose) {
     m_testName = testName;
     m_verbose = verbose;
   }
 
-  @Override
-  public void onTestStart(ITestResult tr) {
-    captureParameters(tr);
-  }
-
-  @Override
-  public void beforeConfiguration(ITestResult tr) {
-    captureParameters(tr);
-  }
-
-  @Override
-  public void onConfigurationSuccess(ITestResult tr) {
-    // Only failed and skipped configurations are listed, so this one is never going to be printed.
-    m_parameterSnapshots.discard(tr);
-  }
-
   /**
-   * Both lifecycle points run before the method body does, so what is captured here is what the
-   * invocation started with, whatever it later does to those values.
+   * Below verbose 2 this reporter prints nothing, so it asks for the suite's snapshots only when it
+   * will read them.
+   *
+   * <p>Early enough: a context starts before its own {@code @BeforeTest} configurations and before
+   * any of its invocations. The only thing announced earlier is a suite level configuration method,
+   * and those are handed no injected value at all -- only {@code @Parameters} strings, which read
+   * the same whenever they are rendered.
    */
-  private void captureParameters(ITestResult tr) {
+  @Override
+  public void onStart(ITestContext context) {
     if (logsResults()) {
-      // Otherwise this reporter prints nothing, and rendering a value would run the user's
-      // toString() for output nobody asked for.
-      m_parameterSnapshots.capture(tr);
+      ParameterSnapshots snapshots = ParameterSnapshots.of(context.getSuite());
+      if (snapshots != null) {
+        snapshots.requestCapture();
+      }
     }
   }
 
   @Override
   public void onFinish(ITestContext context) {
-    try {
-      if (logsResults()) {
-        logResults(context);
-      }
-    } finally {
-      m_parameterSnapshots.discard(context);
+    if (logsResults()) {
+      logResults(context);
     }
   }
 
-  /** Whether this reporter is verbose enough to print anything, and so to capture anything. */
+  /** Whether this reporter is verbose enough to print anything. */
   private boolean logsResults() {
     return m_verbose >= 2;
   }
@@ -80,6 +67,9 @@ public class TextReporter implements ITestListener, IConfigurationListener {
   }
 
   private void logResults(ITestContext context) {
+    // The suite's snapshots, resolved once: every result of this context reads the same store.
+    ParameterSnapshots snapshots = ParameterSnapshots.of(context.getSuite());
+
     // Log Text
     Set<ITestResult> results = context.getFailedConfigurations().getAllResults();
     for (ITestResult tr : results) {
@@ -95,7 +85,7 @@ public class TextReporter implements ITestListener, IConfigurationListener {
           tr.getMethod().getDescription(),
           tr.getMethod().getAttributes(),
           stackTrace,
-          reportedParametersOf(tr));
+          reportedParametersOf(snapshots, tr));
     }
 
     results = context.getSkippedConfigurations().getAllResults();
@@ -106,12 +96,12 @@ public class TextReporter implements ITestListener, IConfigurationListener {
           tr.getMethod().getDescription(),
           tr.getMethod().getAttributes(),
           null,
-          reportedParametersOf(tr));
+          reportedParametersOf(snapshots, tr));
     }
 
     results = context.getPassedTests().getAllResults();
     for (ITestResult tr : results) {
-      logResult("PASSED", tr, null);
+      logResult(snapshots, "PASSED", tr, null);
     }
 
     results = context.getFailedTests().getAllResults();
@@ -122,7 +112,7 @@ public class TextReporter implements ITestListener, IConfigurationListener {
         stackTrace = Utils.shortStackTrace(ex, false);
       }
 
-      logResult("FAILED", tr, stackTrace);
+      logResult(snapshots, "FAILED", tr, stackTrace);
     }
 
     results = context.getSkippedTests().getAllResults();
@@ -137,8 +127,8 @@ public class TextReporter implements ITestListener, IConfigurationListener {
       }
     }
 
-    logExceptions("SKIPPED", skippedTests);
-    logExceptions("RETRIED", retriedTests);
+    logExceptions(snapshots, "SKIPPED", skippedTests);
+    logExceptions(snapshots, "RETRIED", retriedTests);
 
     List<ITestNGMethod> ft = resultsToMethods(context.getFailedTests().getAllResults());
     StringBuilder logBuf = new StringBuilder(LINE);
@@ -167,37 +157,48 @@ public class TextReporter implements ITestListener, IConfigurationListener {
     logResult("", logBuf.toString());
   }
 
-  private void logResult(String status, ITestResult tr, @Nullable String stackTrace) {
+  private void logResult(
+      @Nullable ParameterSnapshots snapshots,
+      String status,
+      ITestResult tr,
+      @Nullable String stackTrace) {
     logResult(
         status,
         tr.getMethod().getQualifiedName(),
         tr.getMethod().getDescription(),
         tr.getMethod().getAttributes(),
         stackTrace,
-        reportedParametersOf(tr));
+        reportedParametersOf(snapshots, tr));
   }
 
   /**
-   * The values an invocation ran with, as this reporter saw them when it started.
+   * The values an invocation ran with, as TestNG captured them when it started.
    *
    * <p>Falls back to the result's own representation for the invocations announced before they were
    * given their values, which leaves nothing to capture: the results {@code
    * reportAllDataDrivenTestsAsSkipped} parameterizes after announcing them, and a configuration
    * method skipped before its parameters were computed. Those keep reading through {@link
-   * org.testng.ITestResult#getParameters()}, exactly as every result did before.
+   * org.testng.ITestResult#getParameters()}, exactly as every result did before -- as does a result
+   * from a suite that has no snapshots at all.
    */
-  private @Nullable ParameterSnapshot reportedParametersOf(ITestResult tr) {
-    ParameterSnapshot captured = m_parameterSnapshots.find(tr);
+  private @Nullable ParameterSnapshot reportedParametersOf(
+      @Nullable ParameterSnapshots snapshots, ITestResult tr) {
+    ParameterSnapshot captured = snapshots != null ? snapshots.find(tr) : null;
     return captured != null
         ? captured
         : ParameterSnapshot.of(tr.getParameters(), tr.getMethod().getParameterTypes());
   }
 
-  private void logExceptions(String status, List<ITestResult> results) {
+  private void logExceptions(
+      @Nullable ParameterSnapshots snapshots, String status, List<ITestResult> results) {
     results.forEach(
         tr -> {
           Throwable throwable = tr.getThrowable();
-          logResult(status, tr, throwable != null ? Utils.shortStackTrace(throwable, false) : null);
+          logResult(
+              snapshots,
+              status,
+              tr,
+              throwable != null ? Utils.shortStackTrace(throwable, false) : null);
         });
   }
 

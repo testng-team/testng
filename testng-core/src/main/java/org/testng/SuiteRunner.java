@@ -16,6 +16,8 @@ import org.testng.internal.invokers.IInvocationStatus;
 import org.testng.internal.invokers.IInvoker;
 import org.testng.internal.invokers.InvokedMethod;
 import org.testng.internal.objects.ObjectFactoryImpl;
+import org.testng.internal.reporters.ParameterSnapshotRecorder;
+import org.testng.internal.reporters.ParameterSnapshots;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
@@ -183,6 +185,10 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
         Optional.ofNullable(classListeners).orElse(Collections.emptyList())) {
       this.classListeners.put(classListener.getClass(), classListener);
     }
+    // The suite owns the reporting snapshots of everything it runs; see ParameterSnapshots.
+    ParameterSnapshotRecorder parameterSnapshotRecorder =
+        new ParameterSnapshotRecorder(ParameterSnapshots.attachTo(this));
+
     ITestRunnerFactory iTestRunnerFactory = buildRunnerFactory(comparator);
 
     // Order the <test> tags based on their order of appearance in testng.xml
@@ -197,6 +203,11 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
               invokedMethodListeners.values(),
               new ArrayList<>(this.classListeners.values()),
               this.holder);
+
+      // One recorder for the whole suite, on every runner. Registered through the narrow methods
+      // rather than addListener(), which would fan it back out over the suite.
+      tr.addTestListener(parameterSnapshotRecorder);
+      tr.addConfigurationListener(parameterSnapshotRecorder);
 
       //
       // Install the method interceptor, if any was passed
