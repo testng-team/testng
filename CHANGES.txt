@@ -1,5 +1,6 @@
 Current (7.13.0)
 Fixed: GITHUB-1994: The XmlTest injected into a configuration or test method is now kept by reference in ITestResult.getParameters() instead of being cloned. XmlTest.clone() builds its copy with new XmlTest(suite), and that constructor registers the copy in the suite, so snapshotting the parameter appended a phantom <test> to the suite that was running -- once per invocation that received one. XmlTest.clone() itself is unchanged, so an IAlterSuiteListener can still use it to add a test. The reflective clone-if-Cloneable rule that backs the historical ITestResult parameter representation moved out of TestResult into its own internal component, unchanged for every other parameter type (Julien Herr)
+Changed: org.testng.ITestContext.getInjectorFactory() answers the new IInjectorFactory.NONE token instead of null for a context that names no factory, so it no longer answers null at all. Three GuiceHelper signatures carried the absence down to an assertion whose message named a case it could not see: the only factories TestNG builds come from Configuration, which initialises its own and never clears it (Julien Herr)
 Changed: org.testng.ITestResult.getMethod() and getName() no longer answer null, and setTestName no longer accepts null. The only result that had no method was the parameter carrier the invoker built before it knew which invocation it was reporting, and that carrier now carries the method from construction. Thirty-eight places in TestNG asserted the method was there through org.testng.internal.Utils.requireMethodOf and not one of them tested it; that helper is removed, its assertion having become the compiler's job (Julien Herr)
 Fixed: The result an invocation starts from carries its test method from the moment it is created, rather than being handed one by ConfigInvoker a few statements later. A @BeforeMethod that declares an ITestResult parameter is given that carrier, and used to see getName() and getInstanceName() answer null; both now answer what the reported result answers. The carrier still knows nothing about the outcome: its status stays CREATED, its millis stay zero and it carries no test context. In memory friendly mode it keeps holding the live method rather than the lightweight snapshot, because that is the method a configuration method reaches through it to mutate (Julien Herr)
 Changed: A <test> built without going through a constructor -- which is how the YAML parser builds one -- now carries the same "Default XmlTest name <uuid>" the XML and the programmatic paths have always had, so org.testng.xml.XmlTest.getName() and org.testng.ITestContext.getName() no longer answer null. Nineteen places dereferenced that name: two of them keyed a ConcurrentHashMap in FailedReporter, which throws on a null key, and XmlSuite.toXml() fed it to Properties.setProperty, which rejects a null value. Two nameless tests in one YAML suite used to be rejected as duplicates named "null"; they now carry different names and both run (Julien Herr)
@@ -30,6 +31,13 @@ Fixed: A <package> tag that carries no name attribute is now reported the way an
 
 Possible backward incompatible changes:
 
+- org.testng.ITestContext.getInjectorFactory() is declared non-null and its default answers
+  IInjectorFactory.NONE. Code testing the result for null must test for the token instead. A custom
+  ITestContext that never overrode it used to fail a @Guice test class with a NullPointerException
+  naming the missing factory, and now fails it with the UnsupportedOperationException
+  IInjectorFactory.getInjector raises by default; a context that names a factory, which is every
+  context TestNG itself builds, is unaffected. A Kotlin class implementing ITestContext whose
+  getInjectorFactory() override answers a nullable type stops compiling.
 - org.testng.ITestResult.getMethod() and getName() are declared non-null and setTestName(String) no
   longer accepts null. A Java caller reading either is unaffected; one passing null to setTestName
   used to leave the result nameless and now gets a NullPointerException. A Kotlin class implementing
@@ -63,7 +71,7 @@ Possible backward incompatible changes:
   - ITestClassFinder: getIClass
   - ITestNGListenerFactory: createListener
   - ITestObjectFactory: newInstance(Constructor, Object...)
-  - ITestContext: getEndDate, getHost and getInjectorFactory
+  - ITestContext: getEndDate and getHost
   - ISuite: getHost, getParameter, getParentInjector and getObjectFactory
 - The same mark widens the parameters of IAnnotationTransformer.transform for ITestAnnotation and
   IConfigurationAnnotation -- testClass, testConstructor and testMethod, of which the javadoc has
