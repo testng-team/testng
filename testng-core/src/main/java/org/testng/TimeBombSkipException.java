@@ -26,7 +26,7 @@ public class TimeBombSkipException extends SkipException {
 
   private static final String FORMAT = "yyyy/MM/dd";
   private final SimpleDateFormat sdf = new SimpleDateFormat(FORMAT);
-  private @Nullable Calendar m_expireDate;
+  private final Calendar m_expireDate;
   private DateFormat m_inFormat = sdf;
   private DateFormat m_outFormat = sdf;
 
@@ -53,7 +53,7 @@ public class TimeBombSkipException extends SkipException {
     super(msg);
     m_inFormat = new SimpleDateFormat(format);
     m_outFormat = new SimpleDateFormat(format);
-    initExpireDate(expirationDate);
+    m_expireDate = expireDateOf(expirationDate);
   }
 
   /**
@@ -65,7 +65,7 @@ public class TimeBombSkipException extends SkipException {
    */
   public TimeBombSkipException(String msg, String date) {
     super(msg);
-    initExpireDate(date);
+    m_expireDate = expireDateOf(date);
   }
 
   /**
@@ -94,7 +94,7 @@ public class TimeBombSkipException extends SkipException {
     super(msg);
     m_inFormat = new SimpleDateFormat(inFormat);
     m_outFormat = new SimpleDateFormat(outFormat);
-    initExpireDate(date);
+    m_expireDate = expireDateOf(date);
   }
 
   /**
@@ -109,7 +109,7 @@ public class TimeBombSkipException extends SkipException {
    */
   public TimeBombSkipException(String msg, Date expirationDate, Throwable cause) {
     super(msg, cause);
-    initExpireDate(expirationDate);
+    m_expireDate = expireDateOf(expirationDate);
   }
 
   /**
@@ -127,7 +127,7 @@ public class TimeBombSkipException extends SkipException {
     super(msg, cause);
     m_inFormat = new SimpleDateFormat(format);
     m_outFormat = new SimpleDateFormat(format);
-    initExpireDate(expirationDate);
+    m_expireDate = expireDateOf(expirationDate);
   }
 
   /**
@@ -142,7 +142,7 @@ public class TimeBombSkipException extends SkipException {
    */
   public TimeBombSkipException(String msg, String date, Throwable cause) {
     super(msg, cause);
-    initExpireDate(date);
+    m_expireDate = expireDateOf(date);
   }
 
   /**
@@ -178,18 +178,18 @@ public class TimeBombSkipException extends SkipException {
     super(msg, cause);
     m_inFormat = new SimpleDateFormat(inFormat);
     m_outFormat = new SimpleDateFormat(outFormat);
-    initExpireDate(date);
+    m_expireDate = expireDateOf(date);
   }
 
-  private void initExpireDate(Date expireDate) {
-    m_expireDate = Calendar.getInstance();
-    m_expireDate.setTime(expireDate);
+  private static Calendar expireDateOf(Date expireDate) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(expireDate);
+    return calendar;
   }
 
-  private void initExpireDate(String date) {
+  private Calendar expireDateOf(String date) {
     try {
-      Date d = m_inFormat.parse(date);
-      initExpireDate(d);
+      return expireDateOf(m_inFormat.parse(date));
     } catch (ParseException pex) {
       throw new TestNGException("Cannot parse date:" + date + " using pattern: " + m_inFormat, pex);
     }
@@ -202,10 +202,6 @@ public class TimeBombSkipException extends SkipException {
 
   @Override
   public boolean isSkip() {
-    if (null == m_expireDate) {
-      return false;
-    }
-
     try {
       Calendar now = Calendar.getInstance();
       Date nowDate = m_inFormat.parse(m_inFormat.format(now.getTime()));
@@ -224,7 +220,7 @@ public class TimeBombSkipException extends SkipException {
     } else {
       return super.getMessage()
           + "; Test must have been enabled by: "
-          + m_outFormat.format(requireExpireDate().getTime());
+          + m_outFormat.format(m_expireDate.getTime());
     }
   }
 

@@ -506,6 +506,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
   /** @return the test results that apply to one of the instances of the testMethod. */
   private Set<ITestResult> keepSameInstances(ITestNGMethod method, Set<ITestResult> results) {
+    Class<?> methodRealClass = Utils.requireTestClassOf(method).getRealClass();
     return results
         .parallelStream()
         .filter(
@@ -520,10 +521,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               // Keep this instance if
               // 1) It's on a different class or
               // 2) It's on the same class and on the same instance
-              boolean unEqualTestClasses =
-                  !r.getTestClass()
-                      .getRealClass()
-                      .equals(Utils.requireTestClassOf(method).getRealClass());
+              boolean unEqualTestClasses = !r.getTestClass().getRealClass().equals(methodRealClass);
               boolean sameInstance = instance == method.getInstance();
               return sameInstance || unEqualTestClasses;
             })

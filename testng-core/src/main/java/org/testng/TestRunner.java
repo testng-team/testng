@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.Nullable;
@@ -624,11 +623,12 @@ public class TestRunner
     }
   }
 
-  /** Both are dropped by {@link #forgetHeavyReferencesIfNeeded()} once the run is over. */
+  /** Dropped by {@link #forgetHeavyReferencesIfNeeded()} once the run is over. */
   private ClassMethodMap requireClassMethodMap() {
     return Objects.requireNonNull(m_classMethodMap, "the run still holds its method map");
   }
 
+  /** Dropped by {@link #forgetHeavyReferencesIfNeeded()} once the run is over. */
   private ConfigurationGroupMethods requireGroupMethods() {
     return Objects.requireNonNull(m_groupMethods, "the run still holds its group methods");
   }
@@ -691,16 +691,10 @@ public class TestRunner
     // removing methods would cause the graph never to terminate (because it would expect
     // termination from methods that never get invoked).
     ITestNGMethod[] interceptedOrder = intercept(getAllTestMethods());
-    AtomicReference<IDynamicGraph<ITestNGMethod>> reference = new AtomicReference<>();
-    TimeUtils.computeAndShowTime(
-        "DynamicGraphHelper.createDynamicGraph()",
-        () -> {
-          IDynamicGraph<ITestNGMethod> ref =
-              DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
-          reference.set(ref);
-        });
     IDynamicGraph<ITestNGMethod> graph =
-        Objects.requireNonNull(reference.get(), "the run computed its dependency graph");
+        TimeUtils.computeAndShowTime(
+            "DynamicGraphHelper.createDynamicGraph()",
+            () -> DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest()));
 
     for (ITestNGMethod each : interceptedOrder) {
       if (each instanceof BaseTestMethod) {
@@ -1155,7 +1149,7 @@ public class TestRunner
     }
   }
 
-  private void setExitCodeListener(@Nullable ITestListener exitCodeListener) {
+  private void setExitCodeListener(ITestListener exitCodeListener) {
     this.exitCodeListener = exitCodeListener;
   }
 

@@ -106,7 +106,8 @@ public class ClassImpl implements IClass, IObject {
           factory = m_testContext.getSuite().getObjectFactory();
         }
         IObjectDispenser dispenser =
-            Dispenser.newInstance(requireNonNull(factory, "a suite carries an object factory"));
+            Dispenser.newInstance(
+                requireNonNull(factory, "a running suite carries an object factory"));
         BasicAttributes basic = new BasicAttributes(this, null);
         DetailedAttributes detailed = newDetailedAttributes(create, errMsgPrefix);
         CreationAttributes attributes = new CreationAttributes(m_testContext, basic, detailed);

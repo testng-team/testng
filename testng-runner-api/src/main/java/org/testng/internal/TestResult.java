@@ -139,7 +139,7 @@ public class TestResult implements ITestResult {
       }
       return;
     }
-    String boundName = Utils.requireTestClassOf(method).getTestName();
+    String boundName = boundClass.getTestName();
     if (boundName != null) {
       m_name = boundName;
       return;

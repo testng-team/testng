@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.TimeZone;
+import java.util.function.Supplier;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 
@@ -40,9 +41,26 @@ public final class TimeUtils {
    * @param task - A {@link Task} that represents the task to be executed.
    */
   public static void computeAndShowTime(String msg, Task task) {
+    computeAndShowTime(
+        msg,
+        () -> {
+          task.execute();
+          return null;
+        });
+  }
+
+  /**
+   * Helper method that can be used to compute the time a task that answers something takes.
+   *
+   * @param msg - A user friendly message to be shown in the logs.
+   * @param task - The task to be executed.
+   * @param <T> - What the task answers.
+   * @return - Whatever the task answered.
+   */
+  public static <T> T computeAndShowTime(String msg, Supplier<T> task) {
     Instant start = Instant.now();
     try {
-      task.execute();
+      return task.get();
     } finally {
       Instant finish = Instant.now();
       long timeElapsed = Duration.between(start, finish).toMillis();

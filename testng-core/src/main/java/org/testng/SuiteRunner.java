@@ -124,20 +124,19 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     List<IMethodInterceptor> localMethodInterceptors =
         Optional.ofNullable(methodInterceptors).orElse(new ArrayList<>());
     setOutputDir(outputDir);
-    if (configuration.getObjectFactory() == null) {
-      configuration.setObjectFactory(new ObjectFactoryImpl());
+    ITestObjectFactory declaredFactory = configuration.getObjectFactory();
+    if (declaredFactory == null) {
+      declaredFactory = new ObjectFactoryImpl();
+      configuration.setObjectFactory(declaredFactory);
     }
-    ITestObjectFactory configuredFactory =
-        Objects.requireNonNull(
-            configuration.getObjectFactory(), "the configuration carries an object factory");
+    // The anonymous factory below closes over it, so it has to be effectively final.
+    final ITestObjectFactory configuredFactory = declaredFactory;
     if (suite.getObjectFactoryClass() == null) {
       objectFactory = configuredFactory;
     } else {
       boolean create = !configuredFactory.getClass().equals(suite.getObjectFactoryClass());
       final ITestObjectFactory suiteObjectFactory;
       if (create) {
-        // Dont keep creating the object factory repeatedly since our current object factory
-        // Was already created based off of a suite level object factory.
         suiteObjectFactory =
             Objects.requireNonNull(
                 configuredFactory.newInstance(suite.getObjectFactoryClass()),

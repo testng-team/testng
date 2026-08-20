@@ -843,7 +843,9 @@ public class Parameters {
                       dataProviderMethod.getMethod(),
                       "the data provider still holds its method while it yields rows"),
                   testMethod,
-                  methodParams.requireContext(),
+                  Objects.requireNonNull(
+                      methodParams.context,
+                      "a data provider is invoked from inside a test context"),
                   fedInstance,
                   annotationFinder);
           shouldRetry = false;
@@ -1007,14 +1009,6 @@ public class Parameters {
       context = ctx;
       parameterValues = pv;
       testResult = tr;
-    }
-
-    /**
-     * The test context, for the callees that dereference it. The two-argument constructor builds
-     * parameters for a constructor injection, which happens before any context exists.
-     */
-    ITestContext requireContext() {
-      return Objects.requireNonNull(context, "these method parameters carry no test context");
     }
   }
 

@@ -67,7 +67,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   private final boolean hasMoreInvocation;
   private final Class<? extends IRetryAnalyzer> retryAnalyzerClass;
   private final String toString;
-  private final IDataProviderMethod dataProviderMethod;
+  private final @Nullable IDataProviderMethod dataProviderMethod;
   private final int hashCode;
   private final Class<?>[] parameterTypes;
 
@@ -122,44 +122,34 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
     toString = iTestNGMethod.toString();
     IDataProviderMethod dp = iTestNGMethod.getDataProviderMethod();
     dataProviderMethod =
-        new IDataProviderMethod() {
-          @Override
-          public @Nullable Object getInstance() {
-            if (dp == null) {
-              return null;
-            }
-            return dp.getInstance();
-          }
+        dp == null
+            ? null
+            : new IDataProviderMethod() {
+              @Override
+              public @Nullable Object getInstance() {
+                return dp.getInstance();
+              }
 
-          @Override
-          public Method getMethod() {
-            throw new UnsupportedOperationException("method() retrieval not supported");
-          }
+              @Override
+              public Method getMethod() {
+                throw new UnsupportedOperationException("method() retrieval not supported");
+              }
 
-          @Override
-          public String getName() {
-            if (dp == null) {
-              return "";
-            }
-            return dp.getName();
-          }
+              @Override
+              public String getName() {
+                return dp.getName();
+              }
 
-          @Override
-          public boolean isParallel() {
-            if (dp == null) {
-              return false;
-            }
-            return dp.isParallel();
-          }
+              @Override
+              public boolean isParallel() {
+                return dp.isParallel();
+              }
 
-          @Override
-          public List<Integer> getIndices() {
-            if (dp == null) {
-              return new ArrayList<>();
-            }
-            return dp.getIndices();
-          }
-        };
+              @Override
+              public List<Integer> getIndices() {
+                return dp.getIndices();
+              }
+            };
     hashCode = iTestNGMethod.hashCode();
     parameterTypes = iTestNGMethod.getConstructorOrMethod().getParameterTypes();
   }
@@ -346,9 +336,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
 
   @Override
   public boolean canRunFromClass(IClass testClass) {
-    return Objects.requireNonNull(this.testClass, "a scheduled method is bound to a class")
-        .getRealClass()
-        .isAssignableFrom(testClass.getRealClass());
+    return Utils.requireTestClassOf(this).getRealClass().isAssignableFrom(testClass.getRealClass());
   }
 
   @Override
@@ -516,7 +504,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public IDataProviderMethod getDataProviderMethod() {
+  public @Nullable IDataProviderMethod getDataProviderMethod() {
     return dataProviderMethod;
   }
 
