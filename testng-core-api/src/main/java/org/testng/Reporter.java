@@ -75,13 +75,13 @@ public class Reporter {
 
   private static final AutoCloseableLock lockForLogging = new AutoCloseableLock();
 
-  private static void log(String s, ITestResult m) {
+  private static void log(String s, @Nullable ITestResult m) {
     try (AutoCloseableLock ignore = lockForLogging.lock()) {
       logToReports(s, m);
     }
   }
 
-  private static void logToReports(String s, ITestResult m) {
+  private static void logToReports(String s, @Nullable ITestResult m) {
     // Escape for the HTML reports.
     if (m_escapeHtml) {
       s = Strings.escapeHtml(s);
@@ -166,8 +166,8 @@ public class Reporter {
     }
   }
 
-  /** @return the current test result. */
-  public static ITestResult getCurrentTestResult() {
+  /** @return the current test result, or {@code null} outside an invocation. */
+  public static @Nullable ITestResult getCurrentTestResult() {
     return m_currentTestResult.get();
   }
 

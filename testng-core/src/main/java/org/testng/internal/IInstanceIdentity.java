@@ -29,11 +29,6 @@ public interface IInstanceIdentity {
   UUID getInstanceId();
 
   /**
-   * @param object - The object to read an instance id from.
-   * @return - The object's instance id when it is identity aware, {@link #NO_INSTANCE} when it is
-   *     identity aware but carries no instance, and the object itself otherwise.
-   */
-  /**
    * @param object - The object to inspect.
    * @return - <code>true</code> when the object carries an instance, that is when {@link
    *     #getInstanceId(Object)} answers something other than {@link #NO_INSTANCE}.
@@ -42,6 +37,11 @@ public interface IInstanceIdentity {
     return getInstanceId(object) != NO_INSTANCE;
   }
 
+  /**
+   * @param object - The object to read an instance id from.
+   * @return - The object's instance id when it is identity aware, {@link #NO_INSTANCE} when it is
+   *     identity aware but carries no instance, and the object itself otherwise.
+   */
   static Object getInstanceId(Object object) {
     if (object instanceof IInstanceIdentity) {
       UUID instanceId = ((IInstanceIdentity) object).getInstanceId();

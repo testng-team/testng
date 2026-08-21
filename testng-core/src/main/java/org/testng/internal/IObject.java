@@ -17,7 +17,7 @@ public interface IObject {
    *
    * @param create - <code>true</code> if objects should be created before returning.
    * @param errorMsgPrefix - Text that should be prefixed to the error message when there are
-   *     issues. Can be empty.
+   *     issues. Can be empty, and can be {@code null}, which is passed through unchanged.
    * @return - An array of {@link IdentifiableObject} objects
    */
   IdentifiableObject[] getObjects(boolean create, @Nullable String errorMsgPrefix);
@@ -50,7 +50,7 @@ public interface IObject {
    * @param object - The object that should be inspected for its compatibility with {@link IObject}.
    * @param create - <code>true</code> if objects should be created before returning.
    * @param errorMsgPrefix - Text that should be prefixed to the error message when there are
-   *     issues. Can be empty.
+   *     issues. Can be empty, and can be {@code null}, which is passed through unchanged.
    * @return - An array (can be empty is instance compatibility fails) of {@link IdentifiableObject}
    *     objects.
    */

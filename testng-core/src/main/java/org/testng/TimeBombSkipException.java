@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -193,11 +192,6 @@ public class TimeBombSkipException extends SkipException {
     } catch (ParseException pex) {
       throw new TestNGException("Cannot parse date:" + date + " using pattern: " + m_inFormat, pex);
     }
-  }
-
-  /** The date this exception stops skipping; absent when it was built without one. */
-  private Calendar requireExpireDate() {
-    return Objects.requireNonNull(m_expireDate, "the exception carries an expiry date");
   }
 
   @Override

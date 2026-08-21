@@ -181,7 +181,7 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
     }
     ITestNGMethod tm = Utils.requireMethodOf(itr);
     int identLevel = sb.length();
-    sb.append(getMethodDeclaration(tm, itr));
+    sb.append(getMethodDeclaration(tm));
     Object[] params = itr.getParameters();
     Class<?>[] paramTypes = tm.getParameterTypes();
     if (null != params && params.length > 0) {
@@ -255,7 +255,7 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
    * @return FQN of a class + method declaration for a method passed in ie.
    *     test.triangle.CheckCount.testCheckCount(java.lang.String)
    */
-  private String getMethodDeclaration(ITestNGMethod method, ITestResult tr) {
+  private String getMethodDeclaration(ITestNGMethod method) {
 
     // see Utils.detailedMethodName
     // perhaps should rather adopt the original method instead
