@@ -14,9 +14,12 @@ import org.testng.ITestResult;
  *
  * <ul>
  *   <li>{@code onTestStart}: {@code TestInvoker} builds the result with its parameters, sets {@code
- *       STARTED} and only then runs the listeners;
+ *       STARTED} and only then runs the listeners -- including for the invocations it registers as
+ *       skipped without ever running them;
  *   <li>{@code beforeConfiguration}: {@code ConfigInvoker} calls {@code setParameters} immediately
- *       before it runs the configuration listeners.
+ *       before it runs the configuration listeners. A configuration skipped because an earlier one
+ *       failed is the exception: its parameters are never computed, so there is nothing to capture
+ *       and nothing to report.
  * </ul>
  *
  * <p>It is installed on every {@code TestRunner} of the suite as a listener, so no invoker has to

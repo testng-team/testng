@@ -43,20 +43,34 @@ public interface ITestInvoker {
 
   void runTestResultListener(ITestResult tr);
 
+  /** For an invocation nothing was ever resolved for, so there are no values to report it with. */
   default ITestResult registerSkippedTestResult(
       ITestNGMethod testMethod, long start, @Nullable Throwable throwable) {
-    return registerSkippedTestResult(testMethod, start, throwable, null);
+    return registerSkippedTestResult(testMethod, start, throwable, new Object[0]);
   }
 
   /**
-   * @param source the result to copy attributes and parameters from, or null when the skip has no
-   *     originating result
+   * Registers the result of an invocation that will not run, and announces it as starting.
+   *
+   * <p>The values are assigned before the listeners are told, so that a listener reading {@link
+   * ITestResult#getParameters()} from {@code onTestStart} already sees what the result will be
+   * reported with.
+   *
+   * @param parameterValues the values the invocation would have run with, empty when nothing was
+   *     ever resolved for it
    */
   ITestResult registerSkippedTestResult(
       ITestNGMethod testMethod,
       long start,
       @Nullable Throwable throwable,
-      @Nullable ITestResult source);
+      Object[] parameterValues);
+
+  /**
+   * The same, for a skip standing in for an invocation that was already built: it takes both its
+   * values and its attributes, so the two cannot be given separately and disagree.
+   */
+  ITestResult registerSkippedTestResult(
+      ITestNGMethod testMethod, long start, @Nullable Throwable throwable, ITestResult source);
 
   void invokeListenersForSkippedTestResult(ITestResult r, IInvokedMethod invokedMethod);
 
