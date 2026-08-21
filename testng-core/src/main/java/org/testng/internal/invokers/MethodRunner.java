@@ -95,6 +95,10 @@ public class MethodRunner implements IMethodRunner {
                 testInvoker.registerSkippedTestResult(
                     tmArguments.getTestMethod(), System.currentTimeMillis(), null, parameterValues);
             result.add(r);
+            // The notifier is what fills ITestContext, and so what the built-in reporters are
+            // generated from. Registering the result is the only way into it: the list this
+            // method returns is read by its caller and by nobody else.
+            testInvoker.getNotifier().addSkippedTest(tmArguments.getTestMethod(), r);
             InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), r);
             testInvoker.invokeListenersForSkippedTestResult(r, invokedMethod);
           }
