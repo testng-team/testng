@@ -102,7 +102,12 @@ public class XMLSuiteResultWriter {
   private Properties getSuiteResultAttributes(ISuiteResult suiteResult) {
     Properties attributes = new Properties();
     ITestContext tc = suiteResult.getTestContext();
-    attributes.setProperty(XMLReporterConfig.ATTR_NAME, tc.getName());
+    String testName = tc.getName();
+    if (testName != null) {
+      // Properties rejects a null value, and a <test> tag is only unnamed when it was built
+      // through the no-argument XmlTest constructor, which is what the YAML parser uses.
+      attributes.setProperty(XMLReporterConfig.ATTR_NAME, testName);
+    }
     XMLReporter.setDurationAttributes(
         config, attributes, tc.getStartDate(), Utils.requireEndDateOf(tc));
     return attributes;
