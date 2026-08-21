@@ -407,8 +407,13 @@ public class ListenerInvocationDefaultBehaviorTest extends SimpleBaseTest {
             IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
             IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT,
             ITESTLISTENER_ON_TEST_FAILURE_TEST_METHOD,
-            // The cancelled invocation: announced as already skipped, so no onTestStart and no
-            // IInvokedMethodListener pair, where the sequential twin above has both.
+            // The cancelled invocation, announced exactly as the sequential twin above announces
+            // its own.
+            ITESTLISTENER_ON_START_TEST_METHOD,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION_WITH_CONTEXT,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT,
             ITESTLISTENER_ON_TEST_SKIPPED_TEST_METHOD,
             // Cancelling did not stop the outer invocationCount loop, so the whole data provider
             // runs a second time and the row fails again.

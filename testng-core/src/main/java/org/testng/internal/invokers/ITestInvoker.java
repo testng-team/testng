@@ -74,6 +74,29 @@ public interface ITestInvoker {
 
   void invokeListenersForSkippedTestResult(ITestResult r, IInvokedMethod invokedMethod);
 
+  /**
+   * Registers an {@code invocationCount} cancelled because an earlier invocation failed, under
+   * {@code skipFailedInvocationCounts} or {@code skipFailedInvocations}.
+   *
+   * <p>The one place that happens, so that a cancelled invocation is announced and reported the
+   * same way whether its data provider is parallel or not. There are two loops doing the cancelling
+   * -- {@link IMethodRunner#runInSequence} and {@link TestMethodWithDataProviderMethodWorker} --
+   * and what they are cancelling is the same thing.
+   *
+   * @param parameterValues the row the cancelled invocation would have re-run, which is the row the
+   *     failed one ran with
+   */
+  default ITestResult registerCancelledInvocation(
+      ITestNGMethod testMethod, long start, Object[] parameterValues) {
+    ITestResult result = registerSkippedTestResult(testMethod, start, null, parameterValues);
+    // The notifier is what fills ITestContext, and so what the built-in reporters are generated
+    // from. Neither loop's return value reaches it.
+    getNotifier().addSkippedTest(testMethod, result);
+    invokeListenersForSkippedTestResult(
+        result, new InvokedMethod(System.currentTimeMillis(), result));
+    return result;
+  }
+
   ITestResultNotifier getNotifier();
 
   IConfiguration getConfiguration();
