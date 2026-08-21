@@ -151,12 +151,21 @@ public final class ParameterSnapshots {
    * What a reporter prints for a result: the values its invocation ran with, as TestNG captured
    * them when it started.
    *
-   * <p>Falls back to the result's own representation for the invocations announced before they were
-   * given their values, which leaves nothing to capture: the results {@code
-   * reportAllDataDrivenTestsAsSkipped} parameterizes after announcing them, and a configuration
-   * method skipped before its parameters were computed. Those keep reading through {@link
-   * ITestResult#getParameters()}, exactly as every result did before -- as does a result from a
-   * suite that has no snapshots at all.
+   * <p>Falls back to the result's own representation when there is no snapshot to read. An
+   * invocation is announced with the values it will be reported with, so what remains is a result
+   * nothing was captured for:
+   *
+   * <ul>
+   *   <li>a configuration method skipped because an earlier one failed: its parameters are never
+   *       computed, since resolving them for a method that will not run can itself fail;
+   *   <li>an invocation nothing was ever resolved for -- a lazy factory instance whose construction
+   *       failed, or a non-data-driven method skipped by a dependency;
+   *   <li>a result from a suite with no store at all, or one whose capture was never requested or
+   *       threw while rendering.
+   * </ul>
+   *
+   * <p>Those keep reading through {@link ITestResult#getParameters()}, exactly as every result did
+   * before.
    *
    * @param snapshots - The store of the suite being reported, or {@code null} if it has none.
    * @param result - The result being reported.

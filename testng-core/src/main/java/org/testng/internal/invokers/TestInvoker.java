@@ -163,8 +163,10 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             Object[] parameterValues = Parameters.injectParameters(next, m, context);
             ITestResult result =
                 registerSkippedTestResult(
-                    testMethod, System.currentTimeMillis(), new Throwable(okToProceed));
-            result.setParameters(parameterValues);
+                    testMethod,
+                    System.currentTimeMillis(),
+                    new Throwable(okToProceed),
+                    parameterValues);
             resultProcessor.accept(result);
             results.add(result);
           }
@@ -723,8 +725,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       ITestResult result =
           registerSkippedTestResult(
               arguments.getTestMethod(), System.currentTimeMillis(), exception, testResult);
-      result.setParameters(testResult.getParameters());
-      TestResult.copyAttributes(testResult, result);
       m_notifier.addSkippedTest(arguments.getTestMethod(), result);
       arguments.getTestMethod().incrementCurrentInvocationCount();
       invokedMethod = new InvokedMethod(startTime, result);
@@ -945,13 +945,29 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       ITestNGMethod testMethod,
       long start,
       @Nullable Throwable throwable,
+      Object[] parameterValues) {
+    return registerSkippedTestResult(testMethod, start, throwable, parameterValues, null);
+  }
+
+  @Override
+  public ITestResult registerSkippedTestResult(
+      ITestNGMethod testMethod, long start, @Nullable Throwable throwable, ITestResult source) {
+    return registerSkippedTestResult(testMethod, start, throwable, source.getParameters(), source);
+  }
+
+  private ITestResult registerSkippedTestResult(
+      ITestNGMethod testMethod,
+      long start,
+      @Nullable Throwable throwable,
+      Object[] parameterValues,
       @Nullable ITestResult source) {
     ITestResult result =
         TestResult.newEndTimeAwareTestResult(testMethod, m_testContext, throwable, start);
     if (source != null) {
       TestResult.copyAttributes(source, result);
-      result.setParameters(source.getParameters());
     }
+    // Everything the result is reported with is on it before anyone is told it started.
+    result.setParameters(parameterValues);
     result.setStatus(ITestResult.STARTED);
     runTestResultListener(result);
     result.setStatus(TestResult.SKIP);

@@ -89,9 +89,9 @@ public class TextReporterTest extends SimpleBaseTest {
 
   @Test(
       description =
-          "A result announced before it was given its values still reports them, through the"
-              + " result itself")
-  public void resultsWithNothingToSnapshotStillReportTheirParameters() {
+          "A data-driven test skipped by a dependency reports the row it would have run, from the"
+              + " snapshot taken when it was announced")
+  public void dataDrivenSkipsReportTheValuesTheyWereAnnouncedWith() {
     TestNG testng = create(SkippedDataDrivenSample.class);
     testng.setReportAllDataDrivenTestsAsSkipped(true);
 
