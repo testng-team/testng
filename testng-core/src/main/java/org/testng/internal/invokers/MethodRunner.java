@@ -82,15 +82,14 @@ public class MethodRunner implements IMethodRunner {
 
         // If we have a failure, skip all the
         // other invocationCounts
-        if (failure.count.get() > 0
-            && (skipFailedInvocationCounts
-                || tmArguments.getTestMethod().skipFailedInvocations())) {
-          while (invocationCount.getAndDecrement() > 0) {
-            result.add(
-                testInvoker.registerCancelledInvocation(
-                    tmArguments.getTestMethod(), System.currentTimeMillis(), parameterValues));
-          }
-        }
+        result.addAll(
+            testInvoker.cancelRemainingInvocations(
+                tmArguments.getTestMethod(),
+                invocationCount,
+                failure.count.get(),
+                skipFailedInvocationCounts,
+                parameterValues,
+                System.currentTimeMillis()));
       } // end finally
       parametersIndex++;
     }
@@ -138,7 +137,7 @@ public class MethodRunner implements IMethodRunner {
               arguments.getGroupMethods(),
               context,
               skipFailedInvocationCounts,
-              invocationCount.get(),
+              invocationCount,
               failure.count.get()));
       // testng387: increment the param index in the bag.
       parametersIndex += 1;
