@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.CollectionUtils;
@@ -38,12 +39,11 @@ public class MethodRunner implements IMethodRunner {
       ITestContext context,
       AtomicInteger invocationCount,
       FailureContext failure,
-      Iterator<Object[]> allParamValues,
+      Iterator<Object @Nullable []> allParamValues,
       boolean skipFailedInvocationCounts) {
     List<ITestResult> result = new ArrayList<>();
     int parametersIndex = 0;
-    Iterable<Object[]> allParameterValues = CollectionUtils.asIterable(allParamValues);
-    for (Object[] next : allParameterValues) {
+    for (Object @Nullable [] next : CollectionUtils.asIterable(allParamValues)) {
       if (next == null) {
         // skipped value
         parametersIndex++;
@@ -112,7 +112,7 @@ public class MethodRunner implements IMethodRunner {
       ITestContext context,
       AtomicInteger invocationCount,
       FailureContext failure,
-      Iterator<Object[]> allParamValues,
+      Iterator<Object @Nullable []> allParamValues,
       boolean skipFailedInvocationCounts) {
     XmlSuite suite = context.getSuite().getXmlSuite();
     ObjectBag objectBag = ObjectBag.getInstance(context.getSuite());
@@ -122,10 +122,10 @@ public class MethodRunner implements IMethodRunner {
 
     List<TestMethodWithDataProviderMethodWorker> workers = new ArrayList<>();
     int parametersIndex = 0;
-    for (Object[] next : CollectionUtils.asIterable(allParamValues)) {
+    for (Object @Nullable [] next : CollectionUtils.asIterable(allParamValues)) {
       if (next == null) {
         // skipped value
-        parametersIndex += 1;
+        parametersIndex++;
         continue;
       }
       Object[] parameterValues =

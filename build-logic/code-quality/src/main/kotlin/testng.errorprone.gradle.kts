@@ -27,6 +27,12 @@ tasks.withType<JavaCompile>().configureEach {
         check("NullAway", CheckSeverity.ERROR)
         option("NullAway:OnlyNullMarked", true)
 
+        // Without JSpecifyMode, NullAway reads declarations only and never looks inside a generic
+        // type: Iterator<Object[]> and Iterator<Object @Nullable []> are the same thing to it, so a
+        // container is free to claim non-null elements while yielding null ones. Turning it on is
+        // what makes @NullMarked mean what JSpecify says it means rather than roughly half of it.
+        option("NullAway:JSpecifyMode", true)
+
         if (testCompile) {
             // SelfAssertion only fires on TestNG's own sample/fixture classes, where trivial
             // assertions such as assertThat("abc").isEqualTo("abc") exist solely to give the

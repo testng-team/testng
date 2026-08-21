@@ -171,7 +171,7 @@ public class MethodInvocationHelper {
   }
 
   @SuppressWarnings("unchecked")
-  public static CloseableIterator<Object[]> invokeDataProvider(
+  public static CloseableIterator<Object @Nullable []> invokeDataProvider(
       @Nullable Object instance,
       Method dataProvider,
       ITestNGMethod method,
