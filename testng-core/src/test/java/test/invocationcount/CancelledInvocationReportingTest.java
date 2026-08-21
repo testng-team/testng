@@ -40,10 +40,8 @@ public class CancelledInvocationReportingTest extends SimpleBaseTest {
         .containsExactly(
             // One invocation ran and failed; the two still to come were cancelled.
             "listener: failed=1 skipped=2",
-            // ... and the context knows about none of them: nothing registers a sequentially
-            // cancelled invocation with the notifier, so testng-results.xml has one result for a
-            // method that produced three.
-            "context: failed=1 skipped=0",
+            // ... and the context is told about the same three.
+            "context: failed=1 skipped=2",
             "started: [[only-row], [only-row], [only-row]]",
             "skipped values: [[only-row], [only-row]]");
   }
