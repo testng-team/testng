@@ -86,9 +86,14 @@ public class MethodRunner implements IMethodRunner {
             && (skipFailedInvocationCounts
                 || tmArguments.getTestMethod().skipFailedInvocations())) {
           while (invocationCount.getAndDecrement() > 0) {
+            // Every cancelled invocation would have re-run the row the failed one ran with, so
+            // that is what it is reported with. TestMethodWithDataProviderMethodWorker cancels
+            // the same way for a parallel data provider, but builds the result inline and
+            // announces it as already skipped; giving that one its values means first routing it
+            // through registerSkippedTestResult, which changes which listeners it reaches.
             ITestResult r =
                 testInvoker.registerSkippedTestResult(
-                    tmArguments.getTestMethod(), System.currentTimeMillis(), null);
+                    tmArguments.getTestMethod(), System.currentTimeMillis(), null, parameterValues);
             result.add(r);
             InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), r);
             testInvoker.invokeListenersForSkippedTestResult(r, invokedMethod);
