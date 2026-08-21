@@ -5,8 +5,8 @@ import org.testng.annotations.Test;
 
 /**
  * Under {@code reportAllDataDrivenTestsAsSkipped}, a data-driven method skipped by a dependency
- * gets one result per row -- announced before it is given its values, so there is nothing for a
- * reporter to capture and it has to fall back to reading the result.
+ * gets one result per row, announced with the row it would have run and reported from the snapshot
+ * taken then.
  */
 public class SkippedDataDrivenSample {
 
