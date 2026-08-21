@@ -17,7 +17,7 @@ public final class CollectionUtils {
     return c != null && !c.isEmpty();
   }
 
-  public static <T> Iterable<T> asIterable(Iterator<T> iterator) {
+  public static <T extends @Nullable Object> Iterable<T> asIterable(Iterator<T> iterator) {
     return () -> iterator;
   }
 }

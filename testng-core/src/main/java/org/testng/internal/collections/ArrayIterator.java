@@ -2,14 +2,15 @@ package org.testng.internal.collections;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import org.jspecify.annotations.Nullable;
 
 /** Custom iterator class over a 2D array */
-public class ArrayIterator implements Iterator<Object[]> {
+public class ArrayIterator implements Iterator<Object @Nullable []> {
 
-  private final Object[][] m_objects;
+  private final Object[] @Nullable [] m_objects;
   private int m_count;
 
-  public ArrayIterator(Object[][] objects) {
+  public ArrayIterator(Object[] @Nullable [] objects) {
     m_objects = objects;
     m_count = 0;
   }
@@ -20,7 +21,7 @@ public class ArrayIterator implements Iterator<Object[]> {
   }
 
   @Override
-  public Object[] next() {
+  public Object @Nullable [] next() {
     if (m_count >= m_objects.length) {
       throw new NoSuchElementException();
     }
