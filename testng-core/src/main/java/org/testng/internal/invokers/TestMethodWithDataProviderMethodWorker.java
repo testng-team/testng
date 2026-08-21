@@ -9,8 +9,6 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.internal.ConfigurationGroupMethods;
-import org.testng.internal.ITestResultNotifier;
-import org.testng.internal.TestResult;
 import org.testng.internal.invokers.TestMethodArguments.Builder;
 import org.testng.xml.XmlSuite;
 
@@ -29,7 +27,6 @@ public class TestMethodWithDataProviderMethodWorker
   private int m_parameterIndex;
   private boolean m_skipFailedInvocationCounts;
   private int m_invocationCount;
-  private final ITestResultNotifier m_notifier;
   private final ITestInvoker m_testInvoker;
 
   private final List<ITestResult> m_testResults = new ArrayList<>();
@@ -49,8 +46,7 @@ public class TestMethodWithDataProviderMethodWorker
       ITestContext testContext,
       boolean skipFailedInvocationCounts,
       int invocationCount,
-      int failureCount,
-      ITestResultNotifier notifier) {
+      int failureCount) {
     this.m_testInvoker = testInvoker;
     m_testMethod = testMethod;
     m_parameterIndex = parameterIndex;
@@ -65,7 +61,6 @@ public class TestMethodWithDataProviderMethodWorker
     m_testContext = testContext;
     m_invocationCount = invocationCount;
     m_failureCount = failureCount;
-    m_notifier = notifier;
   }
 
   @Override
@@ -136,12 +131,8 @@ public class TestMethodWithDataProviderMethodWorker
       }
       if (m_failureCount > 0 && m_skipFailedInvocationCounts) {
         while (m_invocationCount-- > 0) {
-          ITestResult r =
-              TestResult.newEndTimeAwareTestResult(m_testMethod, m_testContext, null, start);
-          r.setStatus(TestResult.SKIP);
-          m_testResults.add(r);
-          m_testInvoker.runTestResultListener(r);
-          m_notifier.addSkippedTest(m_testMethod, r);
+          m_testResults.add(
+              m_testInvoker.registerCancelledInvocation(m_testMethod, start, m_parameterValues));
         }
       }
     }

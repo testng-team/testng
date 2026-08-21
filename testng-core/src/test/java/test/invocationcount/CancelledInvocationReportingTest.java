@@ -53,14 +53,10 @@ public class CancelledInvocationReportingTest extends SimpleBaseTest {
             // Three invocations ran and failed, not one: cancelling does not stop the outer
             // invocationCount loop, so the data provider is run again for each count left.
             "listener: failed=3 skipped=3",
-            // The context does hear about the cancelled ones here.
             "context: failed=3 skipped=3",
-            // Only the three that ran were announced as starting. The cancelled ones go straight
-            // to skipped, so a listener capturing onTestStart never sees them ...
-            "started: [[only-row], [only-row], [only-row]]",
-            // ... and they are reported with no values, though the row they would have re-run is
-            // a field of the worker that cancelled them.
-            "skipped values: [[], [], []]");
+            // Six announcements now: the three that ran, and the three that were cancelled.
+            "started: [[only-row], [only-row], [only-row], [only-row], [only-row], [only-row]]",
+            "skipped values: [[only-row], [only-row], [only-row]]");
   }
 
   /**
