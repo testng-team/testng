@@ -1,6 +1,7 @@
 package org.testng.internal.invokers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,22 +76,43 @@ public interface ITestInvoker {
   void invokeListenersForSkippedTestResult(ITestResult r, IInvokedMethod invokedMethod);
 
   /**
-   * Registers an {@code invocationCount} cancelled because an earlier invocation failed, under
-   * {@code skipFailedInvocationCounts} or {@code skipFailedInvocations}.
+   * Cancels the {@code invocationCount}s an invocation leaves behind by failing, when {@code
+   * skipFailedInvocationCounts} or {@code skipFailedInvocations} asks for it.
    *
-   * <p>The one place that happens, so that a cancelled invocation is announced and reported the
-   * same way whether its data provider is parallel or not. There are two loops doing the cancelling
-   * -- {@link IMethodRunner#runInSequence} and {@link TestMethodWithDataProviderMethodWorker} --
-   * and what they are cancelling is the same thing.
+   * <p>The one place that happens, so a cancelled invocation is announced and reported the same way
+   * whether its data provider is parallel or not. Both callers -- {@link
+   * IMethodRunner#runInSequence} and {@link TestMethodWithDataProviderMethodWorker} -- are
+   * cancelling the same thing, down to the counter.
    *
-   * @param parameterValues the row the cancelled invocation would have re-run, which is the row the
-   *     failed one ran with
+   * @param remaining the counter the invocation loop is driven from, shared by every row: draining
+   *     it is what stops the counts still to come from running, so a caller that finds it drained
+   *     cancels nothing -- whoever got there first has already accounted for them
+   * @param parameterValues the row the cancelled invocations would have re-run, which is the row
+   *     the failed one ran with
+   * @return one result per cancelled invocation, empty when there is nothing to cancel
    */
-  default ITestResult registerCancelledInvocation(
+  default List<ITestResult> cancelRemainingInvocations(
+      ITestNGMethod testMethod,
+      AtomicInteger remaining,
+      int failureCount,
+      boolean skipFailedInvocationCounts,
+      Object[] parameterValues,
+      long start) {
+    if (failureCount <= 0 || !(skipFailedInvocationCounts || testMethod.skipFailedInvocations())) {
+      return Collections.emptyList();
+    }
+    List<ITestResult> cancelled = new ArrayList<>();
+    while (remaining.getAndDecrement() > 0) {
+      cancelled.add(registerCancelledInvocation(testMethod, start, parameterValues));
+    }
+    return cancelled;
+  }
+
+  private ITestResult registerCancelledInvocation(
       ITestNGMethod testMethod, long start, Object[] parameterValues) {
     ITestResult result = registerSkippedTestResult(testMethod, start, null, parameterValues);
     // The notifier is what fills ITestContext, and so what the built-in reporters are generated
-    // from. Neither loop's return value reaches it.
+    // from. Neither caller's return value reaches it.
     getNotifier().addSkippedTest(testMethod, result);
     invokeListenersForSkippedTestResult(
         result, new InvokedMethod(System.currentTimeMillis(), result));

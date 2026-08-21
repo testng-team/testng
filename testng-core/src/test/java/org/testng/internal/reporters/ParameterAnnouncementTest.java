@@ -77,12 +77,10 @@ public class ParameterAnnouncementTest extends SimpleBaseTest {
     run(create(SkippedParallelInvocationCountSample.class), probe);
 
     assertNothingWasAssignedAfterAnnouncing(probe);
-    // Every announcement carries the row, whether it belongs to an invocation that ran and failed
-    // or to one that was cancelled -- the caller cannot tell which from what it is handed, and
-    // that is the point.
+    // The invocation that failed, then the two that never got to run -- the same three the
+    // sequential shape announces, carrying the same row.
     assertThat(probe.announcedValuesOf("cancelled"))
-        .isNotEmpty()
-        .allMatch(values -> values.equals("only-row"));
+        .containsExactly("only-row", "only-row", "only-row");
   }
 
   @Test(

@@ -19,9 +19,11 @@ import test.SimpleBaseTest;
  * What an invocation cancelled by a failing one is reported as, for a sequential data provider and
  * for a parallel one.
  *
- * <p>The two samples differ in nothing but {@code parallel = true}, so every line below that is not
- * identical between the two shapes is a divergence between the two cancellation loops -- {@code
- * MethodRunner#runInSequence} and {@code TestMethodWithDataProviderMethodWorker}.
+ * <p>Each pair of samples differs in nothing but {@code parallel = true}, so anything the two
+ * shapes do not report identically is a divergence between the two cancellation loops -- {@code
+ * MethodRunner#runInSequence} and {@code TestMethodWithDataProviderMethodWorker}. The tests are
+ * written as that comparison rather than as two sets of literals, so a divergence cannot be
+ * recorded as an expectation by accident.
  *
  * <p>Three things are recorded, because different consumers are told by different means:
  *
@@ -34,29 +36,36 @@ import test.SimpleBaseTest;
  */
 public class CancelledInvocationReportingTest extends SimpleBaseTest {
 
-  @Test(description = "GITHUB-3408: a cancelled invocation of a sequential data provider")
-  public void sequentialCancellationIsReportedAs() {
-    assertThat(report(SkippedInvocationCountSample.class))
+  @Test(
+      description =
+          "GITHUB-3408: whether the data provider was parallel is not something a consumer of the"
+              + " results can tell")
+  public void cancellationIsReportedTheSameWayWhateverTheDataProvider() {
+    assertThat(report(SkippedParallelInvocationCountSample.class))
+        .isEqualTo(report(SkippedInvocationCountSample.class))
         .containsExactly(
-            // One invocation ran and failed; the two still to come were cancelled.
+            // One invocation ran and failed; the two still to come were cancelled ...
             "listener: failed=1 skipped=2",
-            // ... and the context is told about the same three.
+            // ... and the context was told about the same three.
             "context: failed=1 skipped=2",
+            // All three were announced as starting, cancelled ones included, each carrying the row
+            // it would have re-run.
             "started: [[only-row], [only-row], [only-row]]",
             "skipped values: [[only-row], [only-row]]");
   }
 
-  @Test(description = "GITHUB-3408: a cancelled invocation of a parallel data provider")
-  public void parallelCancellationIsReportedAs() {
-    assertThat(report(SkippedParallelInvocationCountSample.class))
-        .containsExactly(
-            // Three invocations ran and failed, not one: cancelling does not stop the outer
-            // invocationCount loop, so the data provider is run again for each count left.
-            "listener: failed=3 skipped=3",
-            "context: failed=3 skipped=3",
-            // Six announcements now: the three that ran, and the three that were cancelled.
-            "started: [[only-row], [only-row], [only-row], [only-row], [only-row], [only-row]]",
-            "skipped values: [[only-row], [only-row], [only-row]]");
+  @Test(
+      description =
+          "GITHUB-3408: cancelling stops the invocationCounts still to come, not the rows of the"
+              + " repetition under way")
+  public void everyRowStillRunsWhenOneOfThemCancels() {
+    // An invocationCount counts repetitions of the whole data set, so a row failing says nothing
+    // about its siblings: runInSequence goes on iterating them after it has cancelled. The parallel
+    // shape must not do otherwise -- claiming the counter before invoking, rather than after
+    // failing, would let one row silently swallow the rest.
+    assertThat(rowReport(CancelledParallelRows.class))
+        .isEqualTo(rowReport(CancelledSequentialRows.class))
+        .containsExactly("ran: [[fails-a], [fails-b], [passes]]", "failed=2 passed=1 skipped=1");
   }
 
   /**
@@ -71,6 +80,27 @@ public class CancelledInvocationReportingTest extends SimpleBaseTest {
         "context: failed=" + recorder.contextFailed + " skipped=" + recorder.contextSkipped,
         "started: " + recorder.started,
         "skipped values: " + recorder.skippedValues);
+  }
+
+  /**
+   * The same for a sample with several rows, where which row wins the race to cancel -- and so
+   * which row the skip is reported with -- is not determined. Only what is: that every row ran, and
+   * how many results of each kind came out.
+   */
+  private static List<String> rowReport(Class<?> sample) {
+    Recorder recorder = run(sample);
+
+    List<String> ran = new ArrayList<>(recorder.failed);
+    ran.addAll(recorder.succeeded);
+    Collections.sort(ran);
+    return Arrays.asList(
+        "ran: " + ran,
+        "failed="
+            + recorder.failed.size()
+            + " passed="
+            + recorder.succeeded.size()
+            + " skipped="
+            + recorder.skippedValues.size());
   }
 
   private static Recorder run(Class<?> sample) {
@@ -91,6 +121,7 @@ public class CancelledInvocationReportingTest extends SimpleBaseTest {
     private final List<String> started = Collections.synchronizedList(new ArrayList<>());
     private final List<String> skippedValues = Collections.synchronizedList(new ArrayList<>());
     private final List<String> failed = Collections.synchronizedList(new ArrayList<>());
+    private final List<String> succeeded = Collections.synchronizedList(new ArrayList<>());
     private int contextFailed;
     private int contextSkipped;
 
@@ -107,6 +138,11 @@ public class CancelledInvocationReportingTest extends SimpleBaseTest {
     @Override
     public void onTestFailure(ITestResult result) {
       failed.add(Arrays.toString(result.getParameters()));
+    }
+
+    @Override
+    public void onTestSuccess(ITestResult result) {
+      succeeded.add(Arrays.toString(result.getParameters()));
     }
 
     @Override

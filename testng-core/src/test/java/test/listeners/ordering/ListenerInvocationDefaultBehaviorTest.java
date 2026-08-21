@@ -407,24 +407,15 @@ public class ListenerInvocationDefaultBehaviorTest extends SimpleBaseTest {
             IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
             IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT,
             ITESTLISTENER_ON_TEST_FAILURE_TEST_METHOD,
-            // The cancelled invocation, announced exactly as the sequential twin above announces
-            // its own.
+            // The cancelled invocation. Everything from onTestStart down is what the sequential
+            // twin above produces for its own; the data provider is not run again, because
+            // cancelling drains the counter the invocation loop is driven from.
             ITESTLISTENER_ON_START_TEST_METHOD,
             IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
             IINVOKEDMETHODLISTENER_BEFORE_INVOCATION_WITH_CONTEXT,
             IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
             IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT,
             ITESTLISTENER_ON_TEST_SKIPPED_TEST_METHOD,
-            // Cancelling did not stop the outer invocationCount loop, so the whole data provider
-            // runs a second time and the row fails again.
-            IDATAPROVIDERLISTENER_BEFORE_DATA_PROVIDER_EXECUTION,
-            IDATAPROVIDERLISTENER_AFTER_DATA_PROVIDER_EXECUTION,
-            ITESTLISTENER_ON_START_TEST_METHOD,
-            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
-            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION_WITH_CONTEXT,
-            IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
-            IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT,
-            ITESTLISTENER_ON_TEST_FAILURE_TEST_METHOD,
             ICLASSLISTENER_ON_AFTER_CLASS,
             IEXECUTION_VISUALISER_CONSUME_DOT_DEFINITION,
             ITESTLISTENER_ON_FINISH_TEST_TAG,
