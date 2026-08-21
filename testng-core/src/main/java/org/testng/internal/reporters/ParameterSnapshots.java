@@ -6,6 +6,7 @@ import org.jspecify.annotations.Nullable;
 import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
+import org.testng.internal.Utils;
 
 /**
  * The {@link ParameterSnapshot} taken for each invocation of a suite, produced once and read by
@@ -108,7 +109,8 @@ public final class ParameterSnapshots {
     ParameterSnapshot snapshot;
     try {
       snapshot =
-          ParameterSnapshot.of(result.getParameters(), result.getMethod().getParameterTypes());
+          ParameterSnapshot.of(
+              result.getParameters(), Utils.requireMethodOf(result).getParameterTypes());
     } catch (Throwable rendering) {
       // Rendering a value calls the user's toString(). One that throws would otherwise fail the
       // invocation it is only being reported on; leaving the result unsnapshotted hands it back to

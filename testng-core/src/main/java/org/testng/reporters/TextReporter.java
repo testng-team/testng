@@ -189,7 +189,7 @@ public class TextReporter implements ITestListener {
     ParameterSnapshot captured = snapshots != null ? snapshots.find(tr) : null;
     return captured != null
         ? captured
-        : ParameterSnapshot.of(tr.getParameters(), tr.getMethod().getParameterTypes());
+        : ParameterSnapshot.of(tr.getParameters(), Utils.requireMethodOf(tr).getParameterTypes());
   }
 
   private void logExceptions(
