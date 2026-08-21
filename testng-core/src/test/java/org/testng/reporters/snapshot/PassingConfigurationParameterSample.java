@@ -6,12 +6,10 @@ import org.testng.annotations.Test;
 
 /**
  * A configuration method that is handed the values its test method will run with, mutates them, and
- * then fails -- so a reporter has to have kept what it was announced with to report it.
- *
- * <p>The value is made per run rather than held by the class: mutating it is the point, and a
- * sample every run leaves spent is one only the first reporter to use it can assert on.
+ * passes -- so a reporter which prints a configuration as it succeeds has to have kept what it was
+ * announced with, and the snapshot has to still be there when it does.
  */
-public class ConfigurationParameterSample {
+public class PassingConfigurationParameterSample {
 
   @DataProvider(name = "shared")
   public static Object[][] shared() {
@@ -21,7 +19,6 @@ public class ConfigurationParameterSample {
   @BeforeMethod
   public void prepare(Object[] parameters) {
     ((MutableParameter) parameters[0]).set("mutated");
-    throw new IllegalStateException("this configuration method fails on purpose");
   }
 
   @Test(dataProvider = "shared")

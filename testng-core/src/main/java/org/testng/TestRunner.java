@@ -89,7 +89,13 @@ public class TestRunner
   /** ITestListeners support. */
   private final List<ITestListener> m_testListeners = new ArrayList<>();
 
-  private final Set<IConfigurationListener> m_configurationListeners = new LinkedHashSet<>();
+  /**
+   * Ordered, not a set: registration order decides dispatch order, and what may be registered twice
+   * is settled by the class check in {@link #insertConfigurationListener} -- which is stricter than
+   * a set's, and which {@link #getConfigurationListeners()} applies once more on the way out.
+   */
+  private final List<IConfigurationListener> m_configurationListeners = new ArrayList<>();
+
   private final Set<IExecutionVisualiser> visualisers = new HashSet<>();
 
   private final IConfigurationListener m_confListener = new ConfigurationListener();
@@ -1080,11 +1086,31 @@ public class TestRunner
   // TODO: This method needs to be removed and we need to be leveraging addListener().
   // Investigate and fix this.
   void addTestListener(ITestListener listener) {
+    insertTestListener(listener, m_testListeners.size());
+  }
+
+  /**
+   * Registers one of TestNG's own listeners ahead of the ones it was given, because what it records
+   * is what the others read. {@code onTestStart} is dispatched in registration order, and
+   * everything a runner is handed is appended, so a listener added like the rest would be told an
+   * invocation is starting only once every reporter had already looked for what it was supposed to
+   * have recorded.
+   *
+   * <p>Only the position differs from {@link #addTestListener}: a {@link ListenerComparator} is
+   * applied to the whole list afterwards and can still move it.
+   *
+   * @param listener - An internal listener the other listeners depend on.
+   */
+  void addInternalTestListener(ITestListener listener) {
+    insertTestListener(listener, 0);
+  }
+
+  private void insertTestListener(ITestListener listener, int index) {
     boolean found =
         m_testListeners.stream()
             .anyMatch(iTestListener -> iTestListener.getClass().equals(listener.getClass()));
     if (!found) {
-      m_testListeners.add(listener);
+      m_testListeners.add(index, listener);
     }
   }
 
@@ -1132,10 +1158,29 @@ public class TestRunner
   }
 
   void addConfigurationListener(IConfigurationListener icl) {
+    insertConfigurationListener(icl, m_configurationListeners.size());
+  }
+
+  /**
+   * The {@link #addInternalTestListener} of configuration listeners: {@code beforeConfiguration} is
+   * dispatched in registration order too, so a listener the others read has to come first.
+   *
+   * <p>Being first here also means being last once {@code
+   * TestListenerHelper#runPostConfigurationListeners} reverses the order, which is where it
+   * belongs: whatever an internal listener drops about a finished configuration, it drops after the
+   * reporters have had it.
+   *
+   * @param icl - An internal listener the other listeners depend on.
+   */
+  void addInternalConfigurationListener(IConfigurationListener icl) {
+    insertConfigurationListener(icl, 0);
+  }
+
+  private void insertConfigurationListener(IConfigurationListener icl, int index) {
     boolean alreadyAdded =
         m_configurationListeners.stream().anyMatch(each -> each.getClass().equals(icl.getClass()));
     if (!alreadyAdded) {
-      m_configurationListeners.add(icl);
+      m_configurationListeners.add(index, icl);
     }
   }
 

@@ -12,6 +12,8 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.Utils;
+import org.testng.internal.reporters.ParameterSnapshot;
+import org.testng.internal.reporters.ParameterSnapshots;
 
 /**
  * Reporter printing out detailed messages about what TestNG is going to run and what is the status
@@ -94,9 +96,15 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
     logTestResult(Status.SUCCESS, tr, false);
   }
 
+  /**
+   * This reporter prints every invocation it is told about, so it always reads the suite's
+   * snapshots and asks for them unconditionally -- where {@link TextReporter} only does so above
+   * verbose 2.
+   */
   @Override
   public void onStart(ITestContext ctx) {
     suiteName = ctx.getName();
+    ParameterSnapshots.requestCaptureFor(ctx.getSuite());
     log(
         "RUNNING: Suite: \""
             + suiteName
@@ -182,24 +190,18 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
     ITestNGMethod tm = itr.getMethod();
     int identLevel = sb.length();
     sb.append(getMethodDeclaration(tm, itr));
-    Object[] params = itr.getParameters();
-    Class<?>[] paramTypes = itr.getMethod().getParameterTypes();
-    if (null != params && params.length > 0) {
+    ParameterSnapshot params = reportedParametersOf(itr);
+    if (null != params) {
       // The error might be a data provider parameter mismatch, so make
       // a special case here
-      if (params.length != paramTypes.length) {
+      if (params.hasCountMismatch()) {
         sb.append("Wrong number of arguments were passed by the Data Provider: found ");
-        sb.append(params.length);
+        sb.append(params.suppliedCount());
         sb.append(" but expected ");
-        sb.append(paramTypes.length);
+        sb.append(params.expectedCount());
       } else {
         sb.append("(value(s): ");
-        for (int i = 0; i < params.length; i++) {
-          if (i > 0) {
-            sb.append(", ");
-          }
-          sb.append(Utils.toString(params[i], paramTypes[i]));
-        }
+        sb.append(String.join(", ", params.renderedValues()));
         sb.append(")");
       }
     }
@@ -243,6 +245,12 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
       sb.append("\n").append(text);
     }
     log(sb.toString());
+  }
+
+  /** Looked up per result: printing as a run happens, there is no one moment to resolve a store. */
+  private static @Nullable ParameterSnapshot reportedParametersOf(ITestResult itr) {
+    return ParameterSnapshots.reportedParametersOf(
+        ParameterSnapshots.of(itr.getTestContext().getSuite()), itr);
   }
 
   protected void log(String message) {

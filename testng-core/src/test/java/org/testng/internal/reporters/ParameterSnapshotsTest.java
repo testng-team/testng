@@ -14,8 +14,8 @@ import org.testng.annotations.Test;
 import org.testng.internal.TestResult;
 
 /**
- * The store on its own, with results built by hand: no TestNG run, so nothing but this test ever
- * touches the values it counts renderings of.
+ * The store and what it holds, on their own, with results built by hand: no TestNG run, so nothing
+ * but this test ever touches the values it counts renderings of.
  */
 public class ParameterSnapshotsTest {
 
@@ -80,6 +80,26 @@ public class ParameterSnapshotsTest {
     snapshots.discard(result);
 
     assertThat(snapshots.find(result)).isNull();
+  }
+
+  @Test(
+      description =
+          "A data provider that supplied the wrong number of values leaves the counts to report"
+              + " instead of the values")
+  public void aCountMismatchIsReportedInsteadOfTheValues() {
+    CountingParameter parameter = new CountingParameter("value");
+
+    ParameterSnapshot snapshot =
+        requireNonNull(
+            ParameterSnapshot.of(
+                new Object[] {parameter, parameter}, new Class<?>[] {Object.class}));
+
+    assertThat(snapshot.hasCountMismatch()).isTrue();
+    assertThat(snapshot.suppliedCount()).isEqualTo(2);
+    assertThat(snapshot.expectedCount()).isEqualTo(1);
+    assertThat(snapshot.renderedValues()).isEmpty();
+    // There is no type to render a value against, so nothing was rendered.
+    assertThat(parameter.renderings()).isZero();
   }
 
   private static ParameterSnapshots requestedSnapshots() {

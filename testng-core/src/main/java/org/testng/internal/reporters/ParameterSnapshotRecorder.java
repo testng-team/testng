@@ -19,8 +19,9 @@ import org.testng.ITestResult;
  *       before it runs the configuration listeners.
  * </ul>
  *
- * <p>It is installed on every {@code TestRunner} of the suite as an ordinary listener, so no
- * invoker has to know that reporting snapshots exist.
+ * <p>It is installed on every {@code TestRunner} of the suite as a listener, so no invoker has to
+ * know that reporting snapshots exist -- ahead of the ones the runner was given, since a reporter
+ * being told that an invocation is starting has to find its snapshot already taken.
  */
 public final class ParameterSnapshotRecorder implements ITestListener, IConfigurationListener {
 
@@ -42,7 +43,9 @@ public final class ParameterSnapshotRecorder implements ITestListener, IConfigur
 
   @Override
   public void onConfigurationSuccess(ITestResult result) {
-    // Only failed and skipped configurations are listed, so this one is never going to be printed.
+    // Only failed and skipped configurations are listed, so nothing will read this one again -- and
+    // the reporters that print a configuration as it passes already have: a configuration finishing
+    // is dispatched in reverse, which makes this listener, registered first, the last one told.
     snapshots.discard(result);
   }
 }
