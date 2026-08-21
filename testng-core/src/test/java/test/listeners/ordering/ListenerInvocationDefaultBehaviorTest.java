@@ -382,6 +382,53 @@ public class ListenerInvocationDefaultBehaviorTest extends SimpleBaseTest {
     runTest(expected, SimpleTestClassWithFailedMethodMultipleInvocations.class, true);
   }
 
+  @Test(
+      description =
+          "Test class has only 1 failed data driven test method that uses invocation counts and a"
+              + " parallel data provider, configured to skip failed invocations")
+  public void
+      testOrderHasOnlyFailedParallelDataDrivenMethodMultipleInvocationsAndSkipFailedInvocations() {
+    List<String> expected =
+        Arrays.asList(
+            IEXECUTIONLISTENER_ON_EXECUTION_START,
+            IALTERSUITELISTENER_ALTER,
+            IANNOTATIONTRANSFORMER_TRANSFORM_3_ARGS,
+            IANNOTATIONTRANSFORMER_DATAPROVIDER,
+            ISUITELISTENER_ON_START,
+            ITESTLISTENER_ON_START_TEST_TAG,
+            METHODINTERCEPTOR_INTERCEPT,
+            METHODINTERCEPTOR_INTERCEPT,
+            ICLASSLISTENER_ON_BEFORE_CLASS,
+            IDATAPROVIDERLISTENER_BEFORE_DATA_PROVIDER_EXECUTION,
+            IDATAPROVIDERLISTENER_AFTER_DATA_PROVIDER_EXECUTION,
+            ITESTLISTENER_ON_START_TEST_METHOD,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION_WITH_CONTEXT,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT,
+            ITESTLISTENER_ON_TEST_FAILURE_TEST_METHOD,
+            // The cancelled invocation: announced as already skipped, so no onTestStart and no
+            // IInvokedMethodListener pair, where the sequential twin above has both.
+            ITESTLISTENER_ON_TEST_SKIPPED_TEST_METHOD,
+            // Cancelling did not stop the outer invocationCount loop, so the whole data provider
+            // runs a second time and the row fails again.
+            IDATAPROVIDERLISTENER_BEFORE_DATA_PROVIDER_EXECUTION,
+            IDATAPROVIDERLISTENER_AFTER_DATA_PROVIDER_EXECUTION,
+            ITESTLISTENER_ON_START_TEST_METHOD,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION_WITH_CONTEXT,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT,
+            ITESTLISTENER_ON_TEST_FAILURE_TEST_METHOD,
+            ICLASSLISTENER_ON_AFTER_CLASS,
+            IEXECUTION_VISUALISER_CONSUME_DOT_DEFINITION,
+            ITESTLISTENER_ON_FINISH_TEST_TAG,
+            ISUITELISTENER_ON_FINISH,
+            IREPORTER_GENERATE_REPORT,
+            IEXECUTIONLISTENER_ON_EXECUTION_FINISH);
+    runTest(expected, SimpleTestClassWithParallelDataDrivenMethodMultipleInvocations.class, true);
+  }
+
   @Test(description = "Test class has passed/failed/skipped test methods")
   public void testOrderHasPassedFailedSkippedMethods() {
     List<String> expected =
