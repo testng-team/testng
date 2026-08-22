@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
@@ -126,7 +128,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     Set<String> actualObjectIds = new HashSet<>();
     List<String> actualMethodNames = new LinkedList<>();
     for (ITestNGMethod to : edges.keySet()) {
-      actualObjectIds.add(to.getInstance().toString());
+      actualObjectIds.add(requireNonNull(to.getInstance()).toString());
       actualMethodNames.add(to.getMethodName());
     }
     assertThat(actualObjectIds).containsExactly("one");
@@ -183,12 +185,14 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     return searchForMethod(methodName, graph, null);
   }
 
+  /** A null instance means "match on the method name alone". */
   private static Map<ITestNGMethod, Integer> searchForMethod(
-      String methodName, DynamicGraph<ITestNGMethod> graph, Object instance) {
+      String methodName, DynamicGraph<ITestNGMethod> graph, @Nullable Object instance) {
     for (Map.Entry<ITestNGMethod, Map<ITestNGMethod, Integer>> edge : graph.getEdges().entrySet()) {
-      if (edge.getKey().getMethodName().equals(methodName)
+      ITestNGMethod method = edge.getKey();
+      if (method.getMethodName().equals(methodName)
           && (instance == null
-              || edge.getKey().getInstance().toString().equals(instance.toString()))) {
+              || requireNonNull(method.getInstance()).toString().equals(instance.toString()))) {
         return edge.getValue();
       }
     }
@@ -235,7 +239,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
         ITestNGMethod m =
             new TestNGMethod(
                 new ITestObjectFactory() {},
-                each.getConstructorOrMethod().getMethod(),
+                each.getConstructorOrMethod().requireMethod(),
                 finder,
                 xmlTest,
                 identifiable);
@@ -248,7 +252,8 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     return tstMethods;
   }
 
-  private static Object newInstance(Class<?> clazz) {
+  /** Null when the class cannot be instantiated at all; the caller handles that case. */
+  private static @Nullable Object newInstance(Class<?> clazz) {
     try {
       return InstanceCreator.newInstance(clazz);
     } catch (Exception e) {

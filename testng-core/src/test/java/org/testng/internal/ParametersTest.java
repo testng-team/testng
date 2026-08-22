@@ -7,7 +7,7 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.internal.Parameters.FilterOutInjectedTypesResult;
-import org.testng.internal.annotations.JDK15AnnotationFinder;
+import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
 /** Provide test for package visible methods in org.testng.internal.Parameters */
@@ -18,7 +18,7 @@ public class ParametersTest {
   @SuppressWarnings("unused")
   public void filterOutInJectedTypesFromOptionalValuesTest(
       XmlTest xmlTest, @Optional("optionaltestdata") String testdata) {
-    JDK15AnnotationFinder finder = new JDK15AnnotationFinder(null);
+    IAnnotationFinder finder = new Configuration().getAnnotationFinder();
     Method curMethod = new Object() {}.getClass().getEnclosingMethod();
     FilterOutInjectedTypesResult filterOutResult =
         org.testng.internal.Parameters.filterOutInjectedTypesFromOptionalValues(

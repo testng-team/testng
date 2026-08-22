@@ -18,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.Test;
 import org.testng.xml.internal.Parser;
 import org.w3c.dom.Document;
@@ -66,7 +67,8 @@ public class SchemaConsistencyTest {
    * <p>Enumerated values are sorted: which values exist is what has to match, the order they are
    * written in is not something a reader can observe.
    */
-  private static String render(boolean required, String defaultValue, List<String> enumeration) {
+  private static String render(
+      boolean required, @Nullable String defaultValue, List<String> enumeration) {
     StringBuilder rendered = new StringBuilder(required ? "required" : "optional");
     if (defaultValue != null) {
       rendered.append(" default=\"").append(defaultValue).append('"');

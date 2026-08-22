@@ -29,7 +29,7 @@ public class InstanceCreatorTest {
     Object object =
         SimpleObjectDispenser.createInstance(
             declaringClass, classes, xmlTest, finder, objectFactory, false, "");
-    assertThat((object instanceof ITest)).isTrue();
+    assertThat(object).isInstanceOf(ITest.class);
     assertThat(((ITest) object).getTestName()).isEqualTo(GITHUB_1456);
   }
 }

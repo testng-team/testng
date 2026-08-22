@@ -5,7 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
-import org.jetbrains.annotations.Nullable;
+import java.util.HashMap;
+import org.jspecify.annotations.Nullable;
 import org.testng.IInjectorFactory;
 import org.testng.ITest;
 import org.testng.ITestObjectFactory;
@@ -13,6 +14,7 @@ import org.testng.SampleIModule;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 import org.testng.internal.ClassImpl;
+import org.testng.internal.Configuration;
 import org.testng.internal.paramhandler.FakeTestContext;
 import test.guice.FakeInjector;
 
@@ -60,8 +62,8 @@ public final class GuiceHelperTest {
           GuiceHelperTest.class,
           null,
           new IdentifiableObject((ITest) () -> "GITHUB-2273"),
-          null,
-          null,
+          new HashMap<>(),
+          new Configuration().getAnnotationFinder(),
           new ITestObjectFactory() {});
     }
   }

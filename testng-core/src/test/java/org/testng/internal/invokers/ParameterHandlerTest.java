@@ -6,16 +6,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import org.testng.DataProviderHolder;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.internal.Configuration;
-import org.testng.internal.annotations.DefaultAnnotationTransformer;
-import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.JDK15AnnotationFinder;
 import org.testng.internal.paramhandler.DataDrivenSampleTestClass;
 import org.testng.internal.paramhandler.ExceptionThrowingDataDrivenSampleTestClass;
 import org.testng.internal.paramhandler.FakeTestContext;
@@ -25,15 +22,15 @@ import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
 public class ParameterHandlerTest extends SimpleBaseTest {
-  private ParameterHandler handler;
+  // Nothing here throws, so the handler can be built in the initializer and be non-null.
+  private final Configuration configuration = new Configuration();
 
-  @BeforeClass
-  public void beforeClass() {
-    IAnnotationFinder finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
-    handler =
-        new ParameterHandler(
-            new ITestObjectFactory() {}, finder, new DataProviderHolder(new Configuration()), 0);
-  }
+  private final ParameterHandler handler =
+      new ParameterHandler(
+          new ITestObjectFactory() {},
+          configuration.getAnnotationFinder(),
+          new DataProviderHolder(configuration),
+          0);
 
   @Test
   public void testCreateParameters() {
@@ -66,7 +63,7 @@ public class ParameterHandlerTest extends SimpleBaseTest {
     ParameterHandler.ParameterBag params = invokeParameterCreation(testNGMethod);
     assertThat(params.parameterHolder).isNotNull();
     assertThat(params.parameterHolder.origin).isEqualByComparingTo(origin);
-    Iterator<Object[]> iterators = params.parameterHolder.parameters;
+    Iterator<Object @Nullable []> iterators = params.parameterHolder.parameters;
     assertThat(iterators).toIterable().containsAll(Collections.singletonList(new Object[] {"bar"}));
   }
 
