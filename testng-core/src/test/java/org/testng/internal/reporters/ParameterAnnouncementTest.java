@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import org.testng.reporters.snapshot.ConfigurationParameterSample;
 import org.testng.reporters.snapshot.SkippedConfigurationSample;
 import org.testng.reporters.snapshot.SkippedDataDrivenSample;
 import org.testng.reporters.snapshot.SkippedInvocationCountSample;
+import org.testng.reporters.snapshot.SkippedParallelInvocationCountSample;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 
@@ -61,6 +63,22 @@ public class ParameterAnnouncementTest extends SimpleBaseTest {
 
     assertNothingWasAssignedAfterAnnouncing(probe);
     // The invocation that failed, then the two that never got to run.
+    assertThat(probe.announcedValuesOf("cancelled"))
+        .containsExactly("only-row", "only-row", "only-row");
+  }
+
+  @Test(
+      description =
+          "A cancelled invocationCount of a parallel data provider is announced with the row it"
+              + " would have re-run, like the sequential one")
+  public void cancelledParallelInvocationsAreAnnouncedWithTheirValues() {
+    Probe probe = new Probe();
+
+    run(create(SkippedParallelInvocationCountSample.class), probe);
+
+    assertNothingWasAssignedAfterAnnouncing(probe);
+    // The invocation that failed, then the two that never got to run -- the same three the
+    // sequential shape announces, carrying the same row.
     assertThat(probe.announcedValuesOf("cancelled"))
         .containsExactly("only-row", "only-row", "only-row");
   }
@@ -123,12 +141,12 @@ public class ParameterAnnouncementTest extends SimpleBaseTest {
    * declaring its interest when a context starts and reading the store back from {@link
    * IReporter#generateReport}, which is the last moment one is readable.
    *
-   * <p>None of the samples runs anything in parallel, so this is only ever touched by the runner
-   * thread and then by the assertions.
+   * <p>One of the samples has a parallel data provider, so announcements reach this from a
+   * data-provider worker thread as well as from the runner one.
    */
   private static final class Probe implements ITestListener, IConfigurationListener, IReporter {
 
-    final List<Announcement> announcements = new ArrayList<>();
+    final List<Announcement> announcements = Collections.synchronizedList(new ArrayList<>());
     private final Map<Announcement, String> snapshotsWhenTheReportersRan = new HashMap<>();
 
     @Override

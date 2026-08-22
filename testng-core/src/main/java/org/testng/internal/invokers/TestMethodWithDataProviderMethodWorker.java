@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.internal.ConfigurationGroupMethods;
-import org.testng.internal.ITestResultNotifier;
-import org.testng.internal.TestResult;
 import org.testng.internal.invokers.TestMethodArguments.Builder;
 import org.testng.xml.XmlSuite;
 
@@ -27,9 +26,8 @@ public class TestMethodWithDataProviderMethodWorker
   private final ConfigurationGroupMethods m_groupMethods;
   private final ITestContext m_testContext;
   private int m_parameterIndex;
-  private boolean m_skipFailedInvocationCounts;
-  private int m_invocationCount;
-  private final ITestResultNotifier m_notifier;
+  private final boolean m_skipFailedInvocationCounts;
+  private final AtomicInteger m_invocationCount;
   private final ITestInvoker m_testInvoker;
 
   private final List<ITestResult> m_testResults = new ArrayList<>();
@@ -48,9 +46,8 @@ public class TestMethodWithDataProviderMethodWorker
       ConfigurationGroupMethods groupMethods,
       ITestContext testContext,
       boolean skipFailedInvocationCounts,
-      int invocationCount,
-      int failureCount,
-      ITestResultNotifier notifier) {
+      AtomicInteger invocationCount,
+      int failureCount) {
     this.m_testInvoker = testInvoker;
     m_testMethod = testMethod;
     m_parameterIndex = parameterIndex;
@@ -65,7 +62,6 @@ public class TestMethodWithDataProviderMethodWorker
     m_testContext = testContext;
     m_invocationCount = invocationCount;
     m_failureCount = failureCount;
-    m_notifier = notifier;
   }
 
   @Override
@@ -127,31 +123,18 @@ public class TestMethodWithDataProviderMethodWorker
       // If we have a failure, skip all the
       // other invocationCounts
       //
-
-      // If not specified globally, use the attribute
-      // on the annotation
-      //
-      if (!m_skipFailedInvocationCounts) {
-        m_skipFailedInvocationCounts = m_testMethod.skipFailedInvocations();
-      }
-      if (m_failureCount > 0 && m_skipFailedInvocationCounts) {
-        while (m_invocationCount-- > 0) {
-          ITestResult r =
-              TestResult.newEndTimeAwareTestResult(m_testMethod, m_testContext, null, start);
-          r.setStatus(TestResult.SKIP);
-          m_testResults.add(r);
-          m_testInvoker.runTestResultListener(r);
-          m_notifier.addSkippedTest(m_testMethod, r);
-        }
-      }
+      m_testResults.addAll(
+          m_testInvoker.cancelRemainingInvocations(
+              m_testMethod,
+              m_invocationCount,
+              m_failureCount,
+              m_skipFailedInvocationCounts,
+              m_parameterValues,
+              start));
     }
     m_parameterIndex++;
 
     return m_testResults;
-  }
-
-  public int getInvocationCount() {
-    return m_invocationCount;
   }
 
   @Override

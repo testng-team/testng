@@ -82,23 +82,14 @@ public class MethodRunner implements IMethodRunner {
 
         // If we have a failure, skip all the
         // other invocationCounts
-        if (failure.count.get() > 0
-            && (skipFailedInvocationCounts
-                || tmArguments.getTestMethod().skipFailedInvocations())) {
-          while (invocationCount.getAndDecrement() > 0) {
-            // Every cancelled invocation would have re-run the row the failed one ran with, so
-            // that is what it is reported with. TestMethodWithDataProviderMethodWorker cancels
-            // the same way for a parallel data provider, but builds the result inline and
-            // announces it as already skipped; giving that one its values means first routing it
-            // through registerSkippedTestResult, which changes which listeners it reaches.
-            ITestResult r =
-                testInvoker.registerSkippedTestResult(
-                    tmArguments.getTestMethod(), System.currentTimeMillis(), null, parameterValues);
-            result.add(r);
-            InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), r);
-            testInvoker.invokeListenersForSkippedTestResult(r, invokedMethod);
-          }
-        }
+        result.addAll(
+            testInvoker.cancelRemainingInvocations(
+                tmArguments.getTestMethod(),
+                invocationCount,
+                failure.count.get(),
+                skipFailedInvocationCounts,
+                parameterValues,
+                System.currentTimeMillis()));
       } // end finally
       parametersIndex++;
     }
@@ -146,9 +137,8 @@ public class MethodRunner implements IMethodRunner {
               arguments.getGroupMethods(),
               context,
               skipFailedInvocationCounts,
-              invocationCount.get(),
-              failure.count.get(),
-              testInvoker.getNotifier()));
+              invocationCount,
+              failure.count.get()));
       // testng387: increment the param index in the bag.
       parametersIndex += 1;
     }
