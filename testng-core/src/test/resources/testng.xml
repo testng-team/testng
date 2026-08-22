@@ -83,6 +83,7 @@
       <class name="test.GraphTest"/>
       <class name="org.testng.internal.DynamicGraphTest"/>
       <class name="org.testng.internal.MethodSortingTest"/>
+      <class name="org.testng.internal.MethodInstanceTest"/>
       <class name="org.testng.internal.TestResultMethodBindingTest"/>
       <class name="org.testng.reporters.TestHTMLReporterTest"/>
       <class name="org.testng.internal.invokers.ParameterHandlerTest"/>
