@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
@@ -90,7 +91,13 @@ public class XmlTestTest extends SimpleBaseTest {
     assertThat(withoutRun).isNotEqualTo(withRun);
   }
 
-  private static Map<String, String> newSetOfParameters(String key, String value) {
+  /**
+   * GITHUB-1716 needs a map with a null key or value, but {@link XmlTest#setParameters(Map)} takes
+   * a {@code Map<String, String>}, so the map cannot be typed nullably and still be passed.
+   */
+  @SuppressWarnings("NullAway")
+  private static Map<String, String> newSetOfParameters(
+      @Nullable String key, @Nullable String value) {
     Map<String, String> map = new HashMap<>();
     map.put(key, value);
     return map;

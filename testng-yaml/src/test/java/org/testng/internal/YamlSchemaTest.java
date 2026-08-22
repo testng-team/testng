@@ -17,6 +17,7 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
+import org.testng.xml.XmlScript;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -236,8 +237,10 @@ public class YamlSchemaTest {
         .containsExactly("com.example.pkg");
 
     org.testng.xml.XmlMethodSelector selector = test.getMethodSelectors().get(0);
-    assertThat(selector.getScript().getExpression()).isEqualTo("groups.containsKey(\"x\")");
-    assertThat(selector.getScript().getLanguage()).isEqualTo("beanshell");
+    XmlScript script = selector.getScript();
+    assertThat(script).isNotNull();
+    assertThat(script.getExpression()).isEqualTo("groups.containsKey(\"x\")");
+    assertThat(script.getLanguage()).isEqualTo("beanshell");
 
     XmlClass xmlClass = test.getXmlClasses().get(0);
     assertThat(xmlClass.getName()).isEqualTo("com.example.Klass");

@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.fail;
 
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import org.jspecify.annotations.Nullable;
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
@@ -75,8 +77,10 @@ public class MethodInstanceTest {
   }
 
   private MethodInstance buildTestNgFactoryMethodInstance(String xmlTestName) {
+    // A factory-produced method has no <class> tag of its own, which is the null XmlClass here.
+    // It does have a method name, so the stub carries one rather than pretending otherwise.
     TestClassStub testClass = new TestClassStub(new XmlTestStub(xmlTestName), null);
-    return new MethodInstance(new TestNGMethodStub(null, testClass));
+    return new MethodInstance(new TestNGMethodStub("factoryProducedMethod", testClass));
   }
 
   private MethodInstance buildMethodInstance(
@@ -129,37 +133,38 @@ public class MethodInstanceTest {
 
   public static class TestClassStub implements ITestClass, IObject {
 
-    private XmlTest xmlTest;
-    private XmlClass xmlClass;
+    private final @Nullable XmlTest xmlTest;
+    private final @Nullable XmlClass xmlClass;
 
-    public TestClassStub(XmlTest xmlTest, XmlClass xmlClass) {
+    public TestClassStub(@Nullable XmlTest xmlTest, @Nullable XmlClass xmlClass) {
       this.xmlTest = xmlTest;
       this.xmlClass = xmlClass;
     }
 
+    /** {@code TestResult} names the instance from this, so it must not be null. */
     @Override
     public String getName() {
-      return null;
+      return xmlClass == null ? "" : xmlClass.getName();
     }
 
     @Override
-    public XmlTest getXmlTest() {
+    public @Nullable XmlTest getXmlTest() {
       return xmlTest;
     }
 
     @Override
-    public XmlClass getXmlClass() {
+    public @Nullable XmlClass getXmlClass() {
       return xmlClass;
     }
 
     @Override
-    public String getTestName() {
+    public @Nullable String getTestName() {
       return null;
     }
 
     @Override
     public Class<?> getRealClass() {
-      return xmlClass.getSupportClass();
+      return requireNonNull(xmlClass, "a factory-produced stub has no class tag").getSupportClass();
     }
 
     @Override
@@ -172,16 +177,17 @@ public class MethodInstanceTest {
 
     @Override
     public Object[] getInstances(boolean reuse) {
-      return null;
+      return new Object[0];
     }
 
     @Override
-    public IObject.IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix) {
+    public IObject.IdentifiableObject[] getObjects(
+        boolean create, @Nullable String errorMsgPrefix) {
       return new IObject.IdentifiableObject[0];
     }
 
     @Override
-    public long[] getInstanceHashCodes() {
+    public long @Nullable [] getInstanceHashCodes() {
       return null;
     }
 
@@ -243,10 +249,10 @@ public class MethodInstanceTest {
 
   public static class TestNGMethodStub implements ITestNGMethod {
 
-    private TestClassStub testClassStub;
-    private String methodName;
+    private final @Nullable TestClassStub testClassStub;
+    private final String methodName;
 
-    public TestNGMethodStub(String methodName, TestClassStub testClassStub) {
+    public TestNGMethodStub(String methodName, @Nullable TestClassStub testClassStub) {
       this.methodName = methodName;
       this.testClassStub = testClassStub;
     }
@@ -258,11 +264,11 @@ public class MethodInstanceTest {
 
     @Override
     public Class<?> getRealClass() {
-      return null;
+      throw new UnsupportedOperationException("Pending implementation");
     }
 
     @Override
-    public ITestClass getTestClass() {
+    public @Nullable ITestClass getTestClass() {
       return testClassStub;
     }
 
@@ -275,46 +281,46 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public Object getInstance() {
+    public @Nullable Object getInstance() {
       return null;
     }
 
     @Override
     public long[] getInstanceHashCodes() {
-      return null;
+      return new long[0];
     }
 
     @Override
     public String[] getGroups() {
-      return null;
+      return new String[0];
     }
 
     @Override
     public String[] getGroupsDependedUpon() {
+      return new String[0];
+    }
+
+    @Override
+    public @Nullable String getMissingGroup() {
       return null;
     }
 
     @Override
-    public String getMissingGroup() {
-      return null;
-    }
-
-    @Override
-    public void setMissingGroup(String group) {}
+    public void setMissingGroup(@Nullable String group) {}
 
     @Override
     public String[] getBeforeGroups() {
-      return null;
+      return new String[0];
     }
 
     @Override
     public String[] getAfterGroups() {
-      return null;
+      return new String[0];
     }
 
     @Override
     public String[] getMethodsDependedUpon() {
-      return null;
+      return new String[0];
     }
 
     @Override
@@ -405,7 +411,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public String getId() {
+    public @Nullable String getId() {
       return null;
     }
 
@@ -444,12 +450,12 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public String getDescription() {
+    public @Nullable String getDescription() {
       return null;
     }
 
     @Override
-    public void setDescription(String description) {}
+    public void setDescription(@Nullable String description) {}
 
     @Override
     public void incrementCurrentInvocationCount() {}
@@ -468,13 +474,13 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
+    public @Nullable IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
       return null;
     }
 
     @Override
     public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
-      return null;
+      throw new UnsupportedOperationException("Pending implementation");
     }
 
     @Override
@@ -503,7 +509,7 @@ public class MethodInstanceTest {
 
     @Override
     public List<Integer> getInvocationNumbers() {
-      return null;
+      return Collections.emptyList();
     }
 
     @Override
@@ -514,7 +520,7 @@ public class MethodInstanceTest {
 
     @Override
     public List<Integer> getFailedInvocationNumbers() {
-      return null;
+      return Collections.emptyList();
     }
 
     @Override
@@ -534,18 +540,18 @@ public class MethodInstanceTest {
     public void setInterceptedPriority(int priority) {}
 
     @Override
-    public XmlTest getXmlTest() {
+    public @Nullable XmlTest getXmlTest() {
       return null;
     }
 
     @Override
     public ConstructorOrMethod getConstructorOrMethod() {
-      return null;
+      throw new UnsupportedOperationException("Pending implementation");
     }
 
     @Override
     public Map<String, String> findMethodParameters(XmlTest test) {
-      return null;
+      return Collections.emptyMap();
     }
 
     @Override
