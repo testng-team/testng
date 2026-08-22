@@ -1,6 +1,7 @@
 package org.testng.internal.collections;
 
 import java.util.Iterator;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An {@link Iterator} that may own a resource (such as a {@link java.util.stream.Stream}) which
@@ -11,7 +12,7 @@ import java.util.Iterator;
  * <p>{@link #close()} never throws a checked exception, is idempotent and is a no-op for iterators
  * that own no resource.
  */
-public interface CloseableIterator<T> extends Iterator<T>, AutoCloseable {
+public interface CloseableIterator<T extends @Nullable Object> extends Iterator<T>, AutoCloseable {
 
   @Override
   void close();

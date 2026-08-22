@@ -17,6 +17,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.jspecify.annotations.Nullable;
@@ -170,7 +171,7 @@ public class MethodInvocationHelper {
   }
 
   @SuppressWarnings("unchecked")
-  public static CloseableIterator<Object[]> invokeDataProvider(
+  public static CloseableIterator<Object @Nullable []> invokeDataProvider(
       @Nullable Object instance,
       Method dataProvider,
       ITestNGMethod method,
@@ -262,7 +263,7 @@ public class MethodInvocationHelper {
       final Method thisMethod,
       final ITestResult testResult)
       throws Throwable {
-    final Throwable[] error = new Throwable[1];
+    final AtomicReference<@Nullable Throwable> error = new AtomicReference<>();
     AtomicBoolean wasCalled = new AtomicBoolean(false);
 
     IHookCallBack callback =
@@ -272,10 +273,10 @@ public class MethodInvocationHelper {
             try {
               wasCalled.set(true);
               invokeMethod(thisMethod, testInstance, parameters);
-              error[0] = null;
+              error.set(null);
               tr.setThrowable(null);
             } catch (Throwable t) {
-              error[0] = t;
+              error.set(t);
               tr.setThrowable(t); // make Throwable available to IHookable
             }
           }
@@ -286,8 +287,9 @@ public class MethodInvocationHelper {
           }
         };
     hookable.run(callback, testResult);
-    if (error[0] != null) {
-      throw error[0];
+    Throwable thrown = error.get();
+    if (thrown != null) {
+      throw thrown;
     }
     return wasCalled.get();
   }
@@ -525,7 +527,7 @@ public class MethodInvocationHelper {
       final Method thisMethod,
       final ITestResult testResult)
       throws Throwable {
-    final Throwable[] error = new Throwable[1];
+    final AtomicReference<@Nullable Throwable> error = new AtomicReference<>();
     AtomicBoolean wasCalled = new AtomicBoolean(false);
 
     IConfigureCallBack callback =
@@ -535,10 +537,10 @@ public class MethodInvocationHelper {
             try {
               wasCalled.set(true);
               invokeMethod(thisMethod, instance, parameters);
-              error[0] = null;
+              error.set(null);
               tr.setThrowable(null);
             } catch (Throwable t) {
-              error[0] = t;
+              error.set(t);
               tr.setThrowable(t); // make Throwable available to IConfigurable
             }
           }
@@ -549,8 +551,9 @@ public class MethodInvocationHelper {
           }
         };
     configurableInstance.run(callback, testResult);
-    if (error[0] != null) {
-      throw error[0];
+    Throwable thrown = error.get();
+    if (thrown != null) {
+      throw thrown;
     }
     return wasCalled.get();
   }

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -26,6 +25,7 @@ import org.testng.TestNGException;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IListenersAnnotation;
 import org.testng.annotations.Lazy;
+import org.testng.collections.CollectionUtils;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.invokers.ParameterHolder;
 import org.testng.xml.XmlTest;
@@ -206,7 +206,6 @@ public class FactoryMethod extends BaseTestMethod {
             null /* fedInstance */,
             this.holder,
             "@Factory");
-    Iterator<Object[]> parameterIterator = parameterHolder.parameters;
 
     try {
       List<Integer> indices =
@@ -214,8 +213,8 @@ public class FactoryMethod extends BaseTestMethod {
               .getIndices();
       int position = 0;
       IFactory factory = new FactoryDescriptor(getConstructorOrMethod(), m_lazy);
-      while (parameterIterator.hasNext()) {
-        Object[] parameters = parameterIterator.next();
+      for (Object @Nullable [] parameters :
+          CollectionUtils.asIterable(parameterHolder.parameters)) {
         if (parameters == null) {
           // skipped value
           continue;

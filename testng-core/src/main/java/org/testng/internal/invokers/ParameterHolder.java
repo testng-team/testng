@@ -18,7 +18,15 @@ public class ParameterHolder implements AutoCloseable {
   }
 
   final @Nullable IDataProviderMethod dataProviderHolder;
-  public final Iterator<Object[]> parameters;
+
+  /**
+   * Null rows are skipped positions; see {@link org.testng.internal.FilteredParameters}. A row's
+   * <em>elements</em> are still typed non-null even though a data provider routinely supplies null
+   * ones -- that second untruth is now checkable rather than invisible, and is knowingly left for
+   * the change that gives a row its own type.
+   */
+  public final Iterator<Object @Nullable []> parameters;
+
   final ParameterOrigin origin;
 
   /**
@@ -28,18 +36,20 @@ public class ParameterHolder implements AutoCloseable {
    * original resource is released regardless of how the exposed iterator was wrapped or how much of
    * it was consumed.
    */
-  private final @Nullable CloseableIterator<Object[]> closeableSource;
+  private final @Nullable CloseableIterator<Object @Nullable []> closeableSource;
 
   public ParameterHolder(
-      Iterator<Object[]> parameters, ParameterOrigin origin, @Nullable IDataProviderMethod dph) {
+      Iterator<Object @Nullable []> parameters,
+      ParameterOrigin origin,
+      @Nullable IDataProviderMethod dph) {
     this(parameters, origin, dph, null);
   }
 
   public ParameterHolder(
-      Iterator<Object[]> parameters,
+      Iterator<Object @Nullable []> parameters,
       ParameterOrigin origin,
       @Nullable IDataProviderMethod dph,
-      @Nullable CloseableIterator<Object[]> closeableSource) {
+      @Nullable CloseableIterator<Object @Nullable []> closeableSource) {
     super();
     this.parameters = parameters;
     this.origin = origin;

@@ -154,9 +154,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 testMethod, new HashMap<>(), new HashMap<>(), context, instance);
         ParameterHolder parameterHolder = Objects.requireNonNull(bag.parameterHolder);
         try {
-          Iterator<Object[]> allParamValues = parameterHolder.parameters;
-          Iterable<Object[]> allParameterValues = CollectionUtils.asIterable(allParamValues);
-          for (Object[] next : allParameterValues) {
+          for (Object @Nullable [] next : CollectionUtils.asIterable(parameterHolder.parameters)) {
             if (next == null) {
               continue;
             }
@@ -279,12 +277,15 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         }
         if (bag.parameterHolder != null) {
           try {
-            Iterator<Object[]> it = bag.parameterHolder.parameters;
+            Iterator<Object @Nullable []> it = bag.parameterHolder.parameters;
             int targetIndex = arguments.getParametersIndex();
             for (int i = 0; it.hasNext(); i++) {
-              Object[] current = it.next();
+              Object @Nullable [] current = it.next();
               if (i == targetIndex) {
-                parameterValues = current;
+                // An interceptor that drops or reorders rows can move the target onto an
+                // excluded position; fall back to the values the retry came in with rather
+                // than fail it.
+                parameterValues = Objects.requireNonNullElse(current, parameterValues);
                 break;
               }
             }
@@ -1088,7 +1089,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       }
 
       ParameterHolder parameterHolder = Objects.requireNonNull(bag.parameterHolder);
-      Iterator<Object[]> allParameterValues = parameterHolder.parameters;
+      Iterator<Object @Nullable []> allParameterValues = parameterHolder.parameters;
 
       try {
 

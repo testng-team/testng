@@ -825,7 +825,7 @@ public class Parameters {
                     "could not instantiate the data provider retry analyzer");
       }
 
-      CloseableIterator<Object[]> initParams = null;
+      CloseableIterator<Object @Nullable []> initParams = null;
       RuntimeException thrownException;
       do {
 
@@ -878,7 +878,7 @@ public class Parameters {
       // FilteredParameters and any interceptors, so the resource can be released later - including
       // if the setup below (listeners / filtering / interceptors) throws before a ParameterHolder
       // takes ownership of it.
-      CloseableIterator<Object[]> closeableSource =
+      CloseableIterator<Object @Nullable []> closeableSource =
           Objects.requireNonNull(initParams, "the data provider produced no iterator");
       try {
         for (IDataProviderListener dataProviderListener : holder.getListeners()) {
@@ -891,7 +891,7 @@ public class Parameters {
         allIndices.addAll(testMethod.getInvocationNumbers());
         allIndices.addAll(dataProviderMethod.getIndices());
 
-        Iterator<Object[]> filteredParameters =
+        Iterator<Object @Nullable []> filteredParameters =
             new FilteredParameters(
                 closeableSource, testMethod, dataProviderMethod.getName(), allIndices);
 
@@ -945,7 +945,7 @@ public class Parameters {
     // at the right time).
     testMethod.setParameterInvocationCount(allParameterValuesArray.length);
     // Turn it into an Iterable
-    Iterator<Object[]> parameters = new ArrayIterator(allParameterValuesArray);
+    Iterator<Object @Nullable []> parameters = new ArrayIterator(allParameterValuesArray);
 
     return new ParameterHolder(parameters, origin, null);
   }

@@ -16,9 +16,9 @@ import org.testng.internal.Utils;
  * is called, so a data provider that returns a resource-backed {@code Stream} keeps that resource
  * open for exactly as long as the rows are being pulled.
  */
-public class ResourceAwareIterator<T> implements CloseableIterator<T> {
+public class ResourceAwareIterator<T extends @Nullable Object> implements CloseableIterator<T> {
 
-  private final Iterator<T> delegate;
+  private final Iterator<? extends T> delegate;
   private final @Nullable AutoCloseable resource;
   private boolean closed;
 
@@ -27,7 +27,7 @@ public class ResourceAwareIterator<T> implements CloseableIterator<T> {
    * @param resource the resource to release on {@link #close()}, or {@code null} if there is
    *     nothing to release.
    */
-  public ResourceAwareIterator(Iterator<T> delegate, @Nullable AutoCloseable resource) {
+  public ResourceAwareIterator(Iterator<? extends T> delegate, @Nullable AutoCloseable resource) {
     this.delegate = delegate;
     this.resource = resource;
   }
@@ -43,17 +43,17 @@ public class ResourceAwareIterator<T> implements CloseableIterator<T> {
    * @param resource the resource to release on {@link #close()} (typically the {@code Stream} the
    *     iterator was derived from), or {@code null} if there is nothing to release.
    */
-  public static CloseableIterator<Object[]> forDataProvider(
+  public static CloseableIterator<Object @Nullable []> forDataProvider(
       Iterator<Object> iterator, Type returnType, @Nullable AutoCloseable resource) {
     return new ResourceAwareIterator<>(toObjectArrayIterator(iterator, returnType), resource);
   }
 
   @SuppressWarnings("unchecked")
-  private static Iterator<Object[]> toObjectArrayIterator(
+  private static Iterator<? extends Object @Nullable []> toObjectArrayIterator(
       Iterator<Object> iterator, Type returnType) {
     if (!(returnType instanceof ParameterizedType)) {
       // Raw Iterator/Stream, we expect the user to provide rows of the expected shape.
-      return (Iterator<Object[]>) (Iterator<?>) iterator;
+      return (Iterator<Object @Nullable []>) (Iterator<?>) iterator;
     }
 
     // Inspect only the direct element type of the Iterator/Stream. Each element is treated as an
@@ -63,7 +63,7 @@ public class ResourceAwareIterator<T> implements CloseableIterator<T> {
     // mistaken for a row of Object[].
     Type elementType = ((ParameterizedType) returnType).getActualTypeArguments()[0];
     if (isObjectArrayRow(elementType)) {
-      return (Iterator<Object[]>) (Iterator<?>) iterator;
+      return (Iterator<Object @Nullable []>) (Iterator<?>) iterator;
     }
     return new OneToTwoDimIterator(iterator);
   }
