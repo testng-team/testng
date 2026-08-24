@@ -37,11 +37,18 @@ tasks.withType<JavaCompile>().configureEach {
             // SelfAssertion only fires on TestNG's own sample/fixture classes, where trivial
             // assertions such as assertThat("abc").isEqualTo("abc") exist solely to give the
             // runner a passing method. Production code keeps the check enabled.
+            disable("SelfAssertion")
+
+            // NullAway stays on here: @NullMarked is per package, not per source set, so twelve
+            // test packages are already marked by the main package-info.class on their compile
+            // classpath.
             //
-            // NullAway is off here because @NullMarked applies to a package, not a source set:
-            // nine test packages share a name with a main one, so marking org.testng or
-            // org.testng.internal would sweep in their test halves too.
-            disable("SelfAssertion", "NullAway")
+            // HandleTestAssertionLibraries teaches NullAway that assertThat(x).isNotNull() refines
+            // x. It is keyed on the task name, so testng-test-kit -- test code that lives in a main
+            // source set -- does not get it, even though its org.testng.xml half is marked and
+            // checked today. That is inert only because the AssertJ use in that module sits in the
+            // unmarked test package, so nothing there refines a nullable value yet.
+            option("NullAway:HandleTestAssertionLibraries", true)
         }
     }
 }
