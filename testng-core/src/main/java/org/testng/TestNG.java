@@ -49,6 +49,7 @@ import org.testng.internal.objects.Dispenser;
 import org.testng.internal.objects.IObjectDispenser;
 import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.internal.objects.pojo.CreationAttributes;
+import org.testng.internal.reporters.ParameterSnapshotReader;
 import org.testng.internal.reporters.ParameterSnapshots;
 import org.testng.internal.thread.graph.SuiteWorkerFactory;
 import org.testng.log4testng.Logger;
@@ -1283,6 +1284,12 @@ public class TestNG {
       }
       createSuiteRunners(suiteRunnerMap, xmlSuite);
     }
+
+    // Every reporter of the run is known by now -- the ones a suite declared arrived with it, and
+    // createSuiteRunner() folded them in -- and no suite has started, which is what a reporting
+    // snapshot has to be requested before. The reporters registered on a TestRunner instead ask for
+    // themselves; see ParameterSnapshotReader.
+    ParameterSnapshotReader.requestCaptureIfAnyReads(m_reporters.values(), suiteRunnerMap.values());
 
     //
     // Run suites
