@@ -105,5 +105,20 @@ class TestTaskExecutor {
       LOGGER.error(handled.getMessage(), handled);
       Thread.currentThread().interrupt();
     }
+    reportWorkerFailures();
+  }
+
+  /**
+   * A worker that ended on an exception -- typically because a listener threw -- is still marked
+   * finished so the graph can move on, so nothing downstream of the orchestrator can tell it apart
+   * from a clean one. Saying so here is what keeps the cause out of a debugger. See GITHUB-3243.
+   */
+  private void reportWorkerFailures() {
+    if (orchestrator == null) {
+      return;
+    }
+    for (Throwable failure : orchestrator.getFailures()) {
+      LOGGER.error("A worker of test " + xmlTest.getName() + " ended on an exception", failure);
+    }
   }
 }

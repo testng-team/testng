@@ -21,6 +21,7 @@ class SuiteTaskExecutor {
   private final int threadPoolSize;
 
   private @Nullable ExecutorService service;
+  private @Nullable GraphOrchestrator<ISuite> orchestrator;
 
   private static final Logger LOGGER = Logger.getLogger(SuiteTaskExecutor.class);
 
@@ -49,8 +50,8 @@ class SuiteTaskExecutor {
                 TimeUnit.MILLISECONDS,
                 queue,
                 new TestNGThreadFactory(name));
-    GraphOrchestrator<ISuite> executor = new GraphOrchestrator<>(service, factory, graph, null);
-    executor.run();
+    orchestrator = new GraphOrchestrator<>(service, factory, graph, null);
+    orchestrator.run();
   }
 
   public void awaitCompletion() {
@@ -62,6 +63,21 @@ class SuiteTaskExecutor {
     } catch (InterruptedException handled) {
       Thread.currentThread().interrupt();
       LOGGER.error(handled.getMessage(), handled);
+    }
+    reportWorkerFailures();
+  }
+
+  /**
+   * A worker that ended on an exception -- typically because a listener threw -- is still marked
+   * finished so the graph can move on, so nothing downstream of the orchestrator can tell it apart
+   * from a clean one. Saying so here is what keeps the cause out of a debugger. See GITHUB-3243.
+   */
+  private void reportWorkerFailures() {
+    if (orchestrator == null) {
+      return;
+    }
+    for (Throwable failure : orchestrator.getFailures()) {
+      LOGGER.error("A suite worker ended on an exception", failure);
     }
   }
 }

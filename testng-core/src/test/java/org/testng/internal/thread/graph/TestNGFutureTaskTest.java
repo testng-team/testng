@@ -45,7 +45,8 @@ public class TestNGFutureTaskTest {
   }
 
   /** The task runs on the calling thread, so plain fields are enough to capture the callback. */
-  private static class RecordingCallback implements BiConsumer<IWorker<String>, Throwable> {
+  private static class RecordingCallback
+      implements BiConsumer<IWorker<String>, @Nullable Throwable> {
 
     // Both stay null until the callback fires, and error stays null on a clean completion.
     private @Nullable IWorker<String> reported;

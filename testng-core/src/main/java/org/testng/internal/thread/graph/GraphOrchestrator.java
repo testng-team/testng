@@ -1,5 +1,6 @@
 package org.testng.internal.thread.graph;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ public class GraphOrchestrator<T> {
   private final IThreadWorkerFactory<T> factory;
   private final boolean shutdownExecutorOnFinish;
   private final CountDownLatch completed = new CountDownLatch(1);
+  private final List<Throwable> failures = new ArrayList<>();
 
   private final AutoCloseableLock internalLock = new AutoCloseableLock();
 
@@ -74,6 +76,22 @@ public class GraphOrchestrator<T> {
     return completed.await(timeout, unit);
   }
 
+  /**
+   * The throwables that ended a worker, in the order they were reported. A worker that throws --
+   * typically because a listener threw -- must still have its nodes marked finished, or the graph
+   * never reaches its final state and the run hangs (see GITHUB-3238), so the outcome of such a
+   * worker is indistinguishable from a clean one by the time the graph is done. Keeping the
+   * throwable is what lets the caller report it; it used to be discarded here, leaving the real
+   * cause reachable only under a debugger. See GITHUB-3243.
+   *
+   * @return an immutable snapshot, empty when every worker ran cleanly.
+   */
+  public List<Throwable> getFailures() {
+    try (AutoCloseableLock ignore = internalLock.lock()) {
+      return List.copyOf(failures);
+    }
+  }
+
   private void runNodes(List<T> freeNodes) {
     List<IWorker<T>> workers = factory.createWorkers(freeNodes);
     mapNodeToWorker(workers, freeNodes);
@@ -100,8 +118,13 @@ public class GraphOrchestrator<T> {
     }
   }
 
-  private void afterExecute(IWorker<T> r, Throwable t) {
+  private void afterExecute(IWorker<T> r, @Nullable Throwable t) {
     try (AutoCloseableLock ignore = internalLock.lock()) {
+      if (t != null) {
+        failures.add(t);
+      }
+      // Deliberately unconditional: the nodes of a worker that threw must be marked finished too,
+      // or the graph never reaches its final state and the run hangs. See GITHUB-3238.
       setStatus(r, computeStatus(r));
       if (graph.getNodeCount() == graph.getNodeCountWithStatus(IDynamicGraph.Status.FINISHED)) {
         if (shutdownExecutorOnFinish) {
