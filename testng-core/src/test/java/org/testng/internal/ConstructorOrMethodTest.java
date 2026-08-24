@@ -53,7 +53,7 @@ public class ConstructorOrMethodTest {
 
     first.makeAccessible();
 
-    assertThat(second.getMethod().isAccessible())
+    assertThat(second.requireMethod().isAccessible())
         .as("the sibling wrapper sees the shared handle as accessible")
         .isTrue();
   }
@@ -71,7 +71,7 @@ public class ConstructorOrMethodTest {
     accessible.setAccessible(true);
     ConstructorOrMethod wrapper = new ConstructorOrMethod(accessible);
 
-    assertThat(wrapper.getMethod().isAccessible())
+    assertThat(wrapper.requireMethod().isAccessible())
         .as("an already-accessible incoming handle stays accessible after wrapping")
         .isTrue();
   }

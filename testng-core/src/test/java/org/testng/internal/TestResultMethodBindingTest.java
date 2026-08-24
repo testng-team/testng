@@ -59,7 +59,7 @@ public class TestResultMethodBindingTest {
   public void aBoundTestNameNamesTheResult() {
     ITestNGMethod method = methodBoundToAClass();
     when(method.getInstance()).thenReturn(new Object());
-    when(method.getTestClass().getTestName()).thenReturn("named by @Test");
+    when(Utils.requireTestClassOf(method).getTestName()).thenReturn("named by @Test");
 
     assertThat(TestResult.newTestResultFor(method).getName()).isEqualTo("named by @Test");
   }

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.Test;
 import org.testng.thread.IWorker;
 
@@ -46,11 +47,12 @@ public class TestNGFutureTaskTest {
   /** The task runs on the calling thread, so plain fields are enough to capture the callback. */
   private static class RecordingCallback implements BiConsumer<IWorker<String>, Throwable> {
 
-    private IWorker<String> reported;
-    private Throwable error;
+    // Both stay null until the callback fires, and error stays null on a clean completion.
+    private @Nullable IWorker<String> reported;
+    private @Nullable Throwable error;
 
     @Override
-    public void accept(IWorker<String> worker, Throwable throwable) {
+    public void accept(IWorker<String> worker, @Nullable Throwable throwable) {
       this.reported = worker;
       this.error = throwable;
     }

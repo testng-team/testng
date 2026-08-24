@@ -1,6 +1,7 @@
 package org.testng.xml;
 
 import java.io.InputStream;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
 
 public class FakeHttpXmlParser implements ISuiteParser {
@@ -10,7 +11,7 @@ public class FakeHttpXmlParser implements ISuiteParser {
   }
 
   @Override
-  public XmlSuite parse(String filePath, InputStream is, boolean loadClasses)
+  public XmlSuite parse(String filePath, @Nullable InputStream is, boolean loadClasses)
       throws TestNGException {
     XmlSuite suite = new XmlSuite();
     suite.setName("fake_suite");
