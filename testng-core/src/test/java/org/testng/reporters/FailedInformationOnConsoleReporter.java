@@ -68,12 +68,14 @@ public class FailedInformationOnConsoleReporter implements IReporter {
     String methodname = result.getMethod().getMethodName() + "()";
     builder.append(clsname).append(methodname);
     Object[] parameters = result.getParameters();
-    if (parameters != null && parameters.length != 0) {
+    if (parameters.length != 0) {
       builder.append("  Parameters:").append(Arrays.toString(parameters));
     }
     Throwable throwable = result.getThrowable();
-    builder.append("\nException:\n");
-    builder.append(Utils.shortStackTrace(throwable, false));
+    if (throwable != null) {
+      builder.append("\nException:\n");
+      builder.append(Utils.shortStackTrace(throwable, false));
+    }
     builder.append("\n\n");
     System.err.println(builder);
   }

@@ -22,7 +22,7 @@ public class MethodMultiplyingInterceptor extends TestListenerAdapter
           method
               .getMethod()
               .getConstructorOrMethod()
-              .getMethod()
+              .requireMethod()
               .getAnnotation(TestClassSample.Occurs.class);
       if (occurs == null) {
         continue;

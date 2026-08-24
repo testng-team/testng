@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.RuntimeBehavior;
@@ -138,7 +139,8 @@ public class XMLParserTest {
   }
 
   private static final class NameCollector extends DefaultHandler {
-    private String suiteName;
+    /** Null until a {@code <suite>} element carrying a name has been seen. */
+    private @Nullable String suiteName;
 
     @Override
     public void startElement(String uri, String localName, String name, Attributes attributes) {

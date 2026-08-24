@@ -6,6 +6,7 @@ import static org.testng.xml.SuiteCorpus.parseFile;
 import static org.testng.xml.SuiteCorpus.parseString;
 
 import java.io.IOException;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -25,7 +26,7 @@ import org.testng.internal.RuntimeBehavior;
  */
 public class XmlRoundTripTest {
 
-  private String previousMode;
+  private @Nullable String previousMode;
 
   @BeforeMethod
   public void rememberValidationMode() {

@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Objects;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import org.jspecify.annotations.Nullable;
 import org.testng.SkipException;
 import org.testng.TestNGException;
 import org.testng.annotations.AfterMethod;
@@ -49,7 +50,7 @@ public class XmlValidationTest {
   private static final String SCHEMA_DECLARED_INVALID_SUITE =
       "xml/validation/schema-declared-wrong-element-order.xml";
 
-  private String previousMode;
+  private @Nullable String previousMode;
 
   @BeforeMethod
   public void rememberValidationMode() {
@@ -507,6 +508,6 @@ public class XmlValidationTest {
       source.setSystemId(path.toUri().toString());
       parser.parse(source, handler);
     }
-    return handler.getSuite();
+    return Objects.requireNonNull(handler.getSuite(), "a successful parse produces a suite");
   }
 }
