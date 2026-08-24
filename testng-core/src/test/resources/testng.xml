@@ -786,6 +786,7 @@
       <class name="org.testng.internal.reporters.ParameterSnapshotsTest" />
       <class name="org.testng.internal.reporters.ParameterSnapshotLifecycleTest" />
       <class name="org.testng.internal.reporters.ParameterAnnouncementTest" />
+      <class name="org.testng.internal.reporters.ParameterSnapshotWiringTest" />
     </classes>
   </test>
 
