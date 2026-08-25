@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 final class TestNGURLs {
 
@@ -13,7 +14,7 @@ final class TestNGURLs {
 
   static boolean isDTDDomainInternallyKnownToTestNG(String publicId) {
     try {
-      URL url = new URL(publicId.toLowerCase().trim());
+      URL url = new URL(publicId.toLowerCase(Locale.ROOT).trim());
       return DOMAINS.contains(url.getHost());
     } catch (MalformedURLException e) {
       return false;

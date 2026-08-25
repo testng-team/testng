@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -108,8 +109,8 @@ public class PackageUtils {
 
     for (int i = 0; i < classpathFragments.length; i++) {
       String path;
-      if (classpathFragments[i].toLowerCase().endsWith(".jar")
-          || classpathFragments[i].toLowerCase().endsWith(".zip")) {
+      String fragment = classpathFragments[i].toLowerCase(Locale.ROOT);
+      if (fragment.endsWith(".jar") || fragment.endsWith(".zip")) {
         path = classpathFragments[i] + "!/";
       } else {
         if (classpathFragments[i].endsWith(File.separator)) {

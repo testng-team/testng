@@ -155,6 +155,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
             }
 
             @Override
+            @SuppressWarnings("TypeParameterUnusedInFormals") // signature fixed by the interface
             public <T> T newInstance(String clsName, Object... parameters) {
               try {
                 return suiteObjectFactory.newInstance(clsName, parameters);
@@ -262,12 +263,9 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     }
   }
 
-  private void setOutputDir(String outputDir) {
-    if (isStringBlank(outputDir) && useDefaultListeners) {
-      outputDir = DEFAULT_OUTPUT_DIR;
-    }
-
-    this.outputDir = null != outputDir ? new File(outputDir).getAbsolutePath() : null;
+  private void setOutputDir(String dir) {
+    String resolved = isStringBlank(dir) && useDefaultListeners ? DEFAULT_OUTPUT_DIR : dir;
+    outputDir = null != resolved ? new File(resolved).getAbsolutePath() : null;
   }
 
   private ITestRunnerFactory buildRunnerFactory(Comparator<ITestNGMethod> comparator) {

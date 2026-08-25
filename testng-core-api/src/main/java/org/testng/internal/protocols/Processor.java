@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 import org.testng.internal.Utils;
 
@@ -13,7 +14,7 @@ public abstract class Processor {
 
   public static Processor newInstance(String protocol) {
     Processor instance;
-    switch (protocol.toLowerCase()) {
+    switch (protocol.toLowerCase(Locale.ROOT)) {
       case "file":
         instance = new FileProcessor();
         break;
