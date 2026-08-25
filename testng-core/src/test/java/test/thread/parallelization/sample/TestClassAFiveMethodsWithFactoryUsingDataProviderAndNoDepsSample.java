@@ -17,6 +17,7 @@ import org.testng.ITestContext;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
+import org.testng.internal.Utils;
 import test.thread.parallelization.TestNgRunStateTracker;
 
 public class TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
@@ -173,7 +174,7 @@ public class TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
       dataProviderParam = dataProviderParam.substring(0, dataProviderParam.indexOf(")"));
     }
 
-    dataProviderVals = dataProviderParam.split(",");
+    dataProviderVals = Utils.splitOnLiteral(dataProviderParam, ",");
 
     Object[][] dataToProvide = new Object[dataProviderVals.length][4];
 

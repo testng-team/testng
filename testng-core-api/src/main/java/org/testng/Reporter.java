@@ -32,9 +32,11 @@ public class Reporter {
       new InheritableThreadLocal<>();
 
   /** All output logged in a sequential order. */
-  // ArrayList, not a concurrent list: neither this nor the LinkedList it replaces was ever safe
-  // for the parallel appends log() makes, and making it safe means making the append and the index
-  // read below one operation, which is a change of behaviour and not of collection.
+  // ArrayList, not a concurrent list: the appends are already serialised, since log() holds
+  // lockForLogging across the whole of logToReports, which is what makes the size read and the add
+  // below one operation. What is not covered is that getOutput() hands this very list to the
+  // reporters and clear() empties it, neither of them under that lock -- a hazard neither this nor
+  // the LinkedList it replaces addresses, and one that a different collection would not close.
   private static final List<String> m_output = new ArrayList<>();
 
   private static final Map<String, List<Integer>> m_methodOutputMap = new ConcurrentHashMap<>();

@@ -157,8 +157,9 @@ public abstract class AbstractXmlReporter
         maxEnd = candidate;
       }
     }
-    // Both are set on the first iteration or not at all, so they are null together: the suite is
-    // completely empty.
+    // Both are set on the first iteration or not at all, so a null start means the suite carried
+    // no result. maxEnd is tested rather than assumed because an ITestContext outside TestNG can
+    // answer null from getStartInstant().
     Instant start = minStart == null ? Instant.now() : minStart;
     setDurationAttributes(config, props, start, maxEnd == null ? start : maxEnd);
     return props;

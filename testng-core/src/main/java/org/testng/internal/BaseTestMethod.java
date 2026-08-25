@@ -409,8 +409,8 @@ public abstract class BaseTestMethod
    * {@inheritDoc} Compares two BaseTestMethod using the test class then the associated Java Method.
    */
   @Override
-  // getClass() on purpose, and this is the site the whole review turned on. It is the only thing
-  // that tells a ConfigurationMethod from a TestNGMethod wrapping the same method, the same class
+  // getClass() on purpose: it is the only thing that tells a ConfigurationMethod from a
+  // TestNGMethod wrapping the same method, the same class
   // and the same instance id -- none of the three subclasses overrides equals -- and these objects
   // are HashSet members and HashMap keys in a dozen places. The class cannot be sealed either:
   // three subclasses extend it here and org.testng.internal is Export-Package'd.

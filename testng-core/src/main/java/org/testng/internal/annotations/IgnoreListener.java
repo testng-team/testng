@@ -6,6 +6,7 @@ import java.util.Arrays;
 import org.jspecify.annotations.Nullable;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Ignore;
+import org.testng.internal.Utils;
 import org.testng.internal.reflect.ReflectionHelper;
 
 public class IgnoreListener implements IAnnotationTransformer {
@@ -78,7 +79,7 @@ public class IgnoreListener implements IAnnotationTransformer {
     if (result != null) {
       return result;
     }
-    String[] parts = testPackage.getName().split("\\.");
+    String[] parts = Utils.splitOnLiteral(testPackage.getName(), ".");
     String[] parentParts = Arrays.copyOf(parts, parts.length - 1);
     String parentPackageName = String.join(".", parentParts);
     if (parentPackageName.isEmpty()) {

@@ -18,8 +18,7 @@ public final class Lists {
   @Deprecated(forRemoval = true, since = "7.13.0")
   // The LinkedList is this factory's published contract, not a choice made inside it:
   // org.testng.collections is Export-Package'd and a caller may already depend on the type it
-  // answers. Swapping it under them would be the breaking change, not the fix. It has no call site
-  // left in TestNG and the javadoc above names the replacement.
+  // answers. It has no call site left in TestNG, so the answer is its removal.
   @SuppressWarnings("JdkObsolete")
   public static <K> List<K> newLinkedList() {
     return new LinkedList<>();

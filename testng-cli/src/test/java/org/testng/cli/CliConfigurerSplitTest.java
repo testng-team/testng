@@ -6,48 +6,36 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.lang.reflect.Field;
 import java.util.List;
 import org.testng.TestNG;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
- * What {@code -testclass} and {@code -testnames} do with the commas the user types. Nothing else
- * covers it: {@link CliConfigurerParityTest} compares the two configurers against each other, so a
- * change applied to both is invisible to it.
+ * What {@code -testclass} and {@code -testnames} do with the commas the user types. {@link
+ * org.testng.internal.Utils#splitCommaSeparated} owns the contract and {@code UtilsTest} asserts
+ * it; what this covers is that the command line is wired to it, which nothing else does — {@link
+ * CliConfigurerParityTest} compares the two configurers against each other, so a change applied to
+ * both is invisible to it.
  *
  * <p>The class names are JDK types on purpose. What is under test is the splitting, and the loader
  * only has to answer something for each piece.
  */
 public class CliConfigurerSplitTest {
 
-  @Test
-  public void aSingleClassNameIsTheOnlyClass() {
-    assertThat(testClassesOf("java.lang.String")).containsExactly(String.class);
+  @Test(dataProvider = "testClassValues")
+  public void theTestClassOptionIsSplitOnCommas(String value, Class<?>[] expected) {
+    assertThat(testClassesOf(value)).containsExactly(expected);
   }
 
-  @Test
-  public void severalClassNamesAreSplitOnTheComma() {
-    assertThat(testClassesOf("java.lang.String,java.lang.Integer"))
-        .containsExactly(String.class, Integer.class);
-  }
-
-  @Test
-  public void aTrailingCommaContributesNoClass() {
-    assertThat(testClassesOf("java.lang.String,")).containsExactly(String.class);
-  }
-
-  @Test
-  public void aSpaceAfterTheCommaIsNotPartOfTheName() {
-    assertThat(testClassesOf("java.lang.String, java.lang.Integer"))
-        .containsExactly(String.class, Integer.class);
-  }
-
-  @Test
-  public void anEmptyValueNamesNoClass() {
-    assertThat(testClassesOf("")).isEmpty();
-  }
-
-  @Test
-  public void aValueThatIsNothingButSeparatorsNamesNoClass() {
-    assertThat(testClassesOf(" , ,")).isEmpty();
+  @DataProvider(name = "testClassValues")
+  public Object[][] testClassValues() {
+    return new Object[][] {
+      {"java.lang.String", new Class<?>[] {String.class}},
+      {"java.lang.String,java.lang.Integer", new Class<?>[] {String.class, Integer.class}},
+      {"java.lang.String,", new Class<?>[] {String.class}},
+      {"java.lang.String, java.lang.Integer", new Class<?>[] {String.class, Integer.class}},
+      {"", new Class<?>[0]},
+      {" , ,", new Class<?>[0]},
+    };
   }
 
   @Test
@@ -56,7 +44,7 @@ public class CliConfigurerSplitTest {
         .hasMessageContaining("Cannot load class from file: com.acme.NoSuchClass");
   }
 
-  /** -testnames splits the same way, so the pieces are trimmed there too. */
+  /** -testnames goes through the same helper, so the pieces are trimmed there too. */
   @Test
   public void testNamesAreSplitTheSameWay() {
     CliOptions cli = new CliOptions();
@@ -64,8 +52,8 @@ public class CliConfigurerSplitTest {
     TestNG testng = new TestNG();
     CliConfigurer.configure(testng, cli);
 
-    assertThat(CliConfigurerSplitTest.<List<String>>read(testng, "m_testNames"))
-        .containsExactly("t1", "t2");
+    List<String> names = read(testng, "m_testNames");
+    assertThat(names).containsExactly("t1", "t2");
   }
 
   private static Class<?>[] testClassesOf(String testClass) {
