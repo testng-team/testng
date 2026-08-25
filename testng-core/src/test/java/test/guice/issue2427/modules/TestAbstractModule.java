@@ -22,6 +22,10 @@ abstract class TestAbstractModule extends AbstractModule {
   }
 
   @Override
+  // getClass() on purpose: Guice deduplicates modules by equals, and what this fixture asserts is
+  // that two instances of the same concrete module are one module. instanceof would merge the
+  // three subclasses into one and defeat the test.
+  @SuppressWarnings("EqualsGetClass")
   public boolean equals(Object obj) {
     return obj != null && Objects.equals(getClass(), obj.getClass());
   }

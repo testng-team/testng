@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Singleton;
 import test.guice.issue2343.Person;
 
-public class AnotherParentModule extends AbstractModule {
+public final class AnotherParentModule extends AbstractModule {
 
   private static final AtomicInteger counter = new AtomicInteger(0);
 

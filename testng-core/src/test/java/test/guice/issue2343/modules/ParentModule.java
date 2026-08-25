@@ -5,7 +5,7 @@ import java.util.Objects;
 import javax.inject.Singleton;
 import test.guice.issue2343.Person;
 
-public class ParentModule extends AbstractModule {
+public final class ParentModule extends AbstractModule {
 
   @Override
   protected void configure() {

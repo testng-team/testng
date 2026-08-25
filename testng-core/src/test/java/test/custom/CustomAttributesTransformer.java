@@ -9,7 +9,7 @@ import org.testng.IAnnotationTransformer;
 import org.testng.annotations.CustomAttribute;
 import org.testng.annotations.ITestAnnotation;
 
-public class CustomAttributesTransformer implements IAnnotationTransformer {
+public final class CustomAttributesTransformer implements IAnnotationTransformer {
 
   @Override
   public void transform(
@@ -19,7 +19,7 @@ public class CustomAttributesTransformer implements IAnnotationTransformer {
     annotation.setAttributes(attributes);
   }
 
-  public static class MoreAttribute implements CustomAttribute {
+  public static final class MoreAttribute implements CustomAttribute {
 
     private final String key;
     private final String[] values;

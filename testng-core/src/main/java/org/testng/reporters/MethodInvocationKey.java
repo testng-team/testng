@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import org.testng.ITestNGMethod;
 
-class MethodInvocationKey {
+final class MethodInvocationKey {
   private final ITestNGMethod methodIdentity;
   private final Object[] parameters;
   private final int currentInvocationCount;

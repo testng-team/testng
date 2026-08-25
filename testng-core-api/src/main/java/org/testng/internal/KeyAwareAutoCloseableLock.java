@@ -19,7 +19,7 @@ public final class KeyAwareAutoCloseableLock {
     return new AutoReleasable(internal.lock(), () -> internalMap.remove(key));
   }
 
-  public static class AutoReleasable implements AutoCloseable {
+  public static final class AutoReleasable implements AutoCloseable {
 
     private final AutoCloseableLock lock;
     private final Runnable cleanupAction;
