@@ -802,6 +802,7 @@
   <test name="ConfigFailurePolicy">
     <classes>
       <class name="test.configurationfailurepolicy.FailurePolicyTest" />
+      <class name="test.configurationfailurepolicy.issue2731.IssueTest" />
     </classes>
   </test>
 
