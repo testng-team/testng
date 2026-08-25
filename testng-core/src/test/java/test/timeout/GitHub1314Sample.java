@@ -15,7 +15,7 @@ public class GitHub1314Sample {
   private void iHangHorribly() {
     System.out.println("Test2");
     while (true) {
-      int two = 1 + 1;
+      // hangs on purpose
     }
   }
 

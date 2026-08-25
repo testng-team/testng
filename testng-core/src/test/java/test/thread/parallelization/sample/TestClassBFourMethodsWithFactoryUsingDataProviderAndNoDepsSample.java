@@ -138,7 +138,7 @@ public class TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample {
 
     String dataProviderParam = params.get("dataProviderParam");
 
-    String[] dataProviderVals = null;
+    String[] dataProviderVals;
     String classNamePattern =
         TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getSimpleName()
             + "(";

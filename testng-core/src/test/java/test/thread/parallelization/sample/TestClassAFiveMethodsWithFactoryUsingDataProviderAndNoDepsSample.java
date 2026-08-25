@@ -161,7 +161,7 @@ public class TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
 
     String dataProviderParam = params.get("dataProviderParam");
 
-    String[] dataProviderVals = null;
+    String[] dataProviderVals;
     String classNamePattern =
         TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getSimpleName()
             + "(";

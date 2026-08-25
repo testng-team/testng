@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1009,7 +1008,6 @@ public class TestNgRunStateTracker {
         sb.append(", Data provider param: ").append(getData(EventInfo.DATA_PROVIDER_PARAM));
       }
 
-      Date now = new Date(timeOfEvent);
       SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
       sb.append(", Time of event: ").append(sdfDate.format(timeOfEvent));

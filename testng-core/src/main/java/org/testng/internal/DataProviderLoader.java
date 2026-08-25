@@ -2,12 +2,8 @@ package org.testng.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
-import org.testng.log4testng.Logger;
 
 public class DataProviderLoader extends ClassLoader {
-  private static final int BUFFER_SIZE = 1 << 20;
-  private static final Logger log = Logger.getLogger(DataProviderLoader.class);
-
   public Class loadClazz(String path) throws ClassNotFoundException {
     Class clazz = findLoadedClass(path);
     if (clazz == null) {

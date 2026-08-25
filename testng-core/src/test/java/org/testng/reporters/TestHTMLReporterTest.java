@@ -33,7 +33,7 @@ public class TestHTMLReporterTest {
 
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw, true);
-    TestHTMLReporter.generateTable(pw, "title", tests, "cssClass", (t1, t2) -> 0);
+    TestHTMLReporter.generateTable(pw, "title", tests, "cssClass", (unusedLeft, unusedRight) -> 0);
 
     assertThat(sw.toString())
         .contains("Parameters: org.testng.reporters.TestHTMLReporterTest$ThrowingOnToString@");

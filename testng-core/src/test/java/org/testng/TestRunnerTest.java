@@ -10,6 +10,7 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.testng.internal.Configuration;
 import org.testng.internal.IConfiguration;
+import org.testng.internal.MethodSorting;
 import org.testng.internal.objects.DefaultTestObjectFactory;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
@@ -96,7 +97,8 @@ public class TestRunnerTest {
                 listeners,
                 classListeners,
                 (ISuiteRunnerListener) suite);
-    SuiteRunner suite = new SuiteRunner(configuration, xmlSuite, outputDir, factory, (o1, o2) -> 0);
+    SuiteRunner suite =
+        new SuiteRunner(configuration, xmlSuite, outputDir, factory, MethodSorting.NONE);
     return factory.newTestRunner(suite, xmlTest, emptyList(), emptyList());
   }
 }

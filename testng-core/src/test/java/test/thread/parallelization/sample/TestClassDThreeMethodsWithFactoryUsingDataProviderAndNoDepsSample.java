@@ -115,7 +115,7 @@ public class TestClassDThreeMethodsWithFactoryUsingDataProviderAndNoDepsSample {
 
     String dataProviderParam = params.get("dataProviderParam");
 
-    String[] dataProviderVals = null;
+    String[] dataProviderVals;
     String classNamePattern =
         TestClassDThreeMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getSimpleName()
             + "(";

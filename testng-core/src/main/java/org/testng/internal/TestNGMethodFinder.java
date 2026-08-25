@@ -40,8 +40,6 @@ public class TestNGMethodFinder implements ITestMethodFinder {
     AFTER_GROUPS
   }
 
-  private static final Comparator<ITestNGMethod> NO_COMPARISON = (o1, o2) -> 0;
-
   private final ITestObjectFactory objectFactory;
   private final RunInfo runInfo;
   private final IAnnotationFinder annotationFinder;
@@ -49,7 +47,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
 
   public TestNGMethodFinder(
       ITestObjectFactory objectFactory, RunInfo runInfo, IAnnotationFinder annotationFinder) {
-    this(objectFactory, runInfo, annotationFinder, NO_COMPARISON);
+    this(objectFactory, runInfo, annotationFinder, MethodSorting.NONE);
   }
 
   public TestNGMethodFinder(

@@ -466,7 +466,7 @@ public class EmailableReporter2 implements IReporter {
     Object[] parameters = result.getParameters();
     boolean hasRows = dumpParametersInfo("Factory Parameter", result.getFactoryParameters());
     int parameterCount = parameters == null ? 0 : parameters.length;
-    hasRows |= dumpParametersInfo("Parameter", result.getParameters());
+    hasRows |= dumpParametersInfo("Parameter", parameters);
     dumpAttributesInfo(result.getMethod().getAttributes());
 
     // Write reporter messages (if any)

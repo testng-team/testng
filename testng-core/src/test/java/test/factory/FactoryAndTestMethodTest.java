@@ -11,7 +11,7 @@ public class FactoryAndTestMethodTest {
 
   @Factory(dataProvider = "data")
   public Object[] ohNo(String s) {
-    return makeNullArgTests(s);
+    return new Object[0];
   }
 
   public static class NullArgsTest {
@@ -25,10 +25,6 @@ public class FactoryAndTestMethodTest {
     public void test() {
       assertThat(s).isNotNull();
     }
-  }
-
-  private Object[] makeNullArgTests(String s) {
-    return new Object[0];
   }
 
   @DataProvider(name = "data")

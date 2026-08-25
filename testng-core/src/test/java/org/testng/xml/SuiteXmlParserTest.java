@@ -28,7 +28,7 @@ public class SuiteXmlParserTest {
     SuiteXmlParser parser = new SuiteXmlParser();
 
     try (FileInputStream stream = new FileInputStream(new File(PARENT, fileName))) {
-      XmlSuite suite = parser.parse(fileName, stream, false);
+      parser.parse(fileName, stream, false);
       if (!shouldWork) {
         fail("Parsing of " + fileName + " is supposed to fail");
       }

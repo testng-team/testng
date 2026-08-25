@@ -43,7 +43,7 @@ public class ParameterOverrideTest extends SimpleBaseTest {
     clazz.getLocalParameters().put("InheritedFromClass", "InheritedFromClass");
 
     XmlInclude includeF = createXmlInclude(clazz, "f");
-    XmlInclude includeG = createXmlInclude(clazz, "g");
+    createXmlInclude(clazz, "g");
 
     switch (status) {
       case PASS_TEST:
