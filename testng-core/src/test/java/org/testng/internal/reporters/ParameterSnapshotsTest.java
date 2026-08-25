@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -81,6 +82,51 @@ public class ParameterSnapshotsTest {
     snapshots.discard(result);
 
     assertThat(snapshots.find(result)).isNull();
+  }
+
+  @Test(
+      description =
+          "A store something reads once the invocations are over keeps what the live reporters are"
+              + " done with")
+  public void aStoreReadAfterTheInvocationsKeepsWhatIsOfferedBack() {
+    ITestResult result = resultOf(new CountingParameter("value"));
+    ParameterSnapshots snapshots = new ParameterSnapshots();
+    snapshots.requestCaptureHeldUntilReporting();
+    snapshots.captureIfAbsent(result);
+
+    snapshots.discard(result);
+
+    assertThat(requireNonNull(snapshots.find(result)).renderedValues()).containsExactly("value");
+  }
+
+  @Test(description = "A live reader arriving after a late one does not make the store drop again")
+  public void aLiveRequestDoesNotCancelALateOne() {
+    assertKeptAfterDiscard(
+        snapshots -> {
+          snapshots.requestCaptureHeldUntilReporting();
+          snapshots.requestCapture();
+        });
+  }
+
+  @Test(description = "A late reader arriving after a live one stops the store dropping")
+  public void aLateRequestDoesNotCancelALiveOne() {
+    assertKeptAfterDiscard(
+        snapshots -> {
+          snapshots.requestCapture();
+          snapshots.requestCaptureHeldUntilReporting();
+        });
+  }
+
+  /** Asks in the given order, then offers a captured result back and expects it kept. */
+  private static void assertKeptAfterDiscard(Consumer<ParameterSnapshots> requests) {
+    ITestResult result = resultOf(new CountingParameter("value"));
+    ParameterSnapshots snapshots = new ParameterSnapshots();
+    requests.accept(snapshots);
+    snapshots.captureIfAbsent(result);
+
+    snapshots.discard(result);
+
+    assertThat(requireNonNull(snapshots.find(result)).renderedValues()).containsExactly("value");
   }
 
   @Test(

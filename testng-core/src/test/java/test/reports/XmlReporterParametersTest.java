@@ -20,9 +20,11 @@ import org.testng.reporters.PerSuiteXMLReporter;
 import org.testng.reporters.RuntimeBehavior;
 import org.testng.reporters.TextReporter;
 import org.testng.reporters.XMLReporter;
+import org.testng.reporters.snapshot.CountedConfigurationParameterSample;
 import org.testng.reporters.snapshot.NonCloneableParameterSample;
 import org.testng.reporters.snapshot.ParallelParameterSample;
 import org.testng.reporters.snapshot.ParameterShapesSample;
+import org.testng.reporters.snapshot.PassingConfigurationParameterSample;
 import org.testng.reporters.snapshot.RenderingCountSample;
 import org.testng.reporters.snapshot.WrongArgumentCountSample;
 import org.w3c.dom.Document;
@@ -95,6 +97,20 @@ public class XmlReporterParametersTest extends SimpleBaseTest {
 
   @Test(
       description =
+          "A configuration method that passed is reported with what it was announced with, which"
+              + " means its snapshot outlived the invocation that took it")
+  public void passedConfigurationParametersKeepTheirInvocationTimeValue() {
+    List<List<String>> reported =
+        parametersOf(runUnderXmlReporter(PassingConfigurationParameterSample.class), "prepare");
+
+    // The configuration is handed the row its test method will run with, and mutates it. Nothing
+    // lists a passing configuration until this file does, so reading it back here would answer
+    // what the method left behind rather than what it was given.
+    assertThat(reported).containsExactly(singletonList("[before-configuration]"));
+  }
+
+  @Test(
+      description =
           "The XML serialization of a value is unchanged: no console quoting, an attribute for a"
               + " null, and the parameters in the order the method declares them")
   public void valuesKeepTheirXmlRepresentationAndOrder() {
@@ -123,6 +139,24 @@ public class XmlReporterParametersTest extends SimpleBaseTest {
     assertThat(RenderingCountSample.renderings() - renderedBefore).isEqualTo(1);
     assertThat(parametersOf(parse(new File(outputDirectory, RuntimeBehavior.FILE_NAME)), "report"))
         .containsExactly(singletonList("counted"));
+  }
+
+  @Test(
+      description =
+          "A passing configuration is described from the snapshot that was taken for it, so its"
+              + " value is rendered once rather than captured, dropped and rendered again")
+  public void aPassingConfigurationIsRenderedOnce() {
+    int renderedBefore = CountedConfigurationParameterSample.renderings();
+
+    Document report = runUnderXmlReporter(CountedConfigurationParameterSample.class);
+
+    // Two renderings, one per invocation that was handed the value: the configuration, which is
+    // given the whole row, and the test method itself -- as the two assertions below account for.
+    // Dropping the configuration's snapshot before this report ran would make it three, which is
+    // the capture-then-discard-then-fallback pair this measures the absence of.
+    assertThat(CountedConfigurationParameterSample.renderings() - renderedBefore).isEqualTo(2);
+    assertThat(parametersOf(report, "prepare")).containsExactly(singletonList("[counted]"));
+    assertThat(parametersOf(report, "report")).containsExactly(singletonList("counted"));
   }
 
   @Test(

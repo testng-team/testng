@@ -1177,7 +1177,12 @@ public class TestRunner
    * <p>Being first here also means being last once {@code
    * TestListenerHelper#runPostConfigurationListeners} reverses the order, which is where it
    * belongs: whatever an internal listener drops about a finished configuration, it drops after the
-   * reporters have had it.
+   * reporters have had it. Last among these listeners, that is, and only while nothing reorders
+   * them -- so the guarantee is worth having but is not one to build on. {@code ListenerComparator}
+   * sorts this list before it is reversed and can move it anywhere; the preferential listeners are
+   * merged in after the regular ones; and the invoker appends {@link ConfigurationListener} after
+   * the reversal, which means the result is filed into {@code m_passedConfigurations} -- where the
+   * reports read it -- only once every listener here has been told.
    *
    * @param icl - An internal listener the other listeners depend on.
    */

@@ -28,7 +28,9 @@ import org.testng.ITestResult;
  *
  * <p>Capture is opt-in: rendering a value runs the user's {@code toString()}, which is pure cost
  * when no reporter is verbose enough to print it. A consumer says so once with {@link
- * #requestCapture()}.
+ * #requestCapture()}, or with {@link #requestCaptureHeldUntilReporting()} when it will read the
+ * store after the invocations are over -- which is also what decides whether anything may be
+ * dropped along the way. See {@link #discard}.
  */
 public final class ParameterSnapshots {
 
@@ -40,6 +42,7 @@ public final class ParameterSnapshots {
 
   private final Map<ResultKey, ParameterSnapshot> snapshots = new ConcurrentHashMap<>();
   private volatile boolean captureRequested;
+  private volatile boolean heldUntilReporting;
 
   /**
    * Gives a suite the store its invocations will fill and its reporters will read.
@@ -80,14 +83,41 @@ public final class ParameterSnapshots {
     return attribute instanceof ParameterSnapshots ? (ParameterSnapshots) attribute : null;
   }
 
-  /** Declares that a reporter will read these snapshots, so they are worth taking. */
+  /**
+   * Declares that a reporter will read these snapshots, so they are worth taking, and that it can
+   * live with {@link #discard} dropping a configuration method that passed.
+   *
+   * <p>Which is not the same as reading from inside the invocation lifecycle, tempting as that
+   * shorthand is: {@code TextReporter} reads at {@code onFinish}, once every configuration of its
+   * context has already succeeded. What makes both callers of this safe is narrower -- neither
+   * lists {@link org.testng.ITestContext#getPassedConfigurations()}, which is the only thing {@code
+   * discard} is ever offered. A reporter that starts listing them needs {@link
+   * #requestCaptureHeldUntilReporting()} instead, whenever it reads.
+   */
   public void requestCapture() {
     captureRequested = true;
   }
 
   /**
-   * The same, for a reporter that has a suite rather than a store: a suite without one is a suite
-   * whose snapshots nobody is going to take, which is not the reporter's business.
+   * The same, for a reporter that reads the store once the invocations of the run are over: nothing
+   * is dropped for such a run, since a snapshot the live reporters are finished with is one it has
+   * not seen yet.
+   *
+   * <p>Kept as a second flag rather than as one ordered value on purpose. Both are monotone writes
+   * of {@code true} and neither clears the other, so a run that has both kinds of reader -- the
+   * default one above {@code -verbose 4} -- gets the same answer whichever asks first. Folding them
+   * into one field updated to a maximum would turn two race-free writes into a read-modify-write,
+   * and {@code <suite parallel="tests">} makes those calls from two runners at once.
+   */
+  public void requestCaptureHeldUntilReporting() {
+    captureRequested = true;
+    heldUntilReporting = true;
+  }
+
+  /**
+   * The {@link #requestCapture()} of a reporter that has a suite rather than a store: a suite
+   * without one is a suite whose snapshots nobody is going to take, which is not the reporter's
+   * business.
    *
    * <p>Call it from {@link org.testng.ITestListener#onStart(org.testng.ITestContext)}, which is
    * early enough: a context starts before its own {@code @BeforeTest} configurations and before any
@@ -101,6 +131,20 @@ public final class ParameterSnapshots {
     ParameterSnapshots snapshots = of(suite);
     if (snapshots != null) {
       snapshots.requestCapture();
+    }
+  }
+
+  /**
+   * The same, for a reporter that will read the store once the invocations of the run are over. It
+   * has no invocation lifecycle to ask from, so the run asks on its behalf; see {@link
+   * ParameterSnapshotReader#requestCaptureIfAnyReads}.
+   *
+   * @param suite - A suite about to run, none of whose invocations has started.
+   */
+  public static void requestCaptureHeldUntilReportingFor(@Nullable ISuite suite) {
+    ParameterSnapshots snapshots = of(suite);
+    if (snapshots != null) {
+      snapshots.requestCaptureHeldUntilReporting();
     }
   }
 
@@ -180,20 +224,32 @@ public final class ParameterSnapshots {
   }
 
   /**
-   * Drops what was captured for a result nothing will be reported about anymore -- a configuration
-   * method that succeeded, which no reporter lists once the run is over. It is the caller's
-   * business to know that the live reporters are done with it; see {@link
-   * ParameterSnapshotRecorder#onConfigurationSuccess}. Guarded like {@link #captureIfAbsent}:
-   * {@code @BeforeMethod} / {@code @AfterMethod} invocations are the most frequent events in a run,
-   * and there is nothing to drop when nothing is being captured.
+   * Offers back what was captured for a result every live reporter is done with -- a configuration
+   * method that succeeded, which each of them prints as it passes and none of them lists again.
    *
-   * @param result - The result nothing will be reported about anymore.
+   * <p>Half of that decision is the caller's and half is not, which is why it is taken here. The
+   * caller knows the reporters that sit in the invocation lifecycle have had it; only the store
+   * knows whether a reporter that has not run yet still wants it, and one that reads at {@code
+   * generateReport} does: {@code testng-results.xml} lists the configurations that passed. So a run
+   * that asked through {@link #requestCaptureHeldUntilReporting()} keeps everything until {@link
+   * #detachFrom} releases it, and a run whose readers are all live ones drops as it goes.
+   *
+   * <p>Guarded like {@link #captureIfAbsent} for the same reason: {@code @BeforeMethod} /
+   * {@code @AfterMethod} invocations are the most frequent events in a run, and there is nothing to
+   * drop when nothing is being captured.
+   *
+   * @param result - The result the live reporters have finished with.
    */
   public void discard(ITestResult result) {
-    if (!captureRequested) {
+    if (!discardsWhatIsDone()) {
       return;
     }
     snapshots.remove(new ResultKey(result));
+  }
+
+  /** Named so that {@code discard} not discarding does not read as a bug. */
+  private boolean discardsWhatIsDone() {
+    return captureRequested && !heldUntilReporting;
   }
 
   /** @return - Whether anything is still held, which is what {@link #detachFrom} leaves behind. */
