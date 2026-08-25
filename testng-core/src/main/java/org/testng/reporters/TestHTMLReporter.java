@@ -333,8 +333,7 @@ public class TestHTMLReporter implements ITestListener {
 
       // java.util.Date on purpose: this is the timestamp the HTML report has always shown, and
       // Date.toString takes its zone abbreviation from TimeZone.getDisplayName, which no
-      // DateTimeFormatter pattern reproduces. Changing a published report to silence a warning
-      // would be the wrong way round.
+      // DateTimeFormatter pattern reproduces.
       @SuppressWarnings("JavaUtilDate")
       String startedOn = Date.from(testContext.getStartInstant()).toString();
       long durationMillis = Utils.durationOf(testContext);

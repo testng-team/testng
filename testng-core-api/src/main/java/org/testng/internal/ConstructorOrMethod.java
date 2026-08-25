@@ -96,9 +96,8 @@ public class ConstructorOrMethod {
   }
 
   @Override
-  // getClass() on purpose: this is a public, non-final type of the published API, and instanceof
-  // would make a user's subclass equal to its base while the base is never equal to it. Sealing it
-  // instead would break every user who extends it.
+  // getClass() on purpose, for the reason org/testng/xml/package-info.java gives for the value
+  // types of the XML model: this is public, not final, and a user may extend it.
   @SuppressWarnings("EqualsGetClass")
   public boolean equals(@Nullable Object o) {
     if (this == o) {

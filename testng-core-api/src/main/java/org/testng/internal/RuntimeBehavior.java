@@ -52,7 +52,7 @@ public final class RuntimeBehavior {
   public static List<String> getPreferentialListeners() {
     String packages =
         Optional.ofNullable(System.getProperty(PREFERENTIAL_LISTENERS)).orElse("com.intellij.rt.*");
-    return Arrays.asList(packages.split(","));
+    return Arrays.asList(Utils.splitOnLiteral(packages, ","));
   }
 
   public static boolean strictParallelism() {
