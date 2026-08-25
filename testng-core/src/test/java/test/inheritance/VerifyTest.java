@@ -1,7 +1,7 @@
 package test.inheritance;
 
-import java.util.List;
-import org.testng.AssertJUnit;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public class VerifyTest {
@@ -18,11 +18,6 @@ public class VerifyTest {
       "tearDownApplication"
     };
 
-    int i = 0;
-    List<String> l = ZBase_0.getMethodList();
-    AssertJUnit.assertEquals(expected.length, l.size());
-    for (String s : l) {
-      AssertJUnit.assertEquals(expected[i++], s);
-    }
+    assertThat(ZBase_0.getMethodList()).containsExactly(expected);
   }
 }

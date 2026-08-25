@@ -1,6 +1,6 @@
 package org.testng.internal.listeners.parameterindex;
 
-import static org.testng.AssertJUnit.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
@@ -16,6 +16,6 @@ public class TestWithProviderTest {
 
   @Test(dataProvider = "integerValues")
   public void ShouldBeLessThan5(int value) {
-    assertTrue(value < 5);
+    assertThat(value).isLessThan(5);
   }
 }

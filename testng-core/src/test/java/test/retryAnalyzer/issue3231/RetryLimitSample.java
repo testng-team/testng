@@ -1,6 +1,7 @@
 package test.retryAnalyzer.issue3231;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 import org.testng.annotations.DataProvider;
@@ -25,6 +26,6 @@ public class RetryLimitSample {
 
   @Test(dataProvider = "dp", retryAnalyzer = MyRetry.class)
   public void test(String s) {
-    Assert.fail("fail");
+    fail("fail");
   }
 }
