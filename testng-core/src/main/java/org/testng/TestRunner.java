@@ -4,11 +4,11 @@ import static org.testng.ListenerComparator.sort;
 import static org.testng.internal.MethodHelper.fixMethodsWithClass;
 
 import java.lang.reflect.Method;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;

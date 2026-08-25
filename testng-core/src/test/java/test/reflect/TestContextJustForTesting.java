@@ -1,5 +1,6 @@
 package test.reflect;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
@@ -20,7 +21,7 @@ public class TestContextJustForTesting implements ITestContext {
   @Deprecated
   @Override
   public Date getStartDate() {
-    return null;
+    return Date.from(Instant.EPOCH);
   }
 
   @Deprecated

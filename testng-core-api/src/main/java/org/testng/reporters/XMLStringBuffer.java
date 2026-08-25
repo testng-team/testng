@@ -1,9 +1,9 @@
 package org.testng.reporters;
 
 import java.io.Writer;
-import java.util.Properties;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Properties;
 import java.util.regex.Pattern;
 import org.jspecify.annotations.Nullable;
 import org.testng.internal.Utils;

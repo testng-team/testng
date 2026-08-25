@@ -27,9 +27,9 @@ import org.testng.xml.XmlTest;
 public final class ClassHelper {
 
   /** The additional class loaders to find classes in. */
-  // CopyOnWriteArrayList rather than ArrayList: addClassLoader is public static and reachable from
-  // a user thread, while forName iterates this list from the runner's. The Vector it replaces gave a
-  // synchronised add and an iteration that was not safe at all.
+  // CopyOnWriteArrayList rather than ArrayList: addClassLoader is public static and reachable
+  // from a user thread, while forName iterates this list from the runner's. The Vector it
+  // replaces gave a synchronised add and an iteration that was not safe at all.
   private static final List<ClassLoader> classLoaders = new CopyOnWriteArrayList<>();
 
   private static final String CLASS_HELPER = ClassHelper.class.getSimpleName();

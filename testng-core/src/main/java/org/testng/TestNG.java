@@ -1024,9 +1024,9 @@ public class TestNG {
     }
   }
 
-  // Identity on purpose, for the one comparison below that is not a null test: DEFAULT_OBJECT_FACTORY
-  // is a sentinel meaning "no suite has named a factory yet", and a suite that names one replaces it
-  // with an instance of a user class whose equals TestNG does not own.
+  // Identity on purpose, for the one comparison below that is not a null test.
+  // DEFAULT_OBJECT_FACTORY is a sentinel meaning "no suite has named a factory yet", and a suite
+  // that names one replaces it with an instance of a user class whose equals TestNG does not own.
   @SuppressWarnings("ReferenceEquality")
   private void initializeConfiguration() {
     ITestObjectFactory factory = m_objectFactory;
@@ -2098,9 +2098,7 @@ public class TestNG {
 
   @SuppressWarnings("ReferenceEquality")
   private void setConfigurable(IConfigurable c) {
-    // Identity on purpose: what is being reported is a second, different configurable replacing one
-    // the caller already installed. IConfigurable is a user type and may declare two distinct
-    // instances equal, which would turn a real conflict into silence.
+    // Identity on purpose, for the reason given on setAnnotationTransformer.
     if (m_configurable != null && m_configurable != c) {
       LOGGER.warn("Configurable already set");
     }
@@ -2109,9 +2107,7 @@ public class TestNG {
 
   @SuppressWarnings("ReferenceEquality")
   private void setHookable(IHookable h) {
-    // Identity on purpose: what is being reported is a second, different hookable replacing one the
-    // caller already installed. IHookable is a user type and may declare two distinct instances
-    // equal, which would turn a real conflict into silence.
+    // Identity on purpose, for the reason given on setAnnotationTransformer.
     if (m_hookable != null && m_hookable != h) {
       LOGGER.warn("Hookable already set");
     }

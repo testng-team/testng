@@ -1,9 +1,9 @@
 package org.testng.reporters;
 
 import java.io.File;
-import java.util.Collection;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -157,14 +157,10 @@ public abstract class AbstractXmlReporter
         maxEnd = candidate;
       }
     }
-    // The suite could be completely empty
-    if (minStart == null) {
-      minStart = Instant.now();
-    }
-    if (maxEnd == null) {
-      maxEnd = minStart;
-    }
-    setDurationAttributes(config, props, minStart, maxEnd);
+    // Both are set on the first iteration or not at all, so they are null together: the suite is
+    // completely empty.
+    Instant start = minStart == null ? Instant.now() : minStart;
+    setDurationAttributes(config, props, start, maxEnd == null ? start : maxEnd);
     return props;
   }
 

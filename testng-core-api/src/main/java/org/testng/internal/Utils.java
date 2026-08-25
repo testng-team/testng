@@ -18,8 +18,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -267,15 +265,15 @@ public final class Utils {
     if (separator.isEmpty()) {
       throw new IllegalArgumentException("a separator has to be something");
     }
+    if (value.isEmpty()) {
+      // The one input the loop below would answer differently: String.split answers [""].
+      return new String[] {value};
+    }
     List<String> pieces = new ArrayList<>();
     int start = 0;
     for (int at = value.indexOf(separator); at != -1; at = value.indexOf(separator, start)) {
       pieces.add(value.substring(start, at));
       start = at + separator.length();
-    }
-    if (pieces.isEmpty()) {
-      // No occurrence at all: String.split answers the value itself, even when it is empty.
-      return new String[] {value};
     }
     pieces.add(value.substring(start));
     // Drop the trailing empties, which is what a split with no limit does.
@@ -294,24 +292,18 @@ public final class Utils {
    * @return the pieces the user meant, in order
    */
   public static List<String> splitCommaSeparated(String value) {
-    List<String> pieces = new ArrayList<>();
-    for (String piece : splitOnLiteral(value, ",")) {
-      String trimmed = piece.trim();
-      if (!trimmed.isEmpty()) {
-        pieces.add(trimmed);
-      }
-    }
-    return pieces;
+    return Arrays.stream(split(value, ","))
+        .filter(piece -> !piece.isEmpty())
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  /* Tokenize the string using the separator. */
+  /* Tokenize the string using the separator, trimming every piece. Unlike splitOnLiteral and
+   * String.split it keeps every trailing empty piece, and it answers an empty array for a null or
+   * empty input where String.split answers [""]. */
   public static String[] split(@Nullable String string, String sep) {
     if (string == null || string.isEmpty()) {
       return new String[0];
     }
-
-    // TODO How different is this from:
-    // return string.split(sep);
 
     int start = 0;
     int idx = string.indexOf(sep, start);
@@ -539,21 +531,6 @@ public final class Utils {
   }
 
   /**
-   * The moment a test context finished.
-   *
-   * <p>{@link ITestContext#getEndDate()} answers {@code null} while the &lt;test&gt; is still
-   * running; a reporter only ever sees a finished one.
-   *
-   * @param context The context to read the end date of.
-   * @return The end date, never {@code null}.
-   */
-  @Deprecated
-  @SuppressWarnings("deprecation") // it is the deprecated accessor this deprecated helper asserts on
-  public static Date requireEndDateOf(ITestContext context) {
-    return Objects.requireNonNull(context.getEndDate(), "a reported test context has finished");
-  }
-
-  /**
    * @param context a test context that has finished
    * @return when it finished
    * @throws NullPointerException if it has not finished
@@ -565,8 +542,8 @@ public final class Utils {
   /**
    * How long a &lt;test&gt; ran, in milliseconds.
    *
-   * <p>Asserts through {@link #requireEndInstantOf(ITestContext)} that the context has finished, which
-   * is what every reporter asking for a duration already did.
+   * <p>Asserts through {@link #requireEndInstantOf(ITestContext)} that the context has finished,
+   * which is what every reporter asking for a duration already did.
    *
    * @param context The context to measure.
    * @return The elapsed milliseconds between the start and the end of the context.

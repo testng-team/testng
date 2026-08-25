@@ -19,33 +19,29 @@ public interface ITestContext extends IAttributes {
   String getName();
 
   /**
+   * Abstract on purpose: a default here would recurse against {@link #getStartInstant()} for an
+   * implementation that overrides neither.
+   *
    * @return When this test started running.
-   * @deprecated Use {@link #getStartInstant()} instead. This stays abstract for now, so that an
-   *     implementation written against an earlier release keeps compiling; it will get a default
-   *     built on {@link #getStartInstant()} once implementations have had a release to move.
+   * @deprecated Use {@link #getStartInstant()} instead.
    */
   @Deprecated
   Date getStartDate();
 
   /**
-   * @return When this test stopped running.
-   * @deprecated Use {@link #getEndInstant()} instead. See {@link #getStartDate()} for why it is
-   *     still abstract.
+   * @return When this test stopped running, or {@code null} while it is still running.
+   * @deprecated Use {@link #getEndInstant()} instead.
    */
   @Deprecated
   @Nullable
   Date getEndDate();
 
-  /**
-   * @return When this test started running.
-   */
+  /** @return When this test started running. */
   default Instant getStartInstant() {
     return getStartDate().toInstant();
   }
 
-  /**
-   * @return When this test stopped running, or {@code null} while it is still running.
-   */
+  /** @return When this test stopped running, or {@code null} while it is still running. */
   @Nullable
   default Instant getEndInstant() {
     Date endDate = getEndDate();

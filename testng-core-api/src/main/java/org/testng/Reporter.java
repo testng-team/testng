@@ -32,6 +32,9 @@ public class Reporter {
       new InheritableThreadLocal<>();
 
   /** All output logged in a sequential order. */
+  // ArrayList, not a concurrent list: neither this nor the LinkedList it replaces was ever safe
+  // for the parallel appends log() makes, and making it safe means making the append and the index
+  // read below one operation, which is a change of behaviour and not of collection.
   private static final List<String> m_output = new ArrayList<>();
 
   private static final Map<String, List<Integer>> m_methodOutputMap = new ConcurrentHashMap<>();

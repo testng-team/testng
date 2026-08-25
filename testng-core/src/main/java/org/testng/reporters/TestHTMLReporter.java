@@ -53,11 +53,6 @@ public class TestHTMLReporter implements ITestListener {
   // implements ITestListener
   /////
 
-  @SuppressWarnings("JavaUtilDate") // see the call site: Date.toString is the published format
-  private static String startedOn(ITestContext testContext) {
-    return Date.from(testContext.getStartInstant()).toString();
-  }
-
   private static String getOutputFile(ITestContext context) {
     return context.getName() + ".html";
   }
@@ -336,6 +331,12 @@ public class TestHTMLReporter implements ITestListener {
           .append("</head>\n")
           .append("<body>\n");
 
+      // java.util.Date on purpose: this is the timestamp the HTML report has always shown, and
+      // Date.toString takes its zone abbreviation from TimeZone.getDisplayName, which no
+      // DateTimeFormatter pattern reproduces. Changing a published report to silence a warning
+      // would be the wrong way round.
+      @SuppressWarnings("JavaUtilDate")
+      String startedOn = Date.from(testContext.getStartInstant()).toString();
       long durationMillis = Utils.durationOf(testContext);
       int passed =
           testContext.getPassedTests().size()
@@ -363,11 +364,7 @@ public class TestHTMLReporter implements ITestListener {
           .append("</td>\n")
           .append("</tr><tr>\n")
           .append("<td>Started on:</td><td>")
-          // java.util.Date on purpose: this is the timestamp the HTML report has always shown,
-          // and Date.toString takes its zone abbreviation from TimeZone.getDisplayName, which no
-          // DateTimeFormatter pattern reproduces. Changing a published report to answer a warning
-          // is the wrong way round.
-          .append(startedOn(testContext))
+          .append(startedOn)
           .append("</td>\n")
           .append("</tr>\n")
           .append(hostLine)

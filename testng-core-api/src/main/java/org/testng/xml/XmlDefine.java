@@ -36,10 +36,7 @@ public class XmlDefine {
   }
 
   @Override
-  // getClass() on purpose: this is a public, non-final value type of the published XML model, and
-  // instanceof would make a user's subclass equal to its base while the base is never equal to it.
-  // Sealing the class instead would break every user who extends it.
-  @SuppressWarnings("EqualsGetClass")
+  @SuppressWarnings("EqualsGetClass") // published, subclassable value type; see package-info
   public boolean equals(Object o) {
     if (this == o) {
       return true;

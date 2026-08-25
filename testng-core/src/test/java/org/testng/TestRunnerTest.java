@@ -84,13 +84,7 @@ public class TestRunnerTest {
 
     assertThat(runner.getStartInstant()).isNotNull();
     assertThat(runner.getEndInstant()).isNull();
-  }
-
-  /** Two reads of the start have to agree, whatever the answer is built from. */
-  @Test
-  public void theReportedStartIsStableAcrossReads() {
-    TestRunner runner = createTestRunner(TestWithOneListener.class);
-
+    // Two reads answer the same moment: the context reports when it started, not when it is asked.
     assertThat(runner.getStartInstant()).isEqualTo(runner.getStartInstant());
   }
 
