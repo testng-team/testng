@@ -10,9 +10,9 @@ import org.testng.ITestResult;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class MutationSample {
+public final class MutationSample {
 
-  public static class Custom {
+  public static final class Custom {
     private UUID id;
 
     public Custom(UUID id) {

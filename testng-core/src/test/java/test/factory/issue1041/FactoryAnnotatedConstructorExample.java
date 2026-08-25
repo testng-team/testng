@@ -9,7 +9,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-public class FactoryAnnotatedConstructorExample {
+public final class FactoryAnnotatedConstructorExample {
   static List<FactoryAnnotatedConstructorExample> objects = new ArrayList<>();
 
   private final int data;

@@ -3,7 +3,7 @@ package org.testng.internal.collections;
 import org.jspecify.annotations.Nullable;
 import org.testng.collections.Objects;
 
-public class Pair<A, B> {
+public final class Pair<A, B> {
   private final A first;
   private final B second;
 

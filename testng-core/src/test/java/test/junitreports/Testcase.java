@@ -2,7 +2,7 @@ package test.junitreports;
 
 import org.xml.sax.Attributes;
 
-public class Testcase {
+public final class Testcase {
   private String name;
   private String classname;
   private String innerTagType;

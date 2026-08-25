@@ -74,7 +74,7 @@ public interface IObject {
   }
 
   /** A wrapper object that associates a unique id to every unique test class object. */
-  class IdentifiableObject {
+  final class IdentifiableObject {
     private final Object instance;
     private final UUID instanceId;
 

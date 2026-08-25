@@ -6,7 +6,7 @@ import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHOD
 
 import java.util.Objects;
 
-public class ClassInstanceMethodKey {
+public final class ClassInstanceMethodKey {
   private final String className;
   private final String methodName;
   private final Object classInstance;
