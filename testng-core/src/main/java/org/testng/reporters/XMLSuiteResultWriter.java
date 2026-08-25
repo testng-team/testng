@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.testng.IDataProviderMethod;
 import org.testng.IResultMap;
 import org.testng.ISuiteResult;
@@ -20,6 +21,9 @@ import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.Utils;
+import org.testng.internal.reporters.ParameterSnapshot;
+import org.testng.internal.reporters.ParameterSnapshots;
+import org.testng.internal.reporters.ParameterValue;
 import org.testng.util.Strings;
 import org.testng.util.TimeUtils;
 
@@ -254,28 +258,53 @@ public class XMLSuiteResultWriter {
     return methodSignature.substring(dotAferClassPos + 1);
   }
 
+  /**
+   * Writes the values the invocation ran with, as they were when it started rather than as the
+   * objects stand now. A data provider that hands the same mutable row to every invocation, or a
+   * test that changes what it was given, used to leave every {@code <test-method>} of the method
+   * reporting that value's final state -- the report is written once every invocation is over.
+   */
   public void addTestMethodParams(XMLStringBuffer xmlBuffer, ITestResult testResult) {
-    Object[] parameters = testResult.getParameters();
-    if ((parameters != null) && (parameters.length > 0)) {
-      xmlBuffer.push(XMLReporterConfig.TAG_PARAMS);
-      for (int i = 0; i < parameters.length; i++) {
-        addParameter(xmlBuffer, parameters[i], i);
-      }
-      xmlBuffer.pop();
+    ParameterSnapshot snapshot = reportedParametersOf(testResult);
+    if (snapshot == null) {
+      return;
     }
+    List<ParameterValue> values = snapshot.values();
+    // Empty for an invocation a data provider supplied the wrong number of values to. Nothing was
+    // rendered for it, because the values never reached the invocation either: the matcher throws
+    // while conforming them, so the result carries none and this wrote no <params> before.
+    if (values.isEmpty()) {
+      return;
+    }
+    xmlBuffer.push(XMLReporterConfig.TAG_PARAMS);
+    for (int i = 0; i < values.size(); i++) {
+      addParameter(xmlBuffer, values.get(i), i);
+    }
+    xmlBuffer.pop();
   }
 
-  private void addParameter(XMLStringBuffer xmlBuffer, Object parameter, int i) {
+  /**
+   * The suite owns the snapshots of everything it ran, and the result is what leads back to it: an
+   * {@link org.testng.IReporter} is handed every suite of the run at once, so there is no one suite
+   * to have been given. {@code VerboseReporter} reads them the same way.
+   */
+  private static @Nullable ParameterSnapshot reportedParametersOf(ITestResult testResult) {
+    ITestContext context = testResult.getTestContext();
+    return ParameterSnapshots.reportedParametersOf(
+        context != null ? ParameterSnapshots.of(context.getSuite()) : null, testResult);
+  }
+
+  private void addParameter(XMLStringBuffer xmlBuffer, ParameterValue parameter, int i) {
     Properties attrs = new Properties();
     attrs.setProperty(XMLReporterConfig.ATTR_INDEX, String.valueOf(i));
     xmlBuffer.push(XMLReporterConfig.TAG_PARAM, attrs);
-    if (parameter == null) {
+    if (parameter.isNull()) {
       Properties valueAttrs = new Properties();
       valueAttrs.setProperty(XMLReporterConfig.ATTR_IS_NULL, "true");
       xmlBuffer.addEmptyElement(XMLReporterConfig.TAG_PARAM_VALUE, valueAttrs);
     } else {
       xmlBuffer.push(XMLReporterConfig.TAG_PARAM_VALUE);
-      xmlBuffer.addCDATA(parameter.toString());
+      xmlBuffer.addCDATA(parameter.value());
       xmlBuffer.pop();
     }
     xmlBuffer.pop();
