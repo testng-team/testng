@@ -34,18 +34,20 @@ public class CliConfigurerSplitTest {
     assertThat(testClassesOf("java.lang.String,")).containsExactly(String.class);
   }
 
-  /** Today the space is part of the name, so the class is looked up as " java.lang.Integer". */
   @Test
-  public void aSpaceAfterTheCommaIsPartOfTheName() {
-    assertThatThrownBy(() -> testClassesOf("java.lang.String, java.lang.Integer"))
-        .hasMessageContaining("Cannot load class from file:  java.lang.Integer");
+  public void aSpaceAfterTheCommaIsNotPartOfTheName() {
+    assertThat(testClassesOf("java.lang.String, java.lang.Integer"))
+        .containsExactly(String.class, Integer.class);
   }
 
-  /** Today an empty value is a class name, and the loader is asked for a class called "". */
   @Test
-  public void anEmptyValueIsAskedOfTheClassLoader() {
-    assertThatThrownBy(() -> testClassesOf(""))
-        .hasMessageContaining("Cannot load class from file: ");
+  public void anEmptyValueNamesNoClass() {
+    assertThat(testClassesOf("")).isEmpty();
+  }
+
+  @Test
+  public void aValueThatIsNothingButSeparatorsNamesNoClass() {
+    assertThat(testClassesOf(" , ,")).isEmpty();
   }
 
   @Test
@@ -54,7 +56,7 @@ public class CliConfigurerSplitTest {
         .hasMessageContaining("Cannot load class from file: com.acme.NoSuchClass");
   }
 
-  /** -testnames splits the same way, so the space is part of the name there too. */
+  /** -testnames splits the same way, so the pieces are trimmed there too. */
   @Test
   public void testNamesAreSplitTheSameWay() {
     CliOptions cli = new CliOptions();
@@ -62,7 +64,7 @@ public class CliConfigurerSplitTest {
     TestNG testng = new TestNG();
     CliConfigurer.configure(testng, cli);
 
-    assertThat(this.<List<String>>read(testng, "m_testNames")).containsExactly("t1", " t2");
+    assertThat(this.<List<String>>read(testng, "m_testNames")).containsExactly("t1", "t2");
   }
 
   private static Class<?>[] testClassesOf(String testClass) {

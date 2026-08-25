@@ -15,6 +15,7 @@ import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -245,6 +246,59 @@ public final class Utils {
 
   public static void warn(String warnMsg) {
     LOG.warn(warnMsg);
+  }
+
+  /**
+   * Splits on a literal separator, with the same result {@code String.split(separator)} gives for a
+   * separator that happens to contain no regular expression syntax: trailing empty pieces are
+   * dropped, a value the separator never occurs in answers itself, and nothing is trimmed.
+   *
+   * <p>The point is that the separator is never read as a pattern. {@code "]]>"} and {@code "|"}
+   * mean the same thing here, which is not true of {@code String.split}.
+   *
+   * @param value the string to split, never null
+   * @param separator the literal separator, never empty
+   * @return the pieces, in order
+   */
+  public static String[] splitOnLiteral(String value, String separator) {
+    if (separator.isEmpty()) {
+      throw new IllegalArgumentException("a separator has to be something");
+    }
+    List<String> pieces = new ArrayList<>();
+    int start = 0;
+    for (int at = value.indexOf(separator); at != -1; at = value.indexOf(separator, start)) {
+      pieces.add(value.substring(start, at));
+      start = at + separator.length();
+    }
+    if (pieces.isEmpty()) {
+      // No occurrence at all: String.split answers the value itself, even when it is empty.
+      return new String[] {value};
+    }
+    pieces.add(value.substring(start));
+    // Drop the trailing empties, which is what a split with no limit does.
+    int end = pieces.size();
+    while (end > 0 && pieces.get(end - 1).isEmpty()) {
+      end--;
+    }
+    return pieces.subList(0, end).toArray(new String[0]);
+  }
+
+  /**
+   * Splits a comma separated command line value. Every piece is trimmed and the empty ones are
+   * dropped, so {@code "a.B, a.C,"} answers {@code [a.B, a.C]} and {@code ""} answers nothing.
+   *
+   * @param value the raw option value, never null
+   * @return the pieces the user meant, in order
+   */
+  public static List<String> splitCommaSeparated(String value) {
+    List<String> pieces = new ArrayList<>();
+    for (String piece : splitOnLiteral(value, ",")) {
+      String trimmed = piece.trim();
+      if (!trimmed.isEmpty()) {
+        pieces.add(trimmed);
+      }
+    }
+    return pieces;
   }
 
   /* Tokenize the string using the separator. */

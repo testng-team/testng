@@ -58,8 +58,8 @@ public class ReporterConfig {
     } else {
       className = inputString.substring(0, clsNameEndIndex);
       String propString = inputString.substring(clsNameEndIndex + 1);
-      for (String prop : propString.split(",")) {
-        String[] propNameAndVal = prop.split("=");
+      for (String prop : Utils.splitOnLiteral(propString, ",")) {
+        String[] propNameAndVal = Utils.splitOnLiteral(prop, "=");
         if (propNameAndVal.length == 2) {
           properties.add(new Property(propNameAndVal[0], propNameAndVal[1]));
         }

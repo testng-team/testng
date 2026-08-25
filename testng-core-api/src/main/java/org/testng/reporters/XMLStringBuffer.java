@@ -5,6 +5,7 @@ import java.util.Properties;
 import java.util.Stack;
 import java.util.regex.Pattern;
 import org.jspecify.annotations.Nullable;
+import org.testng.internal.Utils;
 
 /**
  * This class allows you to generate an XML text document by pushing and popping tags from a stack
@@ -297,7 +298,7 @@ public class XMLStringBuffer {
       // Solution from https://stackoverflow.com/q/223652/4234729
       m_buffer.append("<![CDATA[]]]]><![CDATA[>]]>");
     } else { // content contains "]]>"
-      String[] subStrings = content.split("]]>");
+      String[] subStrings = Utils.splitOnLiteral(content, "]]>");
       m_buffer.append("<![CDATA[").append(subStrings[0]).append("]]]]>");
       for (int i = 1; i < subStrings.length - 1; i++) {
         m_buffer.append("<![CDATA[>").append(subStrings[i]).append("]]]]>");
