@@ -892,9 +892,8 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   }
 
   private List<Integer> stringToList(String in) {
-    String[] numbers = in.split(" ");
     List<Integer> result = new ArrayList<>();
-    for (String n : numbers) {
+    for (String n : Utils.splitOnLiteral(in, " ")) {
       result.add(Integer.parseInt(n));
     }
     return result;

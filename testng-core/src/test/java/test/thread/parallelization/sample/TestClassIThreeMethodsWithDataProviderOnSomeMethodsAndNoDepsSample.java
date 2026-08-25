@@ -18,6 +18,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import test.thread.parallelization.TestNgRunStateTracker;
+import org.testng.internal.Utils;
 
 public class TestClassIThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample {
 
@@ -102,7 +103,7 @@ public class TestClassIThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample 
     String sleepFor = params.get("sleepFor");
 
     String dataProviderParam = params.get("dataProviderParam");
-    String[] dataProviderVals = dataProviderParam.split(",");
+    String[] dataProviderVals = Utils.splitOnLiteral(dataProviderParam, ",");
 
     Object[][] dataToProvide = new Object[dataProviderVals.length][4];
 

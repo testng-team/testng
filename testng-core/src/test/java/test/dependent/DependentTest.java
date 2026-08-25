@@ -38,6 +38,7 @@ import test.dependent.issue550.ConfigDependsOnTestMethodSample;
 import test.dependent.issue550.OrderedResultsGatherer;
 import test.dependent.issue893.DependencyTrackingListener;
 import test.dependent.issue893.MultiLevelDependenciesTestClassSample;
+import org.testng.internal.Utils;
 
 public class DependentTest extends SimpleBaseTest {
 
@@ -204,7 +205,7 @@ public class DependentTest extends SimpleBaseTest {
     log.clear();
     testng.run();
     for (int i = 0; i < 12; i += 4) {
-      String[] s = log.get(i).split("#");
+      String[] s = Utils.splitOnLiteral(log.get(i), "#");
       String instance = s[1];
       assertThat(log.subList(i, i + 4))
           .containsExactly(

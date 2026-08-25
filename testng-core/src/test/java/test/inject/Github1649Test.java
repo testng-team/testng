@@ -18,6 +18,7 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
+import org.testng.internal.Utils;
 
 public class Github1649Test extends SimpleBaseTest {
   @Test
@@ -87,7 +88,7 @@ public class Github1649Test extends SimpleBaseTest {
     public void onTestFailure(ITestResult testResult) {
       String methodName = testResult.getMethod().getMethodName();
       String raw = testResult.getThrowable().getMessage();
-      String actual = raw.split("\n")[1];
+      String actual = Utils.splitOnLiteral(raw, "\n")[1];
       failures.put(methodName, actual);
     }
 

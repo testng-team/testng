@@ -1585,9 +1585,8 @@ public class TestNG {
 
     String testClasses = cla.testClass;
     if (null != testClasses) {
-      String[] strClasses = testClasses.split(",");
       List<Class<?>> classes = new ArrayList<>();
-      for (String c : strClasses) {
+      for (String c : Utils.splitCommaSeparated(testClasses)) {
         classes.add(ClassHelper.fileToClass(c));
       }
 
@@ -1595,7 +1594,7 @@ public class TestNG {
     }
 
     if (cla.testNames != null) {
-      setTestNames(Arrays.asList(cla.testNames.split(",")));
+      setTestNames(Utils.splitCommaSeparated(cla.testNames));
       setIgnoreMissedTestNames(cla.ignoreMissedTestNames);
     }
 
@@ -1611,7 +1610,8 @@ public class TestNG {
     setXmlPathInJar(cla.xmlPathInJar);
     setSkipFailedInvocationCounts(cla.skipFailedInvocationCounts);
     toggleFailureIfAllTestsWereSkipped(cla.failIfAllTestsSkipped);
-    setListenersToSkipFromBeingWiredInViaServiceLoaders(cla.spiListenersToSkip.split(","));
+    setListenersToSkipFromBeingWiredInViaServiceLoaders(
+        Utils.splitCommaSeparated(cla.spiListenersToSkip).toArray(new String[0]));
 
     m_configuration.setOverrideIncludedMethods(cla.overrideIncludedMethods);
 

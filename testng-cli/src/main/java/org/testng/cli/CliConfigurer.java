@@ -135,9 +135,8 @@ public final class CliConfigurer {
 
     String testClasses = cli.testClass;
     if (null != testClasses) {
-      String[] strClasses = testClasses.split(",");
       List<Class<?>> classes = new ArrayList<>();
-      for (String c : strClasses) {
+      for (String c : Utils.splitCommaSeparated(testClasses)) {
         classes.add(ClassHelper.fileToClass(c));
       }
 
@@ -145,7 +144,7 @@ public final class CliConfigurer {
     }
 
     if (cli.testNames != null) {
-      testng.setTestNames(Arrays.asList(cli.testNames.split(",")));
+      testng.setTestNames(Utils.splitCommaSeparated(cli.testNames));
       testng.setIgnoreMissedTestNames(cli.ignoreMissedTestNames);
     }
 
@@ -161,7 +160,8 @@ public final class CliConfigurer {
     testng.setXmlPathInJar(cli.xmlPathInJar);
     testng.setSkipFailedInvocationCounts(cli.skipFailedInvocationCounts);
     testng.toggleFailureIfAllTestsWereSkipped(cli.failIfAllTestsSkipped);
-    testng.setListenersToSkipFromBeingWiredInViaServiceLoaders(cli.spiListenersToSkip.split(","));
+    testng.setListenersToSkipFromBeingWiredInViaServiceLoaders(
+        Utils.splitCommaSeparated(cli.spiListenersToSkip).toArray(new String[0]));
 
     testng.setOverrideIncludedMethods(cli.overrideIncludedMethods);
 
