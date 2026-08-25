@@ -16,7 +16,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import org.testng.TestNGException;
-import org.testng.collections.Maps;
 import org.testng.log4testng.Logger;
 
 /**
@@ -150,10 +149,7 @@ public class Graph<T> {
                   .sorted(comparator)
                   .collect(
                       Collectors.toMap(
-                          Node::getObject,
-                          Function.identity(),
-                          (a, b) -> a,
-                          Maps::newLinkedHashMap));
+                          Node::getObject, Function.identity(), (a, b) -> a, LinkedHashMap::new));
       m_independentNodes = independentNodes;
     }
     return independentNodes;
