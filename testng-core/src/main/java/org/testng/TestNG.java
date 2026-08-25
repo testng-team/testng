@@ -123,6 +123,12 @@ public class TestNG {
   /** The default name of the result's output directory (keep public, used by Eclipse). */
   public static final String DEFAULT_OUTPUTDIR = "test-output";
 
+  /** The suite file looked up inside a jar when none was named. */
+  private static final String DEFAULT_XML_PATH_IN_JAR = "testng.xml";
+
+  /** How many suites run at once when none was asked for: one, so suites run sequentially. */
+  private static final Integer DEFAULT_SUITE_THREAD_POOL_SIZE = 1;
+
   private static @Nullable TestNG m_instance;
 
   private @Nullable List<String> m_commandLineMethods;
@@ -175,7 +181,7 @@ public class TestNG {
 
   private @Nullable String m_jarPath;
   /** The path of the testng.xml file inside the jar file */
-  private String m_xmlPathInJar = CommandLineArgs.XML_PATH_IN_JAR_DEFAULT;
+  private String m_xmlPathInJar = DEFAULT_XML_PATH_IN_JAR;
 
   private List<String> m_stringSuites = new ArrayList<>();
   private final List<Class<? extends ITestNGListener>> m_listenerClasses = new ArrayList<>();
@@ -876,7 +882,7 @@ public class TestNG {
 
   private boolean m_ignoreMissedTestNames;
 
-  private Integer m_suiteThreadPoolSize = CommandLineArgs.SUITE_THREAD_POOL_SIZE_DEFAULT;
+  private Integer m_suiteThreadPoolSize = DEFAULT_SUITE_THREAD_POOL_SIZE;
 
   private boolean m_randomizeSuites = Boolean.FALSE;
 

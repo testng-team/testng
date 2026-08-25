@@ -148,11 +148,13 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     }
   }
 
+  @Deprecated
   @Override
   public Object[] getInstances(boolean create) {
     return iClass.getInstances(create);
   }
 
+  @Deprecated
   @Override
   public Object[] getInstances(boolean create, @Nullable String errorMsgPrefix) {
     return iClass.getInstances(create, this.m_errorMsgPrefix);
@@ -163,11 +165,14 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     return IObject.objects(iClass, create, errorMsgPrefix);
   }
 
+  // Deprecated as IClass.getInstanceHashCodes(); the IObject method it also serves is current.
+  @Deprecated
   @Override
   public long[] getInstanceHashCodes() {
     return IObject.instanceHashCodes(iClass);
   }
 
+  @Deprecated
   @Override
   public void addInstance(Object instance) {
     iClass.addInstance(instance);
