@@ -73,6 +73,26 @@ public class TestRunnerTest {
 
   public static class ZooListener implements IConfigurationListener {}
 
+  /**
+   * A test context reports when it started from the moment it exists, and reports no end until it
+   * has run. Nothing covered either, and both are published through ITestContext.
+   */
+  @Test
+  public void aTestContextReportsWhenItStartedAndNotYetWhenItEnded() {
+    TestRunner runner = createTestRunner(TestWithOneListener.class);
+
+    assertThat(runner.getStartDate()).isNotNull();
+    assertThat(runner.getEndDate()).isNull();
+  }
+
+  /** Two reads of the start have to agree, whatever the answer is built from. */
+  @Test
+  public void theReportedStartIsStableAcrossReads() {
+    TestRunner runner = createTestRunner(TestWithOneListener.class);
+
+    assertThat(runner.getStartDate()).isEqualTo(runner.getStartDate());
+  }
+
   private <T> List<Class<?>> classesOf(List<T> values, int limit) {
     return values.stream().limit(limit).map(Object::getClass).collect(Collectors.toList());
   }
