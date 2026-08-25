@@ -306,6 +306,11 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     }
   }
 
+  // Identity on purpose, as far as anything here can say: this method has no caller and no
+  // subclass in TestNG, so there is nothing to check a change of meaning against. Widening it to
+  // equals would make it answer a different index for two equal methods, unverifiably, for the
+  // benefit of a caller that does not exist.
+  @SuppressWarnings("ReferenceEquality")
   protected int indexOf(ITestNGMethod tm, ITestNGMethod[] allTestMethods) {
     for (int i = 0; i < allTestMethods.length; i++) {
       if (allTestMethods[i] == tm) {

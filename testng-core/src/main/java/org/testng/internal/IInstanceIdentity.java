@@ -33,6 +33,10 @@ public interface IInstanceIdentity {
    * @return - <code>true</code> when the object carries an instance, that is when {@link
    *     #getInstanceId(Object)} answers something other than {@link #NO_INSTANCE}.
    */
+  // Identity on purpose, never equals: getInstanceId answers the caller's own object when it is not
+  // identity aware, and TestNG does not own that object's equals. Asking it whether it equals the
+  // token would run user code that is free to answer yes.
+  @SuppressWarnings("ReferenceEquality")
   static boolean carriesInstance(Object object) {
     return getInstanceId(object) != NO_INSTANCE;
   }

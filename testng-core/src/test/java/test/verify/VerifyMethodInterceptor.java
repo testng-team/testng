@@ -8,6 +8,9 @@ import org.testng.ITestContext;
 
 public class VerifyMethodInterceptor implements IMethodInterceptor {
   @Override
+  // Identity on purpose: verifier is one element picked out of methods by the loop above, and what
+  // the second loop skips is that element, not one that looks like it.
+  @SuppressWarnings("ReferenceEquality")
   public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {
     List<IMethodInstance> result = new ArrayList<>();
     IMethodInstance verifier = null;

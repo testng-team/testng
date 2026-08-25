@@ -54,7 +54,9 @@ public final class DynamicGraphHelper {
                   .forEach(
                       d -> {
                         ITestNGMethod dm = dependencyMap.getMethodDependingOn(d, m);
-                        if (m != dm) {
+                        // A method does not depend on itself. Edges.addEdge drops a self edge by
+                        // equals, so an equal pair was already being dropped one call later.
+                        if (!m.equals(dm)) {
                           result.addEdge(
                               TestRunner.PriorityWeight.dependsOnMethods.ordinal(), m, dm);
                         }

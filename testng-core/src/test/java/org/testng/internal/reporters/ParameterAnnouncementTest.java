@@ -217,6 +217,7 @@ public class ParameterAnnouncementTest extends SimpleBaseTest {
      * Read live, so this covers everything up to the assertion rather than only up to the callback
      * that ended the invocation.
      */
+    @SuppressWarnings("ReferenceEquality") // the claim is that it is the same array, not an equal one
     boolean stillHoldsWhatItAnnounced() {
       return result.getParameters() == whenAnnounced;
     }

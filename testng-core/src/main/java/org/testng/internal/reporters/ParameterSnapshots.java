@@ -265,6 +265,9 @@ public final class ParameterSnapshots {
       this.result = result;
     }
 
+    // Identity on purpose, and the reason this wrapper exists: the key is one particular result,
+    // not a result that looks like it. hashCode below is the identity hash for the same reason.
+    @SuppressWarnings("ReferenceEquality")
     @Override
     public boolean equals(@Nullable Object other) {
       return other instanceof ResultKey && ((ResultKey) other).result == result;

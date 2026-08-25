@@ -511,6 +511,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   }
 
   /** @return the test results that apply to one of the instances of the testMethod. */
+  // Identity on purpose: the instances compared are the test class objects a @Factory produced, and
+  // TestNG does not own their equals. Two instances a user declared equal are still two instances
+  // to the scheduler, and folding them together here would attribute one instance's results to
+  // another.
+  @SuppressWarnings("ReferenceEquality")
   private Set<ITestResult> keepSameInstances(ITestNGMethod method, Set<ITestResult> results) {
     Class<?> methodRealClass = Utils.requireTestClassOf(method).getRealClass();
     return results

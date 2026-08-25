@@ -47,6 +47,10 @@ public final class ExecutableCache {
    * a later duplicate lookup never silently loses it. Accessibility is only ever turned on here,
    * never off.
    */
+  // Identity on purpose: the question is whether computeIfAbsent answered the seed itself, which is
+  // what Function.identity() stores for a first sighting, or a member interned earlier. Two equal
+  // Executables are exactly what this cache exists to collapse, so equals cannot ask it.
+  @SuppressWarnings("ReferenceEquality")
   public Executable intern(Executable seed) {
     // Outer lookup (ClassValue): pick out this declaring class's own table.
     ConcurrentMap<Executable, Executable> membersOfClass = cache.get(seed.getDeclaringClass());
