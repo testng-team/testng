@@ -187,8 +187,14 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public long @Nullable [] getInstanceHashCodes() {
-      return null;
+    public long[] getObjectHashCodes() {
+      return new long[0];
+    }
+
+    @Deprecated
+    @Override
+    public long[] getInstanceHashCodes() {
+      return getObjectHashCodes();
     }
 
     @Override

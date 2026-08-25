@@ -51,7 +51,7 @@ public class NoOpTestClass implements ITestClass, IObject {
     m_afterClassMethods = List.of(testClass.getAfterClassMethods());
     m_afterTestMethods = List.of(testClass.getAfterTestMethods());
     m_instances = IObject.objects(testClass, true);
-    m_instanceHashes = IObject.instanceHashCodes(testClass);
+    m_instanceHashes = IObject.objectHashCodes(testClass);
     m_xmlTest = testClass.getXmlTest();
     m_xmlClass = testClass.getXmlClass();
   }
@@ -126,12 +126,16 @@ public class NoOpTestClass implements ITestClass, IObject {
     return m_afterGroupsMethods.toArray(ITestNGMethod[]::new);
   }
 
-  /** @see org.testng.internal.IObject#getInstanceHashCodes() */
-  // Deprecated as IClass.getInstanceHashCodes(); the IObject method it also serves is current.
+  /** @see org.testng.internal.IObject#getObjectHashCodes() */
+  @Override
+  public long[] getObjectHashCodes() {
+    return m_instanceHashes;
+  }
+
   @Deprecated
   @Override
   public long[] getInstanceHashCodes() {
-    return m_instanceHashes;
+    return getObjectHashCodes();
   }
 
   @Deprecated
