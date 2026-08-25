@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
 import org.testng.annotations.DataProvider;
@@ -89,6 +90,17 @@ public class XmlTestTest extends SimpleBaseTest {
     withoutRun.setGroups(new XmlGroups());
     assertThat(withRun).isNotEqualTo(withoutRun);
     assertThat(withoutRun).isNotEqualTo(withRun);
+  }
+
+  @Test
+  public void metaGroupsAreMutableWhenTheTestDeclaresNoGroups() {
+    XmlTest test = createXmlTest(createXmlSuite("suite"), "test");
+    Map<String, List<String>> metaGroups = test.getMetaGroups();
+    assertThat(metaGroups).isEmpty();
+    metaGroups.put("mg", Collections.singletonList("g1"));
+    assertThat(test.getMetaGroups())
+        .withFailMessage("the answer is a copy, so writing to it must not reach the test")
+        .isEmpty();
   }
 
   /**

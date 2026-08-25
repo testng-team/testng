@@ -286,13 +286,11 @@ public class XmlTest implements Cloneable {
 
   /** @return Returns the metaGroups. */
   public Map<String, List<String>> getMetaGroups() {
-    if (m_xmlGroups == null) {
-      return Collections.emptyMap();
-    }
     Map<String, List<String>> result = new HashMap<>();
-    List<XmlDefine> defines = m_xmlGroups.getDefines();
-    for (XmlDefine xd : defines) {
-      result.put(xd.getName(), xd.getIncludes());
+    if (m_xmlGroups != null) {
+      for (XmlDefine xd : m_xmlGroups.getDefines()) {
+        result.put(xd.getName(), xd.getIncludes());
+      }
     }
     return result;
   }

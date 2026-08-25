@@ -11,7 +11,6 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -1270,7 +1269,7 @@ public class TestNG {
     if (m_suites.isEmpty()) {
       error("No test suite found. Nothing to run");
       usage();
-      return Collections.emptyList();
+      return new ArrayList<>();
     }
 
     SuiteRunnerMap suiteRunnerMap = new SuiteRunnerMap();

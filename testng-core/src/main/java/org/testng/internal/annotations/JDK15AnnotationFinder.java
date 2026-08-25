@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -246,7 +245,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     }
     List<A> annotations = new ArrayList<>();
     if (!a.equals(org.testng.annotations.Listeners.class)) {
-      return Collections.emptyList();
+      return annotations;
     }
 
     for (Class<?> inter : cls.getInterfaces()) {
