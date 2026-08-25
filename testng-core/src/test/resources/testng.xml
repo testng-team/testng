@@ -941,6 +941,12 @@
     </classes>
   </test>
 
+  <test name="XmlReporter_duration_tests">
+    <classes>
+      <class name="org.testng.reporters.AbstractXmlReporterDurationTest"/>
+    </classes>
+  </test>
+
   <test name="TestNG_unit_tests">
     <classes>
       <class name="org.testng.TestNGRunSuitesLocallyTest"/>
