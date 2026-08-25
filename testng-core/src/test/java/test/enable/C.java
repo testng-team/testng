@@ -12,7 +12,7 @@ public class C {
   @Test
   public void testC2() {}
 
-  @Test()
+  @Test
   public void testC3() {}
 
   @Test(enabled = false)
@@ -21,16 +21,16 @@ public class C {
   @BeforeSuite
   public void beforeSuiteC() {}
 
-  @BeforeSuite()
+  @BeforeSuite
   public void beforeSuiteC2() {}
 
   @BeforeSuite(enabled = false)
   public void disabledBeforeSuiteC() {}
 
-  @BeforeSuite()
+  @BeforeSuite
   public void beforeSuiteNoRunC() {}
 
-  @BeforeSuite()
+  @BeforeSuite
   public void beforeSuiteNoRunC2() {}
 
   @BeforeSuite(enabled = false)
@@ -48,16 +48,16 @@ public class C {
   @AfterSuite
   public void afterSuiteC() {}
 
-  @AfterSuite()
+  @AfterSuite
   public void afterSuiteC2() {}
 
   @AfterSuite(enabled = false)
   public void disabledAfterSuiteC() {}
 
-  @AfterSuite()
+  @AfterSuite
   public void afterSuiteNoRunC() {}
 
-  @AfterSuite()
+  @AfterSuite
   public void afterSuiteNoRunC2() {}
 
   @AfterSuite(enabled = false)

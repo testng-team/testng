@@ -878,9 +878,9 @@ public class TestNG {
 
   private Integer m_suiteThreadPoolSize = CommandLineArgs.SUITE_THREAD_POOL_SIZE_DEFAULT;
 
-  private boolean m_randomizeSuites = Boolean.FALSE;
+  private boolean m_randomizeSuites = false;
 
-  private boolean m_alwaysRun = Boolean.TRUE;
+  private boolean m_alwaysRun = true;
 
   private Boolean m_preserveOrder = XmlSuite.DEFAULT_PRESERVE_ORDER;
   private @Nullable Boolean m_groupByInstances;
@@ -1807,7 +1807,7 @@ public class TestNG {
         (String)
             cmdLineArgs.getOrDefault(
                 CommandLineArgs.XML_PATH_IN_JAR, CommandLineArgs.XML_PATH_IN_JAR_DEFAULT);
-    result.mixed = (Boolean) cmdLineArgs.getOrDefault(CommandLineArgs.MIXED, Boolean.FALSE);
+    result.mixed = (Boolean) cmdLineArgs.getOrDefault(CommandLineArgs.MIXED, false);
     Object tmpValue = cmdLineArgs.get(CommandLineArgs.INCLUDE_ALL_DATA_DRIVEN_TESTS_WHEN_SKIPPING);
     if (tmpValue != null) {
       result.includeAllDataDrivenTestsWhenSkipping = Boolean.parseBoolean(tmpValue.toString());
@@ -1816,9 +1816,7 @@ public class TestNG {
         (Boolean) cmdLineArgs.get(CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
     result.failIfAllTestsSkipped =
         Boolean.parseBoolean(
-            cmdLineArgs
-                .getOrDefault(CommandLineArgs.FAIL_IF_ALL_TESTS_SKIPPED, Boolean.FALSE)
-                .toString());
+            cmdLineArgs.getOrDefault(CommandLineArgs.FAIL_IF_ALL_TESTS_SKIPPED, false).toString());
     result.spiListenersToSkip =
         (String) cmdLineArgs.getOrDefault(CommandLineArgs.LISTENERS_TO_SKIP_VIA_SPI, "");
     String parallelMode = (String) cmdLineArgs.get(CommandLineArgs.PARALLEL);
