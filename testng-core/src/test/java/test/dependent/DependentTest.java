@@ -13,6 +13,7 @@ import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite.ParallelMode;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
@@ -38,7 +39,6 @@ import test.dependent.issue550.ConfigDependsOnTestMethodSample;
 import test.dependent.issue550.OrderedResultsGatherer;
 import test.dependent.issue893.DependencyTrackingListener;
 import test.dependent.issue893.MultiLevelDependenciesTestClassSample;
-import org.testng.internal.Utils;
 
 public class DependentTest extends SimpleBaseTest {
 

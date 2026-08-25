@@ -70,7 +70,9 @@ public class UtilsTest {
     };
   }
 
-  /** The separator is literal, which is the whole point: String.split would read it as a pattern. */
+  /**
+   * The separator is literal, which is the whole point: String.split would read it as a pattern.
+   */
   @Test
   public void splitOnLiteralDoesNotReadTheSeparatorAsAPattern() {
     assertThat(Utils.splitOnLiteral("a.b", ".")).containsExactly("a", "b");

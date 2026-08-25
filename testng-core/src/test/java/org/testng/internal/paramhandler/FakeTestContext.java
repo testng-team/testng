@@ -1,5 +1,6 @@
 package org.testng.internal.paramhandler;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -43,7 +44,7 @@ public class FakeTestContext implements ITestContext {
   @Deprecated
   @Override
   public Date getStartDate() {
-    return null;
+    return Date.from(Instant.EPOCH);
   }
 
   @Deprecated

@@ -64,7 +64,8 @@ public class CliConfigurerSplitTest {
     TestNG testng = new TestNG();
     CliConfigurer.configure(testng, cli);
 
-    assertThat(this.<List<String>>read(testng, "m_testNames")).containsExactly("t1", "t2");
+    assertThat(CliConfigurerSplitTest.<List<String>>read(testng, "m_testNames"))
+        .containsExactly("t1", "t2");
   }
 
   private static Class<?>[] testClassesOf(String testClass) {
@@ -73,12 +74,12 @@ public class CliConfigurerSplitTest {
     TestNG testng = new TestNG();
     CliConfigurer.configure(testng, cli);
 
-    Class<?>[] classes = new CliConfigurerSplitTest().read(testng, "m_commandLineTestClasses");
+    Class<?>[] classes = read(testng, "m_commandLineTestClasses");
     return classes == null ? new Class<?>[0] : classes;
   }
 
   @SuppressWarnings("unchecked")
-  private <T> T read(TestNG testng, String fieldName) {
+  private static <T> T read(TestNG testng, String fieldName) {
     try {
       Field field = TestNG.class.getDeclaredField(fieldName);
       field.setAccessible(true);

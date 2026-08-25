@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 import org.testng.ITestContext;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import test.thread.parallelization.TestNgRunStateTracker;
 import org.testng.internal.Utils;
+import test.thread.parallelization.TestNgRunStateTracker;
 
 public class TestClassBFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample {
   @Test(dataProvider = "data-provider")

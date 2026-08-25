@@ -97,10 +97,10 @@ public interface ITestInvoker {
       boolean skipFailedInvocationCounts,
       Object[] parameterValues,
       long start) {
-    List<ITestResult> cancelled = new ArrayList<>();
     if (failureCount <= 0 || !(skipFailedInvocationCounts || testMethod.skipFailedInvocations())) {
-      return cancelled;
+      return new ArrayList<>();
     }
+    List<ITestResult> cancelled = new ArrayList<>();
     while (remaining.getAndDecrement() > 0) {
       cancelled.add(registerCancelledInvocation(testMethod, start, parameterValues));
     }
