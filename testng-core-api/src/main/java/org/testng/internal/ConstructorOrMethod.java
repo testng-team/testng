@@ -96,8 +96,10 @@ public class ConstructorOrMethod {
   }
 
   @Override
-  // getClass() on purpose, for the reason org/testng/xml/package-info.java gives for the value
-  // types of the XML model: this is public, not final, and a user may extend it.
+  // getClass() on purpose: it keeps equals symmetric whatever a subclass does, where instanceof
+  // would make this answer equal to a subclass that adds a value component while that subclass
+  // answered unequal to this. The type is public and not final, and it is what
+  // ITestNGMethod.getConstructorOrMethod() hands out, so a user can extend it.
   @SuppressWarnings("EqualsGetClass")
   public boolean equals(@Nullable Object o) {
     if (this == o) {

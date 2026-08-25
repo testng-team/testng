@@ -409,11 +409,12 @@ public abstract class BaseTestMethod
    * {@inheritDoc} Compares two BaseTestMethod using the test class then the associated Java Method.
    */
   @Override
-  // getClass() on purpose: it is the only thing that tells a ConfigurationMethod from a
-  // TestNGMethod wrapping the same method, the same class
-  // and the same instance id -- none of the three subclasses overrides equals -- and these objects
-  // are HashSet members and HashMap keys in a dozen places. The class cannot be sealed either:
-  // three subclasses extend it here and org.testng.internal is Export-Package'd.
+  // getClass() on purpose: none of ConfigurationMethod, FactoryMethod and TestNGMethod overrides
+  // equals, so this comparison is the only thing that tells them apart when they wrap the same
+  // method, the same class and the same instance id -- and they are HashSet members and HashMap
+  // keys in a dozen places. Nothing in the suite fails if it is changed to instanceof, which is
+  // why this is a decision rather than a bug. The class cannot be sealed either: those three
+  // extend it here and org.testng.internal is Export-Package'd.
   @SuppressWarnings("EqualsGetClass")
   public boolean equals(Object obj) {
     if (this == obj) {
