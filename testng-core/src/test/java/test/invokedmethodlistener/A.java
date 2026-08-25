@@ -4,6 +4,6 @@ import org.testng.annotations.BeforeSuite;
 
 public class A {
 
-  @BeforeSuite()
+  @BeforeSuite
   public static void someMethod1() {}
 }

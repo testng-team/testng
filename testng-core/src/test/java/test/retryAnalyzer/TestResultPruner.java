@@ -19,7 +19,7 @@ public class TestResultPruner extends TestListenerAdapter {
       if (!passed.isEmpty() && !skipped.isEmpty()) {
         context.getSkippedTests().removeResult(method);
       }
-      if (((!failedWithinSuccess.isEmpty()) || (!failed.isEmpty())) && !skipped.isEmpty()) {
+      if ((!failedWithinSuccess.isEmpty() || !failed.isEmpty()) && !skipped.isEmpty()) {
         context.getSkippedTests().removeResult(method);
       }
     }

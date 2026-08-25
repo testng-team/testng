@@ -161,7 +161,7 @@ public class XMLSuiteResultWriter {
     Properties attribs = getTestResultAttributes(testResult);
     attribs.setProperty(XMLReporterConfig.ATTR_STATUS, getStatusString(testResult.getStatus()));
     if (testResult.wasRetried()) {
-      attribs.setProperty(XMLReporterConfig.ATTR_RETRIED, Boolean.TRUE.toString());
+      attribs.setProperty(XMLReporterConfig.ATTR_RETRIED, "true");
     }
     xmlBuffer.push(XMLReporterConfig.TAG_TEST_METHOD, attribs);
     addTestMethodParams(xmlBuffer, testResult);

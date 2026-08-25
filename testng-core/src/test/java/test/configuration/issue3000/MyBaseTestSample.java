@@ -5,6 +5,7 @@ import org.testng.annotations.BeforeClass;
 abstract class MyBaseTestSample implements MyInterface {
   protected Object dependency;
 
+  @Override
   public void setDependency(Object ignored) {}
 
   @BeforeClass

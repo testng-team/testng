@@ -63,9 +63,8 @@ public class XmlVerifyTest extends SimpleBaseTest {
     Node xmlSuite = allSuites.item(0);
     assertThat(xmlSuite.getNodeType()).isEqualTo(Node.ELEMENT_NODE);
     Element element = (Element) xmlSuite;
-    assertThat(element.getAttribute("use-global-thread-pool")).isEqualTo(Boolean.TRUE.toString());
-    assertThat(element.getAttribute("share-thread-pool-for-data-providers"))
-        .isEqualTo(Boolean.TRUE.toString());
+    assertThat(element.getAttribute("use-global-thread-pool")).isEqualTo("true");
+    assertThat(element.getAttribute("share-thread-pool-for-data-providers")).isEqualTo("true");
   }
 
   @AfterMethod

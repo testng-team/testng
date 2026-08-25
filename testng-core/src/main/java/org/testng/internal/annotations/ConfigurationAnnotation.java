@@ -198,6 +198,7 @@ public class ConfigurationAnnotation extends TestOrConfiguration
     return m_lastTimeOnly;
   }
 
+  @Override
   public boolean isIgnoreFailure() {
     return m_ignoreFailure;
   }

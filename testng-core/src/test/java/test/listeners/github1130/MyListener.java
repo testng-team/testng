@@ -19,10 +19,12 @@ public class MyListener implements ISuiteListener, IClassListener {
     }
   }
 
+  @Override
   public void onStart(ISuite suite) {
     beforeSuiteCount.add(this.toString());
   }
 
+  @Override
   public void onBeforeClass(ITestClass testClass) {
     beforeClassCount.add(this.toString());
   }

@@ -14,7 +14,7 @@ public class MultipleBeforeGroupTest {
     m_count++;
   }
 
-  @Test()
+  @Test
   public void test() {}
 
   @Test(dependsOnMethods = "test")

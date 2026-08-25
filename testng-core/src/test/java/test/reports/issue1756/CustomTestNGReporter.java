@@ -15,6 +15,7 @@ public class CustomTestNGReporter implements IReporter {
     return logs;
   }
 
+  @Override
   public void generateReport(
       List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
     getTestMehodSummary(suites);

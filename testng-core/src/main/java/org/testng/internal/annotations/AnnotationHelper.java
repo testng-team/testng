@@ -258,7 +258,7 @@ public class AnnotationHelper {
                   || isAnnotationPresent(annotationFinder, m);
           boolean isPublic = Modifier.isPublic(m.getModifiers());
           boolean isSynthetic = m.isSynthetic();
-          if ((isPublic && hasClassAnnotation && !isSynthetic && (!hasTestNGAnnotation))
+          if ((isPublic && hasClassAnnotation && !isSynthetic && !hasTestNGAnnotation)
               || hasMethodAnnotation) {
 
             // Small hack to allow users to specify @Configuration classes even though

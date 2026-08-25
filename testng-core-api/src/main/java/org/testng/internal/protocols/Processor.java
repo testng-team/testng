@@ -47,8 +47,8 @@ public abstract class Processor {
         dir.listFiles(
             file ->
                 (recursive && file.isDirectory())
-                    || (file.getName().endsWith(".class"))
-                    || (file.getName().endsWith(".groovy")));
+                    || file.getName().endsWith(".class")
+                    || file.getName().endsWith(".groovy"));
 
     Utils.log(CLS_NAME, 4, "Looking for test classes in the directory: " + dir);
     if (dirfiles == null) {

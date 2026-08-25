@@ -1,6 +1,5 @@
 package org.testng.internal;
 
-import static java.lang.String.valueOf;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +20,8 @@ public class UtilsTest {
   @Test
   public void escapeUnicode() {
     assertThat(Utils.escapeUnicode("test")).isEqualTo("test");
-    assertThat(Utils.escapeUnicode(valueOf(INVALID_CHAR))).isEqualTo(valueOf(REPLACEMENT_CHAR));
+    assertThat(Utils.escapeUnicode(String.valueOf(INVALID_CHAR)))
+        .isEqualTo(String.valueOf(REPLACEMENT_CHAR));
   }
 
   @Test

@@ -18,12 +18,12 @@ public class ScriptNegativeTest extends SimpleBaseTest {
 
   @BeforeMethod
   public void setup() {
-    System.setProperty("skip.caller.clsLoader", Boolean.TRUE.toString());
+    System.setProperty("skip.caller.clsLoader", "true");
   }
 
   @AfterMethod
   public void cleanup() {
-    System.setProperty("skip.caller.clsLoader", Boolean.FALSE.toString());
+    System.setProperty("skip.caller.clsLoader", "false");
   }
 
   @Test(

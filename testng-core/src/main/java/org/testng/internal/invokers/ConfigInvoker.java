@@ -44,7 +44,6 @@ import org.testng.internal.TestListenerHelper;
 import org.testng.internal.TestResult;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.AnnotationHelper;
-import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
@@ -99,6 +98,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
    * @return false if this class has successfully run all its @Configuration method or true if at
    *     least one of these methods failed.
    */
+  @Override
   public boolean hasConfigurationFailureFor(
       @Nullable ITestNGMethod testNGMethod,
       String[] groups,
@@ -171,6 +171,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
    *
    * @param arguments - A {@link GroupConfigMethodArguments} object.
    */
+  @Override
   public void invokeBeforeGroupsConfigurations(GroupConfigMethodArguments arguments) {
     String[] groups = arguments.getTestMethod().getGroups();
 
@@ -192,7 +193,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         // don't pass the IClass or the instance as the method may be external
         // the invocation must be similar to @BeforeTest/@BeforeSuite
         ConfigMethodArguments configMethodArguments =
-            new Builder()
+            new ConfigMethodArguments.Builder()
                 .usingConfigMethodsAs(filteredConfigurations)
                 .forSuite(arguments.getSuite())
                 .usingParameters(arguments.getParameters())
@@ -213,6 +214,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     return itm.hasBeforeGroupsConfiguration() || itm.hasAfterGroupsConfiguration();
   }
 
+  @Override
   public void invokeAfterGroupsConfigurations(GroupConfigMethodArguments arguments) {
     // Skip this if the current method doesn't belong to any group
     // (only a method that belongs to a group can trigger the invocation
@@ -232,7 +234,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       // don't pass the IClass or the instance as the method may be external
       // the invocation must be similar to @BeforeTest/@BeforeSuite
       ConfigMethodArguments configMethodArguments =
-          new Builder()
+          new ConfigMethodArguments.Builder()
               .usingConfigMethodsAs(filteredConfigurations)
               .forSuite(arguments.getSuite())
               .usingParameters(arguments.getParameters())
@@ -247,6 +249,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     arguments.getGroupMethods().removeAfterGroups(filteredGroups);
   }
 
+  @Override
   public void invokeConfigurations(ConfigMethodArguments arguments) {
     if (arguments.getConfigMethods().length == 0) {
       log(5, "No configuration methods found");

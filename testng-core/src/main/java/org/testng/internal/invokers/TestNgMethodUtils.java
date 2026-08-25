@@ -97,7 +97,7 @@ class TestNgMethodUtils {
     for (ITestNGMethod tm : methods) {
       String msg;
       if ((predicate.test(tm, testClass) && isSameInstance(tm, instance))
-          && (!TestNgMethodUtils.containsConfigurationMethod(tm, vResult))) {
+          && !TestNgMethodUtils.containsConfigurationMethod(tm, vResult)) {
         msg = Utils.getVerbose() < 10 ? "" : "Keeping method " + tm + " for class " + testClass;
         vResult.add(tm);
       } else {

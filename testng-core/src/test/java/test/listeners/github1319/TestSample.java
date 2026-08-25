@@ -54,14 +54,17 @@ public class TestSample {
   public static class Listener implements IConfigurationListener, ITestListener {
     public static Map<String, Object> maps = Maps.newConcurrentMap();
 
+    @Override
     public void onConfigurationSuccess(ITestResult itr) {
       maps.put(itr.getMethod().getMethodName(), itr.getInstance());
     }
 
+    @Override
     public void onConfigurationFailure(ITestResult itr) {
       maps.put(itr.getMethod().getMethodName(), itr.getInstance());
     }
 
+    @Override
     public void onConfigurationSkip(ITestResult itr) {
       maps.put(itr.getMethod().getMethodName(), itr.getInstance());
     }

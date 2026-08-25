@@ -103,7 +103,7 @@ class BaseInvoker {
   }
 
   private boolean noListenersPresent() {
-    return (m_invokedMethodListeners == null) || (m_invokedMethodListeners.isEmpty());
+    return (m_invokedMethodListeners == null) || m_invokedMethodListeners.isEmpty();
   }
 
   /**

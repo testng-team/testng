@@ -62,7 +62,6 @@ import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.TestListenerHelper;
 import org.testng.internal.TestResult;
 import org.testng.internal.Utils;
-import org.testng.internal.invokers.GroupConfigMethodArguments.Builder;
 import org.testng.internal.invokers.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadUtil;
@@ -105,6 +104,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return m_notifier;
   }
 
+  @Override
   public List<ITestResult> invokeTestMethods(
       ITestNGMethod testMethod,
       ConfigurationGroupMethods groupMethods,
@@ -181,7 +181,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       }
       testMethod.incrementCurrentInvocationCount();
       GroupConfigMethodArguments args =
-          new Builder()
+          new GroupConfigMethodArguments.Builder()
               .forTestMethod(testMethod)
               .withGroupConfigMethods(groupMethods)
               .forInstance(instance)
@@ -241,6 +241,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
    * invoking @BeforeGroup, @BeforeMethod, @AfterMethod, @AfterGroup if it is the case for the
    * passed in @Test method.
    */
+  @Override
   public ITestResult invokeTestMethod(
       TestMethodArguments arguments, XmlSuite suite, FailureContext failureContext) {
     // Mark this method with the current thread id
@@ -249,6 +250,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return invokeMethod(arguments, suite, failureContext);
   }
 
+  @Override
   public FailureContext retryFailed(
       TestMethodArguments arguments,
       List<ITestResult> result,
@@ -308,6 +310,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return failure;
   }
 
+  @Override
   public void runTestResultListener(ITestResult tr) {
     // For onTestStart method, still run as insert order
     // but regarding
@@ -627,6 +630,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     }
   }
 
+  @Override
   public void invokeListenersForSkippedTestResult(ITestResult r, IInvokedMethod invokedMethod) {
     if (m_configuration.alwaysRunListeners()) {
       runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, r);

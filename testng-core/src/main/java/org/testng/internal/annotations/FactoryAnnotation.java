@@ -25,6 +25,7 @@ public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotat
     m_dataProvider = dataProvider;
   }
 
+  @Override
   public void setDataProviderClass(@Nullable Class<?> dataProviderClass) {
     m_dataProviderClass = dataProviderClass;
   }

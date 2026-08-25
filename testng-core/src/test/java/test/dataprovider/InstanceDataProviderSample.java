@@ -1,6 +1,5 @@
 package test.dataprovider;
 
-import static java.lang.Integer.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.DataProvider;
@@ -15,6 +14,6 @@ public class InstanceDataProviderSample {
 
   @Test(dataProvider = "dp")
   public void f(Integer n) {
-    assertThat(n).isEqualTo(valueOf(hashCode()));
+    assertThat(n).isEqualTo(Integer.valueOf(hashCode()));
   }
 }
