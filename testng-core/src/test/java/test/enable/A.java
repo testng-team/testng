@@ -11,7 +11,7 @@ public class A {
   @Test
   public void testA2() {}
 
-  @Test()
+  @Test
   public void testA3() {}
 
   @Test(enabled = false)
@@ -20,16 +20,16 @@ public class A {
   @BeforeSuite
   public void beforeSuiteA() {}
 
-  @BeforeSuite()
+  @BeforeSuite
   public void beforeSuiteA2() {}
 
   @BeforeSuite(enabled = false)
   public void disabledBeforeSuiteA() {}
 
-  @BeforeSuite()
+  @BeforeSuite
   public void beforeSuiteNoRunA() {}
 
-  @BeforeSuite()
+  @BeforeSuite
   public void beforeSuiteNoRunA2() {}
 
   @BeforeSuite(enabled = false)
@@ -47,16 +47,16 @@ public class A {
   @AfterSuite
   public void afterSuiteA() {}
 
-  @AfterSuite()
+  @AfterSuite
   public void afterSuiteA2() {}
 
   @AfterSuite(enabled = false)
   public void disabledAfterSuiteA() {}
 
-  @AfterSuite()
+  @AfterSuite
   public void afterSuiteNoRunA() {}
 
-  @AfterSuite()
+  @AfterSuite
   public void afterSuiteNoRunA2() {}
 
   @AfterSuite(enabled = false)

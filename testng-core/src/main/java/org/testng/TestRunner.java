@@ -53,7 +53,6 @@ import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.invokers.AbstractParallelWorker;
 import org.testng.internal.invokers.ConfigMethodArguments;
-import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.internal.invokers.IInvoker;
 import org.testng.internal.invokers.Invoker;
 import org.testng.internal.objects.IObjectDispenser;
@@ -668,7 +667,7 @@ public class TestRunner
   private void invokeTestConfigurations(ITestNGMethod[] testConfigurationMethods) {
     if (null != testConfigurationMethods && testConfigurationMethods.length > 0) {
       ConfigMethodArguments arguments =
-          new Builder()
+          new ConfigMethodArguments.Builder()
               .usingConfigMethodsAs(testConfigurationMethods)
               .forSuite(m_xmlTest.getSuite())
               .usingParameters(m_xmlTest.getAllParameters())

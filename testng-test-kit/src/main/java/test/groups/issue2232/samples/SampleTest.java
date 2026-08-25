@@ -8,17 +8,11 @@ import org.testng.annotations.Test;
 @Test(groups = {"Group1", "Group2", "Group3"})
 public class SampleTest {
 
-  private int variable = 0;
-
   @BeforeClass
-  public void setUp() {
-    variable += 1;
-  }
+  public void setUp() {}
 
   @AfterMethod
-  public void tearDown() {
-    variable += 1;
-  }
+  public void tearDown() {}
 
   @DataProvider(name = "testData1")
   public Object[][] testData1() {
@@ -28,7 +22,5 @@ public class SampleTest {
   }
 
   @Test(dataProvider = "testData1")
-  public void test1(String test) {
-    variable += 1;
-  }
+  public void test1(String test) {}
 }

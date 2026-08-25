@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -94,7 +95,7 @@ class JarFileUtils {
       while (entries.hasMoreElements()) {
         JarEntry je = entries.nextElement();
         String jeName = je.getName();
-        if (Parser.canParse(jeName.toLowerCase())) {
+        if (Parser.canParse(jeName.toLowerCase(Locale.ROOT))) {
           InputStream inputStream = jf.getInputStream(je);
           File copyFile = new File(file, jeName);
           if (!copyFile.toPath().normalize().startsWith(file.toPath().normalize())) {

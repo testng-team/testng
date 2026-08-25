@@ -777,11 +777,11 @@ public abstract class BaseTestMethod
     m_retryAnalyzerClass = clazz == null ? DisabledRetryAnalyzer.class : clazz;
   }
 
-  @Override
   /**
    * @return the retry analyzer class, never null: it is {@link DisabledRetryAnalyzer} until a retry
    *     analyzer is set, and the setter normalises null back to it.
    */
+  @Override
   public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
     return m_retryAnalyzerClass;
   }

@@ -295,8 +295,8 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setTimeOut(long timeOut) {
-    this.timeout = timeOut;
+  public void setTimeOut(long timeout) {
+    this.timeout = timeout;
   }
 
   @Override

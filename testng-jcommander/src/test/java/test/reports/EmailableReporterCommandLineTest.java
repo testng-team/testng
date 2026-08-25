@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.Locale;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -30,7 +31,7 @@ public class EmailableReporterCommandLineTest extends SimpleBaseTest {
 
   @DataProvider(name = "getReporterNames")
   public Object[][] getReporterNames(Method method) {
-    if (method.getName().toLowerCase().contains("jvmarguments")) {
+    if (method.getName().toLowerCase(Locale.ROOT).contains("jvmarguments")) {
       return new Object[][] {{EmailableReporter2.class.getName(), "emailable.report2.name"}};
     }
     return new Object[][] {{EmailableReporter2.class.getName()}};
