@@ -1,6 +1,7 @@
 package test.listeners.issue3238;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
@@ -9,6 +10,6 @@ public class TestClassWithFailingTestMethodSample {
 
   @Test
   public void failingTest() {
-    Assert.fail();
+    fail();
   }
 }

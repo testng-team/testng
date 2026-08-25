@@ -1,9 +1,10 @@
 package test.retryAnalyzer.issue3231;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.Assert;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 import org.testng.annotations.DataProvider;
@@ -67,6 +68,6 @@ public class MutationSample {
       return;
     }
     newObject.setId(UUID.randomUUID()); // Mutate!
-    Assert.fail();
+    fail();
   }
 }
