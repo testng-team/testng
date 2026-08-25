@@ -12,6 +12,12 @@ dependencies {
 }
 
 tasks.withType<JavaCompile>().configureEach {
+    // javac stops after a hundred warnings per task and caps the summary count with them, so
+    // warning 101 is invisible and the tally understates itself. Four tasks reported exactly
+    // "100 warnings" before this line: testng-core-api and testng-core, main and test. A build
+    // that hides diagnostics cannot answer whether a check is ready to be raised to an error.
+    options.compilerArgs.addAll(listOf("-Xmaxwarns", "100000", "-Xmaxerrs", "100000"))
+
     options.errorprone {
         disableWarningsInGeneratedCode.set(true)
 
@@ -36,9 +42,9 @@ tasks.withType<JavaCompile>().configureEach {
         // remain carry a @SuppressWarnings saying why. Finalize is here on new violations alone --
         // both of its sites are suppressed, because the finalizers are what the leak test watches.
         //
-        // Measure before adding one: javac caps at 100 warnings per compile task and several
-        // tasks here are past that, so an ordinary build undercounts. Nothing raises the cap, so
-        // count from a throwaway init script that adds -Xmaxwarns rather than from a plain build.
+        // Measure before adding one. javac caps at 100 warnings per compile task and several
+        // tasks here are past that, so an ordinary build used to undercount; the -Xmaxwarns above
+        // raises the cap, so a plain build now counts them all and no init script is needed.
         //
         // Promoting also takes a check out of disableWarningsInGeneratedCode above: Error Prone
         // only honours that exemption while the check is below ERROR. Nothing here generates Java
