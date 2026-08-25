@@ -2,6 +2,8 @@ package org.testng.reporters;
 
 import java.io.File;
 import java.util.Collection;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -140,38 +142,52 @@ public abstract class AbstractXmlReporter
 
     // Calculate the duration
     Map<String, ISuiteResult> results = suite.getResults();
-    Date minStartDate = new Date();
-    Date maxEndDate = null;
+    Instant minStart = null;
+    Instant maxEnd = null;
     // TODO: We could probably optimize this in order not to traverse this twice
     for (Map.Entry<String, ISuiteResult> result : results.entrySet()) {
       ITestContext testContext = result.getValue().getTestContext();
-      Date startDate = testContext.getStartDate();
-      Date endDate = testContext.getEndDate();
-      if (minStartDate.after(startDate)) {
-        minStartDate = startDate;
+      Instant start = testContext.getStartInstant();
+      Instant end = testContext.getEndInstant();
+      if (minStart == null || minStart.isAfter(start)) {
+        minStart = start;
       }
-      if (maxEndDate == null || maxEndDate.before(endDate)) {
-        maxEndDate = endDate != null ? endDate : startDate;
+      Instant candidate = end != null ? end : start;
+      if (maxEnd == null || maxEnd.isBefore(candidate)) {
+        maxEnd = candidate;
       }
     }
     // The suite could be completely empty
-    if (maxEndDate == null) {
-      maxEndDate = minStartDate;
+    if (minStart == null) {
+      minStart = Instant.now();
     }
-    setDurationAttributes(config, props, minStartDate, maxEndDate);
+    if (maxEnd == null) {
+      maxEnd = minStart;
+    }
+    setDurationAttributes(config, props, minStart, maxEnd);
     return props;
   }
 
+  /**
+   * @deprecated Use {@link #setDurationAttributes(XMLReporterConfig, Properties, Instant, Instant)}
+   *     instead.
+   */
+  @Deprecated
   protected static void setDurationAttributes(
       XMLReporterConfig config, Properties attributes, Date minStartDate, Date maxEndDate) {
+    setDurationAttributes(config, attributes, minStartDate.toInstant(), maxEndDate.toInstant());
+  }
+
+  protected static void setDurationAttributes(
+      XMLReporterConfig config, Properties attributes, Instant minStart, Instant maxEnd) {
 
     String startTime =
         TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(
-            minStartDate.getTime(), config.getTimestampFormat());
+            minStart.toEpochMilli(), config.getTimestampFormat());
     String endTime =
         TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(
-            maxEndDate.getTime(), config.getTimestampFormat());
-    long duration = maxEndDate.getTime() - minStartDate.getTime();
+            maxEnd.toEpochMilli(), config.getTimestampFormat());
+    long duration = Duration.between(minStart, maxEnd).toMillis();
 
     attributes.setProperty(XMLReporterConfig.ATTR_STARTED_AT, startTime);
     attributes.setProperty(XMLReporterConfig.ATTR_FINISHED_AT, endTime);

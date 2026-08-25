@@ -3,6 +3,7 @@ package org.testng;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.testng.annotations.BeforeMethod;
@@ -81,8 +82,8 @@ public class TestRunnerTest {
   public void aTestContextReportsWhenItStartedAndNotYetWhenItEnded() {
     TestRunner runner = createTestRunner(TestWithOneListener.class);
 
-    assertThat(runner.getStartDate()).isNotNull();
-    assertThat(runner.getEndDate()).isNull();
+    assertThat(runner.getStartInstant()).isNotNull();
+    assertThat(runner.getEndInstant()).isNull();
   }
 
   /** Two reads of the start have to agree, whatever the answer is built from. */
@@ -90,7 +91,33 @@ public class TestRunnerTest {
   public void theReportedStartIsStableAcrossReads() {
     TestRunner runner = createTestRunner(TestWithOneListener.class);
 
-    assertThat(runner.getStartDate()).isEqualTo(runner.getStartDate());
+    assertThat(runner.getStartInstant()).isEqualTo(runner.getStartInstant());
+  }
+
+  /**
+   * The deprecated pair still has to answer the same moment as the one that replaced it, to the
+   * millisecond it has always been published with. Deprecated itself, which is how a test of
+   * deprecated API says so rather than suppressing the warning it earns.
+   */
+  @Deprecated
+  @Test
+  public void theDeprecatedDatePairAgreesWithTheInstantPair() {
+    TestRunner runner = createTestRunner(TestWithOneListener.class);
+
+    assertThat(runner.getStartDate()).isEqualTo(Date.from(runner.getStartInstant()));
+    assertThat(runner.getEndDate()).isNull();
+  }
+
+  /** The answer is a copy, so a caller that writes to it cannot move the runner. */
+  @Deprecated
+  @Test
+  public void theDeprecatedStartDateIsACopy() {
+    TestRunner runner = createTestRunner(TestWithOneListener.class);
+
+    Date first = runner.getStartDate();
+    first.setTime(0);
+
+    assertThat(runner.getStartDate()).isNotEqualTo(first);
   }
 
   private <T> List<Class<?>> classesOf(List<T> values, int limit) {

@@ -17,11 +17,13 @@ public class TestContextJustForTesting implements ITestContext {
     throw new UnsupportedOperationException("This stub is only ever matched by type");
   }
 
+  @Deprecated
   @Override
   public Date getStartDate() {
     return null;
   }
 
+  @Deprecated
   @Override
   public Date getEndDate() {
     return null;

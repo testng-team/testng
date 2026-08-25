@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import org.jspecify.annotations.Nullable;
@@ -51,6 +52,11 @@ public class TestHTMLReporter implements ITestListener {
   //
   // implements ITestListener
   /////
+
+  @SuppressWarnings("JavaUtilDate") // see the call site: Date.toString is the published format
+  private static String startedOn(ITestContext testContext) {
+    return Date.from(testContext.getStartInstant()).toString();
+  }
 
   private static String getOutputFile(ITestContext context) {
     return context.getName() + ".html";
@@ -357,7 +363,11 @@ public class TestHTMLReporter implements ITestListener {
           .append("</td>\n")
           .append("</tr><tr>\n")
           .append("<td>Started on:</td><td>")
-          .append(testContext.getStartDate().toString())
+          // java.util.Date on purpose: this is the timestamp the HTML report has always shown,
+          // and Date.toString takes its zone abbreviation from TimeZone.getDisplayName, which no
+          // DateTimeFormatter pattern reproduces. Changing a published report to answer a warning
+          // is the wrong way round.
+          .append(startedOn(testContext))
           .append("</td>\n")
           .append("</tr>\n")
           .append(hostLine)

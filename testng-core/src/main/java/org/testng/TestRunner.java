@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -103,8 +104,8 @@ public class TestRunner
       new LinkedHashMap<>();
   private final DataProviderHolder holder;
 
-  private Date m_startDate = new Date();
-  private @Nullable Date m_endDate = null;
+  private Instant m_startInstant = Instant.now();
+  private @Nullable Instant m_endInstant = null;
   private final IContainer<ITestNGMethod> testMethodsContainer =
       new TestMethodContainer(this::computeAndGetAllTestMethods);
 
@@ -651,7 +652,7 @@ public class TestRunner
     //
     // Log the start date
     //
-    m_startDate = new Date(System.currentTimeMillis());
+    m_startInstant = Instant.now();
 
     // Log start
     logStart();
@@ -839,7 +840,7 @@ public class TestRunner
     //
     // Log the end date
     //
-    m_endDate = new Date(System.currentTimeMillis());
+    m_endInstant = Instant.now();
 
     dumpInvokedMethods();
 
@@ -918,15 +919,27 @@ public class TestRunner
   }
 
   /** @return Returns the startDate. */
+  @Deprecated
   @Override
   public Date getStartDate() {
-    return m_startDate;
+    return Date.from(m_startInstant);
   }
 
   /** @return Returns the endDate. */
+  @Deprecated
   @Override
   public @Nullable Date getEndDate() {
-    return m_endDate;
+    return m_endInstant == null ? null : Date.from(m_endInstant);
+  }
+
+  @Override
+  public Instant getStartInstant() {
+    return m_startInstant;
+  }
+
+  @Override
+  public @Nullable Instant getEndInstant() {
+    return m_endInstant;
   }
 
   @Override
