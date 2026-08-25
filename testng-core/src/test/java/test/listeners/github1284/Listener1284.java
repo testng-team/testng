@@ -1,13 +1,13 @@
 package test.listeners.github1284;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.IClassListener;
 import org.testng.ITestClass;
 
 public class Listener1284 implements IClassListener {
   private static Listener1284 instance;
-  static List<String> testList = new LinkedList<>();
+  static List<String> testList = new ArrayList<>();
 
   public Listener1284() {
     setInstance(this);

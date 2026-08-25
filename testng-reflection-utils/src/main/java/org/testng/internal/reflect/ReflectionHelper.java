@@ -6,7 +6,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,7 +45,7 @@ public class ReflectionHelper {
    */
   public static Method[] excludingMain(Class<?> clazz) {
     Method[] declaredMethods = clazz.getDeclaredMethods();
-    List<Method> pruned = new LinkedList<>();
+    List<Method> pruned = new ArrayList<>();
     for (Method declaredMethod : declaredMethods) {
       if ("main".equals(declaredMethod.getName())
           && isStaticVoid(declaredMethod)

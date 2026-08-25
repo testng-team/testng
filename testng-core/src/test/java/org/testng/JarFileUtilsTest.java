@@ -11,7 +11,7 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
 import org.testng.annotations.BeforeClass;
@@ -180,8 +180,8 @@ public class JarFileUtilsTest {
     assertThat(suites).hasSize(3);
     XmlSuite suite = suites.get(0);
     assertThat(suite.getName()).isEqualTo("testng-tests-suite");
-    List<String> testNames = new LinkedList<>();
-    List<String> classNames = new LinkedList<>();
+    List<String> testNames = new ArrayList<>();
+    List<String> classNames = new ArrayList<>();
     extractClassNames(suites, testNames, classNames);
 
     assertThat(testNames).containsExactly(expectedTestNames);
@@ -230,8 +230,8 @@ public class JarFileUtilsTest {
     XmlSuite suite = suites.get(0);
     assertThat(suite.getName()).isEqualTo(expectedSuiteName);
     assertThat(suite.getTests()).hasSize(numberOfTests);
-    List<String> testNames = new LinkedList<>();
-    List<String> classNames = new LinkedList<>();
+    List<String> testNames = new ArrayList<>();
+    List<String> classNames = new ArrayList<>();
     extractClassNames(suites, testNames, classNames);
     if (expectedTestNames != null) {
       assertThat(testNames).containsExactly(expectedTestNames);

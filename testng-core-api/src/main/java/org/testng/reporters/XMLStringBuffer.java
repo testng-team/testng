@@ -2,7 +2,8 @@ package org.testng.reporters;
 
 import java.io.Writer;
 import java.util.Properties;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.regex.Pattern;
 import org.jspecify.annotations.Nullable;
 import org.testng.internal.Utils;
@@ -24,7 +25,9 @@ public class XMLStringBuffer {
   private final IBuffer m_buffer;
 
   /** The stack of tags to make sure XML document is well formed. */
-  private final Stack<Tag> m_tagStack = new Stack<>();
+  // Deque, not Stack: every use is a push or a pop, so the one thing the two disagree on -- Stack
+  // iterates bottom to top, a Deque used as a stack iterates top to bottom -- never comes up.
+  private final Deque<Tag> m_tagStack = new ArrayDeque<>();
 
   /** A string of space character representing the current indentation. */
   private String m_currentIndent = "";

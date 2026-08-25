@@ -110,6 +110,7 @@ public class TestRunnerTest {
 
   /** The answer is a copy, so a caller that writes to it cannot move the runner. */
   @Deprecated
+  @SuppressWarnings("JavaUtilDate") // writing to a Date is the claim under test, not an oversight
   @Test
   public void theDeprecatedStartDateIsACopy() {
     TestRunner runner = createTestRunner(TestWithOneListener.class);

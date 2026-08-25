@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import javax.xml.XMLConstants;
 import org.jspecify.annotations.Nullable;
 import org.testng.ITestObjectFactory;
@@ -128,7 +129,9 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     EXCLUDE
   }
 
-  private final Stack<Location> m_locations = new Stack<>();
+  // Deque, not Stack: every use is a push, a pop or a peek, so the one thing the two disagree on --
+  // Stack iterates bottom to top, a Deque used as a stack iterates top to bottom -- never comes up.
+  private final Deque<Location> m_locations = new ArrayDeque<>();
   private boolean isSuiteFileTag = false;
 
   private @Nullable XmlClass m_currentClass;

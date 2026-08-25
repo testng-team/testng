@@ -1,7 +1,6 @@
 package org.testng.xml.internal;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.jspecify.annotations.Nullable;
@@ -118,7 +117,7 @@ public final class TestNamesMatcher {
   }
 
   private @Nullable XmlSuite cloneIfSuiteContainTestsWithNamesMatchingAny(XmlSuite suite) {
-    List<XmlTest> tests = new LinkedList<>();
+    List<XmlTest> tests = new ArrayList<>();
     for (XmlTest xt : suite.getTests()) {
       if (xt.nameMatchesAny(testNames)) {
         tests.add(xt);

@@ -2,7 +2,7 @@ package test.listeners.ordering;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.IAlterSuiteListener;
 import org.testng.IAnnotationTransformer;
@@ -45,7 +45,7 @@ public class UniversalListener
         IAnnotationTransformer,
         IConfigurationListener {
 
-  private List<String> messages = new LinkedList<>();
+  private List<String> messages = new ArrayList<>();
 
   public List<String> getMessages() {
     return messages;

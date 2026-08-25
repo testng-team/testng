@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -116,7 +116,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
     Testsuite suite = reportReporter.getTestsuite(Issue1262TestSample.class.getName());
     List<String> expected =
         List.of("testRoles001_Post", "testRoles002_Post", "testRoles003_Post", "testRoles004_Post");
-    List<String> actual = new LinkedList<>();
+    List<String> actual = new ArrayList<>();
     for (Testcase testcase : suite.getTestcase()) {
       actual.add(testcase.getName().trim());
     }

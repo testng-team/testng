@@ -982,7 +982,7 @@ public class TestNgRunStateTracker {
 
     @Override
     public String toString() {
-      final StringBuffer sb = new StringBuffer("EventLog{");
+      final StringBuilder sb = new StringBuilder("EventLog{");
       sb.append("Event: ").append(event);
 
       sb.append(", Suite: ").append(getData(EventInfo.SUITE_NAME));
