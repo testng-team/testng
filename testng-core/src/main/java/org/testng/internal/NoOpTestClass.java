@@ -127,11 +127,14 @@ public class NoOpTestClass implements ITestClass, IObject {
   }
 
   /** @see org.testng.internal.IObject#getInstanceHashCodes() */
+  // Deprecated as IClass.getInstanceHashCodes(); the IObject method it also serves is current.
+  @Deprecated
   @Override
   public long[] getInstanceHashCodes() {
     return m_instanceHashes;
   }
 
+  @Deprecated
   @Override
   public Object[] getInstances(boolean reuse) {
     return m_instances;
@@ -152,6 +155,7 @@ public class NoOpTestClass implements ITestClass, IObject {
     return testClass;
   }
 
+  @Deprecated
   @Override
   public void addInstance(Object instance) {}
 

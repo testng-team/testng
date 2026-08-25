@@ -80,6 +80,8 @@ public class ClassImpl implements IClass, IObject {
     return m_class;
   }
 
+  // Deprecated as IClass.getInstanceHashCodes(); the IObject method it also serves is current.
+  @Deprecated
   @Override
   public long @Nullable [] getInstanceHashCodes() {
     return m_instanceHashCodes;
@@ -120,11 +122,13 @@ public class ClassImpl implements IClass, IObject {
     return m_defaultInstance;
   }
 
+  @Deprecated
   @Override
   public Object[] getInstances(boolean create) {
     return getInstances(create, "");
   }
 
+  @Deprecated
   @Override
   public Object[] getInstances(boolean create, @Nullable String errorMsgPrefix) {
     return Arrays.stream(getObjects(create, errorMsgPrefix))
@@ -163,6 +167,7 @@ public class ClassImpl implements IClass, IObject {
     return Objects.toStringHelper(getClass()).add("class", m_class.getName()).toString();
   }
 
+  @Deprecated
   @Override
   public void addInstance(Object instance) {
     addObject(new IdentifiableObject(instance));
