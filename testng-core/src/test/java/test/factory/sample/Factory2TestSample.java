@@ -8,7 +8,7 @@ import org.testng.annotations.Factory;
  */
 public class Factory2TestSample {
 
-  @Factory()
+  @Factory
   public Object[] createObjects() {
     return new Object[] {new Factory2Sample(), new Factory2Sample()};
   }

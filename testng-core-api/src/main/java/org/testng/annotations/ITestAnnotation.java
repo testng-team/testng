@@ -65,21 +65,27 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
 
   void setSingleThreaded(boolean f);
 
+  @Override
   String getDataProvider();
 
+  @Override
   void setDataProvider(String v);
 
   /**
    * @return The class holding the data provider, or {@code null} when neither the method nor
    *     anything it inherits from names one.
    */
+  @Override
   @Nullable
   Class<?> getDataProviderClass();
 
+  @Override
   void setDataProviderClass(@Nullable Class<?> v);
 
+  @Override
   String getDataProviderDynamicClass();
 
+  @Override
   void setDataProviderDynamicClass(String v);
 
   void setRetryAnalyzer(Class<? extends IRetryAnalyzer> c);

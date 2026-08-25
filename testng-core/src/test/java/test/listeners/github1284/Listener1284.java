@@ -21,10 +21,12 @@ public class Listener1284 implements IClassListener {
     return instance;
   }
 
+  @Override
   public void onBeforeClass(ITestClass iTestClass) {
     Listener1284.testList.add(iTestClass.getRealClass().getName() + " - Before Invocation");
   }
 
+  @Override
   public void onAfterClass(ITestClass iTestClass) {
     Listener1284.testList.add(iTestClass.getRealClass().getName() + " - After Invocation");
   }

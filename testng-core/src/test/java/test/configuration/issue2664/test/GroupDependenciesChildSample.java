@@ -15,6 +15,6 @@ public class GroupDependenciesChildSample extends GroupDependenciesBaseClass {
       dependsOnGroups = "g1")
   public void s1() {}
 
-  @Test()
+  @Test
   public void test3() {}
 }

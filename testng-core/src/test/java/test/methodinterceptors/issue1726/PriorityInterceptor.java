@@ -9,6 +9,7 @@ import org.testng.ITestContext;
 
 public class PriorityInterceptor implements IMethodInterceptor {
 
+  @Override
   public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {
     Comparator<IMethodInstance> comparator =
         Comparator.comparingInt(PriorityInterceptor::getPriority);

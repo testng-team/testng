@@ -244,6 +244,7 @@ public class XmlSuiteTest extends SimpleBaseTest {
     }
 
     // Netbeans IDE automatically overrides this toString()
+    @Override
     public String toString() {
       return this.string.toString();
     }

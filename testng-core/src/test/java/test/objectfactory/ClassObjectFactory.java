@@ -6,6 +6,7 @@ import org.testng.internal.objects.InstanceCreator;
 
 public class ClassObjectFactory implements ITestObjectFactory {
 
+  @Override
   public <T> T newInstance(Constructor<T> constructor, Object... parameters) {
     T object = InstanceCreator.newInstance(constructor, parameters);
     if (object instanceof ISetValue) {

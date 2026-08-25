@@ -6,9 +6,11 @@ import org.testng.annotations.ITestOrConfiguration;
 /** Base interface for IBeforeSuite, IAfterSuite, etc... */
 public interface IBaseBeforeAfter extends ITestOrConfiguration {
   /** Whether methods on this class/method are enabled. */
+  @Override
   boolean getEnabled();
 
   /** The list of groups this class/method belongs to. */
+  @Override
   String[] getGroups();
 
   /**
@@ -16,6 +18,7 @@ public interface IBaseBeforeAfter extends ITestOrConfiguration {
    * guaranteed to have been invoked before this method. Furthermore, if any of these methods was
    * not a SUCCESS, this test method will not be run and will be flagged as a SKIP.
    */
+  @Override
   String[] getDependsOnGroups();
 
   /**
@@ -26,6 +29,7 @@ public interface IBaseBeforeAfter extends ITestOrConfiguration {
    *
    * <p>If some of these methods have been overloaded, all the overloaded versions will be run.
    */
+  @Override
   String[] getDependsOnMethods();
 
   /**
@@ -47,6 +51,7 @@ public interface IBaseBeforeAfter extends ITestOrConfiguration {
    * The description for this method. The string used will appear in the HTML report and also on
    * standard output if verbose &gt; 2.
    */
+  @Override
   @Nullable
   String getDescription();
 

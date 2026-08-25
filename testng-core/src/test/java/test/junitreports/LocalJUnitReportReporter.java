@@ -20,6 +20,7 @@ public class LocalJUnitReportReporter extends JUnitReportReporter implements Tes
     testsuites.addAll(LocalJUnitXMLReporter.getSuites(files));
   }
 
+  @Override
   public Testsuite getTestsuite(String name) {
     for (Testsuite suite : testsuites) {
       if (suite.getName().equals(name)) {

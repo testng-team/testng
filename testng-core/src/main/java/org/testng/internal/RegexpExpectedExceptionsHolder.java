@@ -36,6 +36,7 @@ public class RegexpExpectedExceptionsHolder implements IExpectedExceptionsHolder
         && Pattern.compile(messageRegExp, Pattern.DOTALL).matcher(message).matches();
   }
 
+  @Override
   public String getWrongExceptionMessage(Throwable ite) {
     return "The exception was thrown with the wrong message:"
         + " expected \""

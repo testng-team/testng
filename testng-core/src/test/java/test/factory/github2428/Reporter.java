@@ -15,6 +15,7 @@ public class Reporter implements IReporter {
     return results;
   }
 
+  @Override
   public void generateReport(
       List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
     suites

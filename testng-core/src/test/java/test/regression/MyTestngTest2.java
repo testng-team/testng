@@ -7,14 +7,14 @@ import org.testng.annotations.Test;
 
 public class MyTestngTest2 extends MyTestngTest {
 
-  @BeforeClass()
+  @BeforeClass
   public void beforeClass(ITestContext tc) throws Exception {}
 
-  @BeforeMethod()
+  @BeforeMethod
   public void beforeMethod(ITestContext tc) throws Exception {
     // throw new Exception("fail me");
   }
 
-  @Test()
+  @Test
   public void test(ITestContext tc) {}
 }

@@ -67,6 +67,7 @@ public class DataProviderAnnotation extends BaseAnnotation implements IDataProvi
     return retryUsing;
   }
 
+  @Override
   public void cacheDataForTestRetries(boolean cache) {
     this.cachedDataForTestRetries = cache;
   }

@@ -66,10 +66,12 @@ public class Invoker implements IInvoker {
             suiteRunner);
   }
 
+  @Override
   public IConfigInvoker getConfigInvoker() {
     return m_configInvoker;
   }
 
+  @Override
   public ITestInvoker getTestInvoker() {
     return m_testInvoker;
   }

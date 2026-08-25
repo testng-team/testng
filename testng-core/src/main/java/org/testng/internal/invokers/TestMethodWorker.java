@@ -30,7 +30,6 @@ import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.TestMethodComparator;
 import org.testng.internal.TestMethodContainer;
 import org.testng.internal.Utils;
-import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.thread.IWorker;
 
 /**
@@ -207,7 +206,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         listener.onBeforeClass(testClass);
       }
       ConfigMethodArguments attributes =
-          new Builder()
+          new ConfigMethodArguments.Builder()
               .forTestClass(testClass)
               .usingConfigMethodsAs(
                   ((ITestClassConfigInfo) testClass)
@@ -259,7 +258,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       ITestClass testClass, List<IMethodInstance> invokeInstances) {
     for (IMethodInstance invokeInstance : invokeInstances) {
       ConfigMethodArguments attributes =
-          new Builder()
+          new ConfigMethodArguments.Builder()
               .forTestClass(testClass)
               .forSuite(m_testContext.getSuite().getXmlSuite())
               .usingParameters(m_parameters)

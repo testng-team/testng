@@ -857,7 +857,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                   + "pairs of a suite listener onStart event logger followed by a suite listener onFinish event logger: "
                   + suiteLevelEventLogs)
           .isTrue();
-      suiteListenerStartEventLogs.add((suiteLevelEventLogs.get(i)));
+      suiteListenerStartEventLogs.add(suiteLevelEventLogs.get(i));
     }
 
     for (int i = 0; i < suiteListenerStartEventLogs.size() - 1; i++) {

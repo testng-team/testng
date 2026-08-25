@@ -18,6 +18,7 @@ public class FactoryDataProviderSample extends BaseFactorySample {
     };
   }
 
+  @Override
   @Test
   public void f() {}
 }

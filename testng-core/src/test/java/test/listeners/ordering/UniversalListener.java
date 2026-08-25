@@ -51,18 +51,22 @@ public class UniversalListener
     return messages;
   }
 
+  @Override
   public void onConfigurationSuccess(ITestResult itr) {
     messages.add("org.testng.IConfigurationListener.onConfigurationSuccess(ITestResult itr)");
   }
 
+  @Override
   public void onConfigurationFailure(ITestResult itr) {
     messages.add("org.testng.IConfigurationListener.onConfigurationFailure(ITestResult itr)");
   }
 
+  @Override
   public void onConfigurationSkip(ITestResult itr) {
     messages.add("org.testng.IConfigurationListener.onConfigurationSkip(ITestResult itr)");
   }
 
+  @Override
   public void beforeConfiguration(ITestResult tr) {
     messages.add("org.testng.IConfigurationListener.beforeConfiguration(ITestResult tr)");
   }

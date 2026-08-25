@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 
 public class DuplicateCallsSample extends TestTemplate<Integer> {
 
+  @Override
   @Test(dataProvider = "testParameters")
   public void callExecuteTest(Integer testParameters) {
     assertThat(testParameters > 0).isTrue();

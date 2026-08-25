@@ -428,7 +428,7 @@ public class Parameters {
     if (parameterNames.length == 0) {
       // parameterNames is usually populated via the @Parameters annotation, so we would need to
       // apply our logic only when @Parameters annotation is not involved.
-      boolean invalid = (totalLength != 0) || (!validParameters(methodAnnotation, parameterTypes));
+      boolean invalid = (totalLength != 0) || !validParameters(methodAnnotation, parameterTypes);
       if (invalid) {
         String annotation = methodAnnotation;
         if (!methodAnnotation.startsWith("@")) {

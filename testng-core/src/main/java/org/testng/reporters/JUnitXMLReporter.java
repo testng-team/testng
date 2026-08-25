@@ -218,7 +218,7 @@ public class JUnitXMLReporter implements IResultListener2 {
     if (t != null) {
       attrs.setProperty(XMLConstants.ATTR_TYPE, t.getClass().getName());
       String message = t.getMessage();
-      if ((message != null) && (!message.isEmpty())) {
+      if ((message != null) && !message.isEmpty()) {
         attrs.setProperty(XMLConstants.ATTR_MESSAGE, encodeAttr(message)); // ENCODE
       }
       doc.push(XMLConstants.FAILURE, attrs);

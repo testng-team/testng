@@ -10,6 +10,6 @@ public class UnnamedDataProviderSample {
 
   @DataProvider
   public Object[][] unnamedDataProvider() {
-    return new Object[][] {{Boolean.TRUE}, {Boolean.FALSE}};
+    return new Object[][] {{true}, {false}};
   }
 }

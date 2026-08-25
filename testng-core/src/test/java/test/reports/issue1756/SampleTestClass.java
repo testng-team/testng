@@ -27,6 +27,7 @@ public class SampleTestClass implements ITest {
   @Test(dependsOnMethods = "test1")
   public void test2() {}
 
+  @Override
   public String getTestName() {
     return uri;
   }

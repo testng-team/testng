@@ -1,6 +1,5 @@
 package test.listeners;
 
-import static java.lang.String.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ public class AlterSuiteListenerTest extends SimpleBaseTest {
         List<XmlTest> tests = xmlSuite.getTests();
         int i = 1;
         for (XmlTest xmlTest : tests) {
-          assertThat(xmlTest.getParameter("param")).isEqualTo(valueOf(i));
+          assertThat(xmlTest.getParameter("param")).isEqualTo(String.valueOf(i));
           i++;
         }
       }

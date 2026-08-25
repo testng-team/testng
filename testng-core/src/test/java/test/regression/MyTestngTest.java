@@ -6,10 +6,10 @@ import org.testng.annotations.BeforeTest;
 
 public class MyTestngTest {
 
-  @BeforeSuite()
+  @BeforeSuite
   public void beforeSuite(ITestContext tc) throws Exception {}
 
-  @BeforeTest()
+  @BeforeTest
   public void beforeTest(ITestContext tc) throws Exception {
     throw new RuntimeException("barfing now");
   }

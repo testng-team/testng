@@ -18,7 +18,7 @@ public class Issue1554TestClassSample {
     this.context = context;
   }
 
-  @Test()
+  @Test
   public void aTest() {
     assertThat(browser).isNotNull();
     assertThat(context).isNotNull();

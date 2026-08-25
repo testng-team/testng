@@ -10,7 +10,6 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.internal.ConfigurationGroupMethods;
-import org.testng.internal.invokers.TestMethodArguments.Builder;
 import org.testng.xml.XmlSuite;
 
 public class TestMethodWithDataProviderMethodWorker
@@ -75,7 +74,7 @@ public class TestMethodWithDataProviderMethodWorker
     try {
       tmpResults.add(
           m_testInvoker.invokeTestMethod(
-              new Builder()
+              new TestMethodArguments.Builder()
                   .usingInstance(m_instance)
                   .forTestMethod(m_testMethod)
                   .withParameterValues(m_parameterValues)
@@ -99,7 +98,7 @@ public class TestMethodWithDataProviderMethodWorker
           m_failureCount =
               m_testInvoker
                   .retryFailed(
-                      new Builder()
+                      new TestMethodArguments.Builder()
                           .usingInstance(instance)
                           .forTestMethod(m_testMethod)
                           .withParameterValues(m_parameterValues)

@@ -3,6 +3,6 @@ package test.sanitycheck;
 import org.testng.annotations.Test;
 
 public class SampleTest2 {
-  @Test()
+  @Test
   public void test2() {}
 }

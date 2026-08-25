@@ -11,6 +11,7 @@ import org.testng.reporters.JUnitXMLReporter;
 public class LocalJUnitXMLReporter extends JUnitXMLReporter implements TestsuiteRetriever {
   private final List<Testsuite> testsuites = new ArrayList<>();
 
+  @Override
   protected void generateReport(ITestContext context) {
     super.generateReport(context);
     String dir = context.getOutputDirectory();
@@ -19,6 +20,7 @@ public class LocalJUnitXMLReporter extends JUnitXMLReporter implements Testsuite
     testsuites.addAll(getSuites(files));
   }
 
+  @Override
   public Testsuite getTestsuite(String name) {
     for (Testsuite suite : testsuites) {
       if (suite.getName().equals(name)) {

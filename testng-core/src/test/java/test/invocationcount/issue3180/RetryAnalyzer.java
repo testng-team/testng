@@ -11,6 +11,7 @@ public class RetryAnalyzer implements IRetryAnalyzer {
   /*
    * Retry method
    */
+  @Override
   public boolean retry(ITestResult result) {
     return counter++ < retryLimit;
   }

@@ -13,6 +13,7 @@ import org.testng.xml.XmlSuite;
 public class ReportingListenerFor674 implements IReporter {
   private List<Throwable> errors = new ArrayList<>();
 
+  @Override
   public void generateReport(List<XmlSuite> list, List<ISuite> suites, String s) {
     for (ISuite suite : suites) {
       for (ISuiteResult suiteResult : suite.getResults().values()) {

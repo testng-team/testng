@@ -625,10 +625,10 @@ public class ListenerInvocationDefaultBehaviorTest extends SimpleBaseTest {
             IEXECUTIONLISTENER_ON_EXECUTION_FINISH);
 
     try {
-      System.setProperty(RuntimeBehavior.SYMMETRIC_LISTENER_EXECUTION, Boolean.TRUE.toString());
+      System.setProperty(RuntimeBehavior.SYMMETRIC_LISTENER_EXECUTION, "true");
       runTest(symmetricExpected, SimpleTestClassWithBeforeAndAfterClass.class);
     } finally {
-      System.setProperty(RuntimeBehavior.SYMMETRIC_LISTENER_EXECUTION, Boolean.FALSE.toString());
+      System.setProperty(RuntimeBehavior.SYMMETRIC_LISTENER_EXECUTION, "false");
     }
   }
 
