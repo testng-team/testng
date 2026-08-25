@@ -12,8 +12,6 @@ dependencies {
 }
 
 tasks.withType<JavaCompile>().configureEach {
-    val testCompile = name.contains("Test")
-
     options.errorprone {
         disableWarningsInGeneratedCode.set(true)
 
@@ -33,22 +31,24 @@ tasks.withType<JavaCompile>().configureEach {
         // what makes @NullMarked mean what JSpecify says it means rather than roughly half of it.
         option("NullAway:JSpecifyMode", true)
 
-        if (testCompile) {
-            // SelfAssertion only fires on TestNG's own sample/fixture classes, where trivial
-            // assertions such as assertThat("abc").isEqualTo("abc") exist solely to give the
-            // runner a passing method. Production code keeps the check enabled.
-            disable("SelfAssertion")
+        // Which compiles carry test code. The Error Prone plugin derives compilingTestOnlyCode
+        // from the *source set* name and lets a module override it, so a module whose main source
+        // set holds test fixtures can declare that rather than be classified by whether its task
+        // name happens to contain "Test". testng-test-kit is exactly that module.
+        //
+        // orElse: a JavaCompile task that belongs to no source set gets no convention, and feeding
+        // an absent provider to the options below would make them unresolvable.
+        val testCode = compilingTestOnlyCode.orElse(false)
 
-            // NullAway stays on here: @NullMarked is per package, not per source set, so twelve
-            // test packages are already marked by the main package-info.class on their compile
-            // classpath.
-            //
-            // HandleTestAssertionLibraries teaches NullAway that assertThat(x).isNotNull() refines
-            // x. It is keyed on the task name, so testng-test-kit -- test code that lives in a main
-            // source set -- does not get it, even though its org.testng.xml half is marked and
-            // checked today. That is inert only because the AssertJ use in that module sits in the
-            // unmarked test package, so nothing there refines a nullable value yet.
-            option("NullAway:HandleTestAssertionLibraries", true)
-        }
+        // SelfAssertion only fires on TestNG's own sample/fixture classes, where trivial
+        // assertions such as assertThat("abc").isEqualTo("abc") exist solely to give the runner a
+        // passing method. Production code keeps the check enabled.
+        check("SelfAssertion", testCode.map { if (it) CheckSeverity.OFF else CheckSeverity.DEFAULT })
+
+        // NullAway stays on for test code: @NullMarked is per package, not per source set, so the
+        // test half of every marked main package is already marked by the package-info.class on
+        // its compile classpath. HandleTestAssertionLibraries is what teaches NullAway that
+        // assertThat(x).isNotNull() refines x.
+        option("NullAway:HandleTestAssertionLibraries", testCode.map { it.toString() })
     }
 }
