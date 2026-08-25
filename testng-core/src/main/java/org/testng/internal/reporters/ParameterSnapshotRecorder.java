@@ -46,9 +46,10 @@ public final class ParameterSnapshotRecorder implements ITestListener, IConfigur
 
   @Override
   public void onConfigurationSuccess(ITestResult result) {
-    // Only failed and skipped configurations are listed, so nothing will read this one again -- and
-    // the reporters that print a configuration as it passes already have: a configuration finishing
-    // is dispatched in reverse, which makes this listener, registered first, the last one told.
+    // Offers the snapshot back rather than dropping it: what this listener knows is that the
+    // reporters printing a configuration as it passes have been told -- a configuration finishing
+    // is dispatched in reverse, so this one, registered first, is told last among them. Whether the
+    // offer is taken is the store's to decide; see ParameterSnapshots#discard.
     snapshots.discard(result);
   }
 }

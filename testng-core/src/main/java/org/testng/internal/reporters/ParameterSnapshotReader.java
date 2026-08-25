@@ -26,7 +26,12 @@ import org.testng.ISuite;
  * only ever sees the run's reporters, so a class that is not one -- {@code XMLSuiteResultWriter}
  * and the {@code jq} panels are the ones to watch, since they hold the reads but are not reporters
  * -- could otherwise wear this and be quietly passed over, leaving its report to fall back to
- * {@link org.testng.ITestResult#getParameters()} with nothing to say it had.
+ * {@link org.testng.ITestResult#getParameters()} with nothing to say it had. A read that arrives
+ * this late is worse off than the fallback suggests: the request below is also what tells the store
+ * to hold what the live reporters are finished with, so a reporter missing from this scan reads a
+ * store that dropped exactly the results it came for -- every configuration method that passed.
+ * That is what {@code Main} will have to declare when the {@code jq} report is migrated; a default
+ * run hides it, because {@code XMLReporter} has already asked.
  *
  * <p>Internal, and otherwise empty: implementing it is a statement about TestNG's own reporting,
  * not an extension point. A third party reporter that wants the snapshots implements {@link
@@ -50,7 +55,7 @@ public interface ParameterSnapshotReader extends IReporter {
   static void requestCaptureIfAnyReads(
       Collection<? extends IReporter> reporters, Collection<ISuite> suites) {
     if (reporters.stream().anyMatch(ParameterSnapshotReader.class::isInstance)) {
-      suites.forEach(ParameterSnapshots::requestCaptureFor);
+      suites.forEach(ParameterSnapshots::requestCaptureHeldUntilReportingFor);
     }
   }
 }
