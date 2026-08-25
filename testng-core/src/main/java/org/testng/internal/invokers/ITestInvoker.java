@@ -1,7 +1,6 @@
 package org.testng.internal.invokers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,10 +97,10 @@ public interface ITestInvoker {
       boolean skipFailedInvocationCounts,
       Object[] parameterValues,
       long start) {
-    if (failureCount <= 0 || !(skipFailedInvocationCounts || testMethod.skipFailedInvocations())) {
-      return Collections.emptyList();
-    }
     List<ITestResult> cancelled = new ArrayList<>();
+    if (failureCount <= 0 || !(skipFailedInvocationCounts || testMethod.skipFailedInvocations())) {
+      return cancelled;
+    }
     while (remaining.getAndDecrement() > 0) {
       cancelled.add(registerCancelledInvocation(testMethod, start, parameterValues));
     }
