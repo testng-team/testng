@@ -36,6 +36,11 @@ final class CliRunners {
   private CliRunners() {}
 
   /** @return the installed runner, or {@code null} when none is available. */
+  // Identity on purpose: the fallback exists for a deployment where the context classloader is a
+  // different loader from the one that owns the SPI, and a ClassLoader is only ever the same loader
+  // as itself. ClassLoader does not override equals, so equals would ask the same question less
+  // plainly.
+  @SuppressWarnings("ReferenceEquality")
   static @Nullable ITestNGCliRunner find() {
     ITestNGCliRunner local = cached;
     if (local != null) {

@@ -1024,6 +1024,10 @@ public class TestNG {
     }
   }
 
+  // Identity on purpose, for the one comparison below that is not a null test: DEFAULT_OBJECT_FACTORY
+  // is a sentinel meaning "no suite has named a factory yet", and a suite that names one replaces it
+  // with an instance of a user class whose equals TestNG does not own.
+  @SuppressWarnings("ReferenceEquality")
   private void initializeConfiguration() {
     ITestObjectFactory factory = m_objectFactory;
     //
@@ -2031,8 +2035,11 @@ public class TestNG {
     return m_annotationTransformer;
   }
 
+  @SuppressWarnings("ReferenceEquality")
   private void setAnnotationTransformer(IAnnotationTransformer t) {
-    // compare by reference!
+    // Identity on purpose: what is being reported is a second, different transformer replacing one
+    // the caller already installed. Re-installing the same instance is not a conflict, and a user
+    // type is free to declare two distinct transformers equal, which would hide a real one.
     if (m_annotationTransformer != m_defaultAnnoProcessor && m_annotationTransformer != t) {
       LOGGER.warn("AnnotationTransformer already set");
     }
@@ -2089,16 +2096,22 @@ public class TestNG {
     return m_instance;
   }
 
+  @SuppressWarnings("ReferenceEquality")
   private void setConfigurable(IConfigurable c) {
-    // compare by reference!
+    // Identity on purpose: what is being reported is a second, different configurable replacing one
+    // the caller already installed. IConfigurable is a user type and may declare two distinct
+    // instances equal, which would turn a real conflict into silence.
     if (m_configurable != null && m_configurable != c) {
       LOGGER.warn("Configurable already set");
     }
     m_configurable = c;
   }
 
+  @SuppressWarnings("ReferenceEquality")
   private void setHookable(IHookable h) {
-    // compare by reference!
+    // Identity on purpose: what is being reported is a second, different hookable replacing one the
+    // caller already installed. IHookable is a user type and may declare two distinct instances
+    // equal, which would turn a real conflict into silence.
     if (m_hookable != null && m_hookable != h) {
       LOGGER.warn("Hookable already set");
     }

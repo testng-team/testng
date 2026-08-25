@@ -129,8 +129,10 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
           //   Given graph c -> b -> a, then add c -> a before removing b.
           for (Map.Entry<T, Integer> out : outgoingEdges.entrySet()) {
             for (Map.Entry<T, Integer> in : incomingEdges.entrySet()) {
-              if (in.getKey() == out.getKey()) {
-                // Don't create a one node cycle.
+              if (in.getKey().equals(out.getKey())) {
+                // Don't create a one node cycle. Edges.addEdge drops a self edge by equals too, so
+                // this only spares the work; testing the keys by identity here would have let an
+                // equal pair through to be dropped there instead.
                 continue;
               } else if (in.getValue() > out.getValue()) {
                 // Don't add edges if we're patching up a lower weighted cycle.
