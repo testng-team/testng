@@ -165,11 +165,9 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     return IObject.objects(iClass, create, errorMsgPrefix);
   }
 
-  // Deprecated as IClass.getInstanceHashCodes(); the IObject method it also serves is current.
-  @Deprecated
   @Override
-  public long[] getInstanceHashCodes() {
-    return IObject.instanceHashCodes(iClass);
+  public long[] getObjectHashCodes() {
+    return IObject.objectHashCodes(iClass);
   }
 
   @Deprecated

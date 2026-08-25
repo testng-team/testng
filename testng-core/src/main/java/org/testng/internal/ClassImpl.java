@@ -31,7 +31,7 @@ public class ClassImpl implements IClass, IObject {
   private final IAnnotationFinder m_annotationFinder;
   private final List<IObject.IdentifiableObject> identifiableObjects = new ArrayList<>();
   private final Map<Class<?>, IClass> m_classes;
-  private long @Nullable [] m_instanceHashCodes;
+  private long[] m_instanceHashCodes = new long[0];
   private final IObject.@Nullable IdentifiableObject m_instance;
   private final ITestObjectFactory m_objectFactory;
   private @Nullable String m_testName = null;
@@ -80,11 +80,15 @@ public class ClassImpl implements IClass, IObject {
     return m_class;
   }
 
-  // Deprecated as IClass.getInstanceHashCodes(); the IObject method it also serves is current.
+  @Override
+  public long[] getObjectHashCodes() {
+    return m_instanceHashCodes;
+  }
+
   @Deprecated
   @Override
-  public long @Nullable [] getInstanceHashCodes() {
-    return m_instanceHashCodes;
+  public long[] getInstanceHashCodes() {
+    return getObjectHashCodes();
   }
 
   @Override

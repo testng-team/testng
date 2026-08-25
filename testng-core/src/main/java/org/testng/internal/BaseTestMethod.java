@@ -184,7 +184,7 @@ public abstract class BaseTestMethod
   /** {@inheritDoc} */
   @Override
   public long[] getInstanceHashCodes() {
-    return IObject.instanceHashCodes(m_testClass);
+    return IObject.objectHashCodes(m_testClass);
   }
 
   /**

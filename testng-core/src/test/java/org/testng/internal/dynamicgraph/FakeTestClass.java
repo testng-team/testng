@@ -104,8 +104,14 @@ public class FakeTestClass implements ITestClass, IObject {
   }
 
   @Override
-  public long[] getInstanceHashCodes() {
+  public long[] getObjectHashCodes() {
     return new long[0];
+  }
+
+  @Deprecated
+  @Override
+  public long[] getInstanceHashCodes() {
+    return getObjectHashCodes();
   }
 
   @Override

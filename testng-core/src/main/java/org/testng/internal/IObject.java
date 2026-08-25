@@ -23,7 +23,7 @@ public interface IObject {
   IdentifiableObject[] getObjects(boolean create, @Nullable String errorMsgPrefix);
 
   /** @return - An array representing the hash codes of the corresponding instances. */
-  long[] getInstanceHashCodes();
+  long[] getObjectHashCodes();
 
   /** @param instance - The instance that should be added to the list of instances. */
   void addObject(IdentifiableObject instance);
@@ -32,8 +32,8 @@ public interface IObject {
    * @param object - The object that should be inspected for its compatibility with {@link IObject}.
    * @return - An array representing the hash codes of the corresponding instances.
    */
-  static long[] instanceHashCodes(@Nullable Object object) {
-    return cast(object).map(IObject::getInstanceHashCodes).orElse(new long[] {});
+  static long[] objectHashCodes(@Nullable Object object) {
+    return cast(object).map(IObject::getObjectHashCodes).orElse(new long[] {});
   }
 
   /**
