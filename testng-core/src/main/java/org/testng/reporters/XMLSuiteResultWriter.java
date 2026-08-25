@@ -113,7 +113,7 @@ public class XMLSuiteResultWriter {
       attributes.setProperty(XMLReporterConfig.ATTR_NAME, testName);
     }
     XMLReporter.setDurationAttributes(
-        config, attributes, tc.getStartDate(), Utils.requireEndDateOf(tc));
+        config, attributes, tc.getStartInstant(), Utils.requireEndInstantOf(tc));
     return attributes;
   }
 

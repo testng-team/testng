@@ -13,6 +13,8 @@ import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -544,21 +546,32 @@ public final class Utils {
    * @param context The context to read the end date of.
    * @return The end date, never {@code null}.
    */
+  @Deprecated
+  @SuppressWarnings("deprecation") // it is the deprecated accessor this deprecated helper asserts on
   public static Date requireEndDateOf(ITestContext context) {
     return Objects.requireNonNull(context.getEndDate(), "a reported test context has finished");
   }
 
   /**
+   * @param context a test context that has finished
+   * @return when it finished
+   * @throws NullPointerException if it has not finished
+   */
+  public static Instant requireEndInstantOf(ITestContext context) {
+    return Objects.requireNonNull(context.getEndInstant(), "a reported test context has finished");
+  }
+
+  /**
    * How long a &lt;test&gt; ran, in milliseconds.
    *
-   * <p>Asserts through {@link #requireEndDateOf(ITestContext)} that the context has finished, which
+   * <p>Asserts through {@link #requireEndInstantOf(ITestContext)} that the context has finished, which
    * is what every reporter asking for a duration already did.
    *
    * @param context The context to measure.
    * @return The elapsed milliseconds between the start and the end of the context.
    */
   public static long durationOf(ITestContext context) {
-    return requireEndDateOf(context).getTime() - context.getStartDate().getTime();
+    return Duration.between(context.getStartInstant(), requireEndInstantOf(context)).toMillis();
   }
 
   public static String detailedMethodName(ITestNGMethod method, boolean fqn) {

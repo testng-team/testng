@@ -40,11 +40,13 @@ public class FakeTestContext implements ITestContext {
     return "fake";
   }
 
+  @Deprecated
   @Override
   public Date getStartDate() {
     return null;
   }
 
+  @Deprecated
   @Override
   public Date getEndDate() {
     return null;

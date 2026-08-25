@@ -1,5 +1,6 @@
 package org.testng;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import org.jspecify.annotations.Nullable;
@@ -17,12 +18,39 @@ public interface ITestContext extends IAttributes {
   /** @return The name of this test. */
   String getName();
 
-  /** @return When this test started running. */
+  /**
+   * @return When this test started running.
+   * @deprecated Use {@link #getStartInstant()} instead. This stays abstract for now, so that an
+   *     implementation written against an earlier release keeps compiling; it will get a default
+   *     built on {@link #getStartInstant()} once implementations have had a release to move.
+   */
+  @Deprecated
   Date getStartDate();
 
-  /** @return When this test stopped running. */
+  /**
+   * @return When this test stopped running.
+   * @deprecated Use {@link #getEndInstant()} instead. See {@link #getStartDate()} for why it is
+   *     still abstract.
+   */
+  @Deprecated
   @Nullable
   Date getEndDate();
+
+  /**
+   * @return When this test started running.
+   */
+  default Instant getStartInstant() {
+    return getStartDate().toInstant();
+  }
+
+  /**
+   * @return When this test stopped running, or {@code null} while it is still running.
+   */
+  @Nullable
+  default Instant getEndInstant() {
+    Date endDate = getEndDate();
+    return endDate == null ? null : endDate.toInstant();
+  }
 
   /** @return A list of all the tests that run successfully. */
   IResultMap getPassedTests();

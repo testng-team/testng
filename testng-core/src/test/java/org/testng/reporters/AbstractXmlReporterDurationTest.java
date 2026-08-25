@@ -2,7 +2,7 @@ package org.testng.reporters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Properties;
 import org.testng.annotations.Test;
 import org.testng.util.TimeUtils;
@@ -43,7 +43,10 @@ public class AbstractXmlReporterDurationTest {
   public void aRunThatEndedWhereItStartedLastsNoTime() {
     Properties attributes = new Properties();
     AbstractXmlReporter.setDurationAttributes(
-        new XMLReporterConfig(), attributes, new Date(START_MILLIS), new Date(START_MILLIS));
+        new XMLReporterConfig(),
+        attributes,
+        Instant.ofEpochMilli(START_MILLIS),
+        Instant.ofEpochMilli(START_MILLIS));
 
     assertThat(attributes.getProperty(XMLReporterConfig.ATTR_DURATION_MS)).isEqualTo("0");
   }
@@ -51,7 +54,10 @@ public class AbstractXmlReporterDurationTest {
   private static Properties durationAttributes() {
     Properties attributes = new Properties();
     AbstractXmlReporter.setDurationAttributes(
-        new XMLReporterConfig(), attributes, new Date(START_MILLIS), new Date(END_MILLIS));
+        new XMLReporterConfig(),
+        attributes,
+        Instant.ofEpochMilli(START_MILLIS),
+        Instant.ofEpochMilli(END_MILLIS));
     return attributes;
   }
 }
