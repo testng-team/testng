@@ -144,7 +144,6 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
 
   private final String m_fileName;
   private final boolean m_loadClasses;
-  private boolean m_validate = false;
   private boolean m_doctypeDeclared = false;
 
   /**
@@ -221,7 +220,6 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     m_doctypeDeclared = true;
 
     if (skipConsideringSystemId(systemId)) {
-      m_validate = true;
       InputStream stream = loadDtdUsingClassLoader();
       if (stream != null) {
         // Buffer the classpath DTD so this resolver, rather than SAX, owns and closes the stream.

@@ -7,21 +7,11 @@ import org.testng.annotations.Test;
 public class LockUpInterceptorSampleTest {
 
   @Test
-  public void one() {
-    log("one");
-  }
+  public void one() {}
 
   @Test
-  public void two() {
-    log("two");
-  }
+  public void two() {}
 
   @Test
-  public void three() {
-    log("three");
-  }
-
-  private static void log(String s) {
-    //      System.out.println("[MITest] " + s);
-  }
+  public void three() {}
 }

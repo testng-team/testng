@@ -6,10 +6,7 @@ import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteLevel
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteListenerStartEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllTestLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllTestMethodLevelEventLogs;
-import static test.thread.parallelization.TestNgRunStateTracker.getSuiteAndTestLevelEventLogsForSuite;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteLevelEventLogsForSuite;
-import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerFinishEventLog;
-import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerStartEventLog;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestLevelEventLogsForSuite;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestLevelEventLogsForTest;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerFinishEventLog;
@@ -46,16 +43,12 @@ public class EfficientPriorityParallelizationTest extends BaseParallelizationTes
   private List<EventLog> testLevelEventLogs;
   private List<EventLog> testMethodLevelEventLogs;
 
-  private List<EventLog> suiteOneSuiteAndTestLevelEventLogs;
   private List<EventLog> suiteOneSuiteLevelEventLogs;
   private List<EventLog> suiteOneTestLevelEventLogs;
   private List<EventLog> suiteOneTestMethodLevelEventLogs;
 
   private List<EventLog> suiteOneTestOneTestMethodLevelEventLogs;
   private List<EventLog> suiteOneTestTwoTestMethodLevelEventLogs;
-
-  private EventLog suiteOneSuiteListenerOnStartEventLog;
-  private EventLog suiteOneSuiteListenerOnFinishEventLog;
 
   private EventLog suiteOneTestOneListenerOnStartEventLog;
   private EventLog suiteOneTestOneListenerOnFinishEventLog;
@@ -120,7 +113,6 @@ public class EfficientPriorityParallelizationTest extends BaseParallelizationTes
     testLevelEventLogs = getAllTestLevelEventLogs();
     testMethodLevelEventLogs = getAllTestMethodLevelEventLogs();
 
-    suiteOneSuiteAndTestLevelEventLogs = getSuiteAndTestLevelEventLogsForSuite(SUITE_A);
     suiteOneSuiteLevelEventLogs = getSuiteLevelEventLogsForSuite(SUITE_A);
     suiteOneTestLevelEventLogs = getTestLevelEventLogsForSuite(SUITE_A);
 
@@ -133,9 +125,6 @@ public class EfficientPriorityParallelizationTest extends BaseParallelizationTes
 
     testEventLogsMap.put(SUITE_A_TEST_A, getTestLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_A));
     testEventLogsMap.put(SUITE_A_TEST_B, getTestLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_B));
-
-    suiteOneSuiteListenerOnStartEventLog = getSuiteListenerStartEventLog(SUITE_A);
-    suiteOneSuiteListenerOnFinishEventLog = getSuiteListenerFinishEventLog(SUITE_A);
 
     suiteOneTestOneListenerOnStartEventLog = getTestListenerStartEventLog(SUITE_A, SUITE_A_TEST_A);
     suiteOneTestOneListenerOnFinishEventLog =

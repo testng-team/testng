@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
 import org.testng.ISuite;
-import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
 /**
@@ -16,7 +15,6 @@ import org.testng.xml.XmlSuite;
  */
 public final class ObjectBag {
 
-  private static final Logger logger = Logger.getLogger(ObjectBag.class);
   private final Map<Class<?>, Object> bag = new ConcurrentHashMap<>();
 
   private static final Map<UUID, ObjectBag> instances = new ConcurrentHashMap<>();

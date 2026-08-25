@@ -34,7 +34,9 @@ public enum MethodSorting implements Comparator<ITestNGMethod> {
     }
   },
   NONE("none") {
+    // Comparator fixes the signature, and NONE compares nothing.
     @Override
+    @SuppressWarnings("unused")
     public int compare(ITestNGMethod o1, ITestNGMethod o2) {
       return 0;
     }

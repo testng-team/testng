@@ -184,7 +184,7 @@ public class TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample {
 
     String dataProviderParam = params.get("dataProviderParam");
 
-    String[] dataProviderVals = null;
+    String[] dataProviderVals;
     String classNamePattern =
         TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getSimpleName() + "(";
 

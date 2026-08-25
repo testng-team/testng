@@ -9,8 +9,9 @@ import org.testng.annotations.Test;
 public class BeforeConfigTestSample {
   @BeforeClass
   public void beforeClass() {
+    // The division is the point: this @BeforeClass has to fail.
     @SuppressWarnings("ConstantOverflow")
-    int i = 5 / 0;
+    int unused = 5 / 0;
   }
 
   @BeforeMethod
