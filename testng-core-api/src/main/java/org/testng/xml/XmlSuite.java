@@ -77,9 +77,37 @@ public class XmlSuite implements Cloneable {
     }
   }
 
-  /** Configuration failure policy options. */
+  /**
+   * Decides what happens to the configuration methods that would have run after one of them has
+   * already failed, and hence to the test methods they were setting up.
+   *
+   * <p>What each policy does depends on the level of the configuration method that failed:
+   *
+   * <table border="1">
+   *   <caption>Fate of a test method whose setup failed</caption>
+   *   <tr><th>Failing method</th><th>{@link #SKIP}</th><th>{@link #CONTINUE}</th></tr>
+   *   <tr><td>&#64;BeforeSuite</td><td>skipped</td><td>skipped</td></tr>
+   *   <tr><td>&#64;BeforeTest</td><td>skipped</td><td><b>runs</b></td></tr>
+   *   <tr><td>&#64;BeforeClass</td><td>skipped</td><td>skipped</td></tr>
+   *   <tr><td>&#64;BeforeMethod</td><td>skipped</td><td>skipped</td></tr>
+   * </table>
+   *
+   * <p>The failure itself is always reported, so neither policy turns a broken setup into a green
+   * run. A &#64;BeforeSuite failure stops the suite whatever the policy says.
+   */
   public enum FailurePolicy {
+    /**
+     * Once a configuration method has failed, stop attempting the remaining ones for the whole
+     * class (and, for a &#64;BeforeTest failure, for every class of the same {@code <test>}).
+     */
     SKIP("skip"),
+    /**
+     * Keep attempting a configuration method that has already failed, invalidating only the
+     * narrowest scope the failure belongs to: the failing instance for &#64;BeforeClass, the
+     * failing test-method invocation for &#64;BeforeMethod. Sibling instances and sibling test
+     * methods still get their configuration methods invoked, and a &#64;BeforeTest failure
+     * invalidates no instance at all, so the test methods of that {@code <test>} run.
+     */
     CONTINUE("continue");
 
     private final String name;
@@ -284,7 +312,8 @@ public class XmlSuite implements Cloneable {
   }
 
   /**
-   * Sets the configuration failure policy.
+   * Sets whether TestNG keeps attempting configuration methods after one of them has failed once,
+   * or skips the remaining ones. See {@link FailurePolicy} for what each value invalidates.
    *
    * @param configFailurePolicy The config failure policy.
    */
@@ -293,7 +322,8 @@ public class XmlSuite implements Cloneable {
   }
 
   /**
-   * Returns the configuration failure policy.
+   * Returns whether TestNG keeps attempting configuration methods after one of them has failed
+   * once, or skips the remaining ones. See {@link FailurePolicy} for what each value invalidates.
    *
    * @return The configuration failure policy.
    */

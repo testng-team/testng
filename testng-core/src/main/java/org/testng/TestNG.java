@@ -2058,8 +2058,8 @@ public class TestNG {
 
   /**
    * Sets the policy for whether or not to ever invoke a configuration method again after it has
-   * failed once. Possible values are defined in {@link XmlSuite}. The default value is {@link
-   * org.testng.xml.XmlSuite.FailurePolicy#SKIP}
+   * failed once. See {@link org.testng.xml.XmlSuite.FailurePolicy} for what each value invalidates.
+   * The default value is {@link org.testng.xml.XmlSuite.FailurePolicy#SKIP}
    *
    * @param failurePolicy the configuration failure policy
    */

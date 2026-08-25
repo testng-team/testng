@@ -101,7 +101,11 @@ public class CliOptions {
   /** Parallel mode (methods, tests or classes). */
   public XmlSuite.@Nullable ParallelMode parallelMode;
 
-  /** Configuration failure policy (skip or continue). */
+  /**
+   * Whether TestNG keeps attempting configuration methods after one of them has failed once ({@code
+   * continue}) or skips the remaining ones ({@code skip}). See {@link
+   * org.testng.xml.XmlSuite.FailurePolicy}.
+   */
   public @Nullable String configFailurePolicy;
 
   /** Number of threads to use when running tests in parallel. */
