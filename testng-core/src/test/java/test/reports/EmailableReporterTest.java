@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
+import java.util.Locale;
 import org.testng.IReporter;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
@@ -76,7 +77,7 @@ public class EmailableReporterTest extends SimpleBaseTest {
 
   @DataProvider(name = "getReporterInstances")
   public Object[][] getReporterInstances(Method method) {
-    if (method.getName().toLowerCase().contains("jvmarguments")) {
+    if (method.getName().toLowerCase(Locale.ROOT).contains("jvmarguments")) {
       return new Object[][] {{new EmailableReporter2(), "emailable.report2.name"}};
     }
     return new Object[][] {{new EmailableReporter2()}};

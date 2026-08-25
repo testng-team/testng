@@ -19,6 +19,10 @@ public final class InstanceCreator {
     // Hide Constructor
   }
 
+  // Named by String rather than by Class<T>, so T appears only in the return type and the cast
+  // below is unchecked -- which is the check's complaint. It implements the ITestObjectFactory
+  // overload of the same shape, so the signature is not ours to change.
+  @SuppressWarnings("TypeParameterUnusedInFormals")
   public static <T> T newInstance(String className, Object... parameters) {
     Class<?> clazz = ClassHelper.forName(className);
     Objects.requireNonNull(clazz, "Could not find a valid class");

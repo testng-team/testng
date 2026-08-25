@@ -324,12 +324,9 @@ final class YamlSchema {
      */
     <V> SchemaType<T> mapKey(
         String name, Function<Map<?, ?>, V> conversion, BiConsumer<T, V> setter) {
-      return add(
-          new SchemaProperty(
-              name,
-              Map.class,
-              (target, value) ->
-                  setter.accept(uncheckedCast(target), conversion.apply((Map<?, ?>) value))));
+      BiConsumer<T, Object> converting =
+          (target, value) -> setter.accept(target, conversion.apply((Map<?, ?>) value));
+      return add(new SchemaProperty(name, Map.class, cast(converting)));
     }
 
     /** An accepted spelling of {@code canonical} that warns when it is used. */
@@ -397,11 +394,6 @@ final class YamlSchema {
     private SchemaType<T> add(SchemaProperty property) {
       keys.put(property.getName(), property);
       return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <V> V uncheckedCast(Object value) {
-      return (V) value;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

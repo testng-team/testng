@@ -27,8 +27,10 @@ public class MyTestClassWithGlobalReferenceCounterSample {
     log.debug("test method 2");
   }
 
+  // The finalizer is what decrements the counter MemoryLeakTestNg spins on. Without it that
+  // loop never reaches zero and the test fails on its timeOut.
   @Override
-  @SuppressWarnings("deprecation")
+  @SuppressWarnings({"deprecation", "Finalize"})
   protected void finalize() {
     log.debug("finalize");
     // this will be called when this object is removed from the heap

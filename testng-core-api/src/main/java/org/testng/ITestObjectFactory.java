@@ -11,6 +11,12 @@ public interface ITestObjectFactory {
     return InstanceCreator.newInstance(cls, parameters);
   }
 
+  // The sibling overloads take Class<T> or Constructor<T>, so T is inferred from the argument.
+  // This one identifies the class by name, so nothing in the formals carries T and the caller
+  // picks it by assignment -- newInstance("com.acme.Bar") will happily fill a Foo variable and
+  // fail with a ClassCastException at the call site. That is what the check flags, and it is
+  // published API, so it is suppressed rather than obeyed.
+  @SuppressWarnings("TypeParameterUnusedInFormals")
   default <T> T newInstance(String clsName, Object... parameters) {
     return InstanceCreator.newInstance(clsName, parameters);
   }

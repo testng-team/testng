@@ -48,8 +48,10 @@ public class MemoryLeakTestNg {
     // create TestNG class
     TestNG testng =
         new TestNG() {
+          // Overriding finalize is the observation: the log line is how this test shows the
+          // TestNG instance is never reclaimed.
           @Override
-          @SuppressWarnings("deprecation")
+          @SuppressWarnings({"deprecation", "Finalize"})
           protected void finalize() {
             // it seems that this object will never be finalized !!!
             log.debug("TestNG finalized");

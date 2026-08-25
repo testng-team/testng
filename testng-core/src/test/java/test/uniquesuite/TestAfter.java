@@ -25,5 +25,3 @@ public class TestAfter {
     BaseBefore.m_afterCount = 0;
   }
 }
-
-/////
