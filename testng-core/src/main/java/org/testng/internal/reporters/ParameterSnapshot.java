@@ -3,8 +3,8 @@ package org.testng.internal.reporters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
-import org.testng.internal.Utils;
 
 /**
  * What a reporter needs to remember about the values an invocation ran with: their rendered form,
@@ -17,6 +17,10 @@ import org.testng.internal.Utils;
  * deliberate: it asks nothing of the user's type, where the historical {@code
  * LegacyParameterSnapshotter} needs it to honour {@link Cloneable}.
  *
+ * <p>Built-in reports do not all write a value the same way, so what is held is a {@link
+ * ParameterValue} rather than a string: one capture, from which the console and the XML forms are
+ * each derived. The user's {@code toString()} still runs once per invocation, not once per report.
+ *
  * <p>The price is that {@link Object#toString()} runs as the invocation starts rather than when the
  * report is written. See {@link ParameterSnapshots#captureIfAbsent} for what happens when it
  * throws.
@@ -25,12 +29,12 @@ public final class ParameterSnapshot {
 
   private final int suppliedCount;
   private final int expectedCount;
-  private final List<String> renderedValues;
+  private final List<ParameterValue> values;
 
-  private ParameterSnapshot(int suppliedCount, int expectedCount, List<String> renderedValues) {
+  private ParameterSnapshot(int suppliedCount, int expectedCount, List<ParameterValue> values) {
     this.suppliedCount = suppliedCount;
     this.expectedCount = expectedCount;
-    this.renderedValues = renderedValues;
+    this.values = values;
   }
 
   /**
@@ -49,12 +53,12 @@ public final class ParameterSnapshot {
       return new ParameterSnapshot(
           parameters.length, parameterTypes.length, Collections.emptyList());
     }
-    List<String> rendered = new ArrayList<>(parameters.length);
+    List<ParameterValue> values = new ArrayList<>(parameters.length);
     for (int i = 0; i < parameters.length; i++) {
-      rendered.add(Utils.toString(parameters[i], parameterTypes[i]));
+      values.add(ParameterValue.of(parameters[i], parameterTypes[i]));
     }
     return new ParameterSnapshot(
-        parameters.length, parameterTypes.length, Collections.unmodifiableList(rendered));
+        parameters.length, parameterTypes.length, Collections.unmodifiableList(values));
   }
 
   /**
@@ -73,8 +77,16 @@ public final class ParameterSnapshot {
     return expectedCount;
   }
 
-  /** The rendered values in invocation order. Empty when {@link #hasCountMismatch()}. */
+  /** The values in invocation order. Empty when {@link #hasCountMismatch()}. */
+  public List<ParameterValue> values() {
+    return values;
+  }
+
+  /**
+   * The values as a console reporter prints them, in invocation order. Empty when {@link
+   * #hasCountMismatch()}.
+   */
   public List<String> renderedValues() {
-    return renderedValues;
+    return values.stream().map(ParameterValue::rendered).collect(Collectors.toList());
   }
 }

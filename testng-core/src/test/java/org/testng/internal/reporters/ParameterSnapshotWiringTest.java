@@ -46,17 +46,17 @@ public class ParameterSnapshotWiringTest extends SimpleBaseTest {
   }
 
   @Test(
-      description = "The wiring takes no snapshot for the built-in reporters, which read none yet")
-  public void aDefaultRunTakesNoSnapshot() throws IOException {
+      description =
+          "The wiring takes the snapshots of a default run, because the XML reports read them")
+  public void aDefaultRunTakesSnapshots() throws IOException {
     Run run = runUnderDefaultReporters(TestHelper.createRandomDirectory());
 
-    // Nothing captured, so the snapshot layer rendered nothing: captureIfAbsent is the only place
-    // it renders, and it returns before doing so while no reporter has asked.
-    assertThat(run.snapshottedInvocations).isEmpty();
-    // And not because the reporters never looked: they each render the value for themselves from
-    // generateReport, which is the reading Phase 7 replaces one reporter at a time. How many times
-    // is theirs to change -- it was 8 when this was written, and depends on which of them a run
-    // registers -- so this pins that they read at all, not how often.
+    // XMLReporter declares the reading on AbstractXmlReporter, and a default run registers it, so
+    // the question the wiring asks before any suite starts is answered yes.
+    assertThat(run.snapshottedInvocations).isEqualTo(run.invocations);
+    // The built-in reports Phase 7 has not reached still render the value for themselves from
+    // generateReport, so this is more than the one capture. How many is theirs to change, and
+    // depends on which of them a run registers, so this pins that they read at all, not how often.
     assertThat(run.renderings).isPositive();
   }
 

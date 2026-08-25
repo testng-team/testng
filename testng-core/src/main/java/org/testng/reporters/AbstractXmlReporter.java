@@ -16,9 +16,21 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.internal.Utils;
+import org.testng.internal.reporters.ParameterSnapshotReader;
 import org.testng.util.TimeUtils;
 
-public abstract class AbstractXmlReporter implements IReporter, ICustomizeXmlReport {
+/**
+ * What {@link XMLReporter} and {@link PerSuiteXMLReporter} share, which is everything but where the
+ * result of a run is written.
+ *
+ * <p>Declaring here that the XML reports read the invocation-time parameter snapshots covers both,
+ * and covers a user's own subclass with them: the two differ in how many files they produce, not in
+ * what a {@code <test-method>} says. See {@link ParameterSnapshotReader} for why an XML reporter
+ * has to say so rather than ask for itself -- it is handed a run only once every invocation of it
+ * is over.
+ */
+public abstract class AbstractXmlReporter
+    implements IReporter, ICustomizeXmlReport, ParameterSnapshotReader {
 
   private final XMLReporterConfig config = new XMLReporterConfig();
 
