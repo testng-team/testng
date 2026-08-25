@@ -49,14 +49,33 @@ tasks.withType<JavaCompile>().configureEach {
         // Promoting also takes a check out of disableWarningsInGeneratedCode above: Error Prone
         // only honours that exemption while the check is below ERROR. Nothing here generates Java
         // today, so the list costs nothing; a module that adds a processor pays for it.
+        //
+        // Six of them are contract questions rather than tidiness -- what equals means, what a
+        // caller may do with a returned collection, which separator is a pattern -- and none of
+        // them fails a test when it is answered wrongly. That is what makes stopping the build the
+        // only thing that would catch the next one: EqualsGetClass, JavaUtilDate, JdkObsolete,
+        // MixedMutabilityReturnType, ReferenceEquality and StringSplitter.
+        //
+        // StringSplitter reports less than it matches, so "zero sites" means less for it than for
+        // the rest. It stays silent unless it can build a Guava Splitter fix, which needs the
+        // split to be a variable initialiser, a for-each subject or an array access; the same call
+        // assigned to an existing variable, or passed straight to a method, is never reported. The
+        // source was swept by hand to close that gap, so what is left in main is one deliberate
+        // regular expression in ClassHelper. A new String.split can still enter this way.
         error(
             "BadImport",
             "BooleanLiteral",
+            "EqualsGetClass",
             "Finalize",
             "InconsistentCapitalization",
+            "JavaUtilDate",
+            "JdkObsolete",
             "MissingOverride",
+            "MixedMutabilityReturnType",
             "NotJavadoc",
+            "ReferenceEquality",
             "StringCaseLocaleUsage",
+            "StringSplitter",
             "TypeParameterUnusedInFormals",
             "UnnecessaryParentheses",
             "UnusedVariable",
