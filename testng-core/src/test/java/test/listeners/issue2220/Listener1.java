@@ -1,6 +1,6 @@
 package test.listeners.issue2220;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
@@ -8,7 +8,7 @@ import org.testng.ITestResult;
 
 public class Listener1 implements ITestListener {
 
-  static final List<String> logs = new LinkedList<>();
+  static final List<String> logs = new ArrayList<>();
 
   @Override
   public void onTestStart(ITestResult result) {

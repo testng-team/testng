@@ -2,7 +2,7 @@ package org.testng.internal.invokers;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.jspecify.annotations.Nullable;
@@ -111,7 +111,7 @@ public abstract class AbstractParallelWorker {
       }
 
       public Builder listeners(Collection<IClassListener> listeners) {
-        this.listeners = new LinkedList<>(listeners);
+        this.listeners = new ArrayList<>(listeners);
         return this;
       }
 

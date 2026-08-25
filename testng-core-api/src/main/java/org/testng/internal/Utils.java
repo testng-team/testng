@@ -12,6 +12,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -208,7 +209,7 @@ public final class Utils {
     }
     OutputStreamWriter osw;
     if (null != encoding) {
-      osw = new OutputStreamWriter(new FileOutputStream(outputFile), encoding);
+      osw = new OutputStreamWriter(new FileOutputStream(outputFile), Charset.forName(encoding));
     } else {
       osw = new OutputStreamWriter(new FileOutputStream(outputFile));
     }

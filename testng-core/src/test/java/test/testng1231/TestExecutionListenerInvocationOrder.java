@@ -3,7 +3,7 @@ package test.testng1231;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.IAlterSuiteListener;
 import org.testng.IExecutionListener;
@@ -33,7 +33,7 @@ public class TestExecutionListenerInvocationOrder extends SimpleBaseTest {
 
   public static class TestListenerFor1231
       implements IExecutionListener, IAlterSuiteListener, IReporter, ISuiteListener {
-    public static List<Integer> order = new LinkedList<>();
+    public static List<Integer> order = new ArrayList<>();
 
     @Override
     public void onExecutionStart() {

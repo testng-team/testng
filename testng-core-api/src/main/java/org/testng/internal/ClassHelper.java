@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
@@ -27,7 +27,10 @@ import org.testng.xml.XmlTest;
 public final class ClassHelper {
 
   /** The additional class loaders to find classes in. */
-  private static final List<ClassLoader> classLoaders = new Vector<>();
+  // CopyOnWriteArrayList rather than ArrayList: addClassLoader is public static and reachable from
+  // a user thread, while forName iterates this list from the runner's. The Vector it replaces gave a
+  // synchronised add and an iteration that was not safe at all.
+  private static final List<ClassLoader> classLoaders = new CopyOnWriteArrayList<>();
 
   private static final String CLASS_HELPER = ClassHelper.class.getSimpleName();
 

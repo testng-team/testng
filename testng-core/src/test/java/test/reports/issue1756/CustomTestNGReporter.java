@@ -1,6 +1,6 @@
 package test.reports.issue1756;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.IReporter;
 import org.testng.IResultMap;
@@ -9,7 +9,7 @@ import org.testng.ISuiteResult;
 import org.testng.xml.XmlSuite;
 
 public class CustomTestNGReporter implements IReporter {
-  private final List<String> logs = new LinkedList<>();
+  private final List<String> logs = new ArrayList<>();
 
   public List<String> getLogs() {
     return logs;

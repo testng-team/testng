@@ -1,7 +1,6 @@
 package org.testng;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +32,7 @@ public class Reporter {
       new InheritableThreadLocal<>();
 
   /** All output logged in a sequential order. */
-  private static final List<String> m_output = new LinkedList<>();
+  private static final List<String> m_output = new ArrayList<>();
 
   private static final Map<String, List<Integer>> m_methodOutputMap = new ConcurrentHashMap<>();
 
@@ -90,7 +89,7 @@ public class Reporter {
     if (m == null) {
       // Persist the output temporarily into a ThreadLocal String list.
       if (m_orphanedOutput.get() == null) {
-        m_orphanedOutput.set(new LinkedList<>());
+        m_orphanedOutput.set(new ArrayList<>());
       }
       m_orphanedOutput.get().add(s);
       return;
@@ -99,7 +98,7 @@ public class Reporter {
     // Synchronization needed to ensure the line number and m_output are updated atomically.
     int n = getOutput().size();
 
-    List<Integer> lines = m_methodOutputMap.computeIfAbsent(m.id(), k -> new LinkedList<>());
+    List<Integer> lines = m_methodOutputMap.computeIfAbsent(m.id(), k -> new ArrayList<>());
 
     // Check if there was already some orphaned output for the current thread.
     if (m_orphanedOutput.get() != null) {

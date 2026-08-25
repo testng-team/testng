@@ -1,7 +1,7 @@
 package org.testng.xml.internal;
 
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.testng.TestNGException;
@@ -69,7 +69,7 @@ public final class XmlSuiteUtils {
   }
 
   private static List<XmlClass> constructXmlClassesUsing(List<String> classes) {
-    List<XmlClass> xmlClasses = new LinkedList<>();
+    List<XmlClass> xmlClasses = new ArrayList<>();
     for (String cls : classes) {
       XmlClass xmlClass = new XmlClass(cls);
       xmlClasses.add(xmlClass);

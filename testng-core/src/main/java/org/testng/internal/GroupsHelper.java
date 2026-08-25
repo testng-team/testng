@@ -1,7 +1,7 @@
 package org.testng.internal;
 
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,12 +40,12 @@ public final class GroupsHelper {
       return result;
     }
 
-    List<String> unfinishedGroups = new LinkedList<>();
+    List<String> unfinishedGroups = new ArrayList<>();
     collectGroups(groups, unfinishedGroups, metaGroups, result);
 
     while (!unfinishedGroups.isEmpty()) {
-      List<String> uGroups = new LinkedList<>(unfinishedGroups);
-      unfinishedGroups = new LinkedList<>();
+      List<String> uGroups = new ArrayList<>(unfinishedGroups);
+      unfinishedGroups = new ArrayList<>();
       collectGroups(uGroups, unfinishedGroups, metaGroups, result);
     }
 

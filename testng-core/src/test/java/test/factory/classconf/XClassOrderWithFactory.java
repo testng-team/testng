@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 
 public class XClassOrderWithFactory {
   public static final String EXPECTED_LOG = "BTABTABTA";
-  public static final StringBuffer LOG = new StringBuffer();
+  public static final StringBuilder LOG = new StringBuilder();
 
   @Factory
   public Object[] createInstances() {

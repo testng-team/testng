@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -28,7 +27,7 @@ class JarFileUtils {
   private final String xmlPathInJar;
   private final boolean ignoreMissedTestNames;
   private final @Nullable List<String> testNames;
-  private final List<XmlSuite> suites = new LinkedList<>();
+  private final List<XmlSuite> suites = new ArrayList<>();
   private final XmlSuite.ParallelMode mode;
 
   JarFileUtils(IPostProcessor processor, String xmlPathInJar, @Nullable List<String> testNames) {

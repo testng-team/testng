@@ -1,7 +1,7 @@
 package test.listeners.github1465;
 
 import java.lang.reflect.Method;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -9,8 +9,8 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 
 public class ExampleClassListener implements IInvokedMethodListener {
-  final List<String> messages = new LinkedList<>();
-  final List<String> configMsgs = new LinkedList<>();
+  final List<String> messages = new ArrayList<>();
+  final List<String> configMsgs = new ArrayList<>();
 
   @Override
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {

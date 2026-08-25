@@ -1,7 +1,7 @@
 package test.listeners.issue1777;
 
 import java.lang.reflect.Method;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -11,9 +11,9 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 
 public class MyListener implements IInvokedMethodListener, ITestListener {
-  List<String> allMsgs = new LinkedList<>();
-  List<String> tstMsgs = new LinkedList<>();
-  List<String> cfgMsgs = new LinkedList<>();
+  List<String> allMsgs = new ArrayList<>();
+  List<String> tstMsgs = new ArrayList<>();
+  List<String> cfgMsgs = new ArrayList<>();
 
   @Override
   public void onTestFailedButWithinSuccessPercentage(ITestResult testResult) {
