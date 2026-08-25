@@ -22,7 +22,7 @@ tasks.withType<JavaCompile>().configureEach {
         // its jar is on the processor path, even for a task that disables the check below, and
         // NullAway refuses to start unless one of OnlyNullMarked or AnnotatedPackages is set.
         // Moving them into an else branch fails every test compile.
-        check("NullAway", CheckSeverity.ERROR)
+        error("NullAway")
         option("NullAway:OnlyNullMarked", true)
 
         // Without JSpecifyMode, NullAway reads declarations only and never looks inside a generic
@@ -30,6 +30,31 @@ tasks.withType<JavaCompile>().configureEach {
         // container is free to claim non-null elements while yielding null ones. Turning it on is
         // what makes @NullMarked mean what JSpecify says it means rather than roughly half of it.
         option("NullAway:JSpecifyMode", true)
+
+        // Checks measured at zero unsuppressed sites, promoted from warning so the next
+        // violation stops the build instead of joining an output nobody reads. The sites that
+        // remain carry a @SuppressWarnings saying why. Finalize is here on new violations alone --
+        // both of its sites are suppressed, because the finalizers are what the leak test watches.
+        //
+        // Measure before adding one: javac caps at 100 warnings per compile task and several
+        // tasks here are past that, so an ordinary build undercounts. Nothing raises the cap, so
+        // count from a throwaway init script that adds -Xmaxwarns rather than from a plain build.
+        //
+        // Promoting also takes a check out of disableWarningsInGeneratedCode above: Error Prone
+        // only honours that exemption while the check is below ERROR. Nothing here generates Java
+        // today, so the list costs nothing; a module that adds a processor pays for it.
+        error(
+            "BadImport",
+            "BooleanLiteral",
+            "Finalize",
+            "InconsistentCapitalization",
+            "MissingOverride",
+            "NotJavadoc",
+            "StringCaseLocaleUsage",
+            "TypeParameterUnusedInFormals",
+            "UnnecessaryParentheses",
+            "UnusedVariable",
+        )
 
         // Which compiles carry test code. The Error Prone plugin derives compilingTestOnlyCode
         // from the *source set* name and lets a module override it, so a module whose main source
