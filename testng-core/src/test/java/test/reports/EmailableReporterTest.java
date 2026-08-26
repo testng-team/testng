@@ -3,7 +3,9 @@ package test.reports;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import org.testng.IReporter;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
@@ -15,6 +17,7 @@ import test.reports.issue3038.AnotherTestCaseSample;
 import test.reports.issue3038.ExceptionAwareEmailableReporter;
 import test.reports.issue3038.TestCaseSample;
 import test.reports.issue3038.TestCaseWithConfigProblemSample;
+import test.reports.issue3418.FactoryOnlySample;
 
 public class EmailableReporterTest extends SimpleBaseTest {
   @Test(dataProvider = "getReporterInstances", priority = 1)
@@ -42,6 +45,25 @@ public class EmailableReporterTest extends SimpleBaseTest {
   public void ensureEmailableReportsDontThrowExceptionsWhenConfigsHaveErrors() {
     runTest(
         TestCaseSample.class, TestCaseWithConfigProblemSample.class, AnotherTestCaseSample.class);
+  }
+
+  @Test
+  public void factoryOnlyResultDoesNotGetInvisibleFillerRow() throws IOException {
+    File output = createDirInTempDir("emailable-3418");
+    EmailableReporter2 reporter = new EmailableReporter2();
+    TestNG testng = create(FactoryOnlySample.class);
+    testng.setOutputDirectory(output.getAbsolutePath());
+    testng.addListener(reporter);
+    testng.run();
+
+    File report = new File(output, reporter.getFileName());
+    assertThat(report).exists();
+    String html = Files.readString(report.toPath());
+    assertThat(html)
+        .contains(
+            "<table class=\"result\"><tr class=\"param\"><th>Factory Parameter #1</th></tr>"
+                + "<tr class=\"param stripe\"><td>alpha</td></tr></table>")
+        .doesNotContain("<tr><th class=\"invisible\"/></tr>");
   }
 
   private static void runTest(Class<?>... classes) {
