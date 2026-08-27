@@ -721,7 +721,11 @@ public class TestRunner
     IDynamicGraph<ITestNGMethod> graph =
         TimeUtils.computeAndShowTime(
             "DynamicGraphHelper.createDynamicGraph()",
-            () -> DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest()));
+            () ->
+                DynamicGraphHelper.createDynamicGraph(
+                    interceptedOrder,
+                    getCurrentXmlTest(),
+                    requireGroupMethods().getBeforeGroupsMethods()));
 
     for (ITestNGMethod each : interceptedOrder) {
       if (each instanceof BaseTestMethod) {

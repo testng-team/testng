@@ -353,6 +353,9 @@ public class MethodHelper {
         }
         predecessors.addAll(Arrays.asList(methodsNamed));
       }
+      // A group configuration method is left out: it is resolved against configuration methods of
+      // its own kind here, where a group names test methods. DynamicGraphHelper is what carries a
+      // @BeforeGroups dependsOnGroups over to the tests of the group it runs before.
       boolean anyConfigExceptGroupConfigs =
           !(m.isBeforeGroupsConfiguration() || m.isAfterGroupsConfiguration());
       boolean isGroupAgnosticConfigMethod = !m.isTest() && anyConfigExceptGroupConfigs;

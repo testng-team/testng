@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -259,9 +258,23 @@ public class MethodGroupsHelper {
   protected static ITestNGMethod[] findMethodsThatBelongToGroup(
       ITestNGMethod[] methods, String groupRegexp) {
     final Pattern pattern = getPattern(groupRegexp);
-    Predicate<ITestNGMethod> matchingGroups =
-        tm -> Arrays.stream(tm.getGroups()).anyMatch(group -> isMatch(pattern, group));
-    return Arrays.stream(methods).filter(matchingGroups).toArray(ITestNGMethod[]::new);
+    return Arrays.stream(methods)
+        .filter(tm -> belongsToGroup(tm, pattern))
+        .toArray(ITestNGMethod[]::new);
+  }
+
+  /**
+   * @param groupRegexp regex representing the group, as {@code dependsOnGroups} spells it
+   * @return whether {@code method} belongs to a group the expression matches. This is the
+   *     membership test {@link #findMethodsThatBelongToGroup(ITestNGMethod[], String)} filters on,
+   *     for a caller that needs to ask it of a single method.
+   */
+  protected static boolean belongsToGroup(ITestNGMethod method, String groupRegexp) {
+    return belongsToGroup(method, getPattern(groupRegexp));
+  }
+
+  private static boolean belongsToGroup(ITestNGMethod method, Pattern pattern) {
+    return Arrays.stream(method.getGroups()).anyMatch(group -> isMatch(pattern, group));
   }
 
   private static Boolean isMatch(Pattern pattern, String group) {

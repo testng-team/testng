@@ -28,6 +28,8 @@ import test.beforegroups.issue2229.AnotherTestClassSample;
 import test.beforegroups.issue2229.TestClassSample;
 import test.beforegroups.issue2359.ListenerAdapter;
 import test.beforegroups.issue2359.SampleFor2359;
+import test.beforegroups.issue2804.GroupDependencySample;
+import test.beforegroups.issue2804.GroupPatternDependencySample;
 import test.beforegroups.issue346.SampleTestClass;
 
 public class BeforeGroupsTest extends SimpleBaseTest {
@@ -122,6 +124,39 @@ public class BeforeGroupsTest extends SimpleBaseTest {
         .getPassedTests()
         .forEach(
             t -> assertThat(t.getStartMillis()).isGreaterThanOrEqualTo(beforeGroup.getEndMillis()));
+  }
+
+  @Test(description = "GITHUB-2804")
+  public void ensureDependsOnGroupsOfBeforeGroupsOrdersTheGroupItRunsBefore() {
+    InvokedMethodNameListener listener = run(GroupDependencySample.class);
+
+    // Recorded in afterInvocation, so this is the order in which the methods completed.
+    assertThat(listener.getMethodsForTestClass(GroupDependencySample.class))
+        .containsExactly("z1", "z2", "setUpA", "a1", "a2");
+  }
+
+  @Test(description = "GITHUB-2804")
+  public void ensureDependsOnGroupsOfBeforeGroupsIsHonouredInParallelMode() {
+    XmlSuite xmlSuite = createXmlSuite("2804_suite", "2804_test", GroupDependencySample.class);
+    xmlSuite.setParallel(XmlSuite.ParallelMode.METHODS);
+    xmlSuite.setThreadCount(4);
+
+    InvokedMethodNameListener listener = run(xmlSuite);
+
+    assertThat(listener.getMethodsForTestClass(GroupDependencySample.class))
+        .containsExactlyInAnyOrder("z1", "z2", "setUpA", "a1", "a2")
+        .containsSubsequence("z1", "setUpA", "a1")
+        .containsSubsequence("z2", "setUpA", "a2");
+  }
+
+  @Test(description = "GITHUB-2804")
+  public void ensureABeforeGroupsDependencyWrittenAsAPatternDoesNotSelfDepend() {
+    InvokedMethodNameListener listener = run(GroupPatternDependencySample.class);
+
+    assertThat(listener.getMethodsForTestClass(GroupPatternDependencySample.class))
+        .containsExactlyInAnyOrder("setUpA", "az1", "az2", "z3")
+        .containsSubsequence("setUpA", "az1")
+        .containsSubsequence("setUpA", "az2");
   }
 
   private static void createXmlTest(XmlSuite xmlSuite, String name, String group) {
