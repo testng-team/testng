@@ -8,6 +8,7 @@ import org.jspecify.annotations.Nullable;
 import org.testng.annotations.Test;
 import org.testng.internal.Utils;
 import org.testng.reporters.snapshot.ParameterShapesSample.Shape;
+import org.testng.reporters.snapshot.UnrenderableParameterSample.Unrenderable;
 
 /**
  * The two shapes a captured value is written in, and what keeps them honest.
@@ -79,6 +80,28 @@ public class ParameterValueTest {
     // Left as it came: XMLStringBuffer.addCDATA writes the word for it, which is what the XML
     // report has always contained for such an object.
     assertThat(speechless.value()).isNull();
+  }
+
+  @Test(
+      description =
+          "GITHUB-2830: a value whose toString() throws was supplied, so it is not reported as an"
+              + " absent one -- both shapes carry the identity Utils fell back to")
+  public void aValueThatCannotRenderItselfIsStillAValue() {
+    Unrenderable unrenderable = new Unrenderable();
+
+    ParameterValue value = ParameterValue.of(unrenderable, Unrenderable.class);
+
+    // Where the fallback itself comes from is UtilsTest's to pin; what matters here is that it
+    // reaches both representations and that neither reads it as a value the invocation never got.
+    String identity = identityOf(unrenderable);
+    assertThat(value.isNull()).isFalse();
+    assertThat(value.value()).isEqualTo(identity);
+    assertThat(value.rendered()).isEqualTo(identity);
+  }
+
+  /** What {@link Object#toString()} would have answered for a class that does not override it. */
+  private static String identityOf(Object value) {
+    return value.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(value));
   }
 
   /** A parameter with nothing to say, which is not the same as not being there. */

@@ -690,37 +690,59 @@ public final class Utils {
    * Returns the string representation of the specified object, transparently handling null
    * references and arrays.
    *
+   * <p>Failsafe, like {@link #buildStackTrace}: this runs the object's {@code toString()}, and
+   * every caller of it is a report or a console line -- none of them a place to fail from. One that
+   * throws is described the way {@link Object#toString()} would have described it without one,
+   * rather than ending the report that asked. GITHUB-2830 is what that costs when it is not
+   * guarded.
+   *
    * @param obj the object
    * @return the string representation
    */
   public static String toString(Object obj) {
-    String result;
-    if (obj != null) {
-      if (obj instanceof boolean[]) {
-        result = Arrays.toString((boolean[]) obj);
-      } else if (obj instanceof byte[]) {
-        result = Arrays.toString((byte[]) obj);
-      } else if (obj instanceof char[]) {
-        result = Arrays.toString((char[]) obj);
-      } else if (obj instanceof double[]) {
-        result = Arrays.toString((double[]) obj);
-      } else if (obj instanceof float[]) {
-        result = Arrays.toString((float[]) obj);
-      } else if (obj instanceof int[]) {
-        result = Arrays.toString((int[]) obj);
-      } else if (obj instanceof long[]) {
-        result = Arrays.toString((long[]) obj);
-      } else if (obj instanceof Object[]) {
-        result = Arrays.deepToString((Object[]) obj);
-      } else if (obj instanceof short[]) {
-        result = Arrays.toString((short[]) obj);
-      } else {
-        result = obj.toString();
-      }
-    } else {
-      result = "null";
+    if (obj == null) {
+      return "null";
     }
-    return result;
+    try {
+      return render(obj);
+    } catch (Throwable rendering) {
+      return identityToString(obj);
+    }
+  }
+
+  /** The rendering itself, which is the half that runs the user's code. */
+  private static String render(Object obj) {
+    if (obj instanceof boolean[]) {
+      return Arrays.toString((boolean[]) obj);
+    } else if (obj instanceof byte[]) {
+      return Arrays.toString((byte[]) obj);
+    } else if (obj instanceof char[]) {
+      return Arrays.toString((char[]) obj);
+    } else if (obj instanceof double[]) {
+      return Arrays.toString((double[]) obj);
+    } else if (obj instanceof float[]) {
+      return Arrays.toString((float[]) obj);
+    } else if (obj instanceof int[]) {
+      return Arrays.toString((int[]) obj);
+    } else if (obj instanceof long[]) {
+      return Arrays.toString((long[]) obj);
+    } else if (obj instanceof Object[]) {
+      return Arrays.deepToString((Object[]) obj);
+    } else if (obj instanceof short[]) {
+      return Arrays.toString((short[]) obj);
+    } else {
+      return obj.toString();
+    }
+  }
+
+  /**
+   * What {@link Object#toString()} answers for a class that does not override it, spelled out here
+   * because the one that does cannot be asked. {@code TestHTMLReporter} has answered the same shape
+   * for GITHUB-2830 since long before this was guarded, in decimal rather than in hex -- a
+   * consequence of concatenating the identity hash rather than a decision.
+   */
+  private static String identityToString(Object obj) {
+    return obj.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(obj));
   }
 
   public static String stringifyTypes(Class<?>[] parameterTypes) {

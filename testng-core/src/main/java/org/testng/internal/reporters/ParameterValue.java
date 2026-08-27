@@ -20,6 +20,12 @@ import org.testng.internal.Utils;
  *
  * <p>{@code ParameterValueTest} pins the console form against {@link Utils#toString(Object,
  * Class)}, which is what every reporter called before there was anywhere to keep a rendering.
+ *
+ * <p>Nothing here guards the user's {@code toString()}: {@link Utils#toString(Object)} does, for
+ * every caller rather than for this one, so a value that cannot render itself arrives here already
+ * described by its identity. Both the moment this class renders at -- as the invocation starts --
+ * and the moment a report falls back to rendering the values itself are covered by that, and both
+ * answer the same string.
  */
 public final class ParameterValue {
 
