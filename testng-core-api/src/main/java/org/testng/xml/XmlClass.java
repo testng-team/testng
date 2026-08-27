@@ -218,7 +218,8 @@ public class XmlClass implements Cloneable {
   public Map<String, String> getAllParameters() {
     Map<String, String> result = new HashMap<>();
     if (m_xmlTest != null) {
-      result.putAll(m_xmlTest.getLocalParameters());
+      // getAllParameters, not getLocalParameters: "the tags above it" reaches the <suite> too.
+      result.putAll(m_xmlTest.getAllParameters());
     }
     result.putAll(m_parameters);
     return result;
