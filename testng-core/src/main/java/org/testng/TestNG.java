@@ -1975,7 +1975,13 @@ public class TestNG {
    */
   @Deprecated
   protected static void validateCommandLineParameters(CommandLineArgs args) {
+    // What configure() will make of it, not the raw text: -testclass "" and -testclass " , ,"
+    // name no class at all, and selecting nothing has to be rejected here rather than produce a
+    // run with no classes and no complaint.
     String testClasses = args.testClass;
+    if (testClasses != null && Utils.splitCommaSeparated(testClasses).isEmpty()) {
+      testClasses = null;
+    }
     List<String> testNgXml = args.suiteFiles;
     String testJar = args.testJar;
     List<String> methods = args.commandLineMethods;

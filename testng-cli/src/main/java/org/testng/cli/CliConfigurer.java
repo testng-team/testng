@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.testng.IExecutorServiceFactory;
 import org.testng.IInjectorFactory;
 import org.testng.ITestNGListener;
@@ -55,7 +56,10 @@ public final class CliConfigurer {
    * @throws CliParseException when the combination of options cannot select anything to run.
    */
   public static void validate(CliOptions cli) {
-    String testClasses = cli.testClass;
+    // What configure() will make of it, not the raw text: -testclass "" and -testclass " , ,"
+    // name no class at all, and selecting nothing has to be rejected here rather than produce a
+    // run with no classes and no complaint.
+    String testClasses = selectedTestClasses(cli.testClass);
     List<String> testNgXml = cli.suiteFiles;
     String testJar = cli.testJar;
     List<String> methods = cli.commandLineMethods;
@@ -77,6 +81,17 @@ public final class CliConfigurer {
         && (testNgXml == null || testNgXml.isEmpty())) {
       throw new CliParseException("Groups option should be used with testclass option");
     }
+  }
+
+  /**
+   * @return the option value when it names at least one class, {@code null} when it names none, so
+   *     that validation treats "names nothing" the same way it treats "was not given".
+   */
+  private static @Nullable String selectedTestClasses(@Nullable String testClass) {
+    if (testClass == null || Utils.splitCommaSeparated(testClass).isEmpty()) {
+      return null;
+    }
+    return testClass;
   }
 
   /**
