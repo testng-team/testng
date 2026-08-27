@@ -7,10 +7,12 @@ import java.util.List;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 import test.xml.duplicate.sample.DuplicateOccurrenceSample;
+import test.xml.duplicate.sample.OuterWithNestedSample;
 
 /**
  * The DTD lets {@code <class>} repeat inside {@code <classes>} and {@code <include>} repeat inside
@@ -67,6 +69,42 @@ public class DuplicateXmlOccurrenceTest extends SimpleBaseTest {
 
     assertThat(run(true, create(suite)).getSucceedMethodNames())
         .containsExactlyInAnyOrder("f(one)", "f(two)", "f(3)", "g(3)");
+  }
+
+  /**
+   * A nested class has no tag of its own here: it is the enclosing {@code <class>} tag that brings
+   * it in, so it belongs to that tag and follows every occurrence of it.
+   */
+  @Test
+  public void aNestedClassFollowsEveryOccurrenceOfItsEnclosingTag() {
+    XmlSuite suite = createXmlSuite("suite");
+    XmlTest test = createXmlTest(suite, "test");
+    createXmlClass(test, OuterWithNestedSample.class, Collections.singletonMap("id", "one"));
+    createXmlClass(test, OuterWithNestedSample.class, Collections.singletonMap("id", "two"));
+
+    assertThat(run(true, create(suite)).getSucceedMethodNames())
+        .containsExactlyInAnyOrder("outer(one)", "outer(two)", "nested(one)", "nested(two)");
+  }
+
+  /**
+   * {@code XmlClass.clone()} hands its {@code <include>} list straight to the copy, so two
+   * occurrences can share the very same {@code XmlInclude}. It therefore cannot be asked which
+   * occurrence is running; the method carries both of its own tags.
+   */
+  @Test
+  public void occurrencesSharingAnIncludeKeepTheirOwnClassParameters() {
+    XmlSuite suite = createXmlSuite("suite");
+    XmlTest test = createXmlTest(suite, "test");
+    XmlClass first =
+        createXmlClass(test, DuplicateOccurrenceSample.class, Collections.singletonMap("id", "A"));
+    XmlClass second =
+        createXmlClass(test, DuplicateOccurrenceSample.class, Collections.singletonMap("id", "B"));
+    List<XmlInclude> shared = Collections.singletonList(new XmlInclude("f"));
+    first.setIncludedMethods(shared);
+    second.setIncludedMethods(shared);
+
+    assertThat(run(true, create(suite)).getSucceedMethodNames())
+        .containsExactlyInAnyOrder("f(A)", "f(B)");
   }
 
   private static List<String> runSuite(String resource) {

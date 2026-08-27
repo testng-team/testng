@@ -62,7 +62,6 @@ import org.testng.thread.IWorker;
 import org.testng.util.Strings;
 import org.testng.util.TimeUtils;
 import org.testng.xml.XmlClass;
-import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlTest;
 
@@ -294,15 +293,14 @@ public class TestRunner
       }
     }
 
-    // Parameter inheritance reads upwards, and no parser sets the <include> to <class> back-pointer
-    // at all. Wired here rather than in each parser, or in the XmlClass setters -- which hand out
-    // their live list for callers to mutate directly -- because this is the one point every suite
-    // passes through, however it was built: XML, YAML, a scanned <package>, or the API.
+    // Class-level parameters are inherited by walking up to the <test>, and only the XML content
+    // handler sets that pointer. Wired here rather than in each parser because this is the one
+    // point every suite passes through, however it was built: XML, YAML, a scanned <package>, or
+    // the API. The <include> to <class> pointer is deliberately left alone -- an XmlInclude can be
+    // shared between two XmlClass occurrences, so setting it would make the occurrences fight over
+    // it; a scheduled method carries both of its tags instead.
     for (XmlClass xmlClass : m_testClassesFromXml) {
       xmlClass.setXmlTest(m_xmlTest);
-      for (XmlInclude include : xmlClass.getIncludedMethods()) {
-        include.setXmlClass(xmlClass);
-      }
     }
 
     m_annotationFinder = annotationFinder;

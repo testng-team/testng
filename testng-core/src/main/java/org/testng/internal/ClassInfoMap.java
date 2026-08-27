@@ -59,18 +59,29 @@ public class ClassInfoMap {
       occurrences.clear();
     }
     occurrences.add(xmlClass);
-    registerNestedClassesOf(cl, xmlClass);
+    Set<Class<?>> visited = new HashSet<>();
+    visited.add(cl);
+    registerNestedClassesOf(cl, xmlClass, visited);
   }
 
-  /** Attributes a class's nested classes to its tag, for the ones no tag of their own names. */
-  private void registerNestedClassesOf(Class<?> cl, XmlClass xmlClass) {
+  /**
+   * Attributes a class's nested classes to its tag, for the ones no tag of their own names.
+   *
+   * @param visited - the classes this traversal has already reached. {@code Class#getClasses}
+   *     reports inherited member classes too, so {@code class A { class B extends A {} }} walks
+   *     back into B for ever without it.
+   */
+  private void registerNestedClassesOf(Class<?> cl, XmlClass xmlClass, Set<Class<?>> visited) {
     if (!includeNestedClasses) {
       return;
     }
     for (Class<?> c : cl.getClasses()) {
-      if (!m_map.containsKey(c)) {
+      // Keyed on being named rather than on being present: a nested class the enclosing tag brought
+      // in belongs to that tag, so it follows every occurrence of it. Only a tag of its own, which
+      // describes it directly, stops the enclosing one speaking for it.
+      if (!m_named.contains(c) && visited.add(c)) {
         m_map.computeIfAbsent(c, key -> new ArrayList<>()).add(xmlClass);
-        registerNestedClassesOf(c, xmlClass);
+        registerNestedClassesOf(c, xmlClass, visited);
       }
     }
   }

@@ -930,15 +930,23 @@ public abstract class BaseTestMethod
 
   @Override
   public Map<String, String> findMethodParameters(XmlTest test) {
-    // The bound tag is the one that was scheduled, which is the only thing that tells two repeats
-    // of it apart. XmlInclude and XmlClass already walk up to the <test> and the <suite> for us.
+    // The bound tags are the ones that were scheduled, which is the only thing that tells two
+    // repeats of them apart. Read downwards from the <class>, whose getAllParameters walks up to
+    // the <test> and the <suite>, then overlay the <include>'s own: an XmlInclude may be shared
+    // between two XmlClass occurrences -- XmlClass.clone() hands its list straight over -- so its
+    // parent pointer cannot say which occurrence is asking, and only the local parameters can be
+    // read from it.
+    XmlClass xmlClass = m_xmlClass;
     XmlInclude xmlInclude = m_xmlInclude;
+    if (xmlClass != null) {
+      Map<String, String> result = xmlClass.getAllParameters();
+      if (xmlInclude != null) {
+        result.putAll(xmlInclude.getLocalParameters());
+      }
+      return result;
+    }
     if (xmlInclude != null) {
       return xmlInclude.getAllParameters();
-    }
-    XmlClass xmlClass = m_xmlClass;
-    if (xmlClass != null) {
-      return xmlClass.getAllParameters();
     }
     // No test class bound yet means no <class> tag can match, which XmlTestUtils answers with
     // the suite and <test> parameters on their own.
