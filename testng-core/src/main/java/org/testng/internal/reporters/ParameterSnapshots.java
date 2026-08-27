@@ -228,6 +228,29 @@ public final class ParameterSnapshots {
   }
 
   /**
+   * The same, for a caller that has a result rather than a store.
+   *
+   * <p>The suite owns the snapshots of everything it ran, and the result is what leads back to it.
+   * Every reader needs that: an {@link org.testng.IReporter} is handed every suite of the run at
+   * once, so there is no one suite to have been given, and {@code VerboseReporter} prints as the
+   * run happens, so there is no one moment at which to resolve a store. A reader that does have a
+   * context -- {@code TextReporter}, which reports one at a time -- resolves it once and calls the
+   * two-argument form instead.
+   *
+   * <p>A result carries no context when it was built outside one: the parameter carrier a
+   * configuration method is handed exists before the invocation it reports on is bound to a
+   * context. There is no suite to ask, so such a result reads through itself, like any other the
+   * snapshots have nothing for.
+   *
+   * @param result - The result being reported.
+   * @return - Its rendering, or {@code null} when there is nothing to report.
+   */
+  public static @Nullable ParameterSnapshot reportedParametersOf(ITestResult result) {
+    ITestContext context = result.getTestContext();
+    return reportedParametersOf(context != null ? of(context.getSuite()) : null, result);
+  }
+
+  /**
    * Offers back what was captured for a result every live reporter is done with -- a configuration
    * method that succeeded, which each of them prints as it passes and none of them lists again.
    *

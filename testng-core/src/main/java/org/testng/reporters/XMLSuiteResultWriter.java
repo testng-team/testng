@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.jspecify.annotations.Nullable;
 import org.testng.IDataProviderMethod;
 import org.testng.IResultMap;
 import org.testng.ISuiteResult;
@@ -265,7 +264,7 @@ public class XMLSuiteResultWriter {
    * reporting that value's final state -- the report is written once every invocation is over.
    */
   public void addTestMethodParams(XMLStringBuffer xmlBuffer, ITestResult testResult) {
-    ParameterSnapshot snapshot = reportedParametersOf(testResult);
+    ParameterSnapshot snapshot = ParameterSnapshots.reportedParametersOf(testResult);
     if (snapshot == null) {
       return;
     }
@@ -281,17 +280,6 @@ public class XMLSuiteResultWriter {
       addParameter(xmlBuffer, values.get(i), i);
     }
     xmlBuffer.pop();
-  }
-
-  /**
-   * The suite owns the snapshots of everything it ran, and the result is what leads back to it: an
-   * {@link org.testng.IReporter} is handed every suite of the run at once, so there is no one suite
-   * to have been given. {@code VerboseReporter} reads them the same way.
-   */
-  private static @Nullable ParameterSnapshot reportedParametersOf(ITestResult testResult) {
-    ITestContext context = testResult.getTestContext();
-    return ParameterSnapshots.reportedParametersOf(
-        context != null ? ParameterSnapshots.of(context.getSuite()) : null, testResult);
   }
 
   private void addParameter(XMLStringBuffer xmlBuffer, ParameterValue parameter, int i) {
