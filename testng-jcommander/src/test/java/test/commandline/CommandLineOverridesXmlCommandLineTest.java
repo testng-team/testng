@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Set;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.cli.jcommander.JCommanderCliRunner;
 import org.testng.testhelper.JarCreator;
 import test.SimpleBaseTest;
 import test.TestHelper;
@@ -34,19 +35,17 @@ public class CommandLineOverridesXmlCommandLineTest extends SimpleBaseTest {
           "-listener",
           LocalLogAggregator.class.getCanonicalName()
         };
-    TestNG.privateMain(args, null);
+    new JCommanderCliRunner().run(args, null);
     Set<String> logs = LocalLogAggregator.getLogs();
     assertThat(logs).hasSize(2);
   }
 
   @Test(description = "GITHUB-1810")
   public void ensureNoNullPointerExceptionIsThrown() throws IOException {
-    TestNG testng =
-        TestNG.privateMain(
-            new String[] {
-              TestHelper.writeSuiteToTempFile(buildSuiteContentThatRefersToInvalidTestClass())
-            },
-            null);
+    String[] args = {
+      TestHelper.writeSuiteToTempFile(buildSuiteContentThatRefersToInvalidTestClass())
+    };
+    TestNG testng = new JCommanderCliRunner().run(args, null);
     assertThat(testng.getStatus()).isEqualTo(8);
   }
 

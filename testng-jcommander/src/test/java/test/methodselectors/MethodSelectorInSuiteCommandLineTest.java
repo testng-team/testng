@@ -1,9 +1,9 @@
 package test.methodselectors;
 
 import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.testng.cli.jcommander.JCommanderCliRunner;
 import org.testng.testhelper.OutputDirectoryPatch;
 import test.SimpleBaseTest;
 import test.TestHelper;
@@ -29,7 +29,7 @@ public class MethodSelectorInSuiteCommandLineTest extends SimpleBaseTest {
           OutputDirectoryPatch.getOutputDirectory(),
           getPathToResource("methodselector-in-xml.xml")
         };
-    TestNG.privateMain(args, m_tla);
+    new JCommanderCliRunner().run(args, m_tla);
 
     TestHelper.assertPassedTestNames(m_tla.getPassedTests(), "test2");
   }

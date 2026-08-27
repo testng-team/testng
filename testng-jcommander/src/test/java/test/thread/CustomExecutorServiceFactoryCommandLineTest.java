@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
-import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+import org.testng.cli.jcommander.JCommanderCliRunner;
 import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
@@ -40,7 +40,7 @@ public class CustomExecutorServiceFactoryCommandLineTest extends SimpleBaseTest 
       "-parallel",
       "methods"
     };
-    TestNG.privateMain(args, null);
+    new JCommanderCliRunner().run(args, null);
     assertThat(Issue3066ThreadPoolExecutor.isInvoked()).isTrue();
   }
 
@@ -71,7 +71,7 @@ public class CustomExecutorServiceFactoryCommandLineTest extends SimpleBaseTest 
             Issue3066ExecutorServiceFactory.class.getName(),
             "-suitethreadpoolsize",
             "2");
-    TestNG.privateMain(Lists.merge(suites, args).toArray(String[]::new), null);
+    new JCommanderCliRunner().run(Lists.merge(suites, args).toArray(String[]::new), null);
     assertThat(Issue3066ThreadPoolExecutor.isInvoked()).isTrue();
   }
 
