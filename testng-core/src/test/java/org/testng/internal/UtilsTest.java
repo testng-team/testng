@@ -99,6 +99,53 @@ public class UtilsTest {
         .contains("java.lang.IllegalStateException: message not available");
   }
 
+  @Test(description = "GITHUB-2830")
+  public void toStringShouldBeFailsafe() {
+    Unrenderable unrenderable = new Unrenderable();
+
+    // Every caller of this is a report or a console line, so it answers what Object#toString() says
+    // for a class that does not override it, rather than ending the report that asked.
+    assertThat(Utils.toString(unrenderable)).isEqualTo(identityOf(unrenderable));
+    assertThat(Utils.toString(unrenderable, Unrenderable.class))
+        .isEqualTo(identityOf(unrenderable));
+  }
+
+  @Test(
+      description = "An array is rendered by its contents, so one bad element loses the whole one")
+  public void toStringOfAnArrayIsFailsafeToo() {
+    Object[] array = {new Unrenderable()};
+
+    assertThat(Utils.toString(array)).isEqualTo(identityOf(array));
+  }
+
+  @Test(description = "An Error is guarded too, which a RuntimeException-only catch would not be")
+  public void toStringIsFailsafeAgainstAnError() {
+    Overflowing overflowing = new Overflowing();
+
+    assertThat(Utils.toString(overflowing)).isEqualTo(identityOf(overflowing));
+  }
+
+  /** What {@link Object#toString()} would have answered for a class that does not override it. */
+  private static String identityOf(Object value) {
+    return value.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(value));
+  }
+
+  /** A value that cannot be asked what it is, as opposed to one that answers {@code null}. */
+  private static final class Unrenderable {
+    @Override
+    public String toString() {
+      throw new IllegalStateException("this value cannot be rendered");
+    }
+  }
+
+  /** Unrenderable like {@link Unrenderable}, but failing the way a recursive toString() does. */
+  private static final class Overflowing {
+    @Override
+    public String toString() {
+      throw new StackOverflowError();
+    }
+  }
+
   // exception which cannot be printed
   private static class ThrowingException extends RuntimeException {
     @Override

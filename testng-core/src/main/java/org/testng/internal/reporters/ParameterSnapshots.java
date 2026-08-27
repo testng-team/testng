@@ -170,12 +170,12 @@ public final class ParameterSnapshots {
     }
     ParameterSnapshot snapshot;
     try {
-      snapshot =
-          ParameterSnapshot.of(result.getParameters(), result.getMethod().getParameterTypes());
-    } catch (Throwable rendering) {
-      // Rendering a value calls the user's toString(). One that throws would otherwise fail the
-      // invocation it is only being reported on; leaving the result unsnapshotted hands it back to
-      // the reporter's fallback.
+      snapshot = snapshotOf(result);
+    } catch (Throwable reading) {
+      // Not the rendering, which Utils#toString guards: reading the result, which only a
+      // third-party ITestResult can fail at. Guarded here and not where reportedParametersOf reads
+      // the same thing, because this runs inside the invocation -- where a throw fails a test that
+      // has nothing wrong with it, rather than costing a report.
       return;
     }
     if (snapshot != null) {
@@ -204,12 +204,13 @@ public final class ParameterSnapshots {
    *       computed, since resolving them for a method that will not run can itself fail;
    *   <li>an invocation nothing was ever resolved for -- a lazy factory instance whose construction
    *       failed, or a non-data-driven method skipped by a dependency;
-   *   <li>a result from a suite with no store at all, or one whose capture was never requested or
-   *       threw while rendering.
+   *   <li>a result from a suite with no store at all, or one whose capture was never requested.
    * </ul>
    *
    * <p>Those keep reading through {@link ITestResult#getParameters()}, exactly as every result did
-   * before.
+   * before. Rendering them here runs the user's {@code toString()} at report time rather than at
+   * invocation time, which is late but not dangerous: {@link org.testng.internal.Utils#toString}
+   * guards it, so this answers the same thing a capture would have.
    *
    * @param snapshots - The store of the suite being reported, or {@code null} if it has none.
    * @param result - The result being reported.
@@ -218,9 +219,12 @@ public final class ParameterSnapshots {
   public static @Nullable ParameterSnapshot reportedParametersOf(
       @Nullable ParameterSnapshots snapshots, ITestResult result) {
     ParameterSnapshot captured = snapshots != null ? snapshots.find(result) : null;
-    return captured != null
-        ? captured
-        : ParameterSnapshot.of(result.getParameters(), result.getMethod().getParameterTypes());
+    return captured != null ? captured : snapshotOf(result);
+  }
+
+  /** What a result was invoked with, in the form a report writes it, or {@code null} if nothing. */
+  private static @Nullable ParameterSnapshot snapshotOf(ITestResult result) {
+    return ParameterSnapshot.of(result.getParameters(), result.getMethod().getParameterTypes());
   }
 
   /**

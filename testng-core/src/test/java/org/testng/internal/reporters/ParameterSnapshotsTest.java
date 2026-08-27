@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import org.testng.ITestClass;
@@ -63,14 +64,29 @@ public class ParameterSnapshotsTest {
     assertThat(requireNonNull(snapshots.find(second)).renderedValues()).containsExactly("second");
   }
 
-  @Test(description = "A toString that throws leaves the result unsnapshotted, it does not blow up")
+  @Test(
+      description =
+          "A toString that throws is described rather than blowing up, and the capture and the"
+              + " fallback describe it the same way")
   public void aRenderingThatThrowsIsNotAnError() {
     ITestResult result = resultOf(new ThrowingParameter());
     ParameterSnapshots snapshots = requestedSnapshots();
 
     snapshots.captureIfAbsent(result);
 
-    assertThat(snapshots.find(result)).isNull();
+    // The exact spelling of that identity is ParameterValueTest's to pin; what this one is about is
+    // that there is one at all, and that both paths answer it.
+    List<String> captured = requireNonNull(snapshots.find(result)).renderedValues();
+    assertThat(captured)
+        .singleElement()
+        .asString()
+        .startsWith(ThrowingParameter.class.getName() + "@");
+    // The other half: a run nothing was captured for renders the same value from the fallback, at
+    // report time rather than at invocation time. Both paths run the same guard, which is the
+    // point -- one of them used to be the reporter's last one.
+    assertThat(
+            requireNonNull(ParameterSnapshots.reportedParametersOf(null, result)).renderedValues())
+        .isEqualTo(captured);
   }
 
   @Test(description = "A result a reporter will never print can be dropped before the run ends")

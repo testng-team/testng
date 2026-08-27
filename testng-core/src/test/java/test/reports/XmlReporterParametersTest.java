@@ -26,6 +26,8 @@ import org.testng.reporters.snapshot.ParallelParameterSample;
 import org.testng.reporters.snapshot.ParameterShapesSample;
 import org.testng.reporters.snapshot.PassingConfigurationParameterSample;
 import org.testng.reporters.snapshot.RenderingCountSample;
+import org.testng.reporters.snapshot.UnrenderableParameterSample;
+import org.testng.reporters.snapshot.UnrenderableParameterSample.Unrenderable;
 import org.testng.reporters.snapshot.WrongArgumentCountSample;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -187,6 +189,23 @@ public class XmlReporterParametersTest extends SimpleBaseTest {
     // wrote no <params> before the snapshots and writes none now.
     assertThat(parametersOf(runUnderXmlReporter(WrongArgumentCountSample.class), "report"))
         .containsExactly(emptyList());
+  }
+
+  @Test(
+      description =
+          "GITHUB-2830: a parameter whose toString() throws is described in the file instead of"
+              + " costing it")
+  public void anUnrenderableParameterIsDescribedRatherThanLosingTheReport() {
+    // The whole file used to be lost: XMLReporter builds it in memory and writes it at the end, so
+    // the throw came before the write and TestNG's own catch turned it into a stderr trace.
+    List<List<String>> reported =
+        parametersOf(runUnderXmlReporter(UnrenderableParameterSample.class), "report");
+
+    assertThat(reported).hasSize(1);
+    assertThat(reported.get(0))
+        .singleElement()
+        .asString()
+        .startsWith(Unrenderable.class.getName() + "@");
   }
 
   /**

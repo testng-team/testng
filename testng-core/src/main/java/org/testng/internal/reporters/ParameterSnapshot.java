@@ -22,8 +22,8 @@ import org.jspecify.annotations.Nullable;
  * each derived. The user's {@code toString()} still runs once per invocation, not once per report.
  *
  * <p>The price is that {@link Object#toString()} runs as the invocation starts rather than when the
- * report is written. See {@link ParameterSnapshots#captureIfAbsent} for what happens when it
- * throws.
+ * report is written. See {@link org.testng.internal.Utils#toString(Object)} for what happens when
+ * it throws.
  */
 public final class ParameterSnapshot {
 
