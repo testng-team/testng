@@ -182,7 +182,7 @@ public class EmailableReporterParametersTest extends SimpleBaseTest {
       }
       Matcher row = ROW.matcher(scenario.group(2));
       while (row.find()) {
-        if (cells(row.group(1)).get(0).equals(prefix + " #1")) {
+        if (row.group(1).startsWith("<th>" + prefix + " #1</th>")) {
           rows.add(cells(row.group(2)));
         }
       }

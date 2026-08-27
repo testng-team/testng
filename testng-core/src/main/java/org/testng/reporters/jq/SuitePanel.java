@@ -8,7 +8,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.Utils;
-import org.testng.internal.reporters.ParameterValue;
+import org.testng.internal.reporters.ParameterSnapshots;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.util.Strings;
 
@@ -78,15 +78,9 @@ public class SuitePanel extends BasePanel {
 
     // Parameters? As they were when the invocation started, not as the objects stand now: this
     // panel is built once every invocation of the run is over.
-    List<ParameterValue> values = Model.reportedValuesOf(tr);
+    List<String> values = ParameterSnapshots.reportedPlainValuesOf(tr);
     if (!values.isEmpty()) {
-      String text =
-          values.stream()
-              // String.valueOf writes the word for the one value that has no rendering, which is
-              // what Collectors.joining did for Utils.toString(Object)'s null before.
-              .map(value -> String.valueOf(value.plain()))
-              .collect(Collectors.joining(","));
-      xsb.addOptional(S, "(" + text + ")", C, "parameters");
+      xsb.addOptional(S, "(" + String.join(",", values) + ")", C, "parameters");
     }
 
     CustomAttribute[] attributes = method.getAttributes();

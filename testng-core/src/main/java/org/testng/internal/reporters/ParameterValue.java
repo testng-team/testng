@@ -49,7 +49,7 @@ public final class ParameterValue {
    * @param parameter - One of the values an invocation ran with.
    * @param parameterType - The type the method declares for it, which decides whether the console
    *     form quotes it.
-   * @return - Both renderings of that value.
+   * @return - Every rendering of that value.
    */
   public static ParameterValue of(@Nullable Object parameter, Class<?> parameterType) {
     if (parameter == null) {
@@ -91,17 +91,14 @@ public final class ParameterValue {
    * Utils#toString(Object)} answers for the value, including the word {@code null} for one the
    * invocation was given nothing for.
    *
-   * <p>This is what the built-in HTML reports write -- {@code EmailableReporter2} and the {@code
-   * jq} panels -- and it is the form every reporter called {@code Utils} for before there was
-   * anywhere to keep a rendering. It is neither of the other two: {@link #rendered()} quotes a
-   * {@code String} for a human reading a console, and {@link #value()} answers {@code null} for an
-   * absent value because the XML report says so with an attribute instead.
+   * <p>This is the form every reporter called {@code Utils} for before there was anywhere to keep a
+   * rendering, and it is what the built-in HTML reports write.
    *
    * <p>Itself {@code null} for the one value that has no rendering -- an object whose {@code
    * toString()} answered {@code null} -- which is the same hole {@link Utils#toString(Object)} has,
-   * and is what pinning the two together preserves. A caller that writes into a {@code
-   * StringBuilder} or a {@code StringJoiner} gets the word for it either way; one that hands it to
-   * a method rejecting {@code null} has to say what it writes.
+   * and is what pinning the two together preserves. What a report writes for such a value is
+   * decided once, in {@link ParameterSnapshot#plainValues()}; read that rather than this unless the
+   * hole is what you are after.
    */
   public @Nullable String plain() {
     return isNull ? "null" : value;

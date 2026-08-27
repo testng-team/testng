@@ -10,10 +10,7 @@ import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import org.testng.IInvokedMethod;
 import org.testng.IReporter;
-import org.testng.IResultMap;
 import org.testng.ISuite;
-import org.testng.ISuiteResult;
-import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -87,10 +84,9 @@ public class ModelParametersTest extends SimpleBaseTest {
 
   @Test(description = "A name longer than a hundred characters is cut there and given an ellipsis")
   public void aLongNameIsTruncatedWhereItAlwaysWas() {
-    String first = LongParameterSample.first();
-    String second = LongParameterSample.second();
     // 60 + ", " + 60 is 122 characters, so the cut falls 38 characters into the second value.
-    String truncated = (first + ", " + second).substring(0, 100);
+    String truncated =
+        (LongParameterSample.FIRST + ", " + LongParameterSample.SECOND).substring(0, 100);
 
     assertThat(namesOf(LongParameterSample.class))
         .containsExactlyInAnyOrder("report(" + truncated + "...)", "report(short, brief)");
@@ -114,7 +110,6 @@ public class ModelParametersTest extends SimpleBaseTest {
     // TestNG catches whatever a reporter throws and prints it to stderr, so a Namer that blew up
     // would otherwise look exactly like a run that named nothing.
     assertThat(namer.failure).isNull();
-    assertThat(namer.names).isNotEmpty();
     return namer.names;
   }
 
@@ -123,10 +118,14 @@ public class ModelParametersTest extends SimpleBaseTest {
    * builds its model, and the last moment a snapshot is readable.
    *
    * <p>Taken from the suite rather than from the announcements, because that is where the report
-   * takes them and the two are not the same set: {@code Model} names the three result maps of every
-   * context, and {@code ChronologicalPanel} names every invoked method, configuration methods
-   * included. An invocation a data provider supplied the wrong number of values to reaches the
-   * failed map without ever having been announced as starting.
+   * takes them and the two are not the same set. An invocation a data provider supplied the wrong
+   * number of values to reaches the failed map without ever having been announced as starting.
+   *
+   * <p>Both of the report's own traversals, so that a name this test never asks for is a name no
+   * panel builds either: {@link Model#getAllTestResults(ISuite)}, which is what {@code
+   * ReporterPanel} and {@code TimesPanel} iterate, and {@code suite.getAllInvokedMethods()}, which
+   * is what {@code ChronologicalPanel} iterates -- configuration methods included, and they are in
+   * neither the first list nor the announcements this could have collected instead.
    */
   private static final class Namer implements IReporter, ParameterSnapshotReader {
 
@@ -142,16 +141,9 @@ public class ModelParametersTest extends SimpleBaseTest {
         // Held by identity, as the store is: two invocations of one method with one value must not
         // collapse into a single name here.
         Set<ITestResult> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+        Model model = new Model(suites);
         for (ISuite suite : suites) {
-          for (ISuiteResult suiteResult : suite.getResults().values()) {
-            ITestContext context = suiteResult.getTestContext();
-            for (IResultMap results :
-                new IResultMap[] {
-                  context.getPassedTests(), context.getFailedTests(), context.getSkippedTests()
-                }) {
-              name(seen, results.getAllResults());
-            }
-          }
+          name(seen, model.getAllTestResults(suite));
           List<ITestResult> invoked = new ArrayList<>();
           for (IInvokedMethod invokedMethod : suite.getAllInvokedMethods()) {
             invoked.add(invokedMethod.getTestResult());

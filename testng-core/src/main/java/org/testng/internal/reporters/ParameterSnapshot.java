@@ -89,4 +89,19 @@ public final class ParameterSnapshot {
   public List<String> renderedValues() {
     return values.stream().map(ParameterValue::rendered).collect(Collectors.toList());
   }
+
+  /**
+   * The values as the built-in HTML reports write them, in invocation order. Empty when {@link
+   * #hasCountMismatch()}.
+   *
+   * <p>{@link ParameterValue#plain()} keeps the one hole {@link
+   * org.testng.internal.Utils#toString(Object)} has -- an object whose {@code toString()} answered
+   * {@code null} -- so that the two can be pinned against each other. Answering what a report
+   * writes for such a value is this projection's job, and it is the word, which is what every
+   * built-in report has always shown for it. Deciding it here is what keeps the reports from each
+   * deciding it again.
+   */
+  public List<String> plainValues() {
+    return values.stream().map(value -> String.valueOf(value.plain())).collect(Collectors.toList());
+  }
 }

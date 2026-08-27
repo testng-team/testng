@@ -1,5 +1,7 @@
 package org.testng.internal.reporters;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jspecify.annotations.Nullable;
@@ -222,11 +224,6 @@ public final class ParameterSnapshots {
     return captured != null ? captured : snapshotOf(result);
   }
 
-  /** What a result was invoked with, in the form a report writes it, or {@code null} if nothing. */
-  private static @Nullable ParameterSnapshot snapshotOf(ITestResult result) {
-    return ParameterSnapshot.of(result.getParameters(), result.getMethod().getParameterTypes());
-  }
-
   /**
    * The same, for a caller that has a result rather than a store.
    *
@@ -248,6 +245,29 @@ public final class ParameterSnapshots {
   public static @Nullable ParameterSnapshot reportedParametersOf(ITestResult result) {
     ITestContext context = result.getTestContext();
     return reportedParametersOf(context != null ? of(context.getSuite()) : null, result);
+  }
+
+  /** What a result was invoked with, in the form a report writes it, or {@code null} if nothing. */
+  private static @Nullable ParameterSnapshot snapshotOf(ITestResult result) {
+    return ParameterSnapshot.of(result.getParameters(), result.getMethod().getParameterTypes());
+  }
+
+  /**
+   * The same, for the reports that want nothing but the text -- the built-in HTML ones, which have
+   * no attribute to state an absent value with and no console decoration to add.
+   *
+   * <p>Absence and emptiness are one answer here: a result nothing was captured for, an invocation
+   * that declares no parameter and one a data provider supplied the wrong number of values to all
+   * have nothing to describe, and every caller wrote the same {@code null} check to say so. Only a
+   * reader that reports the count mismatch itself, as the console reporters do, needs the {@link
+   * ParameterSnapshot} rather than this.
+   *
+   * @param result - The result being reported.
+   * @return - Its values as a report writes them, or an empty list when there are none.
+   */
+  public static List<String> reportedPlainValuesOf(ITestResult result) {
+    ParameterSnapshot snapshot = reportedParametersOf(result);
+    return snapshot == null ? Collections.emptyList() : snapshot.plainValues();
   }
 
   /**

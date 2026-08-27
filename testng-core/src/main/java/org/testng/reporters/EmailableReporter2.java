@@ -24,10 +24,8 @@ import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.Utils;
-import org.testng.internal.reporters.ParameterSnapshot;
 import org.testng.internal.reporters.ParameterSnapshotReader;
 import org.testng.internal.reporters.ParameterSnapshots;
-import org.testng.internal.reporters.ParameterValue;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlSuite.ParallelMode;
@@ -36,8 +34,9 @@ import org.testng.xml.XmlSuite.ParallelMode;
  * Reporter that generates a single-page HTML report of the test results.
  *
  * <p>It declares that it reads the invocation-time parameter snapshots: the page is written once
- * every invocation of the run is over, so it is handed a run only when reading the values back off
- * the results would describe the objects as they stand then. See {@link ParameterSnapshotReader}.
+ * every invocation of the run is over, so a data provider that hands the same mutable row to every
+ * invocation, or a test that changes what it was given, would otherwise leave every scenario of
+ * that method reporting the value's final state. See {@link ParameterSnapshotReader}.
  */
 public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
   private static final Logger LOG = Logger.getLogger(EmailableReporter2.class);
@@ -474,10 +473,11 @@ public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
 
     // Write test parameters (if any)
     Object[] parameters = result.getParameters();
-    boolean hasRows = dumpFactoryParametersInfo(result.getFactoryParameters());
-    // How wide the table is, which is an arity and not a rendering: how many values an invocation
-    // was given does not change under a reporter's feet the way one value's toString() does.
+    // The colspan of the rows below, which is an arity and not a rendering: how many values an
+    // invocation was given does not change under a reporter's feet the way one value's toString()
+    // does.
     int parameterCount = parameters == null ? 0 : parameters.length;
+    boolean hasRows = dumpFactoryParametersInfo(result.getFactoryParameters());
     hasRows |= dumpInvocationParametersInfo(result);
     dumpAttributesInfo(result.getMethod().getAttributes());
 
@@ -540,44 +540,22 @@ public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
    * captured at. They are read here as they always were.
    */
   private boolean dumpFactoryParametersInfo(Object[] factoryParameters) {
+    if (factoryParameters.length == 0) {
+      return false;
+    }
     List<String> values = new ArrayList<>(factoryParameters.length);
     for (Object factoryParameter : factoryParameters) {
-      values.add(written(Utils.toString(factoryParameter)));
+      // String.valueOf writes the word for an object whose toString() answered null, which
+      // Utils.toString(Object) answers null for and Utils.escapeHtml does not accept. The snapshot
+      // side of the page settles the same case in ParameterSnapshot#plainValues.
+      values.add(String.valueOf(Utils.toString(factoryParameter)));
     }
     return dumpParametersInfo("Factory Parameter", values);
   }
 
-  /**
-   * The values the invocation ran with, as they were when it started rather than as the objects
-   * stand now. This page is written once every invocation of the run is over, so a data provider
-   * that hands the same mutable row to every invocation, or a test that changes what it was given,
-   * used to leave every scenario of the method reporting that value's final state.
-   */
+  /** The values the invocation ran with, as they were when it started; see the class javadoc. */
   private boolean dumpInvocationParametersInfo(ITestResult result) {
-    ParameterSnapshot snapshot = ParameterSnapshots.reportedParametersOf(result);
-    if (snapshot == null) {
-      return false;
-    }
-    List<String> values = new ArrayList<>(snapshot.values().size());
-    for (ParameterValue value : snapshot.values()) {
-      values.add(written(value.plain()));
-    }
-    return dumpParametersInfo("Parameter", values);
-  }
-
-  /**
-   * What this page writes for a value that has no rendering at all -- an object whose {@code
-   * toString()} answered {@code null}, which {@link Utils#toString(Object)} answers {@code null}
-   * for in turn.
-   *
-   * <p>The word, which is what {@code index.html} has always shown for such a value and what {@code
-   * testng-results.xml} has always contained. {@link Utils#escapeHtml} does not accept {@code
-   * null}, so handing it one threw out of {@code generateReport} and left this file empty: one such
-   * parameter anywhere in a run lost the whole report. Both kinds of row go through here, since a
-   * factory parameter can be just as speechless as an invocation one.
-   */
-  private static String written(@Nullable String rendering) {
-    return rendering != null ? rendering : "null";
+    return dumpParametersInfo("Parameter", ParameterSnapshots.reportedPlainValuesOf(result));
   }
 
   /**

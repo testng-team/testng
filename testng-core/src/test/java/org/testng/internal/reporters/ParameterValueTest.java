@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
-import org.jspecify.annotations.Nullable;
 import org.testng.annotations.Test;
 import org.testng.internal.Utils;
+import org.testng.reporters.snapshot.NoRenderingParameterSample.Speechless;
 import org.testng.reporters.snapshot.ParameterShapesSample.Shape;
 import org.testng.reporters.snapshot.UnrenderableParameterSample.Unrenderable;
 
@@ -106,7 +106,7 @@ public class ParameterValueTest {
   @Test(
       description =
           "GITHUB-2830: a value whose toString() throws was supplied, so it is not reported as an"
-              + " absent one -- both shapes carry the identity Utils fell back to")
+              + " absent one -- every shape carries the identity Utils fell back to")
   public void aValueThatCannotRenderItselfIsStillAValue() {
     Unrenderable unrenderable = new Unrenderable();
 
@@ -118,19 +118,11 @@ public class ParameterValueTest {
     assertThat(value.isNull()).isFalse();
     assertThat(value.value()).isEqualTo(identity);
     assertThat(value.rendered()).isEqualTo(identity);
+    assertThat(value.plain()).isEqualTo(identity);
   }
 
   /** What {@link Object#toString()} would have answered for a class that does not override it. */
   private static String identityOf(Object value) {
     return value.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(value));
-  }
-
-  /** A parameter with nothing to say, which is not the same as not being there. */
-  private static final class Speechless {
-
-    @Override
-    public @Nullable String toString() {
-      return null;
-    }
   }
 }
