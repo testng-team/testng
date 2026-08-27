@@ -62,6 +62,7 @@ import org.testng.thread.IWorker;
 import org.testng.util.Strings;
 import org.testng.util.TimeUtils;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlTest;
 
@@ -278,8 +279,30 @@ public class TestRunner
     m_methodInterceptors.add(builtinInterceptor);
 
     List<XmlPackage> m_packageNamesFromXml = getAllPackages();
-    for (XmlPackage xp : m_packageNamesFromXml) {
-      m_testClassesFromXml.addAll(xp.getXmlClasses());
+    if (!m_packageNamesFromXml.isEmpty()) {
+      // A scanned <package> is not a second occurrence of a class the <test> also lists outright.
+      // The check doubles as re-entrancy: this appends to the XmlTest's own list, so without it a
+      // second run over the same XmlTest would keep stacking the scanned classes up.
+      Set<String> named =
+          m_testClassesFromXml.stream().map(XmlClass::getName).collect(Collectors.toSet());
+      for (XmlPackage xp : m_packageNamesFromXml) {
+        for (XmlClass scanned : xp.getXmlClasses()) {
+          if (named.add(scanned.getName())) {
+            m_testClassesFromXml.add(scanned);
+          }
+        }
+      }
+    }
+
+    // Parameter inheritance reads upwards, and no parser sets the <include> to <class> back-pointer
+    // at all. Wired here rather than in each parser, or in the XmlClass setters -- which hand out
+    // their live list for callers to mutate directly -- because this is the one point every suite
+    // passes through, however it was built: XML, YAML, a scanned <package>, or the API.
+    for (XmlClass xmlClass : m_testClassesFromXml) {
+      xmlClass.setXmlTest(m_xmlTest);
+      for (XmlInclude include : xmlClass.getIncludedMethods()) {
+        include.setXmlClass(xmlClass);
+      }
     }
 
     m_annotationFinder = annotationFinder;
@@ -480,7 +503,7 @@ public class TestRunner
               testMethodFinder,
               m_annotationFinder,
               m_xmlTest,
-              classMap.getXmlClass(ic.getRealClass()),
+              classMap.getXmlClasses(ic.getRealClass()),
               m_testClassFinder.getFactoryCreationFailedMessage());
       m_classMap.put(ic.getRealClass(), tc);
     }

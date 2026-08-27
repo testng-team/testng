@@ -176,6 +176,7 @@ public class TestNGMethod extends BaseTestMethod {
             getAnnotationFinder(),
             cloneInstance());
     clone.setXmlTest(getXmlTest());
+    clone.setXmlOccurrence(getXmlClass(), getXmlInclude(), getXmlOccurrenceIndex());
     ITestClass tc = getTestClass();
     if (tc != null) {
       // Wrapping a test class this method has not been bound to yet would have thrown here.

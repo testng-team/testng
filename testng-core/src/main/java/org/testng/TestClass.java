@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import org.jspecify.annotations.Nullable;
 import org.testng.collections.Objects;
 import org.testng.internal.ConfigurationMethod;
@@ -17,9 +19,12 @@ import org.testng.internal.ITestClassConfigInfo;
 import org.testng.internal.NoOpTestClass;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
+import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.collections.Pair;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 /**
@@ -35,7 +40,9 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   private IClass iClass;
   private @Nullable String testName;
   private XmlTest xmlTest;
-  private @Nullable XmlClass xmlClass;
+  // Every <class> tag naming this class, in XML order. The tag may be repeated, and each repeat is
+  // a separate run of the class's methods with its own parameters.
+  private List<XmlClass> xmlClasses = Collections.emptyList();
   private final ITestObjectFactory objectFactory;
   private final @Nullable String m_errorMsgPrefix;
 
@@ -86,11 +93,11 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
       ITestMethodFinder testMethodFinder,
       IAnnotationFinder annotationFinder,
       XmlTest xmlTest,
-      @Nullable XmlClass xmlClass,
+      List<XmlClass> xmlClasses,
       @Nullable String errorMsgPrefix) {
     this.objectFactory = objectFactory;
     this.m_errorMsgPrefix = errorMsgPrefix;
-    init(cls, testMethodFinder, annotationFinder, xmlTest, xmlClass);
+    init(cls, testMethodFinder, annotationFinder, xmlTest, xmlClasses);
   }
 
   @Override
@@ -105,7 +112,8 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
 
   @Override
   public @Nullable XmlClass getXmlClass() {
-    return xmlClass;
+    // Cannot express more than one occurrence, so it answers the last tag, as ClassInfoMap does.
+    return xmlClasses.isEmpty() ? null : xmlClasses.get(xmlClasses.size() - 1);
   }
 
   public IAnnotationFinder getAnnotationFinder() {
@@ -117,12 +125,12 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
       ITestMethodFinder testMethodFinder,
       IAnnotationFinder annotationFinder,
       XmlTest xmlTest,
-      @Nullable XmlClass xmlClass) {
+      List<XmlClass> xmlClasses) {
     log(3, "Creating TestClass for " + cls);
     iClass = cls;
     m_testClass = cls.getRealClass();
     this.xmlTest = xmlTest;
-    this.xmlClass = xmlClass;
+    this.xmlClasses = xmlClasses;
     this.testMethodFinder = testMethodFinder;
     this.annotationFinder = annotationFinder;
     initTestClassesAndInstances();
@@ -266,10 +274,18 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     for (ITestNGMethod tm : methods) {
       ConstructorOrMethod m = tm.getConstructorOrMethod();
       if (m.getDeclaringClass().isAssignableFrom(realClass)) {
+        // Depends on the method alone, so it is not rebuilt for each @Factory instance.
+        List<Pair<@Nullable XmlClass, @Nullable XmlInclude>> occurrences =
+            xmlOccurrencesOf(tm.getMethodName());
         for (IdentifiableObject o : instances) {
           log(4, "Adding method " + tm + " on TestClass " + realClass);
-          vResult.add(
-              new TestNGMethod(objectFactory, m.requireMethod(), annotationFinder, xmlTest, o));
+          int occurrence = 0;
+          for (Pair<@Nullable XmlClass, @Nullable XmlInclude> tags : occurrences) {
+            TestNGMethod created =
+                new TestNGMethod(objectFactory, m.requireMethod(), annotationFinder, xmlTest, o);
+            created.setXmlOccurrence(tags.first(), tags.second(), occurrence++);
+            vResult.add(created);
+          }
         }
       } else {
         log(4, "Rejecting method " + tm + " for TestClass " + realClass);
@@ -277,6 +293,56 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     }
 
     return vResult.toArray(new ITestNGMethod[0]);
+  }
+
+  /**
+   * The XML tags that schedule this method, one entry per run of it.
+   *
+   * <p>An occurrence contributes one entry per {@code <include>} naming the method exactly -- that
+   * is the tag whose parameters apply, and repeating it is a request to run the method again. An
+   * occurrence whose {@code <methods>} could still select it by regexp, or that lists no {@code
+   * <include>} at all, contributes one entry without a tag.
+   *
+   * <p>A method no occurrence can select is still scheduled once, against the last of them: whether
+   * it runs is {@code XmlMethodSelector}'s call, and a method that never reaches the selector is
+   * never reported as excluded either. That is also the empty case -- a {@code @Factory} produced
+   * class, or a suite that names none -- which falls out as a single entry carrying no tag.
+   */
+  private List<Pair<@Nullable XmlClass, @Nullable XmlInclude>> xmlOccurrencesOf(String methodName) {
+    List<Pair<@Nullable XmlClass, @Nullable XmlInclude>> result = new ArrayList<>();
+    for (XmlClass candidate : xmlClasses) {
+      List<XmlInclude> includes = candidate.getIncludedMethods();
+      boolean named = false;
+      for (XmlInclude include : includes) {
+        if (include.getName().equals(methodName)) {
+          result.add(Pair.create(candidate, include));
+          named = true;
+        }
+      }
+      if (!named && (includes.isEmpty() || selects(includes, methodName))) {
+        result.add(Pair.create(candidate, null));
+      }
+    }
+    if (result.isEmpty()) {
+      result.add(Pair.create(getXmlClass(), null));
+    }
+    return result;
+  }
+
+  /** Whether any of these {@code <include>} tags selects the method, as the selector reads them. */
+  private static boolean selects(List<XmlInclude> includes, String methodName) {
+    for (XmlInclude include : includes) {
+      try {
+        if (Pattern.compile(XmlMethodSelector.asRegexp(include.getName()))
+            .matcher(methodName)
+            .matches()) {
+          return true;
+        }
+      } catch (PatternSyntaxException e) {
+        // Not our error to report: XmlMethodSelector compiles the same name and warns about it.
+      }
+    }
+    return false;
   }
 
   public ITestMethodFinder getTestMethodFinder() {

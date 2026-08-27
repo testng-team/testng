@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="duplicate-classes-distinct-methods">
+  <parameter name="id" value="fromSuite"/>
+  <test name="duplicate-classes-distinct-methods">
+    <classes>
+      <class name="test.xml.duplicate.sample.DuplicateOccurrenceSample">
+        <methods>
+          <include name="f"/>
+        </methods>
+      </class>
+      <class name="test.xml.duplicate.sample.DuplicateOccurrenceSample">
+        <methods>
+          <include name="g"/>
+        </methods>
+      </class>
+    </classes>
+  </test>
+</suite>
