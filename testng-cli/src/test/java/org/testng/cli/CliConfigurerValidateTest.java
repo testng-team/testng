@@ -42,6 +42,27 @@ public class CliConfigurerValidateTest {
     assertThatCode(() -> CliConfigurer.validate(cli)).doesNotThrowAnyException();
   }
 
+  /**
+   * The parsed selection is what counts. Both of these used to reach the class loader and fail
+   * there; since the option is split into a trimmed list they name nothing at all, and naming
+   * nothing has to be rejected here rather than start a run with no classes.
+   */
+  @Test(dataProvider = "valuesThatNameNoClass")
+  public void aTestClassOptionThatNamesNoClassIsRejected(String testClass) {
+    CliOptions cli = new CliOptions();
+    cli.testClass = testClass;
+
+    assertThatThrownBy(() -> CliConfigurer.validate(cli))
+        .isInstanceOf(CliParseException.class)
+        .hasMessageContaining(
+            "You need to specify at least one testng.xml, one class or one method");
+  }
+
+  @DataProvider(name = "valuesThatNameNoClass")
+  public Object[][] valuesThatNameNoClass() {
+    return new Object[][] {{""}, {" "}, {","}, {" , ,"}};
+  }
+
   @Test
   public void suiteFilesAloneAreAccepted() {
     CliOptions cli = new CliOptions();
@@ -54,6 +75,9 @@ public class CliConfigurerValidateTest {
   public Object[][] commandLines() {
     return new Object[][] {
       {null, null, null, null, Collections.<String>emptyList()},
+      {"", null, null, null, Collections.<String>emptyList()},
+      {" , ,", null, null, null, Collections.<String>emptyList()},
+      {"", null, "fast", null, Collections.<String>emptyList()},
       {"com.acme.Sample", null, null, null, Collections.<String>emptyList()},
       {null, "tests.jar", null, null, Collections.<String>emptyList()},
       {null, null, null, null, Collections.singletonList("com.acme.Sample.aMethod")},
