@@ -3,7 +3,8 @@ package org.testng.internal.collections;
 import org.jspecify.annotations.Nullable;
 import org.testng.collections.Objects;
 
-public final class Pair<A, B> {
+// The members are allowed to be null, which equals and hashCode below have always assumed.
+public final class Pair<A extends @Nullable Object, B extends @Nullable Object> {
   private final A first;
   private final B second;
 
@@ -57,11 +58,12 @@ public final class Pair<A, B> {
     return true;
   }
 
-  public static <A, B> Pair<A, B> create(A first, B second) {
+  public static <A extends @Nullable Object, B extends @Nullable Object> Pair<A, B> create(
+      A first, B second) {
     return of(first, second);
   }
 
-  public static <A, B> Pair<A, B> of(A a, B b) {
+  public static <A extends @Nullable Object, B extends @Nullable Object> Pair<A, B> of(A a, B b) {
     return new Pair<>(a, b);
   }
 
