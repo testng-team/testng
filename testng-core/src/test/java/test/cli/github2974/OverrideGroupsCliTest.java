@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.testng.CommandLineArgs;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.TestNG;
@@ -24,15 +23,9 @@ public class OverrideGroupsCliTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-2974")
   public void overrideIncludeGroupsFromCliInParentChildXml() {
-    TestNG testNG =
-        new TestNG(false) {
-          {
-            CommandLineArgs args = new CommandLineArgs();
-            args.groups = "override_group";
-            args.suiteFiles = List.of(getPathToResource("2974/parent_include.xml"));
-            configure(args);
-          }
-        };
+    TestNG testNG = create();
+    testNG.setGroups("override_group");
+    testNG.setTestSuites(List.of(getPathToResource("2974/parent_include.xml")));
     NameCollector collector = new NameCollector();
     testNG.addListener(collector);
     testNG.run();
@@ -42,15 +35,9 @@ public class OverrideGroupsCliTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-2974")
   public void overrideExcludeGroupsFromCliInParentChildXml() {
-    TestNG testNG =
-        new TestNG(false) {
-          {
-            CommandLineArgs args = new CommandLineArgs();
-            args.excludedGroups = "override_group";
-            args.suiteFiles = List.of(getPathToResource("2974/parent_exclude.xml"));
-            configure(args);
-          }
-        };
+    TestNG testNG = create();
+    testNG.setExcludedGroups("override_group");
+    testNG.setTestSuites(List.of(getPathToResource("2974/parent_exclude.xml")));
     NameCollector collector = new NameCollector();
     testNG.addListener(collector);
     testNG.run();
