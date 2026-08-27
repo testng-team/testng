@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -52,7 +53,8 @@ public class CliConfigurerSplitTest {
     TestNG testng = new TestNG();
     CliConfigurer.configure(testng, cli);
 
-    List<String> names = read(testng, "m_testNames");
+    @SuppressWarnings("unchecked")
+    List<String> names = (List<String>) read(testng, "m_testNames");
     assertThat(names).containsExactly("t1", "t2");
   }
 
@@ -62,16 +64,18 @@ public class CliConfigurerSplitTest {
     TestNG testng = new TestNG();
     CliConfigurer.configure(testng, cli);
 
-    Class<?>[] classes = read(testng, "m_commandLineTestClasses");
+    Class<?>[] classes = (Class<?>[]) read(testng, "m_commandLineTestClasses");
     return classes == null ? new Class<?>[0] : classes;
   }
 
-  @SuppressWarnings("unchecked")
-  private static <T> T read(TestNG testng, String fieldName) {
+  /**
+   * Neither field has an accessor, so reflection is the only way to observe what was configured.
+   */
+  private static @Nullable Object read(TestNG testng, String fieldName) {
     try {
       Field field = TestNG.class.getDeclaredField(fieldName);
       field.setAccessible(true);
-      return (T) field.get(testng);
+      return field.get(testng);
     } catch (ReflectiveOperationException e) {
       throw new AssertionError("cannot read TestNG." + fieldName, e);
     }
