@@ -66,6 +66,11 @@ public class ChronologicalPanel extends BaseMultiSuitePanel {
       xsb.addRequired(S, tr.getStartMillis() - start + " ms", C, "method-start");
       xsb.pop(D);
     }
+    // The block the last class opened has no transition left to close it, and toXML() returns the
+    // buffer without closing what is still on its tag stack.
+    if (!"".equals(currentClass)) {
+      xsb.pop(D);
+    }
     return xsb.toXML();
   }
 
