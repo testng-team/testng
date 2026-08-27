@@ -244,7 +244,7 @@ public class XmlMethodSelector implements IMethodSelector {
 
     while (cls != null) {
       for (String im : methods) {
-        Pattern pattern = Pattern.compile(methodName(im));
+        Pattern pattern = Pattern.compile(asRegexp(im));
         Method[] allMethods = ReflectionHelper.getLocalMethods(cls);
         for (Method m : allMethods) {
           if (pattern.matcher(m.getName()).matches()) {
@@ -258,11 +258,17 @@ public class XmlMethodSelector implements IMethodSelector {
     return vResult;
   }
 
-  private static String methodName(String methodName) {
-    if (methodName.contains("\\$")) {
-      return methodName;
+  /**
+   * Reads an {@code <include>} or group name from testng.xml as a regexp: a {@code $} in it is a
+   * literal, not the end-of-input anchor it would be to {@link Pattern}.
+   *
+   * @param xmlName - the name as the XML spells it.
+   */
+  public static String asRegexp(String xmlName) {
+    if (xmlName.contains("\\$")) {
+      return xmlName;
     }
-    return methodName.replaceAll("\\Q$\\E", QUOTED_DOLLAR);
+    return xmlName.replaceAll("\\Q$\\E", QUOTED_DOLLAR);
   }
 
   private static String makeMethodName(String className, String methodName) {
@@ -336,7 +342,7 @@ public class XmlMethodSelector implements IMethodSelector {
   private static boolean isMemberOf(Collection<String> list, String... groups) {
     for (String group : groups) {
       for (String o : list) {
-        String regexpStr = methodName(o);
+        String regexpStr = asRegexp(o);
         if (Pattern.matches(regexpStr, group)) {
           return true;
         }
