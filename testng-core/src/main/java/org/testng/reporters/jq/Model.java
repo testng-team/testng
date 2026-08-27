@@ -16,7 +16,9 @@ import org.testng.ITestResult;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Maps;
 import org.testng.collections.SetMultiMap;
-import org.testng.internal.Utils;
+import org.testng.internal.reporters.ParameterSnapshot;
+import org.testng.internal.reporters.ParameterSnapshots;
+import org.testng.internal.reporters.ParameterValue;
 
 public class Model {
   private final ListMultiMap<ISuite, ITestResult> m_model = Maps.newListMultiMap();
@@ -152,17 +154,29 @@ public class Model {
     return name;
   }
 
+  /**
+   * Names an invocation by the values it ran with, as they were when it started rather than as the
+   * objects stand now. The report is built once every invocation of the run is over, so a data
+   * provider that hands the same mutable row to every invocation, or a test that changes what it
+   * was given, used to leave every one of them named after that value's final state.
+   *
+   * <p>Reached for configuration methods as well as test methods: {@code ChronologicalPanel} names
+   * every invoked method this way, {@code NavigatorPanel} and {@code ReporterPanel} name the test
+   * results, and {@code SuitePanel} uses it as an anchor.
+   */
   public static String getTestResultName(ITestResult tr) {
     StringBuilder result = new StringBuilder(getMethodName(tr.getMethod().getMethodName()));
-    Object[] parameters = tr.getParameters();
-    if (parameters.length > 0) {
+    List<ParameterValue> values = reportedValuesOf(tr);
+    if (!values.isEmpty()) {
       result.append("(");
       StringBuilder p = new StringBuilder();
-      for (int i = 0; i < parameters.length; i++) {
+      for (int i = 0; i < values.size(); i++) {
         if (i > 0) {
           p.append(", ");
         }
-        p.append(Utils.toString(parameters[i]));
+        // append(String) writes the word for the one value that has no rendering, which is what
+        // Utils.toString(Object) left this builder to do before.
+        p.append(values.get(i).plain());
       }
       if (p.length() > 100) {
         String s = p.substring(0, 100);
@@ -175,6 +189,21 @@ public class Model {
     }
 
     return result.toString();
+  }
+
+  /**
+   * The values a result is described by, in invocation order.
+   *
+   * <p>Empty when there is nothing to describe it with, which covers an invocation that declares no
+   * parameter and one a data provider supplied the wrong number of values to -- the latter reaches
+   * the invocation with none either, so this named it without parentheses before and still does.
+   *
+   * @param tr - The result being named.
+   * @return - Its captured values, or an empty list.
+   */
+  static List<ParameterValue> reportedValuesOf(ITestResult tr) {
+    ParameterSnapshot snapshot = ParameterSnapshots.reportedParametersOf(tr);
+    return snapshot == null ? Collections.emptyList() : snapshot.values();
   }
 
   public List<ITestResult> getAllFailedResults() {

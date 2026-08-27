@@ -8,6 +8,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.Utils;
+import org.testng.internal.reporters.ParameterValue;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.util.Strings;
 
@@ -75,10 +76,16 @@ public class SuitePanel extends BasePanel {
     ITestNGMethod method = tr.getMethod();
     xsb.addOptional(S, method.getMethodName(), C, "method-name");
 
-    // Parameters?
-    if (tr.getParameters().length > 0) {
+    // Parameters? As they were when the invocation started, not as the objects stand now: this
+    // panel is built once every invocation of the run is over.
+    List<ParameterValue> values = Model.reportedValuesOf(tr);
+    if (!values.isEmpty()) {
       String text =
-          Arrays.stream(tr.getParameters()).map(Utils::toString).collect(Collectors.joining(","));
+          values.stream()
+              // String.valueOf writes the word for the one value that has no rendering, which is
+              // what Collectors.joining did for Utils.toString(Object)'s null before.
+              .map(value -> String.valueOf(value.plain()))
+              .collect(Collectors.joining(","));
       xsb.addOptional(S, "(" + text + ")", C, "parameters");
     }
 

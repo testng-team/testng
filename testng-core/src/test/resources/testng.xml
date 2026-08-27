@@ -122,6 +122,7 @@
       <class name="test.reports.ReportTest" />
       <class name="test.reports.XmlReporterTest"/>
       <class name="test.reports.XmlReporterParametersTest"/>
+      <class name="test.reports.JqReportParametersTest"/>
       <class name="test.reports.PerSuiteXMLReporterTest"/>
       <class name="test.annotationtransformer.AnnotationTransformerTest" />
 <!--
@@ -785,6 +786,7 @@
   <test name="Reporters">
     <classes>
       <class name="org.testng.reporters.jq.TimesPanelTest" />
+      <class name="org.testng.reporters.jq.ModelParametersTest" />
       <class name="org.testng.internal.reporters.ParameterValueTest" />
       <class name="org.testng.internal.reporters.ParameterSnapshotsTest" />
       <class name="org.testng.internal.reporters.ParameterSnapshotLifecycleTest" />

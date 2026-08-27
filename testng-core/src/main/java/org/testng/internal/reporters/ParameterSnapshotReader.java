@@ -23,15 +23,15 @@ import org.testng.ISuite;
  * </ul>
  *
  * <p>Extending {@link IReporter} is what keeps that a rule rather than a convention: the scan below
- * only ever sees the run's reporters, so a class that is not one -- {@code XMLSuiteResultWriter}
- * and the {@code jq} panels are the ones to watch, since they hold the reads but are not reporters
- * -- could otherwise wear this and be quietly passed over, leaving its report to fall back to
- * {@link org.testng.ITestResult#getParameters()} with nothing to say it had. A read that arrives
- * this late is worse off than the fallback suggests: the request below is also what tells the store
- * to hold what the live reporters are finished with, so a reporter missing from this scan reads a
- * store that dropped exactly the results it came for -- every configuration method that passed.
- * That is what {@code Main} will have to declare when the {@code jq} report is migrated; a default
- * run hides it, because {@code XMLReporter} has already asked.
+ * only ever sees the run's reporters, so a class that is not one -- {@code XMLSuiteResultWriter},
+ * {@code jq}'s {@code Model} and its panels are the ones to watch, since they hold the reads but
+ * are not reporters -- could otherwise wear this and be quietly passed over, leaving its report to
+ * fall back to {@link org.testng.ITestResult#getParameters()} with nothing to say it had. A read
+ * that arrives this late is worse off than the fallback suggests: the request below is also what
+ * tells the store to hold what the live reporters are finished with, so a reporter missing from
+ * this scan reads a store that dropped exactly the results it came for -- every configuration
+ * method that passed. {@code XMLReporter} and {@code Main} both need that, and a default run
+ * registers both, so testing either one alone is what tells them apart.
  *
  * <p>Internal, and otherwise empty: implementing it is a statement about TestNG's own reporting,
  * not an extension point. A third party reporter that wants the snapshots implements {@link
