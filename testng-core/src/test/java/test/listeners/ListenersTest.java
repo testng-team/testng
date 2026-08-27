@@ -832,6 +832,7 @@ public class ListenersTest extends SimpleBaseTest {
       orderingViaMap(NormalSampleTestCase.class, logs, listeners, expected);
     }
 
+    @SuppressWarnings("deprecation")
     static void orderingViaMap(
         Class<?> clazz, List<String> logs, List<ITestNGListener> listeners, String[] expected) {
       logs.clear();

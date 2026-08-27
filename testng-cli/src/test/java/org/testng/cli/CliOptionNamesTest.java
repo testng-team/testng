@@ -17,6 +17,7 @@ import org.testng.annotations.Test;
 public class CliOptionNamesTest {
 
   @Test
+  @SuppressWarnings("deprecation")
   public void optionNamesMatchTheDeprecatedCommandLineArgs() {
     assertThat(constantsOf(CliOptions.class))
         .as("option constants of %s", CliOptions.class.getName())

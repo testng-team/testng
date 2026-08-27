@@ -67,6 +67,7 @@ public class TestListenerHelperTest {
   }
 
   @Test(dataProvider = "getFactoryTestData")
+  @SuppressWarnings("deprecation") // nothing in TestNG calls it; this is its only exercise
   public void testCreateListenerFactory(
       Class<?> testClazz, Class<? extends ITestNGListenerFactory> listenerClazz) {
     ITestContext ctx = new FakeTestContext(testClazz);
