@@ -277,6 +277,12 @@ edits that follow it, so a reviewer can tell which hunks a human actually judged
 - Running a documented command proves it executes, not that it does what the text claims. If the
   text promises an effect — filtering, failing, producing a value — measure that effect.
 - Report what you actually observed. If a run was flaky, say so and show both runs.
+- **What the characterization made fail is the minimum the fix has to cover.** If the `CHANGES.txt`
+  entry needs a "not covered until X migrates" clause, the fix is too shallow — the shared primitive
+  one level down is the altitude, and an existing failsafe on a sibling of that primitive is the
+  tell. GITHUB-2830 lost three reports to one parameter whose `toString()` threw; guarding the
+  caller covered one of them, while guarding `Utils.toString`, beside the already-failsafe
+  `Utils.buildStackTrace`, covered all three and left the caller unchanged.
 - When an upgrade is refused, record the error that refused it, so the next person does not retry it
   blind.
 - **Edit prose before `autostyleApply`, not after.** The formatter rewraps javadoc, so a scripted
