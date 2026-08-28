@@ -36,6 +36,24 @@ rc=$?; echo "EXIT=$rc"; (exit $rc)
 Naming that set before editing is the point: it is the question the change has to answer. A run like
 the one above returns in seconds rather than minutes.
 
+Three things make a `--tests` set narrower or wider than it looks:
+
+- **It must include whatever supplies a dependency.** `--tests "test.inheritance.VerifyTest"` alone
+  fails the task with `Method "VerifyTest.verify()…" depends on nonexistent group "before"`: the
+  group's members live in `test.inheritance.DChild_2`, a sibling `<class>` of the same `<test>`
+  block that the filter removed. That run printed **43 lines saying `0 failed`** against one
+  `BUILD FAILED`. Open the `<test>` block a class sits in and pull in its siblings whenever it uses
+  `dependsOnGroups` or `dependsOnMethods`.
+- **It also collects nested classes.** `--tests "…IssueTest"` picks up `IssueTest$SomeNested`, so a
+  sample nested inside its own test escapes into the run — and a nested failing `@BeforeSuite` runs
+  as the outer suite's, reporting the real test as skipped with the sample's own assertion message.
+  Keep samples in separate top-level files, which is what every `issue<N>/` package already does.
+  `build` is unaffected: it is suite-driven, and only the `--tests` path scans.
+- **A filtered class runs once per fork.** `testng-core` sets `maxParallelForks =
+  availableProcessors() / 2` and drives everything through one `testng.xml`, so every fork applies
+  the filter to the whole suite. Expect the executions to be a multiple of the fork count, and read
+  a flake as disagreement between forks rather than as a high count.
+
 **A new `testng-core` test class does not run until it is listed in
 `testng-core/src/test/resources/testng.xml`.** The task is suite-driven, not classpath-scanned, so
 an unregistered class is skipped by `build` without a word — the file can be committed and never
@@ -48,6 +66,9 @@ confirm it ran, rather than trusting the exit code:
 CLASS=org.testng.xml.XmlRoundTripTest
 grep -o 'tests="[1-9][0-9]*"' "testng-core/build/test-results/test/TEST-$CLASS.xml"
 ```
+
+That file is the previous run's until this one overwrites it — read the gate below before taking a
+count out of it.
 
 Filter the output rather than reading it whole; a full build log runs to thousands of lines, and the
 test logger prints a line per test class, so match on the summary only. Set `pipefail` first —
@@ -94,6 +115,13 @@ makes them this one's. Put `EXIT=` **in the log**, never on stdout: whatever rea
 of a backgrounded run sees the `echo`, which is the last process, and reports 0 for a build that
 failed.
 
+**Any number that reaches a commit message or a pull request comes from `--rerun-tasks`.** Error
+Prone and NullAway see only the units javac recompiles, so an incremental run both hides errors and
+invents them: on one package marking, three checks passed incrementally and failed under
+`--rerun-tasks`, and one of those failures was itself spurious. Forcing only the tasks that matter —
+`:testng-core-api:compileJava --rerun :testng-core:compileJava --rerun` — is much cheaper than
+`--rerun-tasks` over the whole graph, and just as forcing for them.
+
 A green local build is not a green CI. Pull requests against `master` also run an OpenRewrite check
 that `.github/CONTRIBUTING.md` documents, and a wrapper validation. Pushes are weaker than they
 look: the `branches: ['*']` filter in `test.yml` does not match `/`, so pushing a branch named
@@ -138,13 +166,18 @@ Before writing documentation, read what is already in `docs/` and `.github/`. Mo
 covered there; a second copy drifts from the first, and this file was itself written as a fifth copy
 before being cut back to links.
 
-Two things that are not documented elsewhere and cost tool calls to discover:
+Three things that are not documented elsewhere and cost tool calls to discover:
 
 - Per-project build files are named `<module>/<module>-build.gradle.kts`, not `build.gradle.kts`.
 - Build logic lives in two included builds: `build-logic-commons/` builds the plugins that
   `build-logic/` uses. Conventions are precompiled script plugins,
   `build-logic/*/src/main/kotlin/testng.*.gradle.kts` — prefer changing a convention over repeating
   configuration per module.
+- A package is not confined to one module. Ten of them span two or more, `org.testng.internal`
+  across four (core, core-api, runner-api, yaml). Anything scoped to a package — a
+  `package-info.java` annotation such as `@NullMarked`, package javadoc, `Export-Package` reasoning
+  — takes effect in every module where the package appears, through the `package-info.class` on the
+  compile classpath. Size package-scoped work by the package union, never by module.
 
 The `guice` and `yaml` optional features are hand-rolled rather than declared with
 `registerFeature`; the reasoning is in the KDoc of
@@ -217,6 +250,15 @@ gh pr create --repo testng-team/testng --base master --head <fork-owner>:<branch
 
 Conventional Commits. Record user-visible changes in `CHANGES.txt`, newest first, under the current
 version heading.
+
+`org.testng.internal` and its sub-packages are OSGi exported yet excluded from javadoc, which reads
+as a contradiction and invites deprecated bridges. The project does the opposite: it breaks them and
+records the break — 7.13.0 alone lists a class that lost its no-method constructor, two helpers that
+stopped accepting null, constructors that changed signature and types that became final, each entry
+naming the export and doing it anyway. So a change there earns two entries: the `Changed:` line in
+prose, and a bullet under `Possible backward incompatible changes:` saying what stops compiling and
+what to use instead. Grep `CHANGES.txt` for `internal` before arguing about compatibility — the
+precedents are the argument.
 
 Split a pull request that mixes a large mechanical sweep with changes that need judgement. The two
 halves have different review costs: a tool's output — an OpenRewrite run, a formatter pass, a
