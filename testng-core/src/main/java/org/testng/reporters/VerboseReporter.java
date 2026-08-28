@@ -190,7 +190,7 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
     ITestNGMethod tm = itr.getMethod();
     int identLevel = sb.length();
     sb.append(getMethodDeclaration(tm));
-    ParameterSnapshot params = reportedParametersOf(itr);
+    ParameterSnapshot params = ParameterSnapshots.reportedParametersOf(itr);
     if (null != params) {
       // The error might be a data provider parameter mismatch, so make
       // a special case here
@@ -245,20 +245,6 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
       sb.append("\n").append(text);
     }
     log(sb.toString());
-  }
-
-  /**
-   * Looked up per result: printing as a run happens, there is no one moment to resolve a store.
-   *
-   * <p>A result carries no context when it was built outside one -- the parameter carrier a
-   * configuration method is handed, which exists before the invocation it reports on is bound to a
-   * context. There is no suite to ask, so such a result reads through itself, like any other the
-   * snapshots have nothing for.
-   */
-  private static @Nullable ParameterSnapshot reportedParametersOf(ITestResult itr) {
-    ITestContext context = itr.getTestContext();
-    return ParameterSnapshots.reportedParametersOf(
-        context != null ? ParameterSnapshots.of(context.getSuite()) : null, itr);
   }
 
   protected void log(String message) {

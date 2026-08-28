@@ -8,6 +8,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.Utils;
+import org.testng.internal.reporters.ParameterSnapshots;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.util.Strings;
 
@@ -75,11 +76,11 @@ public class SuitePanel extends BasePanel {
     ITestNGMethod method = tr.getMethod();
     xsb.addOptional(S, method.getMethodName(), C, "method-name");
 
-    // Parameters?
-    if (tr.getParameters().length > 0) {
-      String text =
-          Arrays.stream(tr.getParameters()).map(Utils::toString).collect(Collectors.joining(","));
-      xsb.addOptional(S, "(" + text + ")", C, "parameters");
+    // Parameters? As they were when the invocation started, not as the objects stand now: this
+    // panel is built once every invocation of the run is over.
+    List<String> values = ParameterSnapshots.reportedPlainValuesOf(tr);
+    if (!values.isEmpty()) {
+      xsb.addOptional(S, "(" + String.join(",", values) + ")", C, "parameters");
     }
 
     CustomAttribute[] attributes = method.getAttributes();

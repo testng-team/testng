@@ -1,5 +1,7 @@
 package org.testng.internal.reporters;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jspecify.annotations.Nullable;
@@ -222,9 +224,50 @@ public final class ParameterSnapshots {
     return captured != null ? captured : snapshotOf(result);
   }
 
+  /**
+   * The same, for a caller that has a result rather than a store.
+   *
+   * <p>The suite owns the snapshots of everything it ran, and the result is what leads back to it.
+   * Every reader needs that: an {@link org.testng.IReporter} is handed every suite of the run at
+   * once, so there is no one suite to have been given, and {@code VerboseReporter} prints as the
+   * run happens, so there is no one moment at which to resolve a store. A reader that does have a
+   * context -- {@code TextReporter}, which reports one at a time -- resolves it once and calls the
+   * two-argument form instead.
+   *
+   * <p>A result carries no context when it was built outside one: the parameter carrier a
+   * configuration method is handed exists before the invocation it reports on is bound to a
+   * context. There is no suite to ask, so such a result reads through itself, like any other the
+   * snapshots have nothing for.
+   *
+   * @param result - The result being reported.
+   * @return - Its rendering, or {@code null} when there is nothing to report.
+   */
+  public static @Nullable ParameterSnapshot reportedParametersOf(ITestResult result) {
+    ITestContext context = result.getTestContext();
+    return reportedParametersOf(context != null ? of(context.getSuite()) : null, result);
+  }
+
   /** What a result was invoked with, in the form a report writes it, or {@code null} if nothing. */
   private static @Nullable ParameterSnapshot snapshotOf(ITestResult result) {
     return ParameterSnapshot.of(result.getParameters(), result.getMethod().getParameterTypes());
+  }
+
+  /**
+   * The same, for the reports that want nothing but the text -- the built-in HTML ones, which have
+   * no attribute to state an absent value with and no console decoration to add.
+   *
+   * <p>Absence and emptiness are one answer here: a result nothing was captured for, an invocation
+   * that declares no parameter and one a data provider supplied the wrong number of values to all
+   * have nothing to describe, and every caller wrote the same {@code null} check to say so. Only a
+   * reader that reports the count mismatch itself, as the console reporters do, needs the {@link
+   * ParameterSnapshot} rather than this.
+   *
+   * @param result - The result being reported.
+   * @return - Its values as a report writes them, or an empty list when there are none.
+   */
+  public static List<String> reportedPlainValuesOf(ITestResult result) {
+    ParameterSnapshot snapshot = reportedParametersOf(result);
+    return snapshot == null ? Collections.emptyList() : snapshot.plainValues();
   }
 
   /**

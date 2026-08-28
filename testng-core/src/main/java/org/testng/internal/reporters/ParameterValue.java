@@ -4,28 +4,31 @@ import org.jspecify.annotations.Nullable;
 import org.testng.internal.Utils;
 
 /**
- * One value an invocation ran with, captured while it was starting, in the two shapes TestNG's
- * built-in reports write it in.
+ * One value an invocation ran with, captured while it was starting, in the shapes TestNG's built-in
+ * reports write it in.
  *
- * <p>The two are not the same string, and never have been. {@code TextReporter} and {@code
+ * <p>They are not the same string, and never have been. {@code TextReporter} and {@code
  * VerboseReporter} describe a value to a human reading a console: a {@code String} is quoted, so
  * that {@code "42"} is not read as a number and an empty one is visible at all. The XML report
  * serializes it for a machine, so it writes the value itself and says {@code is-null="true"} on the
- * element rather than writing the word.
+ * element rather than writing the word. The HTML reports write the plain rendering, undecorated,
+ * and spell an absent value {@code null} because they have no attribute to say it with.
  *
- * <p>What both start from is the same single rendering, which is the point of capturing here rather
- * than in each reporter: {@link Utils#toString(Object)} calls the user's {@code toString()} once,
- * and the console form is derived from its result rather than from the object. However many
+ * <p>What all three start from is the same single rendering, which is the point of capturing here
+ * rather than in each reporter: {@link Utils#toString(Object)} calls the user's {@code toString()}
+ * once, and the other forms are derived from its result rather than from the object. However many
  * built-in reports a run has enabled, a parameter is rendered once per invocation.
  *
- * <p>{@code ParameterValueTest} pins the console form against {@link Utils#toString(Object,
- * Class)}, which is what every reporter called before there was anywhere to keep a rendering.
+ * <p>{@code ParameterValueTest} pins the console form against {@link Utils#toString(Object, Class)}
+ * and the plain form against {@link Utils#toString(Object)}, which is what every reporter called
+ * before there was anywhere to keep a rendering.
  *
  * <p>Nothing here guards the user's {@code toString()}: {@link Utils#toString(Object)} does, for
  * every caller rather than for this one, so a value that cannot render itself arrives here already
  * described by its identity. Both the moment this class renders at -- as the invocation starts --
  * and the moment a report falls back to rendering the values itself are covered by that, and both
- * answer the same string.
+ * answer the same string. A {@code toString()} that answers {@code null} rather than throwing is
+ * not that case and is not guarded there; see {@link #plain()}.
  */
 public final class ParameterValue {
 
@@ -46,7 +49,7 @@ public final class ParameterValue {
    * @param parameter - One of the values an invocation ran with.
    * @param parameterType - The type the method declares for it, which decides whether the console
    *     form quotes it.
-   * @return - Both renderings of that value.
+   * @return - Every rendering of that value.
    */
   public static ParameterValue of(@Nullable Object parameter, Class<?> parameterType) {
     if (parameter == null) {
@@ -81,5 +84,23 @@ public final class ParameterValue {
   /** The value as {@code TextReporter} and {@code VerboseReporter} print it. */
   public String rendered() {
     return rendered;
+  }
+
+  /**
+   * The single rendering itself, before either report decorates it: exactly what {@link
+   * Utils#toString(Object)} answers for the value, including the word {@code null} for one the
+   * invocation was given nothing for.
+   *
+   * <p>This is the form every reporter called {@code Utils} for before there was anywhere to keep a
+   * rendering, and it is what the built-in HTML reports write.
+   *
+   * <p>Itself {@code null} for the one value that has no rendering -- an object whose {@code
+   * toString()} answered {@code null} -- which is the same hole {@link Utils#toString(Object)} has,
+   * and is what pinning the two together preserves. What a report writes for such a value is
+   * decided once, in {@link ParameterSnapshot#plainValues()}; read that rather than this unless the
+   * hole is what you are after.
+   */
+  public @Nullable String plain() {
+    return isNull ? "null" : value;
   }
 }

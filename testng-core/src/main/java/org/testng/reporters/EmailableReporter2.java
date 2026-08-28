@@ -24,12 +24,21 @@ import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.Utils;
+import org.testng.internal.reporters.ParameterSnapshotReader;
+import org.testng.internal.reporters.ParameterSnapshots;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlSuite.ParallelMode;
 
-/** Reporter that generates a single-page HTML report of the test results. */
-public class EmailableReporter2 implements IReporter {
+/**
+ * Reporter that generates a single-page HTML report of the test results.
+ *
+ * <p>It declares that it reads the invocation-time parameter snapshots: the page is written once
+ * every invocation of the run is over, so a data provider that hands the same mutable row to every
+ * invocation, or a test that changes what it was given, would otherwise leave every scenario of
+ * that method reporting the value's final state. See {@link ParameterSnapshotReader}.
+ */
+public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
   private static final Logger LOG = Logger.getLogger(EmailableReporter2.class);
 
   /** Null until {@link #generateReport} opens it; read it through {@link #writer()}. */
@@ -464,9 +473,12 @@ public class EmailableReporter2 implements IReporter {
 
     // Write test parameters (if any)
     Object[] parameters = result.getParameters();
-    boolean hasRows = dumpParametersInfo("Factory Parameter", result.getFactoryParameters());
+    // The colspan of the rows below, which is an arity and not a rendering: how many values an
+    // invocation was given does not change under a reporter's feet the way one value's toString()
+    // does.
     int parameterCount = parameters == null ? 0 : parameters.length;
-    hasRows |= dumpParametersInfo("Parameter", parameters);
+    boolean hasRows = dumpFactoryParametersInfo(result.getFactoryParameters());
+    hasRows |= dumpInvocationParametersInfo(result);
     dumpAttributesInfo(result.getMethod().getAttributes());
 
     // Write reporter messages (if any)
@@ -522,22 +534,49 @@ public class EmailableReporter2 implements IReporter {
     writer().println("<p class=\"totop\"><a href=\"#summary\">back to summary</a></p>");
   }
 
-  private boolean dumpParametersInfo(String prefix, Object[] parameters) {
+  /**
+   * The values the {@code @Factory} produced the instance with, which are not invocation parameters
+   * and have no snapshot: nothing captures them, and there is no invocation for them to have been
+   * captured at. They are read here as they always were.
+   */
+  private boolean dumpFactoryParametersInfo(Object[] factoryParameters) {
+    if (factoryParameters.length == 0) {
+      return false;
+    }
+    List<String> values = new ArrayList<>(factoryParameters.length);
+    for (Object factoryParameter : factoryParameters) {
+      // String.valueOf writes the word for an object whose toString() answered null, which
+      // Utils.toString(Object) answers null for and Utils.escapeHtml does not accept. The snapshot
+      // side of the page settles the same case in ParameterSnapshot#plainValues.
+      values.add(String.valueOf(Utils.toString(factoryParameter)));
+    }
+    return dumpParametersInfo("Factory Parameter", values);
+  }
+
+  /** The values the invocation ran with, as they were when it started; see the class javadoc. */
+  private boolean dumpInvocationParametersInfo(ITestResult result) {
+    return dumpParametersInfo("Parameter", ParameterSnapshots.reportedPlainValuesOf(result));
+  }
+
+  /**
+   * Writes one header row and one value row, or nothing at all when there is nothing to write --
+   * which is what tells {@code writeScenario} whether the table needs its invisible filler row.
+   */
+  private boolean dumpParametersInfo(String prefix, List<String> values) {
     PrintWriter writer = writer();
-    int parameterCount = parameters == null ? 0 : parameters.length;
-    if (parameterCount == 0) {
+    if (values.isEmpty()) {
       return false;
     }
     writer.print("<tr class=\"param\">");
-    for (int i = 1; i <= parameterCount; i++) {
+    for (int i = 1; i <= values.size(); i++) {
       writer.print(String.format("<th>%s #", prefix));
       writer.print(i);
       writer.print("</th>");
     }
     writer.print("</tr><tr class=\"param stripe\">");
-    for (Object parameter : parameters) {
+    for (String value : values) {
       writer.print("<td>");
-      writer.print(Utils.escapeHtml(Utils.toString(parameter)));
+      writer.print(Utils.escapeHtml(value));
       writer.print("</td>");
     }
     writer.print("</tr>");

@@ -11,12 +11,23 @@ import java.util.List;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.internal.Utils;
+import org.testng.internal.reporters.ParameterSnapshotReader;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.Files;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.XmlSuite;
 
-public class Main implements IReporter {
+/**
+ * The default HTML report.
+ *
+ * <p>It declares here that the report reads the invocation-time parameter snapshots, on behalf of
+ * the {@code Model} and the panels that hold the reads and are not reporters themselves. See {@link
+ * ParameterSnapshotReader} for why an {@code IReporter} has to say so rather than ask for itself --
+ * it is handed a run only once every invocation of it is over. {@code ChronologicalPanel} lists the
+ * configuration methods too, including the ones that passed, so the declaration is also what keeps
+ * their snapshots from being dropped along the way.
+ */
+public class Main implements IReporter, ParameterSnapshotReader {
   private static final String TESTNG_RESOURCE_PREFIX = "/org/testng/";
   private static final String[] RESOURCES =
       new String[] {

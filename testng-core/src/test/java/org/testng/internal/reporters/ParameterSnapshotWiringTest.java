@@ -55,10 +55,12 @@ public class ParameterSnapshotWiringTest extends SimpleBaseTest {
     // XMLReporter declares the reading on AbstractXmlReporter, and a default run registers it, so
     // the question the wiring asks before any suite starts is answered yes.
     assertThat(run.snapshottedInvocations).isEqualTo(run.invocations);
-    // The built-in reports Phase 7 has not reached still render the value for themselves from
-    // generateReport, so this is more than the one capture. How many is theirs to change, and
-    // depends on which of them a run registers, so this pins that they read at all, not how often.
-    assertThat(run.renderings).isPositive();
+    // Two: the one capture the whole run shares, and TestHTMLReporter, which is the last built-in
+    // report Phase 7 has not reached and still renders the value for itself. The three that read
+    // the store -- XMLReporter, jq's Main and EmailableReporter2 -- add nothing between them,
+    // which is what makes this a number rather than "positive". Migrating TestHTMLReporter takes
+    // it to one, and this is what will say so.
+    assertThat(run.renderings).isEqualTo(2);
   }
 
   @Test(
