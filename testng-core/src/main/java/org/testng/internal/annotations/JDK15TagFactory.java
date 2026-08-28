@@ -114,6 +114,7 @@ public class JDK15TagFactory {
               false,
               false,
               bs.timeOut(),
+              bs.priority(),
               new String[0]);
     } else if (annotationClass == IAfterSuite.class) {
       AfterSuite bs = (AfterSuite) a;
@@ -141,6 +142,7 @@ public class JDK15TagFactory {
               false,
               false,
               bs.timeOut(),
+              bs.priority(),
               new String[0]);
     } else if (annotationClass == IBeforeTest.class) {
       BeforeTest bs = (BeforeTest) a;
@@ -168,6 +170,7 @@ public class JDK15TagFactory {
               false,
               false,
               bs.timeOut(),
+              bs.priority(),
               new String[0],
               bs.ignoreFailure());
     } else if (annotationClass == IAfterTest.class) {
@@ -196,6 +199,7 @@ public class JDK15TagFactory {
               false,
               false,
               bs.timeOut(),
+              bs.priority(),
               new String[0]);
     } else if (annotationClass == IBeforeGroups.class) {
       BeforeGroups bs = (BeforeGroups) a;
@@ -224,6 +228,7 @@ public class JDK15TagFactory {
               false,
               false,
               bs.timeOut(),
+              bs.priority(),
               new String[0]);
     } else if (annotationClass == IAfterGroups.class) {
       AfterGroups bs = (AfterGroups) a;
@@ -252,6 +257,7 @@ public class JDK15TagFactory {
               false,
               false,
               bs.timeOut(),
+              bs.priority(),
               new String[0]);
     } else if (annotationClass == IBeforeClass.class) {
       BeforeClass bs = (BeforeClass) a;
@@ -279,6 +285,7 @@ public class JDK15TagFactory {
               false,
               false,
               bs.timeOut(),
+              bs.priority(),
               new String[0],
               bs.ignoreFailure());
     } else if (annotationClass == IAfterClass.class) {
@@ -307,6 +314,7 @@ public class JDK15TagFactory {
               false,
               false,
               bs.timeOut(),
+              bs.priority(),
               new String[0]);
     } else if (annotationClass == IBeforeMethod.class) {
       BeforeMethod bs = (BeforeMethod) a;
@@ -334,6 +342,7 @@ public class JDK15TagFactory {
               bs.firstTimeOnly(),
               false,
               bs.timeOut(),
+              bs.priority(),
               bs.onlyForGroups(),
               bs.ignoreFailure());
     } else if (annotationClass == IAfterMethod.class) {
@@ -362,6 +371,7 @@ public class JDK15TagFactory {
               false,
               bs.lastTimeOnly(),
               bs.timeOut(),
+              bs.priority(),
               bs.onlyForGroups());
     }
 
@@ -391,6 +401,7 @@ public class JDK15TagFactory {
       boolean firstTimeOnly,
       boolean lastTimeOnly,
       long timeOut,
+      int priority,
       String[] groupFilters) {
     return createConfigurationTag(
         beforeSuite,
@@ -415,6 +426,7 @@ public class JDK15TagFactory {
         firstTimeOnly,
         lastTimeOnly,
         timeOut,
+        priority,
         groupFilters,
         false);
   }
@@ -442,6 +454,7 @@ public class JDK15TagFactory {
       boolean firstTimeOnly,
       boolean lastTimeOnly,
       long timeOut,
+      int priority,
       String[] groupFilters,
       boolean ignoreFailure) {
     ConfigurationAnnotation result = new ConfigurationAnnotation();
@@ -470,6 +483,7 @@ public class JDK15TagFactory {
     result.setFirstTimeOnly(firstTimeOnly);
     result.setLastTimeOnly(lastTimeOnly);
     result.setTimeOut(timeOut);
+    result.setPriority(priority);
     result.setIgnoreFailure(ignoreFailure);
     return result;
   }

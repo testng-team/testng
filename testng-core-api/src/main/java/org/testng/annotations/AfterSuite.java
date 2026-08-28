@@ -77,4 +77,17 @@ public @interface AfterSuite {
    * @return the value (default 0)
    */
   long timeOut() default 0;
+
+  /**
+   * The scheduling priority. Lower priorities will be scheduled first.
+   *
+   * <p>Hard dependencies ({@code dependsOnMethods}, {@code dependsOnGroups}) and the inheritance
+   * ordering guarantee take precedence: the priority only orders methods that are otherwise free to
+   * run in any order. The priority itself is not mirrored the way the inheritance order is: the
+   * lower value still runs first here. Priorities are compared between the methods of this kind
+   * found in the same &lt;test&gt; tag, across all of its classes.
+   *
+   * @return the value (default 0)
+   */
+  int priority() default 0;
 }

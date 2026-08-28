@@ -885,6 +885,7 @@
       <class name="test.configuration.BeforeClassTest"/>
       <class name="test.configuration.issue2209.IssueTest"/>
       <class name="test.configuration.issue2254.IssueTest"/>
+      <class name="test.configuration.issue2663.IssueTest"/>
     </classes>
   </test>
 
