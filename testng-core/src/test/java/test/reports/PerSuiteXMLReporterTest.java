@@ -35,7 +35,12 @@ public class PerSuiteXMLReporterTest extends SimpleBaseTest {
     runTest(testng -> testng.setGenerateResultsPerSuite(true));
   }
 
+  /**
+   * Nothing in TestNG calls {@link TestNG#configure(Map)}, so tests are all that keep it honest
+   * while it still ships. The sibling above covers the setter it ends up calling.
+   */
   @Test(description = "GITHUB-2906")
+  @SuppressWarnings("deprecation")
   public void ensurePerSuiteGenerationHappensWithEnabledViaMap() throws Exception {
     runTest(
         testng -> {

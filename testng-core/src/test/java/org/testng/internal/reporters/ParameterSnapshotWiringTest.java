@@ -12,6 +12,7 @@ import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
+import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -122,11 +123,11 @@ public class ParameterSnapshotWiringTest extends SimpleBaseTest {
   /**
    * Runs two {@code <test>}s under the given consumers, plus the two instruments that measure what
    * happened. Neither instrument declares any interest in the snapshots, so a case that captures
-   * captures because of what was passed in.
+   * does so because of what was passed in.
    */
-  private static Run runUnder(Object... consumers) {
+  private static Run runUnder(ITestNGListener... consumers) {
     TestNG testng = createTests("snapshot-wiring", FIXTURE);
-    for (Object consumer : consumers) {
+    for (ITestNGListener consumer : consumers) {
       testng.addListener(consumer);
     }
     return measure(testng);

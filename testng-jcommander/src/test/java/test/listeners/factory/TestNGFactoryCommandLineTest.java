@@ -5,6 +5,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.cli.CliOptions;
+import org.testng.cli.jcommander.JCommanderCliRunner;
 
 /**
  * The command line half of {@code test.listeners.factory.TestNGFactoryTest}, which stays in {@code
@@ -23,7 +24,7 @@ public class TestNGFactoryCommandLineTest {
           CliOptions.LISTENER,
           ExampleListener.class.getName()
         };
-    TestNG testng = TestNG.privateMain(args, null);
+    TestNG testng = new JCommanderCliRunner().run(args, null);
     assertThat(SampleTestFactory.instance).isNotNull();
     assertThat(ExampleListener.getInstance()).isNotNull();
     assertThat(testng.getStatus()).isZero();

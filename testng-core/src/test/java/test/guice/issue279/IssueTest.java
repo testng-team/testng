@@ -60,6 +60,7 @@ public class IssueTest extends SimpleBaseTest {
   }
 
   @Test(description = "GITHUB-3377")
+  @SuppressWarnings("deprecation") // see ConfigurableTestNG
   public void cliListenerDoesNotThrowWhenListenerIsGuiceAnnotated() {
     CommandLineArgs args = new CommandLineArgs();
     args.listener = MyListener.class.getName() + "," + DummyReporter.class.getName();
@@ -73,6 +74,7 @@ public class IssueTest extends SimpleBaseTest {
   }
 
   @Test(description = "GITHUB-3377")
+  @SuppressWarnings("deprecation") // see ConfigurableTestNG
   public void cliListenerInheritsGuiceParentModuleFromSuite() throws IOException {
     XmlSuite xmlSuite = createXmlSuite("sample_suite");
     xmlSuite.setParentModule(SampleModule.class.getName());
@@ -109,6 +111,15 @@ public class IssueTest extends SimpleBaseTest {
     assertThat(DummyReporterWithoutModuleFactory.getInstance()).isInstanceOf(Car.class);
   }
 
+  /**
+   * Gives access to the {@code protected} frozen configuration path kept on {@link TestNG}. What
+   * the two {@code cliListener} tests add over the {@code setListenerClasses} pair above is the
+   * comma splitting and class loading the {@code -listener} option does first, so they stay on this
+   * route while it ships rather than being rewritten onto {@link TestNG#setListenerClasses(List)}.
+   * Only the first of the two would be a duplicate if they were: no other test pairs programmatic
+   * listener classes with a suite-level {@code parentModule}.
+   */
+  @SuppressWarnings("deprecation")
   private static final class ConfigurableTestNG extends TestNG {
     @Override
     public void configure(CommandLineArgs cla) {

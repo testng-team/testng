@@ -1,8 +1,8 @@
 package test.configurationfailurepolicy;
 
 import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.cli.jcommander.JCommanderCliRunner;
 import org.testng.testhelper.OutputDirectoryPatch;
 import test.SimpleBaseTest;
 import test.TestHelper;
@@ -28,7 +28,7 @@ public class FailurePolicyCommandLineTest extends SimpleBaseTest {
           ClassWithFailedBeforeMethodAndMultipleTests.class.getCanonicalName()
         };
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    new JCommanderCliRunner().run(argv, tla);
 
     TestHelper.assertCounts(tla, 1, 1, 2);
   }
@@ -47,7 +47,7 @@ public class FailurePolicyCommandLineTest extends SimpleBaseTest {
           ClassWithFailedBeforeMethodAndMultipleTests.class.getCanonicalName()
         };
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    new JCommanderCliRunner().run(argv, tla);
 
     TestHelper.assertCounts(tla, 2, 0, 2);
   }
@@ -65,7 +65,7 @@ public class FailurePolicyCommandLineTest extends SimpleBaseTest {
           getPathToResource("testng-configfailure.xml")
         };
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    new JCommanderCliRunner().run(argv, tla);
 
     TestHelper.assertCounts(tla, 1, 1, 2);
   }
@@ -83,7 +83,7 @@ public class FailurePolicyCommandLineTest extends SimpleBaseTest {
           getPathToResource("testng-configfailure.xml")
         };
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    new JCommanderCliRunner().run(argv, tla);
 
     TestHelper.assertCounts(tla, 2, 0, 2);
   }

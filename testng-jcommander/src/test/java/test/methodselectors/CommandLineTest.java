@@ -1,9 +1,9 @@
 package test.methodselectors;
 
 import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.testng.cli.jcommander.JCommanderCliRunner;
 import org.testng.testhelper.OutputDirectoryPatch;
 import test.SimpleBaseTest;
 import test.TestHelper;
@@ -42,7 +42,7 @@ public class CommandLineTest extends SimpleBaseTest {
   @Test
   public void commandLineNegativePriorityAllGroups() {
     ARG_WITHOUT_GROUPS[7] = "test.methodselectors.AllTestsMethodSelector:-1";
-    TestNG.privateMain(ARG_WITHOUT_GROUPS, tla);
+    new JCommanderCliRunner().run(ARG_WITHOUT_GROUPS, tla);
     String[] passed = {"test1", "test2", "test3"};
     String[] failed = {};
     TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
@@ -52,7 +52,7 @@ public class CommandLineTest extends SimpleBaseTest {
   @Test
   public void commandLineNegativePriorityGroup2() {
     ARG_WITHOUT_GROUPS[7] = "test.methodselectors.Test2MethodSelector:-1";
-    TestNG.privateMain(ARG_WITHOUT_GROUPS, tla);
+    new JCommanderCliRunner().run(ARG_WITHOUT_GROUPS, tla);
     String[] passed = {"test2"};
     String[] failed = {};
     TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
@@ -63,7 +63,7 @@ public class CommandLineTest extends SimpleBaseTest {
   public void commandLineLessThanPriorityTest1Test() {
     ARG_WITH_GROUPS[7] = "test.methodselectors.Test2MethodSelector:5";
     ARG_WITH_GROUPS[9] = "test1";
-    TestNG.privateMain(ARG_WITH_GROUPS, tla);
+    new JCommanderCliRunner().run(ARG_WITH_GROUPS, tla);
     String[] passed = {"test1", "test2"};
     String[] failed = {};
     TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
@@ -74,7 +74,7 @@ public class CommandLineTest extends SimpleBaseTest {
   public void commandLineGreaterThanPriorityTest1Test2() {
     ARG_WITH_GROUPS[7] = "test.methodselectors.Test2MethodSelector:15";
     ARG_WITH_GROUPS[9] = "test1";
-    TestNG.privateMain(ARG_WITH_GROUPS, tla);
+    new JCommanderCliRunner().run(ARG_WITH_GROUPS, tla);
     String[] passed = {"test2"};
     String[] failed = {};
     TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
@@ -85,7 +85,7 @@ public class CommandLineTest extends SimpleBaseTest {
   public void commandLineLessThanPriorityAllTests() {
     ARG_WITH_GROUPS[7] = "test.methodselectors.AllTestsMethodSelector:5";
     ARG_WITH_GROUPS[9] = "test1";
-    TestNG.privateMain(ARG_WITH_GROUPS, tla);
+    new JCommanderCliRunner().run(ARG_WITH_GROUPS, tla);
     String[] passed = {"test1", "test2", "test3"};
     String[] failed = {};
     TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
@@ -97,7 +97,7 @@ public class CommandLineTest extends SimpleBaseTest {
     ARG_WITH_GROUPS[7] =
         "test.methodselectors.NoTestSelector:7,test.methodselectors.Test2MethodSelector:5";
     ARG_WITH_GROUPS[9] = "test1";
-    TestNG.privateMain(ARG_WITH_GROUPS, tla);
+    new JCommanderCliRunner().run(ARG_WITH_GROUPS, tla);
     String[] passed = {"test1", "test2"};
     String[] failed = {};
     TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
@@ -107,7 +107,7 @@ public class CommandLineTest extends SimpleBaseTest {
   @Test
   public void commandLineNoTest1Selector() {
     ARG_WITHOUT_GROUPS[7] = "test.methodselectors.NoTest1MethodSelector:5";
-    TestNG.privateMain(ARG_WITHOUT_GROUPS, tla);
+    new JCommanderCliRunner().run(ARG_WITHOUT_GROUPS, tla);
     String[] passed = {"test2", "test3"};
     String[] failed = {};
     TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
@@ -118,7 +118,7 @@ public class CommandLineTest extends SimpleBaseTest {
   public void commandLineTestWithXmlFile() {
     ARG_WITHOUT_CLASSES[5] = "test.methodselectors.NoTest1MethodSelector:5";
     ARG_WITHOUT_CLASSES[6] = getPathToResource("testng-methodselectors.xml");
-    TestNG.privateMain(ARG_WITHOUT_CLASSES, tla);
+    new JCommanderCliRunner().run(ARG_WITHOUT_CLASSES, tla);
     String[] passed = {"test2", "test3"};
     String[] failed = {};
     TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
@@ -139,7 +139,7 @@ public class CommandLineTest extends SimpleBaseTest {
           "-overrideincludedmethods"
         };
 
-    TestNG.privateMain(args, tla);
+    new JCommanderCliRunner().run(args, tla);
 
     // test1 is excluded, so only test2 is left in the passed list
     String[] passed = {"test2"};
@@ -160,7 +160,7 @@ public class CommandLineTest extends SimpleBaseTest {
           "-overrideincludedmethods"
         };
 
-    TestNG.privateMain(args, tla);
+    new JCommanderCliRunner().run(args, tla);
 
     String[] passed = {};
     String[] failed = {};
@@ -181,7 +181,7 @@ public class CommandLineTest extends SimpleBaseTest {
           "/^testGroup1.*/"
         };
 
-    TestNG.privateMain(args, tla);
+    new JCommanderCliRunner().run(args, tla);
 
     String[] passed = {"sampleOutputTest1"};
     String[] failed = {};

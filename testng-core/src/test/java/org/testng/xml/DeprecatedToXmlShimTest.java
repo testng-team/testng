@@ -23,6 +23,7 @@ import org.testng.annotations.Test;
  * {@link java.util.Properties} iteration order rather than the order they were set, which is why
  * {@code depends-on} precedes {@code name}.
  */
+@SuppressWarnings("deprecation")
 public class DeprecatedToXmlShimTest {
 
   @Test

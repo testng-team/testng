@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.testng.cli.jcommander.JCommanderCliRunner;
 import test.listeners.cliwiring.FirstWiringListener;
 import test.listeners.cliwiring.ReverseNameListenerComparator;
 import test.listeners.cliwiring.SecondWiringListener;
@@ -36,7 +37,7 @@ public class ListenerWiringCommandLineTest {
       WiringSampleTest.class.getName()
     };
 
-    TestNG testng = TestNG.privateMain(args, null);
+    TestNG testng = new JCommanderCliRunner().run(args, null);
 
     assertThat(testng.getStatus()).isZero();
     // Both names made it through the comma split, and the comparator drove the order:
@@ -55,7 +56,7 @@ public class ListenerWiringCommandLineTest {
       WiringSampleTest.class.getName()
     };
 
-    TestNG testng = TestNG.privateMain(args, null);
+    TestNG testng = new JCommanderCliRunner().run(args, null);
 
     assertThat(testng.getStatus()).isZero();
     assertThat(WiringLog.entries()).containsExactlyInAnyOrder("first", "second");

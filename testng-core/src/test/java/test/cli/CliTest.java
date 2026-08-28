@@ -10,8 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Supplier;
-import org.testng.CommandLineArgs;
+import java.util.function.Consumer;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
@@ -39,34 +38,30 @@ public class CliTest extends SimpleBaseTest {
   }
 
   @Test(dataProvider = "getScenarios", description = "GITHUB-2693")
-  public void ensureDataProviderCountCanBeOverridden(String scenario, CommandLineArgs args) {
-    CustomTestNG tng = new CustomTestNG();
-    tng.configure(args);
+  public void ensureDataProviderCountCanBeOverridden(String scenario, Consumer<TestNG> selection) {
+    TestNG tng = new TestNG();
+    tng.setDataProviderThreadCount(2);
+    selection.accept(tng);
     tng.run();
     assertThat(TestClassSample.threads).withFailMessage(scenario).hasSize(2);
   }
 
+  /**
+   * The three ways this run can be told what to execute. They do not share a code path: classes and
+   * methods pick the count up in {@code createCommandLineSuitesForClasses}, suites only in {@code
+   * createSuiteRunners}, which is where GITHUB-2693 was missing it. Hence one row each.
+   */
   @DataProvider(name = "getScenarios")
   public Object[][] getScenarios() {
-    Supplier<CommandLineArgs> supplier =
-        () -> {
-          CommandLineArgs cli = new CommandLineArgs();
-          cli.dataProviderThreadCount = 2;
-          return cli;
-        };
-    CommandLineArgs cliSuites = supplier.get();
-    cliSuites.suiteFiles = Collections.singletonList("src/test/resources/xml/issue2693.xml");
-    String className = TestClassSample.class.getName();
-
-    CommandLineArgs cliClasses = supplier.get();
-    cliClasses.testClass = className;
-
-    CommandLineArgs cliMethods = supplier.get();
-    cliMethods.commandLineMethods = Collections.singletonList(className + ".test");
+    Consumer<TestNG> suites =
+        tng -> tng.setTestSuites(Collections.singletonList("src/test/resources/xml/issue2693.xml"));
+    Consumer<TestNG> classes = tng -> tng.setTestClasses(new Class<?>[] {TestClassSample.class});
+    Consumer<TestNG> methods =
+        tng ->
+            tng.setCommandLineMethods(
+                Collections.singletonList(TestClassSample.class.getName() + ".test"));
     return new Object[][] {
-      new Object[] {"CLI With Suites", cliSuites},
-      new Object[] {"CLI With Classes", cliClasses},
-      new Object[] {"CLI With Methods", cliMethods}
+      {"With Suites", suites}, {"With Classes", classes}, {"With Methods", methods}
     };
   }
 
@@ -140,14 +135,6 @@ public class CliTest extends SimpleBaseTest {
 
     public List<String> getLogs() {
       return logs;
-    }
-  }
-
-  public static class CustomTestNG extends TestNG {
-
-    @Override
-    public void configure(CommandLineArgs cla) {
-      super.configure(cla);
     }
   }
 }

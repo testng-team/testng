@@ -131,6 +131,10 @@ public class MethodInstanceTest {
     }
   }
 
+  /**
+   * A fake, so the {@code @SuppressWarnings} below are the members {@link ITestClass} still
+   * declares and deprecates rather than uses of a deprecated API.
+   */
   public static class TestClassStub implements ITestClass, IObject {
 
     private final @Nullable XmlTest xmlTest;
@@ -167,6 +171,7 @@ public class MethodInstanceTest {
       return requireNonNull(xmlClass, "a factory-produced stub has no class tag").getSupportClass();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void addInstance(Object instance) {}
 
@@ -175,6 +180,7 @@ public class MethodInstanceTest {
       // Intentionally left blank
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public Object[] getInstances(boolean reuse) {
       return new Object[0];
@@ -191,7 +197,7 @@ public class MethodInstanceTest {
       return new long[0];
     }
 
-    @Deprecated
+    @SuppressWarnings("deprecation")
     @Override
     public long[] getInstanceHashCodes() {
       return getObjectHashCodes();

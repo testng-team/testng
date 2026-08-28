@@ -6,6 +6,10 @@ import org.testng.internal.IObject;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
+/**
+ * A fake, so the {@code @SuppressWarnings} below are the members {@link ITestClass} still declares
+ * and deprecates rather than uses of a deprecated API.
+ */
 public class FakeTestClass implements ITestClass, IObject {
   private final Class<?> clazz;
 
@@ -93,6 +97,7 @@ public class FakeTestClass implements ITestClass, IObject {
     return clazz;
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public Object[] getInstances(boolean create) {
     return new Object[0];
@@ -108,12 +113,13 @@ public class FakeTestClass implements ITestClass, IObject {
     return new long[0];
   }
 
-  @Deprecated
+  @SuppressWarnings("deprecation")
   @Override
   public long[] getInstanceHashCodes() {
     return getObjectHashCodes();
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public void addInstance(Object instance) {}
 
