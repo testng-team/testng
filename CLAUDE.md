@@ -5,25 +5,18 @@ what is specific to Claude Code.
 
 ## Long-running commands
 
-The `Bash` tool caps `timeout` at **600000 ms** and clamps anything larger without saying so, so
-`timeout: 900000` is not a longer timeout — it is the same ten minutes, written in a way that reads
-like fifteen. Passing an explicit timeout is therefore the wrong mechanism for the gate: it cannot
-be given more than the cap. Background it instead, which has no cap and re-invokes you when the
-build exits:
+Run the gate with `run_in_background: true`, not with an explicit `timeout`. The `Bash` tool's
+documented maximum is 600000 ms and it clamps anything larger silently, so `timeout: 900000` reads
+like fifteen minutes and is ten. A gate that overruns is not lost — the tool moves it to the
+background anyway and notifies you — but it has held the turn open for the whole ten minutes first,
+and the foreground read is cut off mid-build. Backgrounding deliberately costs none of that.
 
-```text
-run_in_background: true
-```
-
-A cold `clean build` measured 6m39s here, so ten minutes is a margin rather than a wall — but it is
-a margin that shrinks as the suite grows, and the runs that go long are the ones you cannot predict,
-such as the first build after a rebase that pulled a batch of commits. Keep an explicit `timeout`
-for what it is actually good for: the filtered guard-set runs in `AGENTS.md` § *Verification*, which
-finish in tens of seconds.
+Guard-set runs need no `timeout` at all: the two-class set printed in `AGENTS.md` § *Verification*
+finishes in about ten seconds, an order of magnitude inside the default.
 
 A build started with `run_in_background` reports the status of its **last** process, so an `echo`
-after `./gradlew` masks a failure as exit 0. That is exactly why the gate shape in `AGENTS.md`
-writes `EXIT=` into the log rather than to stdout — use it as written and backgrounding is safe.
+after `./gradlew` masks a failure as exit 0. The gate shape in `AGENTS.md` already accounts for
+that — use it as written and backgrounding is safe.
 
 ## Subagents
 

@@ -146,11 +146,10 @@ Three things that are not documented elsewhere and cost tool calls to discover:
   `build-logic/` uses. Conventions are precompiled script plugins,
   `build-logic/*/src/main/kotlin/testng.*.gradle.kts` — prefer changing a convention over repeating
   configuration per module.
-- A package is not confined to one module. Ten of them span two or more, `org.testng.internal`
-  across four (core, core-api, runner-api, yaml). Anything scoped to a package — a
-  `package-info.java` annotation such as `@NullMarked`, package javadoc, `Export-Package` reasoning
-  — takes effect in every module where the package appears, through the `package-info.class` on the
-  compile classpath. Size package-scoped work by the package union, never by module.
+- **Size package-scoped work by the package union, never by module.** A package is not confined to
+  one module: ten span two or more, `org.testng.internal` across four (core, core-api, runner-api,
+  yaml). Where a `package-info.java` annotation then lands decides which half is covered — see
+  *Declaring a package null-marked* below.
 
 The `guice` and `yaml` optional features are hand-rolled rather than declared with
 `registerFeature`; the reasoning is in the KDoc of
@@ -277,12 +276,12 @@ edits that follow it, so a reviewer can tell which hunks a human actually judged
 - Running a documented command proves it executes, not that it does what the text claims. If the
   text promises an effect — filtering, failing, producing a value — measure that effect.
 - Report what you actually observed. If a run was flaky, say so and show both runs.
-- **What the characterization made fail is the minimum the fix has to cover.** If the `CHANGES.txt`
-  entry needs a "not covered until X migrates" clause, the fix is too shallow — the shared primitive
-  one level down is the altitude, and an existing failsafe on a sibling of that primitive is the
-  tell. GITHUB-2830 lost three reports to one parameter whose `toString()` threw; guarding the
-  caller covered one of them, while guarding `Utils.toString`, beside the already-failsafe
-  `Utils.buildStackTrace`, covered all three and left the caller unchanged.
+- **What the characterization made fail is the minimum the fix has to cover.** A `CHANGES.txt`
+  entry that has to disclaim part of it — "not covered until X migrates" — is the tell that the fix
+  sits too high. Count the failing sites, then enumerate the callers of the shared primitive one
+  level down. On GITHUB-2830 that primitive was `Utils.toString`, located by its already-failsafe
+  sibling `Utils.buildStackTrace`; guarding it covered all three lost reports and left the caller
+  unchanged.
 - When an upgrade is refused, record the error that refused it, so the next person does not retry it
   blind.
 - **Edit prose before `autostyleApply`, not after.** The formatter rewraps javadoc, so a scripted
@@ -299,7 +298,7 @@ edits that follow it, so a reviewer can tell which hunks a human actually judged
   ```
 
   Every hit needs the command that settles it, run in this session, before the commit lands.
-- **Say the ordering out loud before spending the first gate.** A gate is six minutes, so a review
+- **Say the ordering out loud before spending the first gate.** A gate is five minutes, so a review
   or `/simplify` round that arrives after it buys another one. When a cleanup pass is plausible,
   propose "guard set, then the review, then one gate" up front: the cost is yours to know, not the
   reader's to guess.
