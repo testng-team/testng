@@ -17,8 +17,34 @@ The gate is `./gradlew build`, the same task CI runs. Let Gradle decide how much
 a change that reaches nothing finishes in seconds, so there is no need to judge by hand what a diff
 can affect. Add `clean` only to rule out stale output.
 
+Neither its exit code nor the result files prove anything on their own. An up-to-date run prints
+`BUILD SUCCESSFUL` without executing a single test; and while Gradle clears
+`build/test-results/test/` whenever the task *executes*, an up-to-date task does not execute, so the
+previous run's files survive and still read `0 failures`. Run the gate as one shape that answers
+both:
+
 ```bash
-./gradlew build     # minutes when it has work to do, seconds when it does not; 0 failures
+LOG="/tmp/testng-$(git branch --show-current | tr / -)-gate.log"   # parallel workspaces share /tmp
+rm -rf */build/test-results/test          # forces the task out of date, so the tests really run
+./gradlew --console=plain build > "$LOG" 2>&1; echo "EXIT=$?" >> "$LOG"
+grep -qE '^BUILD SUCCESSFUL' "$LOG" && grep -q '^EXIT=0' "$LOG" \
+  || { echo 'GATE INCONCLUSIVE'; grep -A10 'What went wrong' "$LOG"; exit 1; }
+grep -ho 'failures="[0-9]*"\|errors="[0-9]*"' */build/test-results/test/TEST-*.xml | sort | uniq -c
+```
+
+Redirect rather than pipe: a pipeline reports grep's status unless `pipefail` is set, and the log
+you need for the failure is gone either way. `EXIT=` goes in the log for the same reason — whatever
+reads the exit status of a backgrounded run sees the `echo`, which is the last process.
+
+`testng-core` hands the whole suite to every fork it starts (`maxParallelForks =
+availableProcessors() / 2`), so those counts are a multiple of the fork count. Read zeros and ratios
+from them, never an absolute total.
+
+When it fails, Gradle names the HTML report, but locating the test is quicker from the result files:
+
+```bash
+grep -l '<failure\|<error' */build/test-results/test/*.xml
+grep -o 'message="[^"]*"' testng-core/build/test-results/test/TEST-<the-class>.xml
 ```
 
 **The gate is not the edit loop.** Letting Gradle skip work only helps when the change reaches
@@ -29,30 +55,23 @@ minutes once, before committing:
 ```bash
 ./gradlew :testng-core:test \
   --tests "org.testng.xml.XmlRoundTripTest" \
-  --tests "test.xml.XmlVerifyTest" > /tmp/t.log 2>&1
-rc=$?; echo "EXIT=$rc"; (exit $rc)
+  --tests "test.xml.XmlVerifyTest" > /tmp/t.log 2>&1; echo "EXIT=$?" >> /tmp/t.log
 ```
 
 Naming that set before editing is the point: it is the question the change has to answer. A run like
 the one above returns in seconds rather than minutes.
 
-Three things make a `--tests` set narrower or wider than it looks:
+Two things make a `--tests` set narrower or wider than it looks:
 
-- **It must include whatever supplies a dependency.** `--tests "test.inheritance.VerifyTest"` alone
-  fails the task with `Method "VerifyTest.verify()…" depends on nonexistent group "before"`: the
-  group's members live in `test.inheritance.DChild_2`, a sibling `<class>` of the same `<test>`
-  block that the filter removed. That run printed **43 lines saying `0 failed`** against one
-  `BUILD FAILED`. Open the `<test>` block a class sits in and pull in its siblings whenever it uses
-  `dependsOnGroups` or `dependsOnMethods`.
-- **It also collects nested classes.** `--tests "…IssueTest"` picks up `IssueTest$SomeNested`, so a
-  sample nested inside its own test escapes into the run — and a nested failing `@BeforeSuite` runs
-  as the outer suite's, reporting the real test as skipped with the sample's own assertion message.
-  Keep samples in separate top-level files, which is what every `issue<N>/` package already does.
-  `build` is unaffected: it is suite-driven, and only the `--tests` path scans.
-- **A filtered class runs once per fork.** `testng-core` sets `maxParallelForks =
-  availableProcessors() / 2` and drives everything through one `testng.xml`, so every fork applies
-  the filter to the whole suite. Expect the executions to be a multiple of the fork count, and read
-  a flake as disagreement between forks rather than as a high count.
+- **It must include whatever supplies a dependency.** Filtering out the `<class>` that owns a group
+  while keeping a sibling that `dependsOnGroups` on it fails the whole task with `depends on
+  nonexistent group "<name>"` — behind dozens of lines still reading `0 failed`, so only the `BUILD`
+  line says anything is wrong. Open the `<test>` block your class sits in and pull in its siblings
+  whenever it uses `dependsOnGroups` or `dependsOnMethods`.
+- **A wildcard also collects nested classes.** An exact class name does not, but
+  `--tests "…issueNNNN.*"` picks up `IssueTest$Sample` alongside `IssueTest`, so a sample nested
+  inside its own test runs as a test in its own right — and a sample that fails on purpose then
+  reads as a failure of yours. Measured: exact filter one result file, wildcard two.
 
 **A new `testng-core` test class does not run until it is listed in
 `testng-core/src/test/resources/testng.xml`.** The task is suite-driven, not classpath-scanned, so
@@ -67,60 +86,14 @@ CLASS=org.testng.xml.XmlRoundTripTest
 grep -o 'tests="[1-9][0-9]*"' "testng-core/build/test-results/test/TEST-$CLASS.xml"
 ```
 
-That file is the previous run's until this one overwrites it — read the gate below before taking a
-count out of it.
-
-Filter the output rather than reading it whole; a full build log runs to thousands of lines, and the
-test logger prints a line per test class, so match on the summary only. Set `pipefail` first —
-without it the pipeline reports grep's status, so a failed build still exits 0:
-
-```bash
-set -o pipefail
-./gradlew --console=plain build 2>&1 | grep -E "^BUILD (SUCCESSFUL|FAILED)|[1-9][0-9]* failed"
-```
-
-For a failure, extract the useful part instead of scrolling:
-
-```bash
-set -o pipefail
-./gradlew --console=plain build 2>&1 | grep -A15 "What went wrong"
-```
-
-Gradle names the HTML report on failure, but locating the failing test is quicker from the result
-files:
-
-```bash
-grep -l '<failure\|<error' testng-core/build/test-results/test/*.xml
-grep -o 'message="[^"]*"' testng-core/build/test-results/test/TEST-<the-class>.xml | head
-```
-
-**Those result files outlive the run that wrote them.** `build/test-results/test/TEST-*.xml` is
-whatever executed last, on whatever branch, and nothing clears it. A gate that dies mid-run — the
-daemon stopped from outside, say — leaves a log with no `BUILD` line at all while those files still
-read `0 failures`, on the previous commit. Run the gate as one shape that cannot report a false
-green:
-
-```bash
-LOG="/tmp/testng-$(git branch --show-current | tr / -)-gate.log"   # parallel workspaces share /tmp
-rm -rf */build/test-results/test
-./gradlew --console=plain build > "$LOG" 2>&1; echo "EXIT=$?" >> "$LOG"
-grep -qE '^BUILD SUCCESSFUL' "$LOG" && grep -q '^EXIT=0' "$LOG" \
-  || { echo 'GATE INCONCLUSIVE'; grep -A10 'What went wrong' "$LOG"; exit 1; }
-grep -ho 'failures="[0-9]*"\|errors="[0-9]*"' */build/test-results/test/TEST-*.xml | sort | uniq -c
-```
-
-Both proofs are needed and neither is enough alone: an up-to-date run prints `BUILD SUCCESSFUL`
-without executing a single test, and the counts belong to someone else's run until the purge above
-makes them this one's. Put `EXIT=` **in the log**, never on stdout: whatever reads the exit status
-of a backgrounded run sees the `echo`, which is the last process, and reports 0 for a build that
-failed.
+Read that file only after a run you know executed — see the gate above.
 
 **Any number that reaches a commit message or a pull request comes from `--rerun-tasks`.** Error
 Prone and NullAway see only the units javac recompiles, so an incremental run both hides errors and
 invents them: on one package marking, three checks passed incrementally and failed under
 `--rerun-tasks`, and one of those failures was itself spurious. Forcing only the tasks that matter —
 `:testng-core-api:compileJava --rerun :testng-core:compileJava --rerun` — is much cheaper than
-`--rerun-tasks` over the whole graph, and just as forcing for them.
+`--rerun-tasks` over the whole graph, and just as forcing for those units.
 
 A green local build is not a green CI. Pull requests against `master` also run an OpenRewrite check
 that `.github/CONTRIBUTING.md` documents, and a wrapper validation. Pushes are weaker than they
@@ -251,14 +224,12 @@ gh pr create --repo testng-team/testng --base master --head <fork-owner>:<branch
 Conventional Commits. Record user-visible changes in `CHANGES.txt`, newest first, under the current
 version heading.
 
-`org.testng.internal` and its sub-packages are OSGi exported yet excluded from javadoc, which reads
-as a contradiction and invites deprecated bridges. The project does the opposite: it breaks them and
-records the break — 7.13.0 alone lists a class that lost its no-method constructor, two helpers that
-stopped accepting null, constructors that changed signature and types that became final, each entry
-naming the export and doing it anyway. So a change there earns two entries: the `Changed:` line in
-prose, and a bullet under `Possible backward incompatible changes:` saying what stops compiling and
-what to use instead. Grep `CHANGES.txt` for `internal` before arguing about compatibility — the
-precedents are the argument.
+A change under `org.testng.internal` earns two `CHANGES.txt` entries: the `Changed:` line in prose,
+and a bullet under `Possible backward incompatible changes:` naming what stops compiling and what to
+use instead. The package is OSGi exported yet excluded from javadoc, which reads as a contradiction
+and invites deprecated bridges; the project does the opposite, breaking them and recording it, each
+entry naming the export and doing it anyway. Grep `CHANGES.txt` for `internal` before arguing
+about compatibility — the precedents are the argument.
 
 Split a pull request that mixes a large mechanical sweep with changes that need judgement. The two
 halves have different review costs: a tool's output — an OpenRewrite run, a formatter pass, a

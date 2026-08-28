@@ -12,8 +12,8 @@ what is specific to Claude Code.
 timeout: 900000
 ```
 
-Put `EXIT=` **in the log**, never on stdout — see the gate shape in `AGENTS.md`. In a backgrounded
-run the `echo` is the last process, so the harness reports exit 0 for a build that failed.
+A build started with `run_in_background` reports the status of its **last** process, so an `echo`
+after `./gradlew` masks a failure as exit 0. Use the gate shape in `AGENTS.md` as written.
 
 ## Subagents
 
