@@ -18,9 +18,10 @@ import test.SimpleBaseTest;
  *
  * <p>Lower runs first, and it only ever orders methods TestNG is otherwise free to run in any
  * order: a hard dependency and the inheritance guarantee both outrank it. The scope it is compared
- * in is the scope TestNG already collects the methods in -- the class for the class, method and
- * group level ones, the &lt;test&gt; tag for the test and suite level ones -- so a priority never
- * couples two configuration methods that TestNG would not have ordered against each other anyway.
+ * in is the scope TestNG already collects the methods in -- the class for the class-level,
+ * method-level and group-level ones, the &lt;test&gt; tag for the test-level and suite-level ones
+ * -- so a priority never couples two configuration methods that TestNG would not have ordered
+ * against each other anyway.
  *
  * <p>Every sample names its methods the other way round from its priorities, so none of these
  * expectations can be met by the alphabetical tie-break that applies when no priority is given.
