@@ -255,6 +255,15 @@ edits that follow it, so a reviewer can tell which hunks a human actually judged
   having vanished rather than like a stash. `git worktree add ../measure <ref>` answers the question
   without touching what you hold, and when an amend is coming anyway, committing first leaves
   nothing to stash.
+- **`git stash push -- <path>` on a path with no local changes creates nothing.** It says so — "No
+  local changes to save" — and leaves the stack untouched; but the stack is global while the push
+  was scoped, so the `git stash pop` written on the next line dequeues whatever was already on it:
+  another branch's work, spread through the tree as conflicts. Twenty-one files, here, while probing
+  a file that was committed and therefore unmodified. `git stash list` names the branch each entry
+  was made on, which is the giveaway. To instrument a committed file, save the blob instead —
+  `git show HEAD:<path> > /tmp/probe`, edit, copy back — which works whether the file has local
+  changes or not. Git does not drop an entry it could not apply cleanly, so a conflicted pop loses
+  nothing of the other branch's.
 - **Read `git ls-remote` when you start on an already-pushed branch, not when you push.** A branch
   can be rebased from another workspace between two of your turns; finding out at push time means
   the rebase, the gate and the summary were all spent against a base that had moved. Compare trees,

@@ -7,9 +7,10 @@ what is specific to Claude Code.
 
 Run the gate with `run_in_background: true`, not with an explicit `timeout`. The `Bash` tool's
 documented maximum is 600000 ms and it clamps anything larger silently, so `timeout: 900000` reads
-like fifteen minutes and is ten. A gate that overruns is not lost — the tool moves it to the
-background anyway and notifies you — but it has held the turn open for the whole ten minutes first,
-and the foreground read is cut off mid-build. Backgrounding deliberately costs none of that.
+like fifteen minutes and is ten — and ten is not a comfortable ceiling for this gate. A cold build
+after a rebase that pulled twenty-two commits took 8m17s; warm ones on the same branch, 5m43s and
+6m48s. Backgrounding has no ceiling, leaves the turn free while it runs, and re-invokes you when the
+build exits.
 
 Guard-set runs need no `timeout` at all: the two-class set printed in `AGENTS.md` § *Verification*
 finishes in about ten seconds, an order of magnitude inside the default.
