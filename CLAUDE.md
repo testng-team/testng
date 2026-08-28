@@ -47,6 +47,31 @@ grep -l '<failure\|<error' testng-core/build/test-results/test/*.xml
 grep -o 'message="[^"]*"' testng-core/build/test-results/test/TEST-<the-class>.xml | head
 ```
 
+**Those result files outlive the run that wrote them.** `build/test-results/test/TEST-*.xml` is
+whatever executed last, on whatever branch, and nothing clears it. A gate that dies mid-run — the
+daemon stopped from outside, say — leaves a log with no `BUILD` line at all while those files still
+read `0 failures`, on the previous commit. Run the gate as one shape that cannot report a false
+green:
+
+```bash
+LOG="/tmp/testng-$(git branch --show-current | tr / -)-gate.log"   # parallel workspaces share /tmp
+rm -rf */build/test-results/test
+./gradlew --console=plain build > "$LOG" 2>&1; echo "EXIT=$?" >> "$LOG"
+grep -qE '^BUILD SUCCESSFUL' "$LOG" && grep -q '^EXIT=0' "$LOG" \
+  || { echo 'GATE INCONCLUSIVE'; grep -A10 'What went wrong' "$LOG"; exit 1; }
+grep -ho 'failures="[0-9]*"\|errors="[0-9]*"' */build/test-results/test/TEST-*.xml | sort | uniq -c
+```
+
+Both proofs are needed and neither is enough alone: an up-to-date run prints `BUILD SUCCESSFUL`
+without executing a single test, and the counts belong to someone else's run until the purge above
+makes them this one's. Put `EXIT=` **in the log**, never on stdout — in a backgrounded run the
+`echo` is the last process, so the harness reports 0 for a build that failed.
+
+**Say the ordering out loud before spending the first gate.** A gate is six minutes, so a review or
+`/simplify` round that arrives after it buys another one. When a cleanup pass is plausible, propose
+"guard set, then the review, then one gate" up front: the cost is yours to know, not the reader's
+to guess.
+
 ## Subagents
 
 A dispatched agent reports back on its own: the harness re-invokes you when it completes.
@@ -81,6 +106,17 @@ false positives, and real defects whose stated cause was not the cause.
   ```
 
   Every hit needs the command that settles it, run in this session, before the commit lands.
+- **Never `git stash` and switch branches just to look at another commit.** Forgetting the `pop` is
+  easy, and the tree then reads as it was before your edits — which looks exactly like your work
+  having vanished rather than like a stash. `git worktree add ../measure <ref>` answers the question
+  without touching what you hold, and when an amend is coming anyway, committing first leaves
+  nothing to stash.
+- **Read `git ls-remote` when you start on an already-pushed branch, not when you push.** A branch
+  can be rebased from another workspace between two of your turns; finding out at push time means
+  the rebase, the gate and the summary were all spent against a base that had moved. Compare trees,
+  not shas — a server-side rebase gives a different sha for identical content, so
+  `git diff <remote-sha> HEAD` is the question that matters. If it shows only the hunks you added
+  since, your branch is a strict superset and forcing is safe.
 - **Publish deltas and zeros in durable text, not absolute counts.** Upstream moves fast enough that
   an `8 → 6` in a commit message is stale by the next rebase and has to be remeasured; `−82`,
   `0 failures, 0 errors` and "down to zero" survive it.
