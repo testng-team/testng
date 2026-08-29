@@ -105,10 +105,14 @@ public abstract class BaseTestMethod
   @SuppressWarnings("rawtypes")
   private volatile @Nullable Collection m_failedInvocationNumbers;
 
+  // The @Nullable on the value type is what lets the compareAndSet below name null as the value it
+  // expects to replace. Without it the package being @NullMarked makes the updater's value type
+  // non-null, and NullAway rejects the call.
   @SuppressWarnings("rawtypes")
-  private static final AtomicReferenceFieldUpdater<BaseTestMethod, Collection> FAILED_INVOCATIONS =
-      AtomicReferenceFieldUpdater.newUpdater(
-          BaseTestMethod.class, Collection.class, "m_failedInvocationNumbers");
+  private static final AtomicReferenceFieldUpdater<BaseTestMethod, @Nullable Collection>
+      FAILED_INVOCATIONS =
+          AtomicReferenceFieldUpdater.newUpdater(
+              BaseTestMethod.class, Collection.class, "m_failedInvocationNumbers");
 
   private long m_timeOut = 0;
 
@@ -136,8 +140,9 @@ public abstract class BaseTestMethod
   @SuppressWarnings("rawtypes")
   private volatile @Nullable ConcurrentHashMap m_testMethodToRetryAnalyzer;
 
+  // @Nullable value type for the same reason as FAILED_INVOCATIONS above.
   @SuppressWarnings("rawtypes")
-  private static final AtomicReferenceFieldUpdater<BaseTestMethod, ConcurrentHashMap>
+  private static final AtomicReferenceFieldUpdater<BaseTestMethod, @Nullable ConcurrentHashMap>
       RETRY_ANALYZERS =
           AtomicReferenceFieldUpdater.newUpdater(
               BaseTestMethod.class, ConcurrentHashMap.class, "m_testMethodToRetryAnalyzer");
