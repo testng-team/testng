@@ -63,10 +63,12 @@ public class TestOrConfiguration extends BaseAnnotation implements ITestOrConfig
     m_description = description;
   }
 
+  @Override
   public int getPriority() {
     return m_priority;
   }
 
+  @Override
   public void setPriority(int priority) {
     m_priority = priority;
   }

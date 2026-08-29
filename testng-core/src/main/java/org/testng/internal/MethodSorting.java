@@ -48,6 +48,17 @@ public enum MethodSorting implements Comparator<ITestNGMethod> {
   };
 
   /**
+   * The leading key of every ordering that honours a priority: the lower value comes first.
+   *
+   * <p>It is shared rather than restated because {@link
+   * org.testng.internal.MethodHelper#collectAndOrderMethods} composes it in front of whichever
+   * ordering is in force when it collects configuration methods, so that a configuration priority
+   * counts under {@link #METHOD_NAMES} and {@link #NONE} too.
+   */
+  static final Comparator<ITestNGMethod> BY_PRIORITY =
+      Comparator.comparingInt(ITestNGMethod::getPriority);
+
+  /**
    * The order {@link #INSTANCES} applies, held once rather than rebuilt on every comparison: a
    * comparator chain allocates one wrapper per stage, and a sort asks for one comparison per pair.
    *
@@ -57,7 +68,7 @@ public enum MethodSorting implements Comparator<ITestNGMethod> {
    * static fields does not matter.
    */
   private static final Comparator<ITestNGMethod> BY_INSTANCE =
-      Comparator.comparingInt(ITestNGMethod::getPriority)
+      BY_PRIORITY
           .thenComparing(method -> method.getRealClass().getName())
           .thenComparing(ITestNGMethod::getMethodName)
           .thenComparing(Object::toString)

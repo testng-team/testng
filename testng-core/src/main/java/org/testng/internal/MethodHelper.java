@@ -452,6 +452,14 @@ public class MethodHelper {
 
   private static List<ITestNGMethod> sortMethods(
       boolean forTests, List<ITestNGMethod> allMethods, Comparator<ITestNGMethod> comparator) {
+    // A configuration priority leads whatever -Dtestng.order selects, so that @BeforeX(priority)
+    // behaves like @Test(priority), which TestMethodComparator applies at run time without
+    // consulting MethodSorting. Configuration methods have no such run time scheduler -- they are
+    // invoked in the order collected here -- so this is the only seam the priority can act on. The
+    // default ordering already leads with the same key, so this only adds anything under the
+    // "methods" and "none" orderings, and it is a no-op while every method reports the default 0.
+    Comparator<ITestNGMethod> effectiveComparator =
+        forTests ? comparator : MethodSorting.BY_PRIORITY.thenComparing(comparator);
     List<ITestNGMethod> sl = new ArrayList<>();
     List<ITestNGMethod> pl = new ArrayList<>();
     ITestNGMethod[] allMethodsArray = allMethods.toArray(new ITestNGMethod[0]);
@@ -481,7 +489,7 @@ public class MethodHelper {
               .toArray(ITestNGMethod[]::new);
     }
 
-    topologicalSort(allMethodsArray, sl, pl, comparator);
+    topologicalSort(allMethodsArray, sl, pl, effectiveComparator);
 
     List<ITestNGMethod> result = new ArrayList<>();
     result.addAll(sl);

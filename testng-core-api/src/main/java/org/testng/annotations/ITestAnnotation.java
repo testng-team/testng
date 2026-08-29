@@ -104,15 +104,6 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
 
   void setIgnoreMissingDependencies(boolean ignore);
 
-  /**
-   * The scheduling priority. Lower priorities get scheduled first.
-   *
-   * @return the value
-   */
-  int getPriority();
-
-  void setPriority(int priority);
-
   CustomAttribute[] getAttributes();
 
   void setAttributes(CustomAttribute[] attributes);

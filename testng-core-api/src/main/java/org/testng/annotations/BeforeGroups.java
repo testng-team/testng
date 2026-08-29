@@ -87,4 +87,16 @@ public @interface BeforeGroups {
    * @return the value (default 0)
    */
   long timeOut() default 0;
+
+  /**
+   * The scheduling priority. Lower priorities will be scheduled first.
+   *
+   * <p>Hard dependencies ({@code dependsOnMethods}, {@code dependsOnGroups}) and the inheritance
+   * ordering guarantee take precedence: the priority only orders methods that are otherwise free to
+   * run in any order. Priorities are compared between the methods of this kind declared on the same
+   * test class, superclasses included.
+   *
+   * @return the value (default 0)
+   */
+  int priority() default 0;
 }
