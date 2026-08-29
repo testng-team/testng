@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
@@ -210,7 +211,13 @@ public class TestClassConfigurationLookupTest {
 
   private TestClass newTestClass(ITestMethodFinder finder, FakeClass fakeClass) {
     return new TestClass(
-        objectFactory, fakeClass, finder, annotationFinder, xmlTest, xmlClass, null);
+        objectFactory,
+        fakeClass,
+        finder,
+        annotationFinder,
+        xmlTest,
+        Collections.singletonList(xmlClass),
+        null);
   }
 
   /**

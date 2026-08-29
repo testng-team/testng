@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="package-and-class">
+  <test name="package-and-class">
+    <packages>
+      <package name="test.xml.duplicate.sample"/>
+    </packages>
+    <classes>
+      <class name="test.xml.duplicate.sample.DuplicateOccurrenceSample">
+        <parameter name="id" value="fromClassTag"/>
+        <methods>
+          <include name="f"/>
+        </methods>
+      </class>
+    </classes>
+  </test>
+</suite>

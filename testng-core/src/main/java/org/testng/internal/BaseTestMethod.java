@@ -34,6 +34,8 @@ import org.testng.internal.invokers.IInvocationStatus;
 import org.testng.internal.objects.Dispenser;
 import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.internal.objects.pojo.CreationAttributes;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 /** Superclass to represent both &#64;Test and &#64;Configuration methods. */
@@ -90,6 +92,17 @@ public abstract class BaseTestMethod
   private int m_interceptedPriority;
 
   private @Nullable XmlTest m_xmlTest;
+  // The <class> and <include> tags this method was scheduled for. Both tags may be repeated, and
+  // each occurrence carries its own parameters, so the tag -- not its name -- is what answers
+  // findMethodParameters. Null when no tag named the method: a @Factory produced class, a method
+  // pulled in by the group transitive closure, a suite built without <methods>.
+  private @Nullable XmlClass m_xmlClass;
+  private @Nullable XmlInclude m_xmlInclude;
+  // Which of those occurrences this is, counted within this method and instance. Folded into
+  // equals/hashCode so that two repeats of the same tag stay distinct nodes of the method graph;
+  // XmlClass#getIndex and XmlInclude#getIndex cannot serve, being left at zero by every suite the
+  // XML content handler did not parse.
+  private int m_xmlOccurrenceIndex;
   private final IObject.@Nullable IdentifiableObject m_instance;
 
   private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = new ConcurrentHashMap<>();
@@ -439,7 +452,9 @@ public abstract class BaseTestMethod
                 // @Factory instance to be created.
                 && Objects.equals(getInstanceId(), other.getInstanceId());
 
-    return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod());
+    return isEqual
+        && m_xmlOccurrenceIndex == other.m_xmlOccurrenceIndex
+        && getConstructorOrMethod().equals(other.getConstructorOrMethod());
   }
 
   /**
@@ -457,7 +472,7 @@ public abstract class BaseTestMethod
     if (instanceId != null) {
       hash = hash * 31 + instanceId.hashCode();
     }
-    return hash;
+    return hash * 31 + m_xmlOccurrenceIndex;
   }
 
   protected void initGroups(Class<? extends ITestOrConfiguration> annotationClass) {
@@ -871,6 +886,38 @@ public abstract class BaseTestMethod
     m_xmlTest = xmlTest;
   }
 
+  /**
+   * Binds this method to the {@code <class>} and {@code <include>} tags it was scheduled for.
+   *
+   * <p>Only test methods are bound. A configuration method still resolves its parameters by name,
+   * through {@link XmlTestUtils}, which cannot tell two repeats of a tag apart.
+   *
+   * @param xmlClass - the {@code <class>} occurrence, null when no tag named this method.
+   * @param xmlInclude - the {@code <include>} occurrence inside it, null when none names it.
+   * @param occurrenceIndex - which occurrence this is, counting from zero within this method and
+   *     instance.
+   */
+  public void setXmlOccurrence(
+      @Nullable XmlClass xmlClass, @Nullable XmlInclude xmlInclude, int occurrenceIndex) {
+    m_xmlClass = xmlClass;
+    m_xmlInclude = xmlInclude;
+    m_xmlOccurrenceIndex = occurrenceIndex;
+  }
+
+  @Nullable
+  XmlClass getXmlClass() {
+    return m_xmlClass;
+  }
+
+  @Nullable
+  XmlInclude getXmlInclude() {
+    return m_xmlInclude;
+  }
+
+  int getXmlOccurrenceIndex() {
+    return m_xmlOccurrenceIndex;
+  }
+
   @Override
   public ConstructorOrMethod getConstructorOrMethod() {
     return m_method;
@@ -883,6 +930,24 @@ public abstract class BaseTestMethod
 
   @Override
   public Map<String, String> findMethodParameters(XmlTest test) {
+    // The bound tags are the ones that were scheduled, which is the only thing that tells two
+    // repeats of them apart. Read downwards from the <class>, whose getAllParameters walks up to
+    // the <test> and the <suite>, then overlay the <include>'s own: an XmlInclude may be shared
+    // between two XmlClass occurrences -- XmlClass.clone() hands its list straight over -- so its
+    // parent pointer cannot say which occurrence is asking, and only the local parameters can be
+    // read from it.
+    XmlClass xmlClass = m_xmlClass;
+    XmlInclude xmlInclude = m_xmlInclude;
+    if (xmlClass != null) {
+      Map<String, String> result = xmlClass.getAllParameters();
+      if (xmlInclude != null) {
+        result.putAll(xmlInclude.getLocalParameters());
+      }
+      return result;
+    }
+    if (xmlInclude != null) {
+      return xmlInclude.getAllParameters();
+    }
     // No test class bound yet means no <class> tag can match, which XmlTestUtils answers with
     // the suite and <test> parameters on their own.
     ITestClass testClass = getTestClass();

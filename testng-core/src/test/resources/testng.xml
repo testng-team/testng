@@ -77,6 +77,7 @@
     </groups>
     <classes>
       <class name="test.graph.GraphVisualiserTest"/>
+      <class name="test.xml.duplicate.DuplicateXmlOccurrenceTest"/>
       <class name="test.Test1" />
       <class name="test.MethodTest" />
       <class name="test.sample.AfterClassCalledAtEnd"/>
