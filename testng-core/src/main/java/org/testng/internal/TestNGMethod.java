@@ -163,6 +163,63 @@ public class TestNGMethod extends BaseTestMethod {
   }
 
   /**
+   * Binds a fully initialized prototype to another instance. When the instance's effective class
+   * for group lookup matches the prototype's, the expensive {@link #init(XmlTest)} work is reused.
+   */
+  public TestNGMethod bind(IObject.IdentifiableObject instance) {
+    TestNGMethod bound =
+        new TestNGMethod(
+            m_objectFactory,
+            getConstructorOrMethod().requireMethod(),
+            getAnnotationFinder(),
+            instance);
+    copyInitializedState(bound);
+    XmlTest xmlTest = getXmlTest();
+    if (xmlTest != null
+        && !effectiveClassForGroups().equals(bound.effectiveClassForGroups())) {
+      bound.init(xmlTest);
+    }
+    return bound;
+  }
+
+  private void copyInitializedState(TestNGMethod target) {
+    target.setXmlTest(getXmlTest());
+    target.setXmlOccurrence(getXmlClass(), getXmlInclude(), getXmlOccurrenceIndex());
+    ITestClass tc = getTestClass();
+    if (tc != null) {
+      // Wrapping a test class this method has not been bound to yet would have thrown here.
+      // ConfigurationMethod.clone() already propagates the absence rather than wrapping it.
+      NoOpTestClass testClass = new NoOpTestClass(tc);
+      testClass.setBeforeTestMethods(clone(tc.getBeforeTestMethods()));
+      testClass.setAfterTestMethod(clone(tc.getAfterTestMethods()));
+      target.m_testClass = testClass;
+    }
+    target.setDate(getDate());
+    target.setGroups(getGroups());
+    target.setGroupsDependedUpon(getGroupsDependedUpon(), Collections.emptyList());
+    target.setMethodsDependedUpon(getMethodsDependedUpon());
+    target.setAlwaysRun(isAlwaysRun());
+    target.m_beforeGroups = getBeforeGroups();
+    target.m_afterGroups = getAfterGroups();
+    target.setMissingGroup(getMissingGroup());
+    target.setThreadPoolSize(getThreadPoolSize());
+    target.setDescription(getDescription());
+    target.setEnabled(getEnabled());
+    target.setParameterInvocationCount(getParameterInvocationCount());
+    target.setInvocationCount(getInvocationCount());
+    target.m_successPercentage = getSuccessPercentage();
+    target.setTimeOut(getTimeOut());
+    target.setRetryAnalyzerClass(getRetryAnalyzerClass());
+    target.setSkipFailedInvocations(skipFailedInvocations());
+    target.setInvocationNumbers(getInvocationNumbers());
+    target.setPriority(getPriority());
+    target.m_attributes = m_attributes;
+    target.isDataDriven = isDataDriven;
+    target.setIgnoreMissingDependencies(ignoreMissingDependencies());
+    target.setInvocationTimeOut(getInvocationTimeOut());
+  }
+
+  /**
    * Clones the current <code>TestNGMethod</code> and its @BeforeMethod and @AfterMethod methods.
    *
    * @see org.testng.internal.BaseTestMethod#clone()
@@ -175,38 +232,8 @@ public class TestNGMethod extends BaseTestMethod {
             getConstructorOrMethod().requireMethod(),
             getAnnotationFinder(),
             cloneInstance());
-    clone.setXmlTest(getXmlTest());
-    clone.setXmlOccurrence(getXmlClass(), getXmlInclude(), getXmlOccurrenceIndex());
-    ITestClass tc = getTestClass();
-    if (tc != null) {
-      // Wrapping a test class this method has not been bound to yet would have thrown here.
-      // ConfigurationMethod.clone() already propagates the absence rather than wrapping it.
-      NoOpTestClass testClass = new NoOpTestClass(tc);
-      testClass.setBeforeTestMethods(clone(tc.getBeforeTestMethods()));
-      testClass.setAfterTestMethod(clone(tc.getAfterTestMethods()));
-      clone.m_testClass = testClass;
-    }
-    clone.setDate(getDate());
-    clone.setGroups(getGroups());
-    clone.setGroupsDependedUpon(getGroupsDependedUpon(), Collections.emptyList());
-    clone.setMethodsDependedUpon(getMethodsDependedUpon());
-    clone.setAlwaysRun(isAlwaysRun());
-    clone.m_beforeGroups = getBeforeGroups();
-    clone.m_afterGroups = getAfterGroups();
+    copyInitializedState(clone);
     clone.m_currentInvocationCount = m_currentInvocationCount;
-    clone.setMissingGroup(getMissingGroup());
-    clone.setThreadPoolSize(getThreadPoolSize());
-    clone.setDescription(getDescription());
-    clone.setEnabled(getEnabled());
-    clone.setParameterInvocationCount(getParameterInvocationCount());
-    clone.setInvocationCount(getInvocationCount());
-    clone.m_successPercentage = getSuccessPercentage();
-    clone.setTimeOut(getTimeOut());
-    clone.setRetryAnalyzerClass(getRetryAnalyzerClass());
-    clone.setSkipFailedInvocations(skipFailedInvocations());
-    clone.setInvocationNumbers(getInvocationNumbers());
-    clone.setPriority(getPriority());
-
     return clone;
   }
 

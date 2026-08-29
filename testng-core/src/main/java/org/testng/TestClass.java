@@ -217,49 +217,72 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     ITestNGMethod[] beforeMethodTemplates = testMethodFinder.getBeforeTestMethods(realClass);
     ITestNGMethod[] afterMethodTemplates = testMethodFinder.getAfterTestMethods(realClass);
 
+    IdentifiableObject prototypeInstance = instances[0];
+    List<ITestNGMethod> beforeSuitePrototypes =
+        ConfigurationMethod.createSuiteConfigurationMethods(
+            objectFactory, beforeSuiteTemplates, annotationFinder, true, prototypeInstance);
+    List<ITestNGMethod> afterSuitePrototypes =
+        ConfigurationMethod.createSuiteConfigurationMethods(
+            objectFactory, afterSuiteTemplates, annotationFinder, false, prototypeInstance);
+    List<ITestNGMethod> beforeTestPrototypes =
+        ConfigurationMethod.createTestConfigurationMethods(
+            objectFactory,
+            beforeTestTemplates,
+            annotationFinder,
+            true,
+            this.xmlTest,
+            prototypeInstance);
+    List<ITestNGMethod> afterTestPrototypes =
+        ConfigurationMethod.createTestConfigurationMethods(
+            objectFactory,
+            afterTestTemplates,
+            annotationFinder,
+            false,
+            this.xmlTest,
+            prototypeInstance);
+    List<ITestNGMethod> beforeClassPrototypes =
+        ConfigurationMethod.createClassConfigurationMethods(
+            objectFactory, beforeClassTemplates, annotationFinder, true, xmlTest, prototypeInstance);
+    List<ITestNGMethod> afterClassPrototypes =
+        ConfigurationMethod.createClassConfigurationMethods(
+            objectFactory, afterClassTemplates, annotationFinder, false, xmlTest, prototypeInstance);
+    ITestNGMethod[] beforeGroupsPrototypes =
+        ConfigurationMethod.createBeforeConfigurationMethods(
+            objectFactory, beforeGroupsTemplates, annotationFinder, true, prototypeInstance);
+    List<ITestNGMethod> afterGroupsPrototypes =
+        ConfigurationMethod.createAfterConfigurationMethods(
+            objectFactory, afterGroupsTemplates, annotationFinder, false, prototypeInstance);
+    List<ITestNGMethod> beforeMethodPrototypes =
+        ConfigurationMethod.createTestMethodConfigurationMethods(
+            objectFactory, beforeMethodTemplates, annotationFinder, true, xmlTest, prototypeInstance);
+    List<ITestNGMethod> afterMethodPrototypes =
+        ConfigurationMethod.createTestMethodConfigurationMethods(
+            objectFactory, afterMethodTemplates, annotationFinder, false, xmlTest, prototypeInstance);
+
     for (IdentifiableObject eachInstance : instances) {
       m_beforeSuiteMethods =
-          ConfigurationMethod.createSuiteConfigurationMethods(
-              objectFactory, beforeSuiteTemplates, annotationFinder, true, eachInstance);
+          ConfigurationMethod.bindSuiteConfigurationMethods(beforeSuitePrototypes, eachInstance);
       m_afterSuiteMethods =
-          ConfigurationMethod.createSuiteConfigurationMethods(
-              objectFactory, afterSuiteTemplates, annotationFinder, false, eachInstance);
+          ConfigurationMethod.bindSuiteConfigurationMethods(afterSuitePrototypes, eachInstance);
       m_beforeTestConfMethods =
-          ConfigurationMethod.createTestConfigurationMethods(
-              objectFactory,
-              beforeTestTemplates,
-              annotationFinder,
-              true,
-              this.xmlTest,
-              eachInstance);
+          ConfigurationMethod.bindTestConfigurationMethods(beforeTestPrototypes, eachInstance);
       m_afterTestConfMethods =
-          ConfigurationMethod.createTestConfigurationMethods(
-              objectFactory,
-              afterTestTemplates,
-              annotationFinder,
-              false,
-              this.xmlTest,
-              eachInstance);
+          ConfigurationMethod.bindTestConfigurationMethods(afterTestPrototypes, eachInstance);
       m_beforeClassMethods =
-          ConfigurationMethod.createClassConfigurationMethods(
-              objectFactory, beforeClassTemplates, annotationFinder, true, xmlTest, eachInstance);
+          ConfigurationMethod.bindClassConfigurationMethods(beforeClassPrototypes, eachInstance);
       beforeClassConfig.put(eachInstance.getInstanceId(), m_beforeClassMethods);
       m_afterClassMethods =
-          ConfigurationMethod.createClassConfigurationMethods(
-              objectFactory, afterClassTemplates, annotationFinder, false, xmlTest, eachInstance);
+          ConfigurationMethod.bindClassConfigurationMethods(afterClassPrototypes, eachInstance);
       afterClassConfig.put(eachInstance.getInstanceId(), m_afterClassMethods);
       m_beforeGroupsMethods =
-          ConfigurationMethod.createBeforeConfigurationMethods(
-              objectFactory, beforeGroupsTemplates, annotationFinder, true, eachInstance);
+          ConfigurationMethod.bindBeforeConfigurationMethods(beforeGroupsPrototypes, eachInstance);
       m_afterGroupsMethods =
-          ConfigurationMethod.createAfterConfigurationMethods(
-              objectFactory, afterGroupsTemplates, annotationFinder, false, eachInstance);
+          ConfigurationMethod.bindAfterConfigurationMethods(afterGroupsPrototypes, eachInstance);
       m_beforeTestMethods.addAll(
-          ConfigurationMethod.createTestMethodConfigurationMethods(
-              objectFactory, beforeMethodTemplates, annotationFinder, true, xmlTest, eachInstance));
+          ConfigurationMethod.bindTestMethodConfigurationMethods(
+              beforeMethodPrototypes, eachInstance));
       m_afterTestMethods.addAll(
-          ConfigurationMethod.createTestMethodConfigurationMethods(
-              objectFactory, afterMethodTemplates, annotationFinder, false, xmlTest, eachInstance));
+          ConfigurationMethod.bindTestMethodConfigurationMethods(afterMethodPrototypes, eachInstance));
     }
   }
 
@@ -274,17 +297,28 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     for (ITestNGMethod tm : methods) {
       ConstructorOrMethod m = tm.getConstructorOrMethod();
       if (m.getDeclaringClass().isAssignableFrom(realClass)) {
+        if (instances.length == 0) {
+          continue;
+        }
         // Depends on the method alone, so it is not rebuilt for each @Factory instance.
         List<Pair<@Nullable XmlClass, @Nullable XmlInclude>> occurrences =
             xmlOccurrencesOf(tm.getMethodName());
+        TestNGMethod prototype = null;
+        int occurrence = 0;
         for (IdentifiableObject o : instances) {
           log(4, "Adding method " + tm + " on TestClass " + realClass);
-          int occurrence = 0;
           for (Pair<@Nullable XmlClass, @Nullable XmlInclude> tags : occurrences) {
-            TestNGMethod created =
-                new TestNGMethod(objectFactory, m.requireMethod(), annotationFinder, xmlTest, o);
-            created.setXmlOccurrence(tags.first(), tags.second(), occurrence++);
-            vResult.add(created);
+            TestNGMethod method;
+            if (prototype == null) {
+              prototype =
+                  new TestNGMethod(
+                      objectFactory, m.requireMethod(), annotationFinder, xmlTest, o);
+              method = prototype;
+            } else {
+              method = prototype.bind(o);
+            }
+            method.setXmlOccurrence(tags.first(), tags.second(), occurrence++);
+            vResult.add(method);
           }
         }
       } else {
