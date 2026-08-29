@@ -786,6 +786,7 @@
 
   <test name="Reporters">
     <classes>
+      <class name="org.testng.reporters.jq.ChronologicalPanelTest" />
       <class name="org.testng.reporters.jq.TimesPanelTest" />
       <class name="org.testng.reporters.jq.ModelParametersTest" />
       <class name="org.testng.internal.reporters.ParameterValueTest" />
@@ -942,6 +943,12 @@
   <test name="TestRunner_unit_tests">
     <classes>
       <class name="org.testng.TestRunnerTest"/>
+    </classes>
+  </test>
+
+  <test name="TestClass_unit_tests">
+    <classes>
+      <class name="org.testng.TestClassConfigurationLookupTest"/>
     </classes>
   </test>
 

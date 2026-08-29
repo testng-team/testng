@@ -8,10 +8,11 @@ import org.jspecify.annotations.Nullable;
 /**
  * Wraps either a method or a constructor.
  *
- * <p>In a big suite the same few methods get wrapped again and again — once per {@code @Factory}
- * instance and per clone — so a plain wrapper would keep a separate reflective handle for each. To
- * avoid that, this wrapper de-duplicates through the shared {@link ExecutableCache}: every wrapper
- * for the same member points at one {@code Method}/{@code Constructor}.
+ * <p>In a big suite the same few methods get wrapped again and again — once per test class that
+ * declares or inherits them, and per clone — so a plain wrapper would keep a separate reflective
+ * handle for each. To avoid that, this wrapper de-duplicates through the shared {@link
+ * ExecutableCache}: every wrapper for the same member points at one {@code Method}/{@code
+ * Constructor}.
  *
  * <p>Set {@link RuntimeBehavior#internReflectiveMembers()} to {@code false} to turn the sharing off
  * and simply hold the handle you were given, exactly like older TestNG. Either way the behaviour
