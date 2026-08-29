@@ -474,6 +474,103 @@ public class ConfigurationMethod extends BaseTestMethod {
     }
   }
 
+  /**
+   * Binds a fully initialized prototype to another instance. When the instance's effective class for
+   * group lookup matches the prototype's, the expensive {@link #init()} work is reused; otherwise
+   * {@link #init()} is run again for the differing class.
+   */
+  public ConfigurationMethod bind(IObject.IdentifiableObject instance) {
+    ConfigurationMethod bound =
+        new ConfigurationMethod(
+            m_objectFactory,
+            getConstructorOrMethod(),
+            getAnnotationFinder(),
+            isBeforeSuiteConfiguration(),
+            isAfterSuiteConfiguration(),
+            isBeforeTestConfiguration(),
+            isAfterTestConfiguration(),
+            isBeforeClassConfiguration(),
+            isAfterClassConfiguration(),
+            isBeforeMethodConfiguration(),
+            isAfterMethodConfiguration(),
+            isIgnoreFailure(),
+            getBeforeGroups(),
+            getAfterGroups(),
+            false /* do not call init() */,
+            instance);
+    copyInitializedState(bound);
+    if (!effectiveClassForGroups().equals(bound.effectiveClassForGroups())) {
+      bound.init();
+    }
+    return bound;
+  }
+
+  private void copyInitializedState(ConfigurationMethod target) {
+    target.m_testClass = getTestClass();
+    target.setDate(getDate());
+    target.setGroups(getGroups());
+    target.setGroupsDependedUpon(getGroupsDependedUpon(), Collections.emptyList());
+    target.setMethodsDependedUpon(getMethodsDependedUpon());
+    target.setAlwaysRun(isAlwaysRun());
+    target.setMissingGroup(getMissingGroup());
+    target.setDescription(getDescription());
+    target.setEnabled(getEnabled());
+    target.setParameterInvocationCount(getParameterInvocationCount());
+    target.m_inheritGroupsFromTestClass = inheritGroupsFromTestClass();
+    target.m_isBeforeGroupsConfiguration = m_isBeforeGroupsConfiguration;
+    target.m_isAfterGroupsConfiguration = m_isAfterGroupsConfiguration;
+    target.setTimeOut(getTimeOut());
+    target.setXmlTest(getXmlTest());
+  }
+
+  private static List<ITestNGMethod> bindConfigurationMethods(
+      List<ITestNGMethod> prototypes, IObject.IdentifiableObject instance) {
+    List<ITestNGMethod> result = new ArrayList<>(prototypes.size());
+    for (ITestNGMethod method : prototypes) {
+      result.add(((ConfigurationMethod) method).bind(instance));
+    }
+    return result;
+  }
+
+  private static ITestNGMethod[] bindConfigurationMethods(
+      ITestNGMethod[] prototypes, IObject.IdentifiableObject instance) {
+    ITestNGMethod[] result = new ITestNGMethod[prototypes.length];
+    for (int i = 0; i < prototypes.length; i++) {
+      result[i] = ((ConfigurationMethod) prototypes[i]).bind(instance);
+    }
+    return result;
+  }
+
+  public static List<ITestNGMethod> bindSuiteConfigurationMethods(
+      List<ITestNGMethod> prototypes, IObject.IdentifiableObject instance) {
+    return bindConfigurationMethods(prototypes, instance);
+  }
+
+  public static List<ITestNGMethod> bindTestConfigurationMethods(
+      List<ITestNGMethod> prototypes, IObject.IdentifiableObject instance) {
+    return bindConfigurationMethods(prototypes, instance);
+  }
+
+  public static List<ITestNGMethod> bindClassConfigurationMethods(
+      List<ITestNGMethod> prototypes, IObject.IdentifiableObject instance) {
+    return bindConfigurationMethods(prototypes, instance);
+  }
+
+  public static ITestNGMethod[] bindBeforeConfigurationMethods(
+      ITestNGMethod[] prototypes, IObject.IdentifiableObject instance) {
+    return bindConfigurationMethods(prototypes, instance);
+  }
+
+  public static List<ITestNGMethod> bindAfterConfigurationMethods(
+      List<ITestNGMethod> prototypes, IObject.IdentifiableObject instance) {
+    return bindConfigurationMethods(prototypes, instance);
+  }
+
+  public static List<ITestNGMethod> bindTestMethodConfigurationMethods(
+      List<ITestNGMethod> prototypes, IObject.IdentifiableObject instance) {
+    return bindConfigurationMethods(prototypes, instance);
+  }
+
   @Override
   public ConfigurationMethod clone() {
     ConfigurationMethod clone =
@@ -494,19 +591,8 @@ public class ConfigurationMethod extends BaseTestMethod {
             getAfterGroups(),
             false /* do not call init() */,
             cloneInstance());
-    clone.m_testClass = getTestClass();
-    clone.setDate(getDate());
-    clone.setGroups(getGroups());
-    clone.setGroupsDependedUpon(getGroupsDependedUpon(), Collections.emptyList());
-    clone.setMethodsDependedUpon(getMethodsDependedUpon());
-    clone.setAlwaysRun(isAlwaysRun());
-    clone.setMissingGroup(getMissingGroup());
-    clone.setDescription(getDescription());
+    copyInitializedState(clone);
     clone.setPriority(getPriority());
-    clone.setEnabled(getEnabled());
-    clone.setParameterInvocationCount(getParameterInvocationCount());
-    clone.m_inheritGroupsFromTestClass = inheritGroupsFromTestClass();
-
     return clone;
   }
 
