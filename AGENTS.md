@@ -88,6 +88,34 @@ grep -o 'tests="[1-9][0-9]*"' "testng-core/build/test-results/test/TEST-$CLASS.x
 
 Read that file only after a run you know executed — see the gate above.
 
+**A production object built by hand in a test is usually under-configured, and the test then passes
+vacuously.** `TestClass` asks its `ITestMethodFinder` for the configuration methods, and the finder
+answers only what a method selector included — so a bare `new RunInfo(() -> xmlTest)` registers no
+selector, `RunInfo.includeMethod` (`testng-core/src/main/java/org/testng/internal/RunInfo.java:37`)
+never enters its loop and returns the `false` it started with. Every category then comes back empty,
+for a reason that looks nothing like the cause. `TestRunner.initRunInfo`
+(`testng-core/src/main/java/org/testng/TestRunner.java:414`) does the missing half at lines 424 and
+426. Diff the fixture against the production call site of whatever it builds:
+`TestClassConfigurationLookupTest#newRunInfo` exists only to reproduce those two lines, and says so.
+
+**An expectation derived by reading records your assumption, not the behaviour.** In that same test
+`getBeforeClassMethods()` was asserted to carry one entry per `@Factory` instance; it carries one.
+`TestClass.initMethods` assigns the field inside the per-instance loop and stores a copy per id
+(`TestClass.java:235-238`), so only the last instance survives and the per-instance lists are what
+`getInstanceBeforeClassMethods` answers. For anything pinning existing behaviour, run it first and
+paste what it answered.
+
+**The test doubles here have a settled shape.** `org.mockito:mockito-core` is declared at
+`testng-core/testng-core-build.gradle.kts:37`, so counting calls on a real collaborator is a wrapper
+rather than a hand-written spy: `mock(Iface.class, delegatesTo(real))`, then `verify(...)`, which
+defaults to exactly once, and `verifyNoMoreInteractions(...)` to close the set. A fake implementing
+`IClass`/`ITestClass`/`IObject` follows `FakeTestClass` and `MethodInstanceTest.TestClassStub` —
+deprecated members carry `@SuppressWarnings("deprecation")` rather than `@Deprecated`, since on a
+fake the annotation buys nothing and makes `InlineMeSuggester` fire, and the deprecated accessor
+delegates to the live one. A method the fake is never asked for throws
+`UnsupportedOperationException("not reached while building a TestClass")` instead of a plausible
+empty value, so the load-bearing surface stands out.
+
 **Any number that reaches a commit message or a pull request comes from `--rerun-tasks`.** Error
 Prone and NullAway see only the units javac recompiles, so an incremental run both hides errors and
 invents them: on one package marking, three checks passed incrementally and failed under
