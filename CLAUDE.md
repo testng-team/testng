@@ -3,49 +3,35 @@
 Read [AGENTS.md](AGENTS.md) first — it holds everything about this repository. This file only adds
 what is specific to Claude Code.
 
-## Selecting the build JDK
-
-The ambient `java` is whatever the version manager resolved for the session, not necessarily what
-the build wants. With `mise`, derive it from the property so it stays correct across bumps:
-
-```bash
-export JAVA_HOME="$(mise where java@$(sed -n 's/^jdkBuildVersion=//p' gradle.properties))"
-```
-
-This needs the `java@<N>` alias to point at an installed version; `mise where` fails otherwise.
-
 ## Long-running commands
 
-`./gradlew build` takes several minutes whenever it has real work to do — well over the default
-`Bash` timeout. Pass an explicit one:
+Run the gate with `run_in_background: true`, not with an explicit `timeout`. The `Bash` tool's
+documented maximum is 600000 ms and it clamps anything larger silently, so `timeout: 900000` reads
+like fifteen minutes and is ten — and ten is not a comfortable ceiling for this gate. A cold build
+after a rebase that pulled twenty-two commits took 8m17s; warm ones on the same branch, 5m43s and
+6m48s. Backgrounding has no ceiling, leaves the turn free while it runs, and re-invokes you when the
+build exits.
 
-```text
-timeout: 900000
-```
+Guard-set runs need no `timeout` at all: the two-class set printed in `AGENTS.md` § *Verification*
+finishes in about ten seconds, an order of magnitude inside the default.
 
-Filter the output rather than reading it whole; a full build log runs to thousands of lines, and the
-test logger prints a line per test class, so match on the summary only. Set `pipefail` first —
-without it the pipeline reports grep's status, so a failed build still exits 0:
+A build started with `run_in_background` reports the status of its **last** process, so an `echo`
+after `./gradlew` masks a failure as exit 0. The gate shape in `AGENTS.md` already accounts for
+that — use it as written and backgrounding is safe.
 
-```bash
-set -o pipefail
-./gradlew --console=plain build 2>&1 | grep -E "^BUILD (SUCCESSFUL|FAILED)|[1-9][0-9]* failed"
-```
+## Subagents
 
-For a failure, extract the useful part instead of scrolling:
+A dispatched agent reports back on its own: the harness re-invokes you when it completes.
+Polling for it re-sends the whole conversation on every filler turn, and a review wave costs
+dozens of them — easily the largest avoidable cost in a session. Dispatch, run the independent
+work you already know you need, then stop and let the notification arrive.
 
-```bash
-set -o pipefail
-./gradlew --console=plain build 2>&1 | grep -A15 "What went wrong"
-```
+If plan mode is what makes you keep the turn alive, that is the signal to ask the question now
+rather than to manufacture another `echo waiting`.
 
-Gradle names the HTML report on failure, but locating the failing test is quicker from the result
-files:
-
-```bash
-grep -l '<failure\|<error' testng-core/build/test-results/test/*.xml
-grep -o 'message="[^"]*"' testng-core/build/test-results/test/TEST-<the-class>.xml | head
-```
+An agent's finding is a hypothesis. Reproduce it here before acting on it, and before relaying
+it — the reproduction is usually one command, and findings have been wrong in both directions:
+false positives, and real defects whose stated cause was not the cause.
 
 ## Environment
 
