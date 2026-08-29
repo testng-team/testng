@@ -74,7 +74,7 @@ To run all the test cases (build the code) run `./gradlew test`
 
 The codebase makes use of [autostyle](https://github.com/autostyle/autostyle) to enforce code formatting and also fixing code formatting.
 
-To check if there are any code formatting/styling issues (Its best to run this before every pull request), run `./gradlew autostyleCheck`
+To check if there are any code formatting/styling issues (it's best to run this before every pull request), run `./gradlew autostyleCheck`
 
 To automatically fix any styling issues run `./gradlew autostyleApply`
 
