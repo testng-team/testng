@@ -15,7 +15,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlSuite.ParallelMode;
 import test.BaseTest;
 import test.timeout.github1493.TestClassSample;
-import test.timeout.issue2009.TimeOutWithParallelSample;
 
 public class TimeOutTest extends BaseTest {
   private final long m_id;
