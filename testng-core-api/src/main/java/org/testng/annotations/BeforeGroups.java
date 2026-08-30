@@ -4,6 +4,23 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Runs <em>inside</em> the lifecycle of the class the group is entered from, not around it: the
+ * &#64;BeforeClass methods of that class have already run when it is invoked, and the matching
+ * &#64;AfterGroups method runs before the &#64;AfterClass methods of the class the group is left
+ * from.
+ *
+ * <p>A group is a selector over test methods rather than a container of classes, so it does not
+ * nest with the class lifecycle at all -- a class can enter a second group in the middle of its own
+ * run, in which case that group's setup is invoked mid-class, and a test method belonging to two
+ * groups has the setup of both due before it, neither group enclosing the other. Only the class the
+ * group is entered from is ordered against it: when a group spans several classes running in
+ * parallel, another class's &#64;AfterClass may well run before the &#64;AfterGroups method.
+ *
+ * <p>A group is entered once for the whole &lt;test&gt;, however many classes and however many
+ * &#64;Factory instances contribute methods to it, and the method is invoked on the instance the
+ * group was entered from.
+ */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(java.lang.annotation.ElementType.METHOD)
 @Documented
