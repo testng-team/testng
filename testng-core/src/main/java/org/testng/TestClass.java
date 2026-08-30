@@ -286,31 +286,29 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
 
     for (IdentifiableObject eachInstance : instances) {
       m_beforeSuiteMethods =
-          ConfigurationMethod.bindSuiteConfigurationMethods(beforeSuitePrototypes, eachInstance);
+          ConfigurationMethod.bind(beforeSuitePrototypes, eachInstance);
       m_afterSuiteMethods =
-          ConfigurationMethod.bindSuiteConfigurationMethods(afterSuitePrototypes, eachInstance);
+          ConfigurationMethod.bind(afterSuitePrototypes, eachInstance);
       m_beforeTestConfMethods =
-          ConfigurationMethod.bindTestConfigurationMethods(beforeTestPrototypes, eachInstance);
+          ConfigurationMethod.bind(beforeTestPrototypes, eachInstance);
       m_afterTestConfMethods =
-          ConfigurationMethod.bindTestConfigurationMethods(afterTestPrototypes, eachInstance);
+          ConfigurationMethod.bind(afterTestPrototypes, eachInstance);
       m_beforeClassMethods =
-          ConfigurationMethod.bindClassConfigurationMethods(beforeClassPrototypes, eachInstance);
+          ConfigurationMethod.bind(beforeClassPrototypes, eachInstance);
       beforeClassConfig.put(eachInstance.getInstanceId(), m_beforeClassMethods);
       m_afterClassMethods =
-          ConfigurationMethod.bindClassConfigurationMethods(afterClassPrototypes, eachInstance);
+          ConfigurationMethod.bind(afterClassPrototypes, eachInstance);
       afterClassConfig.put(eachInstance.getInstanceId(), m_afterClassMethods);
       m_beforeGroupsMethods =
-          ConfigurationMethod.bindBeforeConfigurationMethods(beforeGroupsPrototypes, eachInstance);
+          ConfigurationMethod.bind(beforeGroupsPrototypes, eachInstance);
       m_afterGroupsMethods =
-          ConfigurationMethod.bindAfterConfigurationMethods(afterGroupsPrototypes, eachInstance);
+          ConfigurationMethod.bind(afterGroupsPrototypes, eachInstance);
       List<ITestNGMethod> beforeMethods =
-          ConfigurationMethod.bindTestMethodConfigurationMethods(
-              beforeMethodPrototypes, eachInstance);
+          ConfigurationMethod.bind(beforeMethodPrototypes, eachInstance);
       m_beforeTestMethods.addAll(beforeMethods);
       beforeMethodConfig.put(eachInstance.getInstanceId(), beforeMethods);
       List<ITestNGMethod> afterMethods =
-          ConfigurationMethod.bindTestMethodConfigurationMethods(
-              afterMethodPrototypes, eachInstance);
+          ConfigurationMethod.bind(afterMethodPrototypes, eachInstance);
       m_afterTestMethods.addAll(afterMethods);
       afterMethodConfig.put(eachInstance.getInstanceId(), afterMethods);
     }
