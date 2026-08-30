@@ -21,8 +21,7 @@ public class GroupPanel extends BaseMultiSuitePanel {
   }
 
   @Override
-  public String getContent(ISuite suite, XMLStringBuffer main) {
-    XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
+  void writeContent(ISuite suite, XMLStringBuffer xsb) {
     List<String> sortedGroups = getModel().getGroups(suite.getName());
     Collections.sort(sortedGroups);
     for (String group : sortedGroups) {
@@ -38,7 +37,6 @@ public class GroupPanel extends BaseMultiSuitePanel {
       }
       xsb.pop(D);
     }
-    return xsb.toXML();
   }
 
   @Override
