@@ -303,7 +303,10 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
           continue;
         }
-        if (hasConfigurationFailureFor(
+        // An invocation that retries a failed test method is not held back by the failures of
+        // the attempt it retries, the way the retried test method itself is not.
+        if (!arguments.isForRetriedTestMethod()
+            && hasConfigurationFailureFor(
                 tm, arguments.getTestMethod(), tm.getGroups(), testClass, arguments.getInstance())
             && !alwaysRun) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));

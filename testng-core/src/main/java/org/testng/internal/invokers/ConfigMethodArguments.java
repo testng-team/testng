@@ -15,6 +15,7 @@ public class ConfigMethodArguments extends MethodArguments {
   private final ITestNGMethod[] allMethods;
   private final XmlSuite suite;
   private final @Nullable ITestResult testMethodResult;
+  private final boolean retriedTestMethod;
 
   private ConfigMethodArguments(
       @Nullable IClass testClass,
@@ -24,12 +25,14 @@ public class ConfigMethodArguments extends MethodArguments {
       Map<String, String> params,
       Object @Nullable [] parameterValues,
       @Nullable Object instance,
-      @Nullable ITestResult testMethodResult) {
+      @Nullable ITestResult testMethodResult,
+      boolean retriedTestMethod) {
     super(instance, currentTestMethod, params, parameterValues);
     this.testClass = testClass;
     this.allMethods = allMethods;
     this.suite = suite;
     this.testMethodResult = testMethodResult;
+    this.retriedTestMethod = retriedTestMethod;
   }
 
   public @Nullable IClass getTestClass() {
@@ -48,6 +51,15 @@ public class ConfigMethodArguments extends MethodArguments {
     return testMethodResult;
   }
 
+  /**
+   * @return true if these configuration methods belong to an invocation that retries a failed test
+   *     method. Such an invocation is not held back by the failures of the attempt it retries --
+   *     see {@code TestInvoker.invokeMethod}, which runs the test method itself on the same terms.
+   */
+  public boolean isForRetriedTestMethod() {
+    return retriedTestMethod;
+  }
+
   public void setTestClass(IClass testClass) {
     this.testClass = testClass;
   }
@@ -62,6 +74,7 @@ public class ConfigMethodArguments extends MethodArguments {
     private Object @Nullable [] parameterValues;
     private @Nullable Object instance;
     private @Nullable ITestResult testMethodResult;
+    private boolean retriedTestMethod;
 
     public Builder forTestClass(IClass testClass) {
       this.testClass = testClass;
@@ -110,6 +123,11 @@ public class ConfigMethodArguments extends MethodArguments {
       return this;
     }
 
+    public Builder forRetriedTestMethod(boolean retriedTestMethod) {
+      this.retriedTestMethod = retriedTestMethod;
+      return this;
+    }
+
     public ConfigMethodArguments build() {
       return new ConfigMethodArguments(
           testClass,
@@ -119,7 +137,8 @@ public class ConfigMethodArguments extends MethodArguments {
           Objects.requireNonNull(params),
           parameterValues,
           instance,
-          testMethodResult);
+          testMethodResult,
+          retriedTestMethod);
     }
   }
 }
