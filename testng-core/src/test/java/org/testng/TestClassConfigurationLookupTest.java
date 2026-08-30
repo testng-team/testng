@@ -3,7 +3,10 @@ package org.testng;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.AdditionalAnswers.delegatesTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -22,7 +25,9 @@ import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Test;
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.IObject;
 import org.testng.internal.RunInfo;
 import org.testng.internal.TestNGMethodFinder;
@@ -169,6 +174,74 @@ public class TestClassConfigurationLookupTest {
         .containsExactly(tuple(lastInstance, "afterClass"));
   }
 
+  @Test
+  public void annotationLookupsForTestMethodsDoNotGrowWithFactoryInstances() {
+    IAnnotationFinder spyAnnotationFinder =
+        mock(IAnnotationFinder.class, delegatesTo(annotationFinder));
+    FakeClass fakeClass = new FakeClass(10);
+
+    new TestClass(
+        objectFactory,
+        fakeClass,
+        newFinder(),
+        spyAnnotationFinder,
+        xmlTest,
+        xmlClass,
+        null);
+
+    // Across 10 factory instances, @Test annotation lookups on aTest() method occur only for the
+    // prototype method (initGroups and initRestOfGroupDependencies: 2 lookups), not 10 * 2 = 20 times.
+    verify(spyAnnotationFinder, times(2))
+        .findAnnotation(
+            any(ConstructorOrMethod.class),
+            eq(ITestAnnotation.class));
+  }
+
+  @Test
+  public void boundTestMethodsHaveIndependentInvocationCounters() {
+    FakeClass fakeClass = new FakeClass(INSTANCES);
+    TestClass testClass = newTestClass(fakeClass);
+
+    ITestNGMethod[] testMethods = testClass.getTestMethods();
+    assertThat(testMethods).hasSize(INSTANCES);
+
+    testMethods[0].incrementCurrentInvocationCount();
+
+    assertThat(testMethods[0].getCurrentInvocationCount()).isEqualTo(1);
+    assertThat(testMethods[1].getCurrentInvocationCount()).isEqualTo(0);
+    assertThat(testMethods[2].getCurrentInvocationCount()).isEqualTo(0);
+  }
+
+  @Test
+  public void differingRuntimeClassesFromFactoryGetTheirOwnClassLevelGroups() {
+    FakeClass multiClass = new FakeClass(new SubClassA(), new SubClassB());
+    XmlClass multiXmlClass = new XmlClass(BaseSample.class.getName());
+    XmlTest multiXmlTest = new XmlTest(xmlSuite);
+    multiXmlTest.getXmlClasses().add(multiXmlClass);
+
+    XmlMethodSelector selector = new XmlMethodSelector();
+    selector.setXmlClasses(multiXmlTest.getXmlClasses());
+    RunInfo runInfo = new RunInfo(() -> multiXmlTest);
+    runInfo.addMethodSelector(selector, 10);
+    ITestMethodFinder finder =
+        new TestNGMethodFinder(objectFactory, runInfo, annotationFinder);
+
+    TestClass testClass =
+        new TestClass(
+            objectFactory,
+            multiClass,
+            finder,
+            annotationFinder,
+            multiXmlTest,
+            multiXmlClass,
+            null);
+
+    ITestNGMethod[] testMethods = testClass.getTestMethods();
+    assertThat(testMethods).hasSize(2);
+    assertThat(testMethods[0].getGroups()).containsExactly("group-a");
+    assertThat(testMethods[1].getGroups()).containsExactly("group-b");
+  }
+
   private static List<Object> instancesOf(FakeClass fakeClass) {
     return fakeClass.objects.stream()
         .map(IObject.IdentifiableObject::getInstance)
@@ -236,6 +309,12 @@ public class TestClassConfigurationLookupTest {
       }
     }
 
+    FakeClass(Object... instances) {
+      for (Object inst : instances) {
+        objects.add(new IObject.IdentifiableObject(inst));
+      }
+    }
+
     @Override
     public IdentifiableObject[] getObjects(boolean create, @Nullable String errorMsgPrefix) {
       return objects.toArray(new IdentifiableObject[0]);
@@ -268,6 +347,9 @@ public class TestClassConfigurationLookupTest {
 
     @Override
     public Class<?> getRealClass() {
+      if (!objects.isEmpty() && objects.get(0).getInstance() instanceof BaseSample) {
+        return BaseSample.class;
+      }
       return Sample.class;
     }
 
@@ -331,4 +413,15 @@ public class TestClassConfigurationLookupTest {
     @Test(groups = "a-group")
     public void aTest() {}
   }
+
+  public static class BaseSample {
+    @Test
+    public void baseTest() {}
+  }
+
+  @Test(groups = "group-a")
+  public static class SubClassA extends BaseSample {}
+
+  @Test(groups = "group-b")
+  public static class SubClassB extends BaseSample {}
 }

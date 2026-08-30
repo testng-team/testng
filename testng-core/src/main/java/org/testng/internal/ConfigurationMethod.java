@@ -523,7 +523,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     target.setXmlTest(getXmlTest());
   }
 
-  private static List<ITestNGMethod> bindConfigurationMethods(
+  public static List<ITestNGMethod> bind(
       List<ITestNGMethod> prototypes, IObject.IdentifiableObject instance) {
     List<ITestNGMethod> result = new ArrayList<>(prototypes.size());
     for (ITestNGMethod method : prototypes) {
@@ -532,43 +532,13 @@ public class ConfigurationMethod extends BaseTestMethod {
     return result;
   }
 
-  private static ITestNGMethod[] bindConfigurationMethods(
+  public static ITestNGMethod[] bind(
       ITestNGMethod[] prototypes, IObject.IdentifiableObject instance) {
     ITestNGMethod[] result = new ITestNGMethod[prototypes.length];
     for (int i = 0; i < prototypes.length; i++) {
       result[i] = ((ConfigurationMethod) prototypes[i]).bind(instance);
     }
     return result;
-  }
-
-  public static List<ITestNGMethod> bindSuiteConfigurationMethods(
-      List<ITestNGMethod> prototypes, IObject.IdentifiableObject instance) {
-    return bindConfigurationMethods(prototypes, instance);
-  }
-
-  public static List<ITestNGMethod> bindTestConfigurationMethods(
-      List<ITestNGMethod> prototypes, IObject.IdentifiableObject instance) {
-    return bindConfigurationMethods(prototypes, instance);
-  }
-
-  public static List<ITestNGMethod> bindClassConfigurationMethods(
-      List<ITestNGMethod> prototypes, IObject.IdentifiableObject instance) {
-    return bindConfigurationMethods(prototypes, instance);
-  }
-
-  public static ITestNGMethod[] bindBeforeConfigurationMethods(
-      ITestNGMethod[] prototypes, IObject.IdentifiableObject instance) {
-    return bindConfigurationMethods(prototypes, instance);
-  }
-
-  public static List<ITestNGMethod> bindAfterConfigurationMethods(
-      List<ITestNGMethod> prototypes, IObject.IdentifiableObject instance) {
-    return bindConfigurationMethods(prototypes, instance);
-  }
-
-  public static List<ITestNGMethod> bindTestMethodConfigurationMethods(
-      List<ITestNGMethod> prototypes, IObject.IdentifiableObject instance) {
-    return bindConfigurationMethods(prototypes, instance);
   }
 
   @Override
