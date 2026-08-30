@@ -28,33 +28,41 @@ public class TimesPanel extends BaseMultiSuitePanel {
     return "Times for " + suite.getName();
   }
 
-  private String js(ISuite suite) {
+  /**
+   * Writes the table of one suite into {@code xsb}, a row at a time.
+   *
+   * <p>Not as one String: this table holds four {@code data.setCell} calls per result of the whole
+   * suite, and building it whole made it the largest single object of the report generation --
+   * larger, at several tens of thousands of results, than the panel buffer that is spilled to disk
+   * around it.
+   */
+  private void js(ISuite suite, XMLStringBuffer xsb) {
     String functionName = "tableData_" + suiteToTag(suite);
-    StringBuilder result =
-        new StringBuilder(
-            "suiteTableInitFunctions.push('"
-                + functionName
-                + "');\n"
-                + "function "
-                + functionName
-                + "() {\n"
-                + "var data = new google.visualization.DataTable();\n"
-                + "data.addColumn('number', 'Number');\n"
-                + "data.addColumn('string', 'Method');\n"
-                + "data.addColumn('string', 'Class');\n"
-                + "data.addColumn('number', 'Time (ms)');\n");
-
     List<ITestResult> allTestResults = getModel().getAllTestResults(suite);
-    result.append("data.addRows(").append(allTestResults.size()).append(");\n");
-
     allTestResults.sort((o1, o2) -> (int) (time(o2) - time(o1)));
+
+    xsb.addString(
+        "suiteTableInitFunctions.push('"
+            + functionName
+            + "');\n"
+            + "function "
+            + functionName
+            + "() {\n"
+            + "var data = new google.visualization.DataTable();\n"
+            + "data.addColumn('number', 'Number');\n"
+            + "data.addColumn('string', 'Method');\n"
+            + "data.addColumn('string', 'Class');\n"
+            + "data.addColumn('number', 'Time (ms)');\n"
+            + "data.addRows("
+            + allTestResults.size()
+            + ");\n");
 
     int index = 0;
     for (ITestResult tr : allTestResults) {
       ITestNGMethod m = tr.getMethod();
       long time = tr.getEndMillis() - tr.getStartMillis();
-      result
-          .append("data.setCell(")
+      StringBuilder row = new StringBuilder();
+      row.append("data.setCell(")
           .append(index)
           .append(", 0, ")
           .append(index)
@@ -79,28 +87,26 @@ public class TimesPanel extends BaseMultiSuitePanel {
         total = 0L;
       }
       m_totalTime.put(suite.getName(), total + time);
+      xsb.addString(row.toString());
       index++;
     }
 
-    result
-        .append("window.suiteTableData['")
-        .append(suiteToTag(suite))
-        .append("']")
-        .append("= { tableData: data, tableDiv: 'times-div-")
-        .append(suiteToTag(suite))
-        .append("'}\n")
-        .append("return data;\n")
-        .append("}\n");
-
-    return result.toString();
+    xsb.addString(
+        "window.suiteTableData['"
+            + suiteToTag(suite)
+            + "']"
+            + "= { tableData: data, tableDiv: 'times-div-"
+            + suiteToTag(suite)
+            + "'}\n"
+            + "return data;\n"
+            + "}\n");
   }
 
   @Override
-  public String getContent(ISuite suite, XMLStringBuffer main) {
-    XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
+  void writeContent(ISuite suite, XMLStringBuffer xsb) {
     xsb.push(D, C, "times-div");
     xsb.push("script", "type", "text/javascript");
-    xsb.addString(js(suite));
+    js(suite, xsb);
     xsb.pop("script");
     long time = maxTime(suite);
     xsb.addRequired(
@@ -108,7 +114,6 @@ public class TimesPanel extends BaseMultiSuitePanel {
     xsb.push(D, "id", "times-div-" + suiteToTag(suite));
     xsb.pop(D);
     xsb.pop(D);
-    return xsb.toXML();
   }
 
   private String prettyDuration(long totalTime) {

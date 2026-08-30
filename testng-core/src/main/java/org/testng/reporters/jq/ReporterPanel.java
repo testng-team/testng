@@ -24,8 +24,7 @@ public class ReporterPanel extends BaseMultiSuitePanel {
   }
 
   @Override
-  public String getContent(ISuite suite, XMLStringBuffer main) {
-    XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
+  void writeContent(ISuite suite, XMLStringBuffer xsb) {
     for (ITestResult tr : getModel().getAllTestResults(suite)) {
       List<String> lines = Reporter.getOutput(tr);
       if (!lines.isEmpty()) {
@@ -39,7 +38,6 @@ public class ReporterPanel extends BaseMultiSuitePanel {
         xsb.pop(D);
       }
     }
-    return xsb.toXML();
   }
 
   @Override

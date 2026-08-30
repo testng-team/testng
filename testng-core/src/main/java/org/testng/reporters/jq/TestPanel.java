@@ -22,8 +22,7 @@ public class TestPanel extends BaseMultiSuitePanel {
   }
 
   @Override
-  public String getContent(ISuite suite, XMLStringBuffer main) {
-    XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
+  void writeContent(ISuite suite, XMLStringBuffer xsb) {
 
     xsb.push("ul");
     for (XmlTest test : suite.getXmlSuite().getTests()) {
@@ -34,8 +33,6 @@ public class TestPanel extends BaseMultiSuitePanel {
       xsb.pop("li");
     }
     xsb.pop("ul");
-
-    return xsb.toXML();
   }
 
   @Override
