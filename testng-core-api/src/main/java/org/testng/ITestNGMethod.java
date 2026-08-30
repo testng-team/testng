@@ -88,7 +88,9 @@ public interface ITestNGMethod extends Cloneable {
   /**
    * @return - The set of methods that are dependent on the current method. This information can
    *     help in deciding what other TestNG methods will be skipped if the current method fails. If
-   *     the current method is a configuration method, then an empty set is returned.
+   *     the current method is a configuration method, then an empty set is returned. The set is
+   *     available by the time an {@link IMethodInterceptor} registered by the user is invoked, and
+   *     reflects the graph the run is scheduled on from the moment the first test method starts.
    */
   default Set<ITestNGMethod> downstreamDependencies() {
     throw new UnsupportedOperationException("Pending implementation");
@@ -98,6 +100,9 @@ public interface ITestNGMethod extends Cloneable {
    * @return - The set of methods upon which the current method has a dependency. This information
    *     can help in deciding what all TestNG methods need to pass before the current method can be
    *     executed. If the current method is a configuration method, then an empty set is returned.
+   *     The set is available by the time an {@link IMethodInterceptor} registered by the user is
+   *     invoked, and reflects the graph the run is scheduled on from the moment the first test
+   *     method starts.
    */
   default Set<ITestNGMethod> upstreamDependencies() {
     throw new UnsupportedOperationException("Pending implementation");
