@@ -58,7 +58,7 @@ public class FileStringBuffer implements IBuffer {
     } else {
       // Big string, add it to the temporary file directly
       flushToFile();
-      try (FileWriter writer = new FileWriter(m_file, true /* append */)) {
+      try (FileWriter writer = new FileWriter(temporaryFile(), true /* append */)) {
         copy(new StringReader(s.toString()), writer);
       } catch (IOException e) {
         LOGGER.error(e.getMessage(), e);
@@ -106,23 +106,36 @@ public class FileStringBuffer implements IBuffer {
       return;
     }
 
+    File file = temporaryFile();
+    p("Size " + m_sb.length() + ", flushing to " + file);
+    try (FileWriter fw = new FileWriter(file, true /* append */)) {
+      fw.append(m_sb);
+    } catch (IOException e) {
+      LOGGER.error(e.getMessage(), e);
+    }
+    m_sb = new StringBuilder();
+  }
+
+  /**
+   * Creates the temporary file on first use.
+   *
+   * <p>Not left to {@link #flushToFile()}: that one answers early when the in-memory builder is
+   * empty, which it is when the very first thing appended is a string larger than MAX -- and it
+   * then went straight on to write to the file it had just decided not to create.
+   *
+   * @return the file this buffer spills to
+   */
+  private File temporaryFile() {
     if (m_file == null) {
       try {
         m_file = File.createTempFile("testng", "fileStringBuffer");
         m_file.deleteOnExit();
         p("Created temp file " + m_file);
       } catch (IOException e) {
-        LOGGER.error(e.getMessage(), e);
+        throw new IllegalStateException("Could not create the temporary file of a buffer", e);
       }
     }
-
-    p("Size " + m_sb.length() + ", flushing to " + m_file);
-    try (FileWriter fw = new FileWriter(m_file, true /* append */)) {
-      fw.append(m_sb);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    m_sb = new StringBuilder();
+    return m_file;
   }
 
   private static void p(String s) {
