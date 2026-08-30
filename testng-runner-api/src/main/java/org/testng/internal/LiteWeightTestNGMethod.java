@@ -3,10 +3,12 @@ package org.testng.internal;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import org.jspecify.annotations.Nullable;
 import org.testng.IClass;
@@ -172,6 +174,23 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   @Override
   public void setTestClass(ITestClass cls) {
     this.testClass = cls;
+  }
+
+  /**
+   * @return an empty set. This is a snapshot, taken so that a reported result holds no reference to
+   *     the run; carrying the dependencies would pull the very methods it was made to release, each
+   *     of them snapshotted in turn. An empty answer is what the {@link ITestNGMethod} default
+   *     cannot give, since it throws.
+   */
+  @Override
+  public Set<ITestNGMethod> upstreamDependencies() {
+    return Collections.emptySet();
+  }
+
+  /** @return an empty set, for the reason given on {@link #upstreamDependencies()}. */
+  @Override
+  public Set<ITestNGMethod> downstreamDependencies() {
+    return Collections.emptySet();
   }
 
   @Override

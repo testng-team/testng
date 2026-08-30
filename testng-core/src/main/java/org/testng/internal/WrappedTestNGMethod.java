@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import org.jspecify.annotations.Nullable;
@@ -37,6 +38,16 @@ public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   @Override
   public Class<?> getRealClass() {
     return testNGMethod.getRealClass();
+  }
+
+  @Override
+  public Set<ITestNGMethod> upstreamDependencies() {
+    return testNGMethod.upstreamDependencies();
+  }
+
+  @Override
+  public Set<ITestNGMethod> downstreamDependencies() {
+    return testNGMethod.downstreamDependencies();
   }
 
   @Override
