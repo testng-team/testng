@@ -47,6 +47,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       new LinkedHashMap<>();
   private final @Nullable ITestRunnerFactory tmpRunnerFactory;
   private final DataProviderHolder holder;
+  private final ParameterResolverHolder parameterResolverHolder;
 
   private boolean useDefaultListeners = true;
 
@@ -115,6 +116,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       throw new IllegalArgumentException("comparator must not be null");
     }
     this.holder = holder;
+    this.parameterResolverHolder = new ParameterResolverHolder(configuration);
     this.configuration = configuration;
     this.xmlSuite = suite;
     this.useDefaultListeners = useDefaultListeners;
@@ -417,6 +419,21 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     return this.holder.getListeners();
   }
 
+  /**
+   * The {@link IParameterResolver}s of this suite.
+   *
+   * <p>The holder itself is shared with the {@code TestRunner}s rather than copied, so a resolver
+   * registered after they were built -- by {@code @Listeners} on a test class, for instance -- is
+   * seen by all of them. This mirrors what {@link DataProviderHolder} already does.
+   */
+  ParameterResolverHolder getParameterResolverHolder() {
+    return this.parameterResolverHolder;
+  }
+
+  void addParameterResolvers(Collection<IParameterResolver> resolvers) {
+    this.parameterResolverHolder.addResolvers(resolvers);
+  }
+
   private void runSequentially() {
     for (TestRunner tr : testRunners) {
       runTest(tr);
@@ -507,6 +524,9 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     if (listener instanceof IDataProviderInterceptor) {
       IDataProviderInterceptor interceptor = (IDataProviderInterceptor) listener;
       this.holder.addInterceptor(interceptor);
+    }
+    if (listener instanceof IParameterResolver) {
+      this.parameterResolverHolder.addResolver((IParameterResolver) listener);
     }
     if (listener instanceof ITestListener) {
       for (TestRunner testRunner : testRunners) {

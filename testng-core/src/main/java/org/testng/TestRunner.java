@@ -44,6 +44,7 @@ import org.testng.internal.ListenerOrderDeterminer;
 import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.MethodSorting;
+import org.testng.internal.ParameterResolverHolder;
 import org.testng.internal.ResultMap;
 import org.testng.internal.RunInfo;
 import org.testng.internal.RuntimeBehavior;
@@ -106,6 +107,13 @@ public class TestRunner
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners =
       new LinkedHashMap<>();
   private final DataProviderHolder holder;
+
+  /**
+   * Shared with the {@link SuiteRunner} rather than copied, so that a resolver registered on the
+   * suite after this runner was built is still seen here. Only a runner built outside a {@code
+   * SuiteRunner} gets one of its own.
+   */
+  private ParameterResolverHolder parameterResolverHolder;
 
   private Instant m_startInstant = Instant.now();
   private @Nullable Instant m_endInstant = null;
@@ -253,6 +261,10 @@ public class TestRunner
     m_configuration = configuration;
     m_xmlTest = test;
     m_suite = suite;
+    parameterResolverHolder =
+        suite instanceof SuiteRunner
+            ? ((SuiteRunner) suite).getParameterResolverHolder()
+            : new ParameterResolverHolder(configuration);
     m_testName = test.getName();
     m_host = suite.getHost();
     m_testClassesFromXml = test.getXmlClasses();
@@ -321,6 +333,7 @@ public class TestRunner
             invokedMethodListeners,
             classListeners,
             holder,
+            parameterResolverHolder,
             m_confListener,
             suiteRunner);
 
@@ -1308,6 +1321,9 @@ public class TestRunner
     if (listener instanceof IDataProviderInterceptor) {
       IDataProviderInterceptor interceptor = (IDataProviderInterceptor) listener;
       holder.addInterceptor(interceptor);
+    }
+    if (listener instanceof IParameterResolver) {
+      parameterResolverHolder.addResolver((IParameterResolver) listener);
     }
 
     if (listener instanceof IExecutionVisualiser) {
