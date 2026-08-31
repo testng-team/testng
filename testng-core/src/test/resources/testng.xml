@@ -294,6 +294,8 @@
       <class name="test.inject.ConfigurationResultCarriesItsMethodTest"/>
       <class name="test.inject.Github1649Test"/>
       <class name="test.inject.issue1994.IssueTest"/>
+      <class name="test.inject.parameterresolver.ParameterResolverTest"/>
+      <class name="test.inject.parameterresolver.MockitoParameterResolverTest"/>
     </classes>
   </test>
 

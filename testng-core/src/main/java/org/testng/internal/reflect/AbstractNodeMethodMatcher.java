@@ -23,7 +23,8 @@ public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
     boolean matching = false;
     for (final Set<InjectableParameter> injects : getConformanceInjectsOrder()) {
       final Parameter[] parameters =
-          ReflectionRecipes.filter(getContext().getMethodParameter(), injects);
+          ReflectionRecipes.filter(
+              getContext().getMethodParameter(), injects, getContext().getResolvedParameters());
       matching = match(parameters, getContext().getArguments());
       if (matching) {
         conformingParameters = parameters;
@@ -63,6 +64,7 @@ public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
     return ReflectionRecipes.inject(
         getContext().getMethodParameter(),
         InjectableParameter.Assistant.ALL_INJECTS,
+        getContext().getResolvedParameters(),
         matchingArguments(parameters, getContext().getArguments()),
         getContext().getMethod(),
         getContext().getTestContext(),

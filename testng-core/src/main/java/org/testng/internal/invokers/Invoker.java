@@ -14,6 +14,7 @@ import org.testng.ITestNGMethod;
 import org.testng.SuiteRunState;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.ParameterResolverHolder;
 import org.testng.internal.Utils;
 
 /**
@@ -41,6 +42,7 @@ public class Invoker implements IInvoker {
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners,
       DataProviderHolder holder,
+      ParameterResolverHolder parameterResolverHolder,
       IConfigurationListener internalConfigurationListener,
       ISuiteRunnerListener suiteRunner) {
     m_configInvoker =
@@ -60,6 +62,7 @@ public class Invoker implements IInvoker {
             configuration,
             invokedMethodListeners,
             holder,
+            parameterResolverHolder,
             classListeners,
             skipFailedInvocationCounts,
             m_configInvoker,
