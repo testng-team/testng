@@ -224,7 +224,7 @@ includedMethods
 independentNode
 inFormat
 initializer
-injectables
+injectables?
 injectionMethod
 inlined
 inputStream
@@ -462,3 +462,5 @@ xmlTest
 xsb
 xy
 yaml
+parameterResolvers
+resolvedParameters

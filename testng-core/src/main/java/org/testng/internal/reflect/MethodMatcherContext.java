@@ -17,6 +17,7 @@ public class MethodMatcherContext {
   private final Object[] arguments;
   private final ITestContext testContext;
   private final @Nullable ITestResult testResult;
+  private final ResolvedParameters resolvedParameters;
 
   /**
    * Constructs a context for MethodMatchers.
@@ -31,11 +32,34 @@ public class MethodMatcherContext {
       final Object[] arguments,
       final ITestContext testContext,
       final @Nullable ITestResult testResult) {
+    this(method, arguments, testContext, testResult, ResolvedParameters.none());
+  }
+
+  /**
+   * The same, for a method some of whose parameters an {@link org.testng.IParameterResolver} owns.
+   *
+   * @param method current method.
+   * @param arguments user arguments.
+   * @param testContext current test context.
+   * @param testResult current test results.
+   * @param resolvedParameters the parameters supplied by a resolver rather than by the arguments.
+   */
+  public MethodMatcherContext(
+      final Method method,
+      final Object[] arguments,
+      final ITestContext testContext,
+      final @Nullable ITestResult testResult,
+      final ResolvedParameters resolvedParameters) {
     this.method = method;
     this.methodParameter = ReflectionRecipes.getMethodParameters(method);
     this.arguments = arguments;
     this.testContext = testContext;
     this.testResult = testResult;
+    this.resolvedParameters = resolvedParameters;
+  }
+
+  public ResolvedParameters getResolvedParameters() {
+    return resolvedParameters;
   }
 
   public Parameter[] getMethodParameter() {

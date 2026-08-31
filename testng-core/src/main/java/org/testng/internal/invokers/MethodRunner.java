@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
+import org.testng.IParameterResolver;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.CollectionUtils;
@@ -41,6 +42,8 @@ public class MethodRunner implements IMethodRunner {
       Iterator<Object @Nullable []> allParamValues,
       boolean skipFailedInvocationCounts) {
     List<ITestResult> result = new ArrayList<>();
+    // Read once: the accessor sorts the resolvers, and every row would otherwise re-sort them.
+    Collection<IParameterResolver> resolvers = testInvoker.getParameterResolvers();
     int parametersIndex = 0;
     for (Object @Nullable [] next : CollectionUtils.asIterable(allParamValues)) {
       if (next == null) {
@@ -49,8 +52,7 @@ public class MethodRunner implements IMethodRunner {
         continue;
       }
       Object[] parameterValues =
-          Parameters.injectParameters(
-              next, arguments.getTestMethod().getConstructorOrMethod().requireMethod(), context);
+          Parameters.injectParameters(next, arguments.getTestMethod(), context, resolvers);
 
       List<ITestResult> tmpResults = new ArrayList<>();
       int tmpResultsIndex = -1;
@@ -111,6 +113,8 @@ public class MethodRunner implements IMethodRunner {
     ExecutorService service = getOrCreate(reUse, suite, objectBag, testInvoker.getConfiguration());
 
     List<TestMethodWithDataProviderMethodWorker> workers = new ArrayList<>();
+    // Read once: the accessor sorts the resolvers, and every row would otherwise re-sort them.
+    Collection<IParameterResolver> resolvers = testInvoker.getParameterResolvers();
     int parametersIndex = 0;
     for (Object @Nullable [] next : CollectionUtils.asIterable(allParamValues)) {
       if (next == null) {
@@ -119,8 +123,7 @@ public class MethodRunner implements IMethodRunner {
         continue;
       }
       Object[] parameterValues =
-          Parameters.injectParameters(
-              next, arguments.getTestMethod().getConstructorOrMethod().requireMethod(), context);
+          Parameters.injectParameters(next, arguments.getTestMethod(), context, resolvers);
 
       workers.add(
           new TestMethodWithDataProviderMethodWorker(
