@@ -790,6 +790,7 @@
       <class name="org.testng.internal.ClassHelperTest"/>
       <class name="org.testng.internal.ClassHelperCacheTest"/>
       <class name="org.testng.internal.TestResultParametersTest"/>
+      <class name="org.testng.internal.ParametersTest"/>
       <class name="org.testng.internal.objects.InstanceCreatorTest"/>
       <class name="org.testng.util.StringsTest"/>
       <class name="org.testng.reflect.TestFileToClass"/>
