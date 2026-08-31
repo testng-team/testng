@@ -32,6 +32,11 @@ import test.beforegroups.issue2804.GroupDependencySample;
 import test.beforegroups.issue2804.GroupPatternDependencySample;
 import test.beforegroups.issue346.SampleTestClass;
 
+/**
+ * Where the group configuration sits relative to the <em>class</em> configuration is pinned
+ * separately, by {@code test.configuration.issue1346.IssueTest} -- next to the GITHUB-1338 samples
+ * it follows from.
+ */
 public class BeforeGroupsTest extends SimpleBaseTest {
   @Test
   public void testInSequentialMode() throws IOException {
