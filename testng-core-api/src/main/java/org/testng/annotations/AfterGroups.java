@@ -4,6 +4,12 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Runs <em>inside</em> the lifecycle of the class the group is left from, not around it: it is
+ * invoked before the &#64;AfterClass methods of that class, and once for the whole &lt;test&gt;
+ * however many classes and &#64;Factory instances contribute methods to the group. See {@link
+ * BeforeGroups} for why the group boundary does not nest with the class boundary.
+ */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(java.lang.annotation.ElementType.METHOD)
 @Documented
