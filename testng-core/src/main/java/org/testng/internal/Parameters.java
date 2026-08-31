@@ -7,17 +7,20 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.IntPredicate;
 import org.jspecify.annotations.Nullable;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
 import org.testng.IDataProviderListener;
 import org.testng.IDataProviderMethod;
+import org.testng.IParameterResolver;
 import org.testng.IRetryDataProvider;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
@@ -58,6 +61,7 @@ import org.testng.internal.reflect.InjectableParameter;
 import org.testng.internal.reflect.MethodMatcher;
 import org.testng.internal.reflect.MethodMatcherContext;
 import org.testng.internal.reflect.ReflectionRecipes;
+import org.testng.internal.reflect.ResolvedParameters;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -188,7 +192,8 @@ public class Parameters {
             params, methodParams, parameterValues, currentTestMeth, ctx, testResult),
         finder,
         xmlSuite,
-        name);
+        name,
+        ResolvedParameters.none());
   }
 
   private static @Nullable Class<? extends Annotation> retrieveConfigAnnotation(Method m) {
@@ -253,7 +258,7 @@ public class Parameters {
       XmlSuite xmlSuite) {
     List<Object> vResult = new ArrayList<>();
     if (optionalValues.length != parameterNames.length) {
-      FilterOutInjectedTypesResult filterOutResult =
+      FilteredParameterTypes filterOutResult =
           filterOutInjectedTypesFromOptionalValues(parameterTypes, optionalValues);
       optionalValues = filterOutResult.getOptionalValues();
       parameterTypes = filterOutResult.getParameterTypes();
@@ -296,32 +301,40 @@ public class Parameters {
    *
    * @param parameterTypes - The parameter types to be used
    * @param optionalValues - The optional values to be considered.
-   * @return FilterOutInjectedTypesResult
+   * @return the types and optional values TestNG does not supply itself
    */
-  static FilterOutInjectedTypesResult filterOutInjectedTypesFromOptionalValues(
+  static FilteredParameterTypes filterOutInjectedTypesFromOptionalValues(
       Class<?>[] parameterTypes, String[] optionalValues) {
-    List<Class<?>> typeList = new ArrayList<>(Arrays.asList(parameterTypes));
-    List<String> optionalValueList = new ArrayList<>(Arrays.asList(optionalValues));
-    Iterator<Class<?>> typeIterator = typeList.iterator();
-    Iterator<String> optionalIterator = optionalValueList.iterator();
-    while (typeIterator.hasNext()) {
-      Class<?> parameterType = typeIterator.next();
-      optionalIterator.next();
-      if (INJECTED_TYPES.contains(parameterType)) {
-        optionalIterator.remove();
-        typeIterator.remove();
-      }
-    }
-    return new FilterOutInjectedTypesResult(
-        typeList.toArray(new Class<?>[0]), optionalValueList.toArray(new String[0]));
+    return filterOut(
+        parameterTypes, optionalValues, i -> INJECTED_TYPES.contains(parameterTypes[i]));
   }
 
-  /** Store the result of parameterTypes and optionalValues after filter out injected types */
-  static final class FilterOutInjectedTypesResult {
+  /**
+   * Drops the positions a predicate rejects from the parameter types and, in lockstep, from their
+   * optional values. The two arrays are positional and the annotation finder produces one optional
+   * value per parameter, so they are walked together or the pairing is lost.
+   */
+  private static FilteredParameterTypes filterOut(
+      Class<?>[] parameterTypes, String[] optionalValues, IntPredicate drop) {
+    List<Class<?>> keptTypes = new ArrayList<>(parameterTypes.length);
+    List<String> keptOptionalValues = new ArrayList<>(optionalValues.length);
+    for (int i = 0; i < parameterTypes.length; i++) {
+      if (drop.test(i)) {
+        continue;
+      }
+      keptTypes.add(parameterTypes[i]);
+      keptOptionalValues.add(optionalValues[i]);
+    }
+    return new FilteredParameterTypes(
+        keptTypes.toArray(new Class<?>[0]), keptOptionalValues.toArray(new String[0]));
+  }
+
+  /** The parameter types and optional values left once a filter has dropped some positions. */
+  static final class FilteredParameterTypes {
     private final Class<?>[] parameterTypes;
     private final String[] optionalValues;
 
-    private FilterOutInjectedTypesResult(Class<?>[] parameterTypes, String[] optionalValues) {
+    private FilteredParameterTypes(Class<?>[] parameterTypes, String[] optionalValues) {
       this.parameterTypes = parameterTypes;
       this.optionalValues = optionalValues;
     }
@@ -360,13 +373,24 @@ public class Parameters {
       String methodAnnotation,
       String[] parameterNames,
       MethodParameters params,
-      XmlSuite xmlSuite) {
+      XmlSuite xmlSuite,
+      ResolvedParameters resolved) {
     if (parameterTypes.length == 0) {
       return new Object[0];
     }
 
-    if (areAllOptionalValuesNull(optionalValues)) {
-      checkParameterTypes(method.getName(), parameterTypes, methodAnnotation, parameterNames);
+    // A parameter a resolver owns is neither TestNG's to inject nor testng.xml's to supply, so it
+    // is taken out before both checks below: the native injection check would reject it, and the
+    // value lookup would produce a value for it that nothing consumes.
+    FilteredParameterTypes unresolved =
+        filterOutResolvedParameters(method, parameterTypes, optionalValues, resolved);
+
+    // Gate on the same set that is checked: an @Optional carried by a parameter the resolver owns
+    // says nothing about the parameters it does not own, and reading the unfiltered values here
+    // would skip the check for them entirely. With no resolver in play this is the same array.
+    if (areAllOptionalValuesNull(unresolved.getOptionalValues())) {
+      checkParameterTypes(
+          method.getName(), unresolved.getParameterTypes(), methodAnnotation, parameterNames);
     }
     List<Object> vResult = new ArrayList<>();
 
@@ -375,8 +399,8 @@ public class Parameters {
             method.getName(),
             "method",
             methodAnnotation,
-            parameterTypes,
-            optionalValues,
+            unresolved.getParameterTypes(),
+            unresolved.getOptionalValues(),
             parameterNames,
             params,
             xmlSuite);
@@ -399,6 +423,25 @@ public class Parameters {
     return vResult.toArray(new Object[0]);
   }
 
+  /**
+   * The parameter types, and their optional values, that TestNG still has to account for itself. A
+   * parameter an {@link IParameterResolver} owns is supplied by that resolver, so it is neither
+   * checked against the native injection rules -- which is what lets a test method declare one
+   * without a data provider -- nor looked up in testng.xml. With no resolver in play both arrays
+   * are handed back untouched, and the method is not reflected on a second time.
+   */
+  private static FilteredParameterTypes filterOutResolvedParameters(
+      ConstructorOrMethod method,
+      Class<?>[] parameterTypes,
+      String[] optionalValues,
+      ResolvedParameters resolved) {
+    if (resolved.isEmpty()) {
+      return new FilteredParameterTypes(parameterTypes, optionalValues);
+    }
+    Parameter[] parameters = extractParameters(method);
+    return filterOut(parameterTypes, optionalValues, i -> resolved.owns(parameters[i]));
+  }
+
   private static Parameter[] extractParameters(ConstructorOrMethod method) {
     if (method.getMethod() != null) {
       return ReflectionRecipes.getMethodParameters(method.getMethod());
@@ -406,8 +449,11 @@ public class Parameters {
     return ReflectionRecipes.getConstructorParameters(method.requireConstructor());
   }
 
+  /** How {@code handleParameters} and its callers spell the {@code @Test} annotation. */
+  public static final String TEST_ANNOTATION = "@" + Test.class.getSimpleName();
+
   private static boolean canInject(String annotation) {
-    return !("@" + Test.class.getSimpleName()).equalsIgnoreCase(annotation);
+    return !TEST_ANNOTATION.equalsIgnoreCase(annotation);
   }
 
   private static final List<Class<?>> INJECTED_TYPES =
@@ -700,7 +746,8 @@ public class Parameters {
       MethodParameters params,
       IAnnotationFinder finder,
       XmlSuite xmlSuite,
-      String atName) {
+      String atName,
+      ResolvedParameters resolved) {
     List<Object> result = new ArrayList<>();
     String[] extraOptionalValues = extractOptionalValues(finder, m);
 
@@ -714,7 +761,7 @@ public class Parameters {
       String[] parameterNames = annotation.getValue();
       extraParameters =
           createParametersForMethod(
-              m, types, extraOptionalValues, atName, parameterNames, params, xmlSuite);
+              m, types, extraOptionalValues, atName, parameterNames, params, xmlSuite, resolved);
     }
 
     //
@@ -723,7 +770,7 @@ public class Parameters {
     else {
       extraParameters =
           createParametersForMethod(
-              m, types, extraOptionalValues, atName, new String[0], params, xmlSuite);
+              m, types, extraOptionalValues, atName, new String[0], params, xmlSuite, resolved);
     }
 
     //
@@ -787,6 +834,40 @@ public class Parameters {
       @Nullable Object fedInstance,
       DataProviderHolder holder,
       String annotationName) {
+    return handleParameters(
+        objectFactory,
+        testMethod,
+        allParameterNames,
+        instance,
+        methodParams,
+        xmlSuite,
+        annotationFinder,
+        fedInstance,
+        holder,
+        annotationName,
+        Collections.emptyList());
+  }
+
+  /**
+   * The same, for a run that registers {@link IParameterResolver}s. A resolver owns some of the
+   * parameters of a {@code @Test} method, so those must not be counted against the native injection
+   * rules -- nor, later, against the data provider row.
+   *
+   * @param parameterResolvers the resolvers registered for the suite the method belongs to.
+   * @return An Iterator over the values for each parameter of this method.
+   */
+  public static ParameterHolder handleParameters(
+      ITestObjectFactory objectFactory,
+      ITestNGMethod testMethod,
+      Map<String, String> allParameterNames,
+      @Nullable Object instance,
+      MethodParameters methodParams,
+      XmlSuite xmlSuite,
+      IAnnotationFinder annotationFinder,
+      @Nullable Object fedInstance,
+      DataProviderHolder holder,
+      String annotationName,
+      Collection<IParameterResolver> parameterResolvers) {
     /*
      * Do we have a @DataProvider? If yes, then we have several
      * sets of parameters for this method
@@ -938,7 +1019,9 @@ public class Parameters {
             methodParams,
             annotationFinder,
             xmlSuite,
-            annotationName);
+            annotationName,
+            resolvedParameters(
+                testMethod, methodParams.context, annotationName, parameterResolvers));
 
     // Mark that this method needs to have at least a certain
     // number of invocations (needed later to call AfterGroups
@@ -964,6 +1047,49 @@ public class Parameters {
         new MethodMatcherContext(method, parameterValues, context, null);
     final MethodMatcher matcher = new DataProviderMethodMatcher(matcherContext);
     return matcher.getConformingArguments();
+  }
+
+  /**
+   * The same, for a run that registers {@link IParameterResolver}s: a parameter a resolver owns is
+   * left out of the matching and its value is placed back at its declared position.
+   *
+   * @param parameterValues parameter values from a data provider, empty when there is none
+   * @param testMethod the test method to be invoked
+   * @param context test context
+   * @param parameterResolvers the resolvers registered for the suite the method belongs to
+   */
+  public static Object[] injectParameters(
+      Object[] parameterValues,
+      ITestNGMethod testMethod,
+      ITestContext context,
+      Collection<IParameterResolver> parameterResolvers)
+      throws TestNGException {
+    Method method = testMethod.getConstructorOrMethod().requireMethod();
+    ResolvedParameters resolved =
+        ResolvedParameters.of(
+            ReflectionRecipes.getMethodParameters(method), testMethod, context, parameterResolvers);
+    MethodMatcherContext matcherContext =
+        new MethodMatcherContext(method, parameterValues, context, null, resolved);
+    final MethodMatcher matcher = new DataProviderMethodMatcher(matcherContext);
+    return matcher.getConformingArguments();
+  }
+
+  /**
+   * The parameters a resolver owns on a {@code @Test} method. Configuration methods and
+   * constructors are deliberately left out of this first implementation, and a method TestNG could
+   * not reflect on has nothing to resolve.
+   */
+  private static ResolvedParameters resolvedParameters(
+      ITestNGMethod testMethod,
+      @Nullable ITestContext context,
+      String annotationName,
+      Collection<IParameterResolver> parameterResolvers) {
+    Method method = testMethod.getConstructorOrMethod().getMethod();
+    if (context == null || method == null || canInject(annotationName)) {
+      return ResolvedParameters.none();
+    }
+    return ResolvedParameters.of(
+        ReflectionRecipes.getMethodParameters(method), testMethod, context, parameterResolvers);
   }
 
   /** A parameter passing helper class. */
