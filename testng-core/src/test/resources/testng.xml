@@ -779,6 +779,7 @@
       <class name="org.testng.internal.ExecutableCacheTest"/>
       <class name="org.testng.internal.ClassHelperTest"/>
       <class name="org.testng.internal.TestResultParametersTest"/>
+      <class name="org.testng.internal.ParametersTest"/>
       <class name="org.testng.internal.objects.InstanceCreatorTest"/>
       <class name="org.testng.util.StringsTest"/>
       <class name="test.issue1430.TestFileToClass"/>
