@@ -301,7 +301,15 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 // An interceptor that drops or reorders rows can move the target onto an
                 // excluded position; fall back to the values the retry came in with rather
                 // than fail it.
-                parameterValues = Objects.requireNonNullElse(current, parameterValues);
+                if (current != null) {
+                  // A row straight from the data provider accounts only for the parameters the
+                  // provider supplies. It has to go back through the matcher, or everything
+                  // TestNG supplies itself -- a native injection, a resolved parameter -- is
+                  // dropped and the retry invokes the method with the wrong arity.
+                  parameterValues =
+                      Parameters.injectParameters(
+                          current, arguments.getTestMethod(), testContext, getParameterResolvers());
+                }
                 break;
               }
             }

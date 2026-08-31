@@ -252,24 +252,28 @@ public class ParameterResolverTest extends SimpleBaseTest {
 
   @Test(
       description =
-          "GITHUB-1164: pins that a retry re-reading its row loses the resolved value -- exactly as"
-              + " it already loses a natively injected one")
-  public void retryRereadingItsRowLosesInjectedValues() {
+          "GITHUB-1164: a retry that re-reads its row keeps the resolved value, and the natively"
+              + " injected one with it")
+  public void retryRereadingItsRowKeepsInjectedValues() {
     SampleRun run = SampleRun.of(RetryRereadingItsRowSample.class, new SampleParameterResolver());
 
-    // Not a resolver defect, and not this change: TestInvoker.retryFailed hands the raw data
-    // provider row straight to the invocation when cacheDataForTestRetries is false, without
-    // running it back through the matcher. The sample carries a control method that uses only
-    // native injection, and it fails the very same way -- which is what makes this a
-    // characterization test rather than a bug this API introduced.
-    assertThat(run.failureMessages()).hasSize(2);
+    // Both methods fail on purpose, so both are retried once. What matters is that the second
+    // attempt reached the body at all: it only can if the re-read row went back through the
+    // matcher. The control method uses native injection alone, which is why this is not a
+    // resolver-only fix.
+    assertThat(ParameterRecorder.invocationsOf("nativeControl")).hasSize(2);
+    assertThat(ParameterRecorder.invocationsOf("withResolver")).hasSize(2);
     assertThat(run.failureMessages())
-        .allSatisfy(
-            message -> assertThat(message).contains("wrong number of arguments: 1 expected: 2"));
+        .noneSatisfy(message -> assertThat(message).contains("wrong number of arguments"));
 
-    // Neither body ran a second time: the retry never got as far as the method.
-    assertThat(ParameterRecorder.invocationsOf("nativeControl")).hasSize(1);
-    assertThat(ParameterRecorder.invocationsOf("withResolver")).hasSize(1);
+    for (Object[] parameters : ParameterRecorder.invocationsOf("nativeControl")) {
+      assertThat(parameters[0]).isEqualTo("value");
+      assertThat(parameters[1]).isInstanceOf(ITestContext.class);
+    }
+    for (Object[] parameters : ParameterRecorder.invocationsOf("withResolver")) {
+      assertThat(parameters[0]).isInstanceOf(CustomObject.class);
+      assertThat(parameters[1]).isEqualTo("value");
+    }
   }
 
   @Test(description = "GITHUB-1164: the diagnostic survives a value whose toString() throws")
