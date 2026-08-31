@@ -8,6 +8,7 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
+import test.configuration.github1338.BaseGitHub1338Sample;
 import test.configuration.github1338.FirstGitHub1338Sample;
 import test.configuration.github1338.SecondGitHub1338Sample;
 import test.configuration.github1338.ThirdGitHub1338Sample;
@@ -34,6 +35,7 @@ public class BaseGroupsTest extends SimpleBaseTest {
 
   @Test(description = "https://github.com/cbeust/testng/issues/1338")
   public void verifyBeforeGroupUseAppropriateInstance() {
+    BaseGitHub1338Sample.reset();
     XmlSuite suite = createXmlSuite("Suite");
     XmlTest test =
         createXmlTest(
@@ -52,5 +54,13 @@ public class BaseGroupsTest extends SimpleBaseTest {
 
     assertThat(listener.getSkippedMethodNames()).isEmpty();
     assertThat(listener.getFailedMethodNames()).isEmpty();
+    // SecondGitHub1338Sample is listed first and holds no group1 method, so nothing of it runs at
+    // all -- @BeforeGroups included. It is the instance the group is entered from that carries the
+    // group configuration, which is what GITHUB-1338 fixed.
+    assertThat(BaseGitHub1338Sample.invocations())
+        .containsExactly(
+            "classSetUp:FirstGitHub1338Sample",
+            "groupSetUp:FirstGitHub1338Sample",
+            "classSetUp:ThirdGitHub1338Sample");
   }
 }
