@@ -3,10 +3,8 @@ package org.testng;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.AdditionalAnswers.delegatesTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -27,7 +25,6 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Test;
-import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.IObject;
 import org.testng.internal.RunInfo;
 import org.testng.internal.TestNGMethodFinder;
@@ -176,25 +173,32 @@ public class TestClassConfigurationLookupTest {
 
   @Test
   public void annotationLookupsForTestMethodsDoNotGrowWithFactoryInstances() {
+    int lookupsForOneInstance = countTestAnnotationLookups(1);
+    int lookupsForManyInstances = countTestAnnotationLookups(10);
+
+    assertThat(lookupsForManyInstances).isEqualTo(lookupsForOneInstance);
+  }
+
+  private int countTestAnnotationLookups(int instanceCount) {
     IAnnotationFinder spyAnnotationFinder =
         mock(IAnnotationFinder.class, delegatesTo(annotationFinder));
-    FakeClass fakeClass = new FakeClass(10);
 
     new TestClass(
         objectFactory,
-        fakeClass,
+        new FakeClass(instanceCount),
         newFinder(),
         spyAnnotationFinder,
         xmlTest,
-        xmlClass,
+        Collections.singletonList(xmlClass),
         null);
 
-    // Across 10 factory instances, @Test annotation lookups on aTest() method occur only for the
-    // prototype method (initGroups and initRestOfGroupDependencies: 2 lookups), not 10 * 2 = 20 times.
-    verify(spyAnnotationFinder, times(2))
-        .findAnnotation(
-            any(ConstructorOrMethod.class),
-            eq(ITestAnnotation.class));
+    return (int)
+        mockingDetails(spyAnnotationFinder).getInvocations().stream()
+            .filter(
+                invocation ->
+                    "findAnnotation".equals(invocation.getMethod().getName())
+                        && invocation.getArguments()[1] == ITestAnnotation.class)
+            .count();
   }
 
   @Test
@@ -233,7 +237,7 @@ public class TestClassConfigurationLookupTest {
             finder,
             annotationFinder,
             multiXmlTest,
-            multiXmlClass,
+            Collections.singletonList(multiXmlClass),
             null);
 
     ITestNGMethod[] testMethods = testClass.getTestMethods();
