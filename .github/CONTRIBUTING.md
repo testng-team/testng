@@ -39,10 +39,6 @@ Two of them are worth knowing before you start:
 * [`contribution: help wanted`](https://github.com/testng-team/testng/labels/contribution%3A%20help%20wanted)
   lists issues that are ready for someone to pick up.
 
-The labels are being renamed to this scheme. Until that lands, the two links above come back empty
-even though the issues exist; browse the [full label list](https://github.com/testng-team/testng/labels)
-to find them under their current names.
-
 Maintainers: the full taxonomy, the colors, and the rules for adding, renaming, merging, and
 deleting labels are in [LABELS.md](LABELS.md).
 

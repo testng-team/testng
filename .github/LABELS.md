@@ -223,7 +223,7 @@ updates:
 Defining custom Dependabot labels replaces its default `dependencies` and ecosystem labels, and a
 label that does not exist in the repository is silently ignored -- declaring only labels that have
 yet to be created leaves the pull requests with no label at all. When renaming, list the old and the
-new names together until the rename has landed, the same way Label Commenter carries both. Preserve
+new names together until the rename has landed, as Label Commenter also has to. Preserve
 every classification required by repository filters or automation.
 
 Dependabot cannot label per dependency, only per ecosystem. The Gradle wrapper is bumped by the
