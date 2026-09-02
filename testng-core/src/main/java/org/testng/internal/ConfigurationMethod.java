@@ -514,6 +514,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     target.setAlwaysRun(isAlwaysRun());
     target.setMissingGroup(getMissingGroup());
     target.setDescription(getDescription());
+    target.setPriority(getPriority());
     target.setEnabled(getEnabled());
     target.setParameterInvocationCount(getParameterInvocationCount());
     target.m_inheritGroupsFromTestClass = inheritGroupsFromTestClass();
@@ -562,7 +563,6 @@ public class ConfigurationMethod extends BaseTestMethod {
             false /* do not call init() */,
             cloneInstance());
     copyInitializedState(clone);
-    clone.setPriority(getPriority());
     return clone;
   }
 
