@@ -1,6 +1,32 @@
 # Configuration for Label Commenter - https://github.com/peaceiris/actions-label-commenter
+#
+# Migration window: the label names below are being renamed to the `prefix: value` taxonomy
+# documented in .github/LABELS.md. Both the old and the new name are listed so that the automation
+# keeps working while the labels themselves are renamed. Delete the old-name entries once the
+# rename has landed and been verified.
+#
+# The bodies are duplicated on purpose rather than shared through a YAML anchor: this file is an
+# automation interface, and a parsing surprise here fails silently.
 labels:
   - name: "Need: sample"
+    labeled:
+      issue:
+        body: |
+          Hi, @{{ issue.user.login }}.
+          We need more information to reproduce the issue.
+
+          Please help share a [Minimal, Reproducible Example](https://stackoverflow.com/help/minimal-reproducible-example) that can be used to recreate the issue.
+
+          In addition to sharing a sample, please also add the following details:
+
+          * TestNG version being used.
+          * JDK version being used.
+          * How was the test run (IDE/Build Tools)?
+          * How does your build file (`pom.xml` | `build.gradle` | `build.gradle.kts`) look like ?
+
+          It would be better if you could share a sample project that can be directly used to reproduce the problem.
+          Reply to this issue when all information is provided, thank you.
+  - name: "status: needs reproducer"
     labeled:
       issue:
         body: |
@@ -26,7 +52,22 @@ labels:
           * 📫 The [TestNG user group](https://groups.google.com/forum/#!forum/testng-users)
           * 📮 [StackOverflow](https://stackoverflow.com/questions/tagged/testng)
         action: close
+  - name: "type: question"
+    labeled:
+      issue:
+        body: |
+          💬 Please ask questions at:
+          * 📫 The [TestNG user group](https://groups.google.com/forum/#!forum/testng-users)
+          * 📮 [StackOverflow](https://stackoverflow.com/questions/tagged/testng)
+        action: close
   - name: "Need: help"
+    labeled:
+      issue:
+        body: |
+          This issue is looking for contributors.
+
+          Please comment below if you are interested.
+  - name: "contribution: help wanted"
     labeled:
       issue:
         body: |
