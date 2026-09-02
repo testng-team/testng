@@ -26,6 +26,26 @@ Maybe you can write a runnable test case (check the `src/test/` folder for examp
 Don't worry if the CI fails because it is the expected behavior.
 This pull request will be a perfect start to find the fix :)
 
+# Issue labels
+
+Issues are classified with prefixed labels: `type:` for the nature of the report, `area:` and
+`runner:` for the affected scope, `status:` for what is currently needed to move it forward, and
+`aspect:`, `platform:`, `contribution:` and `resolution:` for everything else.
+
+Two of them are worth knowing before you start:
+
+* [`contribution: good first issue`](https://github.com/testng-team/testng/labels/contribution%3A%20good%20first%20issue)
+  lists small, well-scoped issues with clear acceptance criteria.
+* [`contribution: help wanted`](https://github.com/testng-team/testng/labels/contribution%3A%20help%20wanted)
+  lists issues that are ready for someone to pick up.
+
+The labels are being renamed to this scheme. Until that lands, the two links above come back empty
+even though the issues exist; browse the [full label list](https://github.com/testng-team/testng/labels)
+to find them under their current names.
+
+Maintainers: the full taxonomy, the colors, and the rules for adding, renaming, merging, and
+deleting labels are in [LABELS.md](LABELS.md).
+
 # We encourage pull requests that:
   
   * Add new features to TestNG (or)
