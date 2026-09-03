@@ -1,10 +1,17 @@
 version: 2
+
+# Declaring `labels` replaces Dependabot's defaults (dependencies, java, github_actions), and a
+# label that does not exist in the repository is silently ignored, so these names must stay in step
+# with the repository. The taxonomy is documented in .github/LABELS.md.
 updates:
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - "dependency: update"
+      - "dependency: github actions"
 
   # The workflow matrix generator (.github/workflows/matrix.mjs) is a real npm project with its
   # own package.json and lock file. The github-actions ecosystem above does not look at it.
@@ -12,6 +19,9 @@ updates:
     directory: "/.github/workflows"
     schedule:
       interval: "weekly"
+    labels:
+      - "dependency: update"
+      - "dependency: npm"
 
   - package-ecosystem: "gradle"
     directory: "/"
@@ -19,6 +29,9 @@ updates:
       interval: "daily"
       # Check for updates at 00:00 UTC
       time: "00:00"
+    labels:
+      - "dependency: update"
+      - "dependency: java"
     ignore:
       # Autostyle 4.0.1 bundles a google-java-format that reaches into javac internals without
       # the --add-exports JPMS flags, so every module fails on JDK 25 with:
