@@ -271,26 +271,41 @@ public class MethodHelper {
   }
 
   public static boolean isAlwaysRun(@Nullable IConfigurationAnnotation configurationAnnotation) {
-    if (null == configurationAnnotation) {
-      return false;
-    }
+    return null != configurationAnnotation
+        && configurationAnnotation.getAlwaysRun()
+        && (isBeforeConfiguration(configurationAnnotation)
+            || isAfterConfiguration(configurationAnnotation));
+  }
 
-    boolean alwaysRun = false;
-    if ((configurationAnnotation.getAfterSuite()
-            || configurationAnnotation.getAfterTest()
-            || configurationAnnotation.getAfterTestClass()
-            || configurationAnnotation.getAfterTestMethod()
-            || configurationAnnotation.getBeforeTestMethod()
-            || configurationAnnotation.getBeforeTestClass()
-            || configurationAnnotation.getBeforeTest()
-            || configurationAnnotation.getBeforeSuite()
-            || configurationAnnotation.getBeforeGroups().length != 0
-            || configurationAnnotation.getAfterGroups().length != 0)
-        && configurationAnnotation.getAlwaysRun()) {
-      alwaysRun = true;
-    }
+  /**
+   * @param configurationAnnotation - The annotation carried by the configuration method.
+   * @return true if {@code alwaysRun} lets this configuration method run even though a method
+   *     invoked before it failed or was skipped. That is what {@code alwaysRun} means on an
+   *     &#64;After method; on a &#64;Before method it only lifts the group filtering, so a
+   *     &#64;Before method never bypasses a previous failure (GITHUB-1622). Every method this
+   *     answers true for is also an {@link #isAlwaysRun(IConfigurationAnnotation)} one.
+   */
+  public static boolean canBypassConfigurationFailure(
+      @Nullable IConfigurationAnnotation configurationAnnotation) {
+    return null != configurationAnnotation
+        && configurationAnnotation.getAlwaysRun()
+        && isAfterConfiguration(configurationAnnotation);
+  }
 
-    return alwaysRun;
+  private static boolean isBeforeConfiguration(IConfigurationAnnotation annotation) {
+    return annotation.getBeforeSuite()
+        || annotation.getBeforeTest()
+        || annotation.getBeforeTestClass()
+        || annotation.getBeforeTestMethod()
+        || annotation.getBeforeGroups().length != 0;
+  }
+
+  private static boolean isAfterConfiguration(IConfigurationAnnotation annotation) {
+    return annotation.getAfterSuite()
+        || annotation.getAfterTest()
+        || annotation.getAfterTestClass()
+        || annotation.getAfterTestMethod()
+        || annotation.getAfterGroups().length != 0;
   }
 
   /** Extracts the unique list of <code>ITestNGMethod</code>s. */

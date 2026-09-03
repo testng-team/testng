@@ -286,9 +286,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         // - the test is enabled and
         // - the Configuration method belongs to the same class or a parent
         configurationAnnotation = AnnotationHelper.findConfiguration(annotationFinder(), method);
-        boolean alwaysRun = MethodHelper.isAlwaysRun(configurationAnnotation);
         boolean canProcessMethod =
-            MethodHelper.isEnabled(objectClass, annotationFinder()) || alwaysRun;
+            MethodHelper.isEnabled(objectClass, annotationFinder())
+                || MethodHelper.isAlwaysRun(configurationAnnotation);
         if (!canProcessMethod) {
           log(
               3,
@@ -303,9 +303,15 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
           continue;
         }
-        if (hasConfigurationFailureFor(
-                tm, arguments.getTestMethod(), tm.getGroups(), testClass, arguments.getInstance())
-            && !alwaysRun) {
+        // GITHUB-1622. Both guards are field reads, so they come before the map walks.
+        if (!arguments.isForRetriedTestMethod()
+            && !MethodHelper.canBypassConfigurationFailure(configurationAnnotation)
+            && hasConfigurationFailureFor(
+                tm,
+                arguments.getTestMethod(),
+                tm.getGroups(),
+                testClass,
+                arguments.getInstance())) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
           InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), testResult);
           // Set test result as 'SKIP' in 'beforeConfiguration' & 'beforeInvocation' if

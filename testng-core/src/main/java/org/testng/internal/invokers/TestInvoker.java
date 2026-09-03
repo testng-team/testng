@@ -727,7 +727,12 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     ITestNGMethod[] setupConfigMethods =
         TestNgMethodUtils.filterSetupConfigurationMethods(
             arguments.getTestMethod(), arguments.getBeforeMethods());
-    runConfigMethods(arguments, suite, testResult, setupConfigMethods);
+    runConfigMethods(
+        arguments,
+        suite,
+        testResult,
+        setupConfigMethods,
+        failureContext.representsRetriedMethod.get());
 
     long startTime = System.currentTimeMillis();
     InvokedMethod invokedMethod = new InvokedMethod(startTime, testResult);
@@ -923,7 +928,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     ITestNGMethod[] teardownConfigMethods =
         TestNgMethodUtils.filterTeardownConfigurationMethods(
             arguments.getTestMethod(), arguments.getAfterMethods());
-    runConfigMethods(arguments, suite, testResult, teardownConfigMethods);
+    runConfigMethods(
+        arguments, suite, testResult, teardownConfigMethods, /* retriedTestMethod= */ false);
   }
 
   private void runAfterGroupsConfigurations(TestMethodArguments arguments) {
@@ -942,17 +948,19 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       TestMethodArguments arguments,
       XmlSuite suite,
       ITestResult testResult,
-      ITestNGMethod[] teardownConfigMethods) {
+      ITestNGMethod[] configMethods,
+      boolean retriedTestMethod) {
     ConfigMethodArguments cfgArgs =
         new ConfigMethodArguments.Builder()
             .forTestClass(arguments.getTestClass())
             .forTestMethod(arguments.getTestMethod())
-            .usingConfigMethodsAs(teardownConfigMethods)
+            .usingConfigMethodsAs(configMethods)
             .forSuite(suite)
             .usingParameters(arguments.getParameters())
             .usingParameterValues(arguments.getParameterValues())
             .usingInstance(arguments.getInstance())
             .withResult(testResult)
+            .forRetriedTestMethod(retriedTestMethod)
             .build();
     invoker.invokeConfigurations(cfgArgs);
   }
