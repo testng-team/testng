@@ -767,8 +767,10 @@
     <classes>
       <class name="test.methodinterceptors.MethodInterceptorTest" />
       <class name="test.methodinterceptors.Issue392Test" />
+      <class name="test.methodinterceptors.Issue521Test" />
       <class name="test.methodinterceptors.multipleinterceptors.MultipleInterceptorsTest" />
       <class name="test.methodinterceptors.issue1726.CustomInterceptorTest"/>
+      <class name="test.methodinterceptors.issue1263.Issue1263Test"/>
     </classes>
   </test>
 

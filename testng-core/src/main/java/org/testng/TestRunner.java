@@ -714,10 +714,12 @@ public class TestRunner
   private void privateRun(XmlTest xmlTest) {
     boolean parallel = xmlTest.getParallel().isParallel();
 
+    ITestNGMethod[] allMethods = getAllTestMethods();
+
     // Make sure we create a graph based on the intercepted methods, otherwise an interceptor
     // removing methods would cause the graph never to terminate (because it would expect
     // termination from methods that never get invoked).
-    ITestNGMethod[] interceptedOrder = intercept(getAllTestMethods());
+    ITestNGMethod[] interceptedOrder = intercept(allMethods);
     IDynamicGraph<ITestNGMethod> graph =
         TimeUtils.computeAndShowTime(
             "DynamicGraphHelper.createDynamicGraph()",
@@ -727,16 +729,12 @@ public class TestRunner
                     getCurrentXmlTest(),
                     requireGroupMethods().getBeforeGroupsMethods()));
 
-    for (ITestNGMethod each : interceptedOrder) {
-      if (each instanceof BaseTestMethod) {
-        // We don't want our users to change this vital info. That is why the setter is NOT
-        // being exposed via the interface, and so we resort to an "instanceof" check.
-        Set<ITestNGMethod> downstream = new HashSet<>(graph.getDependenciesFor(each));
-        ((BaseTestMethod) each).setDownstreamDependencies(downstream);
-        Set<ITestNGMethod> upstream = new HashSet<>(graph.getUpstreamDependenciesFor(each));
-        ((BaseTestMethod) each).setUpstreamDependencies(upstream);
-      }
-    }
+    // The whole set, and not only what came back: a method an interceptor dropped is no node of
+    // this graph, which answers empty for it, and that empty is what has to replace the relation
+    // published to the interceptors. The intercepted order is published in turn, for a method an
+    // interceptor added rather than kept.
+    publishDependencies(allMethods, graph);
+    publishDependencies(interceptedOrder, graph);
 
     Collection<IExecutionVisualiser> original =
         sort(this.visualisers, m_configuration.getListenerComparator());
@@ -744,10 +742,9 @@ public class TestRunner
     // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
     // If the user specified a method interceptor, or if we have any methods that have a non-default
     // priority on them, we need to sort.
-    boolean hasMultipleInterceptors = m_methodInterceptors.size() > 1;
     boolean hasNonZeroPriorityMethods =
         Arrays.stream(interceptedOrder).anyMatch(m -> m.getPriority() != 0);
-    boolean needPrioritySort = hasMultipleInterceptors || hasNonZeroPriorityMethods;
+    boolean needPrioritySort = hasUserMethodInterceptors() || hasNonZeroPriorityMethods;
     Comparator<ITestNGMethod> methodComparator = newComparator(needPrioritySort);
     if (parallel) {
       if (graph.getNodeCount() <= 0) {
@@ -786,8 +783,53 @@ public class TestRunner
     }
   }
 
+  /**
+   * Binds each method to the dependencies the graph holds for it. We don't want our users to change
+   * this vital info, which is why the setter is NOT being exposed via the interface, and so we
+   * resort to an "instanceof" check.
+   */
+  private static void publishDependencies(
+      ITestNGMethod[] methods, IDynamicGraph<ITestNGMethod> graph) {
+    for (ITestNGMethod each : methods) {
+      if (each instanceof BaseTestMethod) {
+        Set<ITestNGMethod> downstream = new HashSet<>(graph.getDependenciesFor(each));
+        ((BaseTestMethod) each).setDownstreamDependencies(downstream);
+        Set<ITestNGMethod> upstream = new HashSet<>(graph.getUpstreamDependenciesFor(each));
+        ((BaseTestMethod) each).setUpstreamDependencies(upstream);
+      }
+    }
+  }
+
+  /**
+   * {@code init} clears the list and puts exactly one built-in interceptor in it -- {@link
+   * PreserveOrderMethodInterceptor} or {@link InstanceOrderingMethodInterceptor} -- ahead of
+   * anything a listener registration can add, so more than one of them means the user registered
+   * one of their own.
+   */
+  private boolean hasUserMethodInterceptors() {
+    return m_methodInterceptors.size() > 1;
+  }
+
   /** Apply the method interceptor (if applicable) to the list of methods. */
   private ITestNGMethod[] intercept(ITestNGMethod[] methods) {
+
+    // An interceptor is handed every test method of this <test>, the ones taking part in a
+    // dependency included, so it is told what each of them is bound to before it decides what to
+    // drop and where to move it. The graph the run is scheduled on cannot answer that here, being
+    // built from what these interceptors return, so the relation is read off a graph over the
+    // unfiltered set -- built for this and nothing else, and only when there is a user interceptor
+    // to read it, the built-in one having no use for it.
+    if (hasUserMethodInterceptors()) {
+      IDynamicGraph<ITestNGMethod> declared =
+          TimeUtils.computeAndShowTime(
+              "DynamicGraphHelper.createDynamicGraph() [before interception]",
+              () ->
+                  DynamicGraphHelper.createDynamicGraph(
+                      methods,
+                      getCurrentXmlTest(),
+                      requireGroupMethods().getBeforeGroupsMethods()));
+      publishDependencies(methods, declared);
+    }
 
     List<IMethodInstance> methodInstances =
         MethodHelper.methodsToMethodInstances(Arrays.asList(methods));
@@ -823,8 +865,7 @@ public class TestRunner
 
     // If the user specified a method interceptor, whatever that returns is the order we're going
     // to run things in. Set the intercepted priority for that case.
-    // There's a built-in interceptor, so look for more than one.
-    if (m_methodInterceptors.size() > 1) {
+    if (hasUserMethodInterceptors()) {
       for (int i = 0; i < resultArray.length; ++i) {
         resultArray[i].setInterceptedPriority(i);
       }
