@@ -319,9 +319,32 @@ public class XMLStringBuffer {
     return m_buffer;
   }
 
+  // XmlCharFilteringWriter.isAllowed spells this same set out character by character, for the
+  // streaming path; the two have to be edited together.
   private static final Pattern INVALID_XML_CHARS =
       Pattern.compile(
           "[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
+
+  /**
+   * Appends the XML of another buffer to this one, without ever holding it whole in memory.
+   *
+   * <p>This is {@code addString(other.toXML())} with the {@code String} taken out of the middle:
+   * {@link XmlCharFilteringWriter} drops the same characters a slice at a time, where {@link
+   * #toXML()} reads the whole buffer back and copies it again for its regular expression. What is
+   * appended is otherwise identical, the tag stack of {@code other} included -- neither this nor
+   * {@code toXML()} closes what is still open on it.
+   *
+   * <p>Note this drops those characters from what is appended, not from the buffer appended to:
+   * whatever was written to this buffer directly is left as it was, and so is anything written
+   * after.
+   *
+   * @param other The buffer to append. Its content is left as it is.
+   */
+  public void addBuffer(XMLStringBuffer other) {
+    XmlCharFilteringWriter writer = new XmlCharFilteringWriter(m_buffer);
+    other.m_buffer.toWriter(writer);
+    writer.close();
+  }
 
   /** @return The String representation of the XML for this XMLStringBuffer. */
   public String toXML() {
