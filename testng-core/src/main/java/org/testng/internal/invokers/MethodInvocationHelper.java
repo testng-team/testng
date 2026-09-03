@@ -45,7 +45,6 @@ import org.testng.internal.thread.TestNGThreadFactory;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadTimeoutException;
 import org.testng.internal.thread.ThreadUtil;
-import org.testng.xml.XmlSuite;
 
 /** Collections of helper methods to help deal with invocation of TestNG methods */
 public class MethodInvocationHelper {
@@ -295,8 +294,9 @@ public class MethodInvocationHelper {
   }
 
   /**
-   * Invokes a method on a separate thread in order to allow us to timeout the invocation. It uses
-   * as implementation an <code>Executor</code> and a <code>CountDownLatch</code>.
+   * Invokes a method under its time-out. On a thread TestNG already owns the invocation runs in
+   * place, watched by a monitor thread; otherwise it is handed to an <code>Executor</code> whose
+   * termination is awaited.
    */
   protected static void invokeWithTimeout(
       IConfiguration config,
@@ -316,11 +316,11 @@ public class MethodInvocationHelper {
       ITestResult testResult,
       @Nullable IHookable hookable)
       throws InterruptedException, ThreadExecutionException {
-    if (ThreadUtil.isTestNGThread()
-        && Utils.requireTestContextOf(testResult).getCurrentXmlTest().getParallel()
-            != XmlSuite.ParallelMode.TESTS) {
-      // We are already running in our own executor, don't create another one (or we will
-      // lose the time out of the enclosing executor).
+    if (ThreadUtil.isTestNGThread()) {
+      // We already own this thread, so the time-out can be enforced in place: the no-executor path
+      // runs a monitor thread that interrupts us once the time-out elapses. Handing the method to
+      // yet another thread would buy us nothing and would cost parallel="tests" the thread affinity
+      // it promises for the methods of a <test>.
       return invokeWithTimeoutWithNoExecutor(tm, instance, parameterValues, testResult, hookable);
     } else {
       return invokeWithTimeoutWithNewExecutor(

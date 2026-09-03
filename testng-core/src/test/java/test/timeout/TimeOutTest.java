@@ -15,7 +15,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlSuite.ParallelMode;
 import test.BaseTest;
 import test.timeout.github1493.TestClassSample;
-import test.timeout.issue2009.TimeOutWithParallelSample;
 
 public class TimeOutTest extends BaseTest {
   private final long m_id;
@@ -33,6 +32,20 @@ public class TimeOutTest extends BaseTest {
 
     verifyPassedTests("timeoutShouldPass");
     verifyFailedTests("timeoutShouldFailByException", "timeoutShouldFailByTimeOut");
+
+    // The statuses above hold whether or not the time-out was enforced: a method that overruns is
+    // failed once it returns, so a run that let it sleep its full ten seconds reports exactly the
+    // same thing. Only the duration says the method was actually cut short, which is the guarantee
+    // GITHUB-2009 established for the in-place path and the one the executor path has always given
+    // the rest. Note the "tests" row exercises the executor path like "none" does, not the in-place
+    // one: setParallel here sets the mode on the <test>, where ParallelMode.TESTS is a declared
+    // no-op (isParallel = false). Suite-level parallel="tests" is covered by
+    // TimeOutIntegrationTest.testTimeOutWhenParallelIsTest and by timeOutInParallelTestsFromXml.
+    ITestResult timedOut = getFailedTests().get("timeoutShouldFailByTimeOut").get(0);
+    assertThat(timedOut.getEndMillis() - timedOut.getStartMillis())
+        .as(
+            "timeoutShouldFailByTimeOut must be cut short by its 1s time-out, not sleep its full 10s")
+        .isLessThan(5_000L);
   }
 
   @DataProvider(name = "parallelModes")

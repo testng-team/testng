@@ -112,6 +112,7 @@
       <class name="test.thread.issue2361.IssueTest"/>
       <class name="test.thread.SequentialTest" />
       <class name="test.thread.ParallelTestTest" />
+      <class name="test.thread.issue1333.Issue1333Test" />
       <class name="test.thread.DataProviderThreadPoolSizeTest" />
       <class name="test.thread.MultiThreadedDependentTest" />
       <class name="test.thread.TrueParallelTest" />
