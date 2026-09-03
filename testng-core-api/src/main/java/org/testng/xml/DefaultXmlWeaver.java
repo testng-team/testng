@@ -322,7 +322,8 @@ public class DefaultXmlWeaver implements IWeaveXml {
       if (xmlTest.getXmlGroups() != null) {
         for (XmlDefine define : xmlTest.getXmlGroups().getDefines()) {
           Properties metaGroupProp = new Properties();
-          metaGroupProp.setProperty("name", define.getName());
+          metaGroupProp.setProperty(
+              "name", Objects.requireNonNull(define.getName(), "<define> has no name"));
 
           xsb.push("define", metaGroupProp);
 

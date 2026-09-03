@@ -1,6 +1,7 @@
 package org.testng.xml;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -8,6 +9,7 @@ import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
@@ -24,6 +26,36 @@ import org.testng.xml.issue2866.ThreadCountingSuiteAlteringListener;
 import test.SimpleBaseTest;
 
 public class XmlSuiteTest extends SimpleBaseTest {
+
+  @Test(description = "GITHUB-3388")
+  public void toXmlReportsUnnamedPackage() {
+    XmlSuite suite = new XmlSuite();
+    suite.setName("s");
+    XmlTest test = new XmlTest(suite);
+    test.setName("t");
+    test.setPackages(Collections.singletonList(new XmlPackage()));
+
+    assertThatThrownBy(suite::toXml)
+        .isInstanceOf(NullPointerException.class)
+        .hasMessage("<package> has no name");
+  }
+
+  @Test(description = "GITHUB-3388")
+  public void toXmlReportsUnnamedDefineOnTestLevelGroups() {
+    XmlSuite suite = new XmlSuite();
+    suite.setName("s");
+    XmlTest test = new XmlTest(suite);
+    test.setName("t");
+    XmlDefine define = new XmlDefine();
+    define.onElement("g1");
+    XmlGroups groups = new XmlGroups();
+    groups.addDefine(define);
+    test.setGroups(groups);
+
+    assertThatThrownBy(suite::toXml)
+        .isInstanceOf(NullPointerException.class)
+        .hasMessage("<define> has no name");
+  }
 
   @Test
   public void testIncludedAndExcludedGroups() {
