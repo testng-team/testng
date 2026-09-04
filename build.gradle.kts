@@ -2,7 +2,7 @@ plugins {
     id("testng.repositories")
     id("build-logic.build-params")
     id("idea")
-    id("com.gradleup.nmcp.aggregation") version "1.6.1"
+    id("com.gradleup.nmcp.aggregation") version "1.6.2"
     id("org.openrewrite.rewrite") version "7.39.0"
 }
 
