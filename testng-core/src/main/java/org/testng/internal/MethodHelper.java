@@ -132,7 +132,7 @@ public class MethodHelper {
     ITestNGMethod[] methods =
         Arrays.stream(incoming)
             .filter(each -> !each.equals(m))
-            .filter(each -> Objects.isNull(each.getRealClass().getEnclosingClass()))
+            .filter(each -> isTopLevelOrSameTestClass(each, m))
             .toArray(ITestNGMethod[]::new);
     String canonicalMethodName = calculateMethodCanonicalName(m);
     Pair<String, Predicate<ITestNGMethod>> filterPair = filterToUse(m);
@@ -556,6 +556,26 @@ public class MethodHelper {
               System.out.println(String.valueOf(im));
             });
     System.out.println("=====");
+  }
+
+  /**
+   * Nested-class methods stay out of regex {@code dependsOnMethods} matching (GITHUB-141), but a
+   * nested test class must still see its own siblings (GITHUB-3222), including methods inherited
+   * onto that nested class.
+   */
+  private static boolean isTopLevelOrSameTestClass(
+      ITestNGMethod candidate, ITestNGMethod dependant) {
+    Class<?> candidateClass = effectiveTestClass(candidate);
+    return Objects.isNull(candidateClass.getEnclosingClass())
+        || candidateClass.equals(effectiveTestClass(dependant));
+  }
+
+  private static Class<?> effectiveTestClass(ITestNGMethod method) {
+    ITestClass testClass = method.getTestClass();
+    if (testClass != null) {
+      return testClass.getRealClass();
+    }
+    return method.getRealClass();
   }
 
   private static boolean isConfigurationMethod(ITestNGMethod tm) {
