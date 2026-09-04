@@ -32,6 +32,9 @@ import test.dependent.issue141.SkipReasoner;
 import test.dependent.issue141.TestClassSample;
 import test.dependent.issue2658.FailingClassSample;
 import test.dependent.issue2658.PassingClassSample;
+import test.dependent.issue3222.AbstractParentTest;
+import test.dependent.issue3222.InheritedNestedSample;
+import test.dependent.issue3222.SiblingNestedSample;
 import test.dependent.issue550.ConfigDependencySample;
 import test.dependent.issue550.ConfigDependencyWithMismatchedLevelSample;
 import test.dependent.issue550.ConfigDependsOnTestAndConfigMethodSample;
@@ -101,10 +104,7 @@ public class DependentTest extends SimpleBaseTest {
     assertThat(reasoner.getUpstreamFailures()).containsExactly("test_C6390323");
   }
 
-  @Test(
-      description = "GITHUB-141",
-      expectedExceptions = TestNGException.class,
-      expectedExceptionsMessageRegExp = "\n.* depends on nonexistent method .*")
+  @Test(description = "GITHUB-141")
   public void ensureDependsOnMethodsHonoursRegexPatternsDuplicateMatchesNestedClasses() {
     TestNG testng = create(NestedTestClassSample.class);
     MethodNameCollector listener = new MethodNameCollector();
@@ -112,6 +112,19 @@ public class DependentTest extends SimpleBaseTest {
     testng.addListener(listener);
     testng.addListener(reasoner);
     testng.run();
+    // Each nested class resolves the regex against its own siblings only (GITHUB-3222).
+    assertThat(listener.getPassedNames()).containsExactlyInAnyOrder("test_C6390323", "randomTest");
+    assertThat(listener.getFailedNames()).containsExactly("test_C6390323");
+    assertThat(listener.getSkippedNames()).containsExactly("randomTest");
+    assertThat(reasoner.getUpstreamFailures()).containsExactly("test_C6390323");
+    assertThat(listener.getPassedQualifiers())
+        .containsExactlyInAnyOrder(
+            NestedTestClassSample.FirstSample.class.getName() + ".test_C6390323",
+            NestedTestClassSample.FirstSample.class.getName() + ".randomTest");
+    assertThat(listener.getFailedQualifiers())
+        .containsExactly(NestedTestClassSample.SecondSample.class.getName() + ".test_C6390323");
+    assertThat(listener.getSkippedQualifiers())
+        .containsExactly(NestedTestClassSample.SecondSample.class.getName() + ".randomTest");
   }
 
   @Test(
@@ -126,6 +139,38 @@ public class DependentTest extends SimpleBaseTest {
     SkipReasoner reasoner = new SkipReasoner();
     testng.addListener(listener);
     testng.addListener(reasoner);
+    testng.run();
+  }
+
+  @Test(description = "GITHUB-3222")
+  public void ensureDependsOnMethodsIsResolvedInAStaticNestedClass() {
+    TestNG testng = create(AbstractParentTest.ChildTest.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getPassedNames()).isEmpty();
+    assertThat(listener.getFailedNames()).containsExactly("test1");
+    assertThat(listener.getSkippedNames()).containsExactly("test2");
+  }
+
+  @Test(description = "GITHUB-3222")
+  public void ensureDependsOnMethodsResolvesInheritedMethodsInANestedClass() {
+    TestNG testng = create(InheritedNestedSample.NestedChild.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getPassedNames()).containsExactly("test1", "test2");
+    assertThat(listener.getFailedNames()).isEmpty();
+    assertThat(listener.getSkippedNames()).isEmpty();
+  }
+
+  @Test(
+      description = "GITHUB-3222",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          ".*SiblingNestedSample.Second.test2\\(\\) depends on nonexistent method test1")
+  public void ensureDependsOnMethodsDoesNotResolveSiblingNestedClassMethods() {
+    TestNG testng = create(SiblingNestedSample.First.class, SiblingNestedSample.Second.class);
     testng.run();
   }
 
@@ -445,6 +490,9 @@ public class DependentTest extends SimpleBaseTest {
     private final List<String> passedNames = new ArrayList<>();
     private final List<String> failedNames = new ArrayList<>();
     private final List<String> skippedNames = new ArrayList<>();
+    private final List<String> passedQualifiers = new ArrayList<>();
+    private final List<String> failedQualifiers = new ArrayList<>();
+    private final List<String> skippedQualifiers = new ArrayList<>();
 
     private final List<String> passedInstances = new ArrayList<>();
     private final List<String> failedInstances = new ArrayList<>();
@@ -474,33 +522,56 @@ public class DependentTest extends SimpleBaseTest {
       return skippedNames;
     }
 
+    public List<String> getPassedQualifiers() {
+      return passedQualifiers;
+    }
+
+    public List<String> getFailedQualifiers() {
+      return failedQualifiers;
+    }
+
+    public List<String> getSkippedQualifiers() {
+      return skippedQualifiers;
+    }
+
+    private static String asQualified(ITestResult result) {
+      return result.getTestClass().getRealClass().getName()
+          + "."
+          + result.getMethod().getMethodName();
+    }
+
     @Override
     public void onTestFailure(ITestResult result) {
       failedNames.add(result.getMethod().getMethodName());
+      failedQualifiers.add(asQualified(result));
       failedInstances.add(asString.apply(result));
     }
 
     @Override
     public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
       failedNames.add(result.getMethod().getMethodName());
+      failedQualifiers.add(asQualified(result));
       failedInstances.add(asString.apply(result));
     }
 
     @Override
     public void onTestFailedWithTimeout(ITestResult result) {
       failedNames.add(result.getMethod().getMethodName());
+      failedQualifiers.add(asQualified(result));
       failedInstances.add(asString.apply(result));
     }
 
     @Override
     public void onTestSuccess(ITestResult result) {
       passedNames.add(result.getMethod().getMethodName());
+      passedQualifiers.add(asQualified(result));
       passedInstances.add(asString.apply(result));
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
       skippedNames.add(result.getMethod().getMethodName());
+      skippedQualifiers.add(asQualified(result));
       skippedInstances.add(asString.apply(result));
     }
   }
