@@ -24,4 +24,21 @@ public class IssueTest extends SimpleBaseTest {
         .containsExactly(
             "beforeMethod", "beforeChildMethod", "testCase", "afterChildMethod", "afterMethod");
   }
+
+  @Test(description = "GITHUB-2714")
+  public void afterMethodInheritanceSurvivesGroupsAndDependsOnGroups() {
+    InvokedMethodNameListener listener = run(AfterMethodGroupsChildSample.class);
+
+    assertThat(listener.getInvokedMethodNames())
+        .containsExactly(
+            "beforeMethod", "beforeChildMethod", "testCase", "afterChildMethod", "afterMethod");
+  }
+
+  @Test(description = "GITHUB-2432")
+  public void inheritanceEdgeDoesNotCycleWhenAgnosticMethodIsTransitivelyUpstream() {
+    InvokedMethodNameListener listener = run(TransitiveUpstreamChild.class);
+
+    assertThat(listener.getInvokedMethodNames())
+        .containsExactly("baseGroup", "childAgnostic", "childGroup", "baseAfterGroup", "test");
+  }
 }
