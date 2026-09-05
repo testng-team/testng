@@ -5,17 +5,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 import org.jspecify.annotations.Nullable;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.jarfileutils.org.testng.SampleTest1;
 import org.testng.testhelper.JarCreator;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.XmlClass;
@@ -106,6 +111,16 @@ public class JarFileUtilsTest {
     JarFileUtils utils = newJarFileUtils(testNames, ignoreMissedTestNames);
     // 3 tests from 3 suites, the first suite has one test is given
     runTest(utils, 1, 3, expectedTestNames, expectedClassNames, "testng-tests-suite");
+  }
+
+  @Test(description = "GITHUB-2333")
+  public void moduleInfoClassEntriesAreNotTreatedAsTestClasses() throws IOException {
+    File jarWithModuleInfo = jarWithModuleInfoDescriptors();
+    JarFileUtils utils = new JarFileUtils(new FakeProcessor(), "missing-suite.xml", null);
+    List<XmlSuite> suites = utils.extractSuitesFrom(jarWithModuleInfo);
+    List<String> classNames = new ArrayList<>();
+    extractClassNames(suites, new ArrayList<>(), classNames);
+    assertThat(classNames).containsExactly("org.testng.jarfileutils.org.testng.SampleTest1");
   }
 
   @Test
@@ -239,6 +254,33 @@ public class JarFileUtilsTest {
     if (expectedClassNames != null) {
       assertThat(classNames).contains(expectedClassNames);
     }
+  }
+
+  private static File jarWithModuleInfoDescriptors() throws IOException {
+    File jarFile = File.createTempFile("testng-module-info", ".jar");
+    jarFile.deleteOnExit();
+    String classEntry = SampleTest1.class.getName().replace('.', '/') + ".class";
+    byte[] sampleBytes;
+    try (InputStream classBytes =
+        SampleTest1.class.getClassLoader().getResourceAsStream(classEntry)) {
+      sampleBytes = requireNonNull(classBytes, classEntry).readAllBytes();
+    }
+    try (JarOutputStream jos = new JarOutputStream(Files.newOutputStream(jarFile.toPath()))) {
+      jos.putNextEntry(new JarEntry(classEntry));
+      jos.write(sampleBytes);
+      jos.closeEntry();
+      jos.putNextEntry(new JarEntry("module-info.class"));
+      jos.write(new byte[] {0});
+      jos.closeEntry();
+      jos.putNextEntry(new JarEntry("META-INF/versions/9/module-info.class"));
+      jos.write(new byte[] {0});
+      jos.closeEntry();
+      // Regular multi-release class: filtered by META-INF/, not by the module-info suffix.
+      jos.putNextEntry(new JarEntry("META-INF/versions/9/" + classEntry));
+      jos.write(sampleBytes);
+      jos.closeEntry();
+    }
+    return jarFile;
   }
 
   public static class FakeProcessor implements IPostProcessor {

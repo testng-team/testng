@@ -153,7 +153,14 @@ class JarFileUtils {
   }
 
   private static boolean isJavaClass(JarEntry je) {
-    return je.getName().endsWith(".class");
+    String name = je.getName();
+    if (je.isDirectory() || !name.endsWith(".class")) {
+      return false;
+    }
+    // module-info.class is a module descriptor (ACC_MODULE), not a loadable class.
+    // META-INF/versions/** is multi-release layout; naive discovery would turn those
+    // paths into invalid class names such as META-INF.versions.9.module-info.
+    return !name.startsWith("META-INF/") && !name.endsWith("module-info.class");
   }
 
   private static String constructClassName(JarEntry je) {
