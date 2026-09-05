@@ -30,6 +30,7 @@ import org.testng.IDataProviderMethod;
 import org.testng.IHookable;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
+import org.testng.IParameterResolver;
 import org.testng.IRetryAnalyzer;
 import org.testng.ISuite;
 import org.testng.ISuiteRunnerListener;
@@ -56,6 +57,7 @@ import org.testng.internal.ListenerOrderDeterminer;
 import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.MethodInstance;
+import org.testng.internal.ParameterResolverHolder;
 import org.testng.internal.Parameters;
 import org.testng.internal.RegexpExpectedExceptionsHolder;
 import org.testng.internal.RuntimeBehavior;
@@ -72,6 +74,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
   private final ConfigInvoker invoker;
   private final DataProviderHolder holder;
+  private final ParameterResolverHolder parameterResolverHolder;
   private final List<IClassListener> m_classListeners;
   private final boolean m_skipFailedInvocationCounts;
 
@@ -82,6 +85,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       IConfiguration m_configuration,
       Collection<IInvokedMethodListener> m_invokedMethodListeners,
       DataProviderHolder holder,
+      ParameterResolverHolder parameterResolverHolder,
       List<IClassListener> m_classListeners,
       boolean m_skipFailedInvocationCounts,
       ConfigInvoker invoker,
@@ -94,6 +98,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         m_configuration,
         suiteRunner);
     this.holder = holder;
+    this.parameterResolverHolder = parameterResolverHolder;
     this.m_classListeners = m_classListeners;
     this.m_skipFailedInvocationCounts = m_skipFailedInvocationCounts;
     this.invoker = invoker;
@@ -147,19 +152,22 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 m_configuration.getObjectFactory(),
                 annotationFinder(),
                 buildDataProviderHolder(),
+                getParameterResolvers(),
                 1);
 
         ParameterBag bag =
             handler.createParameters(
                 testMethod, new HashMap<>(), new HashMap<>(), context, instance);
         ParameterHolder parameterHolder = Objects.requireNonNull(bag.parameterHolder);
+        // Read once: the accessor sorts the resolvers, and every row would otherwise re-sort them.
+        Collection<IParameterResolver> resolvers = getParameterResolvers();
         try {
           for (Object @Nullable [] next : CollectionUtils.asIterable(parameterHolder.parameters)) {
             if (next == null) {
               continue;
             }
-            Method m = testMethod.getConstructorOrMethod().requireMethod();
-            Object[] parameterValues = Parameters.injectParameters(next, m, context);
+            Object[] parameterValues =
+                Parameters.injectParameters(next, testMethod, context, resolvers);
             ITestResult result =
                 registerSkippedTestResult(
                     testMethod,
@@ -271,7 +279,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         int verbose = testContext.getCurrentXmlTest().getVerbose();
         ParameterHandler handler =
             new ParameterHandler(
-                m_configuration.getObjectFactory(), annotationFinder(), this.holder, verbose);
+                m_configuration.getObjectFactory(),
+                annotationFinder(),
+                this.holder,
+                getParameterResolvers(),
+                verbose);
 
         ParameterBag bag =
             handler.createParameters(
@@ -289,7 +301,15 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 // An interceptor that drops or reorders rows can move the target onto an
                 // excluded position; fall back to the values the retry came in with rather
                 // than fail it.
-                parameterValues = Objects.requireNonNullElse(current, parameterValues);
+                if (current != null) {
+                  // A row straight from the data provider accounts only for the parameters the
+                  // provider supplies. It has to go back through the matcher, or everything
+                  // TestNG supplies itself -- a native injection, a resolved parameter -- is
+                  // dropped and the retry invokes the method with the wrong arity.
+                  parameterValues =
+                      Parameters.injectParameters(
+                          current, arguments.getTestMethod(), testContext, getParameterResolvers());
+                }
                 break;
               }
             }
@@ -336,6 +356,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       dpListeners.addAll(listeners);
     }
     return dpListeners;
+  }
+
+  @Override
+  public Collection<IParameterResolver> getParameterResolvers() {
+    return this.parameterResolverHolder.getResolvers();
   }
 
   private DataProviderHolder buildDataProviderHolder() {
@@ -1083,6 +1108,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               m_configuration.getObjectFactory(),
               annotationFinder(),
               buildDataProviderHolder(),
+              getParameterResolvers(),
               verbose);
 
       ParameterBag bag =

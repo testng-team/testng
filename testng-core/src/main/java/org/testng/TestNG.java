@@ -154,6 +154,8 @@ public class TestNG {
       m_dataProviderListeners = new LinkedHashMap<>();
   private final Map<Class<? extends IDataProviderInterceptor>, IDataProviderInterceptor>
       m_dataProviderInterceptors = new LinkedHashMap<>();
+  private final Map<Class<? extends IParameterResolver>, IParameterResolver> m_parameterResolvers =
+      new LinkedHashMap<>();
 
   public static final Integer DEFAULT_VERBOSE = 1;
 
@@ -848,6 +850,10 @@ public class TestNG {
       IDataProviderInterceptor interceptor = (IDataProviderInterceptor) listener;
       maybeAddListener(m_dataProviderInterceptors, interceptor);
     }
+    if (listener instanceof IParameterResolver) {
+      IParameterResolver resolver = (IParameterResolver) listener;
+      maybeAddListener(m_parameterResolvers, resolver);
+    }
   }
 
   public Set<IReporter> getReporters() {
@@ -1464,6 +1470,8 @@ public class TestNG {
             m_classListeners.values(),
             holder,
             MethodSorting.basedOn());
+
+    result.addParameterResolvers(m_parameterResolvers.values());
 
     for (ISuiteListener isl : m_suiteListeners.values()) {
       result.addListener(isl);
