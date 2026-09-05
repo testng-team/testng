@@ -16,6 +16,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
@@ -45,6 +46,15 @@ public abstract class BaseTestMethod
   private static final Pattern SPACE_SEPARATOR_PATTERN = Pattern.compile(" +");
 
   /**
+   * Shared stand-in for the group arrays below when they are empty, which is the common case. A
+   * {@code String[] x = {}} field initializer allocates a fresh array per instance; a big
+   * &#64;Factory suite builds one method object per instance, so those add up to five throwaway
+   * arrays per method. A zero-length array cannot be mutated, so handing the same one to every
+   * method is safe even though the getters return it directly.
+   */
+  static final String[] EMPTY_STRING_ARRAY = new String[0];
+
+  /**
    * The test class on which the test method was found. Note that this is not necessarily the
    * declaring class.
    */
@@ -56,11 +66,11 @@ public abstract class BaseTestMethod
   protected String m_id = "";
   protected long m_date = -1;
   protected final IAnnotationFinder m_annotationFinder;
-  protected String[] m_groups = {};
-  protected String[] m_groupsDependedUpon = {};
-  protected String[] m_methodsDependedUpon = {};
-  protected String[] m_beforeGroups = {};
-  protected String[] m_afterGroups = {};
+  protected String[] m_groups = EMPTY_STRING_ARRAY;
+  protected String[] m_groupsDependedUpon = EMPTY_STRING_ARRAY;
+  protected String[] m_methodsDependedUpon = EMPTY_STRING_ARRAY;
+  protected String[] m_beforeGroups = EMPTY_STRING_ARRAY;
+  protected String[] m_afterGroups = EMPTY_STRING_ARRAY;
   private boolean m_isAlwaysRun;
   private boolean m_enabled;
 
@@ -81,10 +91,29 @@ public abstract class BaseTestMethod
   private boolean m_skipFailedInvocations = true;
   private long m_invocationTimeOut = 0L;
 
-  private List<Integer> m_invocationNumbers = new ArrayList<>();
-  private final Set<ITestNGMethod> downstreamDependencies = new HashSet<>();
-  private final Set<ITestNGMethod> upstreamDependencies = new HashSet<>();
-  private final Collection<Integer> m_failedInvocationNumbers = new ConcurrentLinkedQueue<>();
+  // Non-empty only for the <include invocation-numbers="..."> case. Starts out as the shared empty
+  // list rather than a fresh one per method; setInvocationNumbers replaces it wholesale, and
+  // nothing writes through the reference, so sharing an immutable list is safe.
+  private List<Integer> m_invocationNumbers = Collections.emptyList();
+  // Left null until the method actually has dependencies, which most methods never do. An empty
+  // HashSet costs the set plus its backing HashMap, and a big @Factory suite holds two of them per
+  // method per instance. Published to the worker threads by the volatile write in the setters.
+  private volatile @Nullable Set<ITestNGMethod> downstreamDependencies;
+  private volatile @Nullable Set<ITestNGMethod> upstreamDependencies;
+  // Written only when an invocation fails. An empty ConcurrentLinkedQueue still costs the queue
+  // plus the dummy node it starts with, so hold off until there is a failure to record.
+  @SuppressWarnings("rawtypes")
+  private volatile @Nullable Collection m_failedInvocationNumbers;
+
+  // The @Nullable on the value type is what lets the compareAndSet below name null as the value it
+  // expects to replace. Without it the package being @NullMarked makes the updater's value type
+  // non-null, and NullAway rejects the call.
+  @SuppressWarnings("rawtypes")
+  private static final AtomicReferenceFieldUpdater<BaseTestMethod, @Nullable Collection>
+      FAILED_INVOCATIONS =
+          AtomicReferenceFieldUpdater.newUpdater(
+              BaseTestMethod.class, Collection.class, "m_failedInvocationNumbers");
+
   private long m_timeOut = 0;
 
   private boolean m_ignoreMissingDependencies;
@@ -105,7 +134,19 @@ public abstract class BaseTestMethod
   private int m_xmlOccurrenceIndex;
   private final IObject.@Nullable IdentifiableObject m_instance;
 
-  private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = new ConcurrentHashMap<>();
+  // Only ever populated for a parameterised test that has a retry analyzer, so it stays null for
+  // almost every method. Installed with a CAS through the updater below rather than under a lock:
+  // a per-instance lock object would give back a quarter of what leaving the map out saves.
+  @SuppressWarnings("rawtypes")
+  private volatile @Nullable ConcurrentHashMap m_testMethodToRetryAnalyzer;
+
+  // @Nullable value type for the same reason as FAILED_INVOCATIONS above.
+  @SuppressWarnings("rawtypes")
+  private static final AtomicReferenceFieldUpdater<BaseTestMethod, @Nullable ConcurrentHashMap>
+      RETRY_ANALYZERS =
+          AtomicReferenceFieldUpdater.newUpdater(
+              BaseTestMethod.class, ConcurrentHashMap.class, "m_testMethodToRetryAnalyzer");
+
   protected final ITestObjectFactory m_objectFactory;
 
   public BaseTestMethod(
@@ -170,10 +211,14 @@ public abstract class BaseTestMethod
 
   @Override
   public @Nullable Object getInstance() {
-    return Optional.ofNullable(m_instance)
-        .map(IObject.IdentifiableObject::getInstance)
-        .map(IParameterInfo::embeddedInstance)
-        .orElse(null);
+    // Hot path (called per invocation via TestNgMethodUtils.isSameInstance): a plain null-guarded
+    // chain instead of Optional.ofNullable(...).map(...).map(...), which allocated three throwaway
+    // Optionals on every call. embeddedInstance passes null straight through, so the result is
+    // unchanged.
+    if (m_instance == null) {
+      return null;
+    }
+    return IParameterInfo.embeddedInstance(m_instance.getInstance());
   }
 
   /**
@@ -189,9 +234,7 @@ public abstract class BaseTestMethod
 
   @Override
   public @Nullable UUID getInstanceId() {
-    return Optional.ofNullable(m_instance)
-        .map(IObject.IdentifiableObject::getInstanceId)
-        .orElse(null);
+    return m_instance == null ? null : m_instance.getInstanceId();
   }
 
   /** {@inheritDoc} */
@@ -235,34 +278,60 @@ public abstract class BaseTestMethod
     return m_methodsDependedUpon;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A snapshot, not a live view: {@link #setDownstreamDependencies(Set)} swaps in a new set
+   * rather than clearing and refilling the one already handed out, so a set taken before a
+   * replacement keeps what it held. The old behaviour tracked the replacement. Nothing in TestNG
+   * reads these across a replacement -- they are filled once while the graph is built and read
+   * while it runs -- and holding no set at all is what keeps a method with no dependencies from
+   * carrying an empty one.
+   */
   @Override
   public Set<ITestNGMethod> downstreamDependencies() {
-    return Collections.unmodifiableSet(downstreamDependencies);
+    return readOnlyView(downstreamDependencies);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A snapshot rather than a live view, for the reason given on {@link
+   * #downstreamDependencies()}.
+   */
   @Override
   public Set<ITestNGMethod> upstreamDependencies() {
-    return Collections.unmodifiableSet(upstreamDependencies);
+    return readOnlyView(upstreamDependencies);
   }
 
+  /** Replaces the downstream dependencies. Sets already handed out keep what they held. */
   public void setDownstreamDependencies(Set<ITestNGMethod> methods) {
-    setupDependencies(downstreamDependencies, methods);
+    downstreamDependencies = setupDependencies(methods);
   }
 
+  /** Replaces the upstream dependencies. Sets already handed out keep what they held. */
   public void setUpstreamDependencies(Set<ITestNGMethod> methods) {
-    setupDependencies(upstreamDependencies, methods);
+    upstreamDependencies = setupDependencies(methods);
   }
 
-  private static void setupDependencies(
-      Set<ITestNGMethod> dependencies, Set<ITestNGMethod> methods) {
-    if (!dependencies.isEmpty()) {
-      dependencies.clear();
+  private static Set<ITestNGMethod> readOnlyView(@Nullable Set<ITestNGMethod> dependencies) {
+    return dependencies == null
+        ? Collections.emptySet()
+        : Collections.unmodifiableSet(dependencies);
+  }
+
+  /**
+   * @return a set holding {@code methods}, or {@code null} when there are none. Returning null
+   *     rather than an empty set is what keeps a dependency-free method from carrying one.
+   */
+  private static @Nullable Set<ITestNGMethod> setupDependencies(Set<ITestNGMethod> methods) {
+    if (methods.isEmpty()) {
+      return null;
     }
-    Set<ITestNGMethod> toAdd = methods;
     if (RuntimeBehavior.isMemoryFriendlyMode()) {
-      toAdd = methods.stream().map(LiteWeightTestNGMethod::new).collect(Collectors.toSet());
+      return methods.stream().map(LiteWeightTestNGMethod::new).collect(Collectors.toSet());
     }
-    dependencies.addAll(toAdd);
+    return new HashSet<>(methods);
   }
 
   /** {@inheritDoc} */
@@ -647,6 +716,10 @@ public abstract class BaseTestMethod
 
   protected String[] getStringArray(
       String @Nullable [] methodArray, String @Nullable [] classArray) {
+    if (isEmpty(methodArray) && isEmpty(classArray)) {
+      // The common case. Bail out before allocating the set and the result array.
+      return EMPTY_STRING_ARRAY;
+    }
     final Set<String> vResult = new HashSet<>();
     if (null != methodArray) {
       Collections.addAll(vResult, methodArray);
@@ -654,7 +727,11 @@ public abstract class BaseTestMethod
     if (null != classArray) {
       Collections.addAll(vResult, classArray);
     }
-    return vResult.toArray(new String[0]);
+    return vResult.toArray(EMPTY_STRING_ARRAY);
+  }
+
+  private static boolean isEmpty(String @Nullable [] array) {
+    return array == null || array.length == 0;
   }
 
   protected void setGroups(String[] groups) {
@@ -662,10 +739,14 @@ public abstract class BaseTestMethod
   }
 
   protected void setGroupsDependedUpon(String[] groups, Collection<String> xmlGroupDependencies) {
+    if (isEmpty(groups) && xmlGroupDependencies.isEmpty()) {
+      m_groupsDependedUpon = EMPTY_STRING_ARRAY;
+      return;
+    }
     List<String> l = new ArrayList<>();
     l.addAll(Arrays.asList(groups));
     l.addAll(xmlGroupDependencies);
-    m_groupsDependedUpon = l.toArray(new String[0]);
+    m_groupsDependedUpon = l.toArray(EMPTY_STRING_ARRAY);
   }
 
   protected void setMethodsDependedUpon(String[] methods) {
@@ -849,12 +930,28 @@ public abstract class BaseTestMethod
 
   @Override
   public List<Integer> getFailedInvocationNumbers() {
-    return new ArrayList<>(m_failedInvocationNumbers);
+    Collection<Integer> failed = failedInvocations();
+    return failed == null ? new ArrayList<>() : new ArrayList<>(failed);
   }
 
   @Override
   public void addFailedInvocationNumber(int number) {
-    m_failedInvocationNumbers.add(number);
+    Collection<Integer> failed = failedInvocations();
+    if (failed == null) {
+      failed = new ConcurrentLinkedQueue<>();
+      // Losing the race means another thread already installed a queue; record into theirs, or the
+      // failure numbers would be split across two queues and one of them thrown away.
+      if (!FAILED_INVOCATIONS.compareAndSet(this, null, failed)) {
+        // The winner's queue is never replaced, so the re-read hands back that one.
+        failed = Objects.requireNonNull(failedInvocations());
+      }
+    }
+    failed.add(number);
+  }
+
+  @SuppressWarnings("unchecked")
+  private @Nullable Collection<Integer> failedInvocations() {
+    return m_failedInvocationNumbers;
   }
 
   @Override
@@ -988,13 +1085,32 @@ public abstract class BaseTestMethod
     }
 
     final String keyAsString = getSimpleName() + "#" + parameterId(tr);
-    return m_testMethodToRetryAnalyzer.computeIfAbsent(
-        keyAsString,
-        key -> {
-          BasicAttributes ba = new BasicAttributes(null, this.m_retryAnalyzerClass);
-          CreationAttributes attributes = new CreationAttributes(tr.getTestContext(), ba, null);
-          return (IRetryAnalyzer) Dispenser.newInstance(m_objectFactory).dispense(attributes);
-        });
+    return retryAnalyzers()
+        .computeIfAbsent(
+            keyAsString,
+            key -> {
+              BasicAttributes ba = new BasicAttributes(null, this.m_retryAnalyzerClass);
+              CreationAttributes attributes = new CreationAttributes(tr.getTestContext(), ba, null);
+              return (IRetryAnalyzer) Dispenser.newInstance(m_objectFactory).dispense(attributes);
+            });
+  }
+
+  /**
+   * @return the per-parameter retry analyzer cache, creating it on the first call. The CAS matters:
+   *     two threads settling on different maps would each build their own analyzer for the same
+   *     key, and a retry analyzer that loses its count lets a test retry more often than it should.
+   */
+  @SuppressWarnings("unchecked")
+  private ConcurrentHashMap<String, IRetryAnalyzer> retryAnalyzers() {
+    ConcurrentHashMap<String, IRetryAnalyzer> analyzers = m_testMethodToRetryAnalyzer;
+    if (analyzers == null) {
+      analyzers = new ConcurrentHashMap<>();
+      if (!RETRY_ANALYZERS.compareAndSet(this, null, analyzers)) {
+        // As above: the map the winning thread installed stays put.
+        analyzers = Objects.requireNonNull(m_testMethodToRetryAnalyzer);
+      }
+    }
+    return analyzers;
   }
 
   private static String parameterId(ITestResult itr) {
@@ -1002,7 +1118,10 @@ public abstract class BaseTestMethod
   }
 
   private static boolean isNotParameterisedTest(ITestResult tr) {
-    return Optional.ofNullable(tr.getParameters()).orElse(new Object[0]).length == 0;
+    // orElse evaluates its argument whether or not it is used, so the Optional form built an empty
+    // array on every call, including the calls that had parameters to look at.
+    Object[] parameters = tr.getParameters();
+    return parameters == null || parameters.length == 0;
   }
 
   private @Nullable IRetryAnalyzer computeRetryAnalyzerInstanceToUse(ITestResult tr) {

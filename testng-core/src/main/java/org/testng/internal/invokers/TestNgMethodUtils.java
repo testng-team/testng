@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import org.jspecify.annotations.Nullable;
@@ -113,8 +112,11 @@ class TestNgMethodUtils {
     if (instance == null) {
       return true;
     }
-    Object tmObject = Optional.ofNullable(tm).map(ITestNGMethod::getInstance).orElse(new Object());
-    return instance.equals(tmObject);
+    // A missing instance (tm null, or no instance bound yet) never matches a real one. The previous
+    // form used Optional.ofNullable(tm).map(...).orElse(new Object()), which allocated a throwaway
+    // Object on every call — orElse evaluates its argument eagerly even when it is not used.
+    Object tmObject = tm == null ? null : tm.getInstance();
+    return tmObject != null && instance.equals(tmObject);
   }
 
   static ITestNGMethod[] filterSetupConfigurationMethods(

@@ -177,7 +177,13 @@ public class Graph<T> {
   }
 
   private static void log(Supplier<String> s) {
-    Logger.getLogger(Graph.class).trace("[Graph] " + s.get());
+    // Ask the supplier only when the message is going to be printed. Callers pass a lambda so the
+    // message is not built when tracing is off, and calling get() here defeated that: adding a
+    // node rendered the method's full signature every time, whatever the log level.
+    Logger logger = Logger.getLogger(Graph.class);
+    if (logger.isTraceEnabled()) {
+      logger.trace("[Graph] " + s.get());
+    }
   }
 
   private @Nullable Node<T> findNodeWithNoPredecessors(List<Node<T>> nodes) {

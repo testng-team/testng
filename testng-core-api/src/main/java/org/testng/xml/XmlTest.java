@@ -424,7 +424,11 @@ public class XmlTest implements Cloneable {
    * Convenience method to cache the ordering numbers for methods.
    *
    * @param method The method name
-   * @return The invocation numbers of the method
+   * @return The invocation numbers of the method, or an empty list when it declares none.
+   *     <p><b>The empty answer is immutable</b>, where it used to be a fresh {@link ArrayList} the
+   *     caller was free to add to. A caller that means to build on what it gets back has to copy it
+   *     first. Nothing in TestNG did, and the fresh list was allocated for every method of every
+   *     &#64;Factory instance only to be thrown away, which is why it is shared now.
    */
   public List<Integer> getInvocationNumbers(String method) {
     Map<String, List<Integer>> cached = m_failedInvocationNumbers;
@@ -442,8 +446,11 @@ public class XmlTest implements Cloneable {
       }
     }
 
+    // Empty for all but the <include invocation-numbers="..."> methods, and every test method of
+    // every @Factory instance asks once - so hand back a shared empty list instead of a throwaway
+    // one that the caller then holds on to for the length of the run.
     List<Integer> numbers = cached.get(method);
-    return numbers != null ? numbers : new ArrayList<>();
+    return numbers != null ? numbers : Collections.emptyList();
   }
 
   public void setPreserveOrder(Boolean preserveOrder) {

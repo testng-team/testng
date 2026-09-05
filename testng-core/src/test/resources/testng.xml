@@ -94,6 +94,7 @@
       <class name="org.testng.internal.thread.graph.TestNGFutureTaskTest"/>
       <class name="org.testng.internal.thread.graph.GraphOrchestratorTest"/>
       <class name="org.testng.internal.KeyAwareAutoCloseableLockTest"/>
+      <class name="org.testng.internal.BaseTestMethodTest"/>
       <class name="test.ReflectionHelperTest"/>
       <class name="test.privatemethod.PrivateMethodTest$PrivateMethodInnerTest"/>
       <class name="test.multiple.TestMultiple"/>
