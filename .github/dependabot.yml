@@ -32,6 +32,16 @@ updates:
     labels:
       - "dependency: update"
       - "dependency: java"
+    groups:
+      # The recipe BOM and the Gradle plugin are released together upstream: rewrite-recipe-bom
+      # 3.38.0 is the release that carries rewrite-gradle-plugin 7.41.0. Taken one at a time they
+      # leave the pair mismatched, and each pull request pays for its own rewriteDryRun run. The
+      # glob covers both names, since the plugin is reported without a group id. The group is
+      # dormant while the ignore entry below holds every OpenRewrite version back; it is what
+      # these updates should look like once that entry is dropped.
+      openrewrite:
+        patterns:
+          - "org.openrewrite*"
     ignore:
       # Autostyle 4.0.1 bundles a google-java-format that reaches into javac internals without
       # the --add-exports JPMS flags, so every module fails on JDK 25 with:
@@ -39,3 +49,20 @@ updates:
       # Drop this entry once a release fixes it. See testng-team/testng#3292.
       - dependency-name: "com.github.autostyle:autostyle-plugin-gradle"
         versions: ["4.0.1"]
+
+      # OpenRewrite left Maven Central in August 2026: Sonatype's new volume limits made ~80
+      # modules twice a month untenable, so 8.91.0 onwards is published only to the Code Genome
+      # Project registry, which needs a (free) account token to download from. rewrite-recipe-bom
+      # 3.38.0 and the Gradle plugin from 7.40.0 on still import org.openrewrite:rewrite-bom:8.91.0,
+      # which Central 404s -- its latest is 8.90.4 -- so they fail to resolve before any recipe runs:
+      #   Could not parse POM .../rewrite-recipe-bom-3.38.0.pom
+      #     > Could not find org.openrewrite:rewrite-bom:8.91.0
+      # Upstream calls that Plugin Portal release unintended and says to stay on the previous
+      # version: openrewrite/rewrite-gradle-plugin#476, openrewrite/rewrite-recipe-bom#68.
+      # 7.39.0 / 3.37.0 are the last Central-resolvable pair, and no later one can be, so this
+      # ignores every version rather than the three known-broken ones -- otherwise Dependabot
+      # reopens a pull request that cannot build on each upstream release, twice a month.
+      # Drop this entry when the build points at https://artifacts.codegenomeproject.org/maven/,
+      # which means asking every contributor to hold a token, or when OpenRewrite is dropped.
+      # See testng-team/testng#3457 and testng-team/testng#3458.
+      - dependency-name: "org.openrewrite*"
