@@ -544,16 +544,39 @@ public abstract class BaseTestMethod
     return hash * 31 + m_xmlOccurrenceIndex;
   }
 
+  /**
+   * The class {@link #initGroups(Class)} would consult for class-level group metadata on a method
+   * bound to {@code instance}, without instantiating a lazy {@code @Factory} object.
+   */
+  static Class<?> effectiveClassForGroups(
+      IObject.@Nullable IdentifiableObject instance, ConstructorOrMethod method) {
+    Class<?> clazz = method.getDeclaringClass();
+    if (instance == null) {
+      return clazz;
+    }
+    Object wrapper = instance.getInstance();
+    if (wrapper instanceof IParameterInfo) {
+      IParameterInfo info = (IParameterInfo) wrapper;
+      if (info.isInstanceInstantiated()) {
+        Object object = info.getInstance();
+        if (object != null) {
+          clazz = object.getClass();
+        }
+      }
+    } else if (wrapper != null) {
+      clazz = wrapper.getClass();
+    }
+    return clazz;
+  }
+
+  Class<?> effectiveClassForGroups() {
+    return effectiveClassForGroups(m_instance, m_method);
+  }
+
   protected void initGroups(Class<? extends ITestOrConfiguration> annotationClass) {
     ITestOrConfiguration annotation =
         getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
-    Class<?> clazz = getConstructorOrMethod().getDeclaringClass();
-    if (isInstanceInstantiated()) {
-      Object object = getInstance();
-      if (object != null) {
-        clazz = object.getClass();
-      }
-    }
+    Class<?> clazz = effectiveClassForGroups();
     // else: a lazy @Factory instance is not created yet; a constructor factory produces exactly its
     // declaring class, which is already the default above — so don't instantiate to read the class.
     ITestOrConfiguration classAnnotation =
