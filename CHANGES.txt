@@ -1,4 +1,5 @@
 Current (7.13.0)
+Fixed: GITHUB-3239, GITHUB-2714: a configuration method that is outside the group graph keeps the inheritance order even when a sibling has dependsOnGroups. A child @BeforeClass no longer runs between two base methods, and a base @AfterMethod no longer runs before the child's (Burak Kalaycı)
 Fixed: GITHUB-2333: skip module-info.class and META-INF/versions entries when discovering classes in a test jar (Burak Kalaycı)
 Fixed: GITHUB-2595: A programmatic IMethodSelector at priority 10 is no longer dropped as a duplicate of the built-in XmlMethodSelector. RunInfo stored selectors in a TreeSet ordered only by priority, so two descriptors with the same priority compared equal and one was discarded. Equal-priority selectors now keep insertion order (Burak Kalaycı)
 Fixed: GITHUB-3222: dependsOnMethods in a static nested test class now resolves sibling methods, including methods inherited onto that nested class. MethodHelper.findDependedUponMethods() used to drop every method whose class had an enclosing class, so the nested class never saw its own tests (Burak Kalaycı)
