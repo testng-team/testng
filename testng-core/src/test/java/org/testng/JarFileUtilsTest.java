@@ -260,17 +260,24 @@ public class JarFileUtilsTest {
     File jarFile = File.createTempFile("testng-module-info", ".jar");
     jarFile.deleteOnExit();
     String classEntry = SampleTest1.class.getName().replace('.', '/') + ".class";
-    try (JarOutputStream jos = new JarOutputStream(Files.newOutputStream(jarFile.toPath()));
-        InputStream classBytes =
-            SampleTest1.class.getClassLoader().getResourceAsStream(classEntry)) {
+    byte[] sampleBytes;
+    try (InputStream classBytes =
+        SampleTest1.class.getClassLoader().getResourceAsStream(classEntry)) {
+      sampleBytes = requireNonNull(classBytes, classEntry).readAllBytes();
+    }
+    try (JarOutputStream jos = new JarOutputStream(Files.newOutputStream(jarFile.toPath()))) {
       jos.putNextEntry(new JarEntry(classEntry));
-      requireNonNull(classBytes, classEntry).transferTo(jos);
+      jos.write(sampleBytes);
       jos.closeEntry();
       jos.putNextEntry(new JarEntry("module-info.class"));
       jos.write(new byte[] {0});
       jos.closeEntry();
       jos.putNextEntry(new JarEntry("META-INF/versions/9/module-info.class"));
       jos.write(new byte[] {0});
+      jos.closeEntry();
+      // Regular multi-release class: filtered by META-INF/, not by the module-info suffix.
+      jos.putNextEntry(new JarEntry("META-INF/versions/9/" + classEntry));
+      jos.write(sampleBytes);
       jos.closeEntry();
     }
     return jarFile;
