@@ -3,7 +3,7 @@ plugins {
     id("build-logic.build-params")
     id("idea")
     id("com.gradleup.nmcp.aggregation") version "1.6.2"
-    id("org.openrewrite.rewrite") version "7.39.0"
+    id("org.openrewrite.rewrite") version "7.41.0"
 }
 
 dependencies {
