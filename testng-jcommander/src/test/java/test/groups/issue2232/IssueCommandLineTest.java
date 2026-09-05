@@ -14,7 +14,7 @@ import org.testng.annotations.Test;
 import test.TestHelper;
 
 /**
- * The command line half of {@code test.groups.issue2232.IssueTest}, which stays in {@code
+ * The command line half of {@code org.testng.groups.issue2232.IssueTest}, which stays in {@code
  * testng-core} for the in-process case. This is the only test in the build that runs {@code
  * org.testng.TestNG} as a real forked process.
  */

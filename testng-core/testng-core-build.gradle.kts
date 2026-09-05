@@ -49,6 +49,12 @@ tasks.compileTestGroovy {
 
 tasks.test {
     maxParallelForks = Runtime.getRuntime().availableProcessors().div(2)
+    // Classes under org.testng.**.samples are TestNG input, not tests: a driver builds a suite
+    // around them and asserts on the result. Several are meant to fail or to be skipped, so
+    // running them directly reports failures that mean nothing. The exclude is inert while the
+    // suite XML below decides what runs, and is what makes GitHub issue #3446 step 5 -- dropping
+    // that XML for classpath discovery -- a one-line change rather than a fresh investigation.
+    exclude("org/testng/**/samples/**")
     (testFramework.options as TestNGOptions).apply {
         suites("src/test/resources/testng.xml")
         maxHeapSize = "1500m"
