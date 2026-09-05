@@ -278,20 +278,38 @@ public abstract class BaseTestMethod
     return m_methodsDependedUpon;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A snapshot, not a live view: {@link #setDownstreamDependencies(Set)} swaps in a new set
+   * rather than clearing and refilling the one already handed out, so a set taken before a
+   * replacement keeps what it held. The old behaviour tracked the replacement. Nothing in TestNG
+   * reads these across a replacement -- they are filled once while the graph is built and read
+   * while it runs -- and holding no set at all is what keeps a method with no dependencies from
+   * carrying an empty one.
+   */
   @Override
   public Set<ITestNGMethod> downstreamDependencies() {
     return readOnlyView(downstreamDependencies);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>A snapshot rather than a live view, for the reason given on {@link
+   * #downstreamDependencies()}.
+   */
   @Override
   public Set<ITestNGMethod> upstreamDependencies() {
     return readOnlyView(upstreamDependencies);
   }
 
+  /** Replaces the downstream dependencies. Sets already handed out keep what they held. */
   public void setDownstreamDependencies(Set<ITestNGMethod> methods) {
     downstreamDependencies = setupDependencies(methods);
   }
 
+  /** Replaces the upstream dependencies. Sets already handed out keep what they held. */
   public void setUpstreamDependencies(Set<ITestNGMethod> methods) {
     upstreamDependencies = setupDependencies(methods);
   }
@@ -1100,7 +1118,10 @@ public abstract class BaseTestMethod
   }
 
   private static boolean isNotParameterisedTest(ITestResult tr) {
-    return Optional.ofNullable(tr.getParameters()).orElse(new Object[0]).length == 0;
+    // orElse evaluates its argument whether or not it is used, so the Optional form built an empty
+    // array on every call, including the calls that had parameters to look at.
+    Object[] parameters = tr.getParameters();
+    return parameters == null || parameters.length == 0;
   }
 
   private @Nullable IRetryAnalyzer computeRetryAnalyzerInstanceToUse(ITestResult tr) {
