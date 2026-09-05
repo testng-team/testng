@@ -32,6 +32,14 @@ updates:
     labels:
       - "dependency: update"
       - "dependency: java"
+    groups:
+      # The recipe BOM and the Gradle plugin are released together upstream: rewrite-recipe-bom
+      # 3.38.0 is the release that carries rewrite-gradle-plugin 7.41.0. Taken one at a time they
+      # leave the pair mismatched, and each pull request pays for its own rewriteDryRun run. The
+      # glob covers both names, since the plugin is reported without a group id.
+      openrewrite:
+        patterns:
+          - "org.openrewrite*"
     ignore:
       # Autostyle 4.0.1 bundles a google-java-format that reaches into javac internals without
       # the --add-exports JPMS flags, so every module fails on JDK 25 with:
