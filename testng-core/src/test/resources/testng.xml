@@ -99,7 +99,7 @@
       <class name="test.multiple.TestMultiple"/>
       <class name="test.ClassConfigurations"/>
       <class name="test.alwaysrun.AlwaysRunTest"/>
-      <class name="test.conffailure.ConfigurationFailure" />
+      <class name="org.testng.conffailure.ConfigurationFailure" />
       <class name="test.superclass.MainTest" />
       <class name="test.superclass.Test3" />
       <class name="test.failures.FailuresTest" />
@@ -141,7 +141,7 @@
       <class name="test.configuration.github1700.RunTest"/>
       <class name="test.configuration.issue2432.IssueTest"/>
       <class name="test.configuration.issue2426.IssueTest"/>
-      <class name="test.aftergroups.AfterGroupsBehaviorTest"/>
+      <class name="org.testng.aftergroups.AfterGroupsBehaviorTest"/>
       <class name="test.testng285.TestNG285Test" />
       <class name="test.failedreporter.FailedReporterTest" />
       <class name="test.failedreporter.issue2517.DataProviderWithFactoryFailedReporterTest" />
@@ -173,10 +173,10 @@
       <class name="test.bug92.Bug92Test" />
       <class name="test.ReturnValueTest" />
       <class name="test.groupbug.GroupBugTest" />
-      <class name="test.groups.issue1834.IssueTest"/>
-      <class name="test.groups.issue182.IssueTest"/>
-      <class name="test.groups.issue2152.IssueTest"/>
-      <class name="test.groups.issue2232.IssueTest"/>
+      <class name="org.testng.groups.issue1834.IssueTest"/>
+      <class name="org.testng.groups.issue182.IssueTest"/>
+      <class name="org.testng.groups.issue2152.IssueTest"/>
+      <class name="org.testng.groups.issue2232.IssueTest"/>
       <class name="test.parameters.ShadowTest" />
       <class name="test.parameters.ParameterOverrideTest" />
       <class name="test.parameters.ParameterInjectAndOptionTest" />
@@ -191,7 +191,7 @@
       <class name="test.testng1231.TestExecutionListenerInvocationOrder"/>
       <class name="test.testng1232.TestListenerInstances"/>
       <class name="test.testng674.BeforeClassSkipExceptionTest"/>
-      <class name="test.testng106.TestNG106"/>
+      <class name="org.testng.conffailure.TestNG106"/>
       <class name="test.issue107.Issue107Test"/>
       <class name="test.test111.Test1" />
       <class name="test.testng173.TestNG173Test" />
@@ -213,7 +213,7 @@
       <class name="test.testng1396.ParallelByInstancesInterceptorTest"/>
       <class name="test.github1417.TestParamsInjectionInBeforeClass"/>
       <class name="test.order.OrderTest" />
-      <class name="test.github1461.MemoryLeakTestNg" />
+      <class name="org.testng.memory.MemoryLeakTestNg" />
       <!-- TODO fix the random issue <class name="test.issue565.Issue565Test"/>-->
       <class name="test.failedreporter.issue3111.FactoryInstanceFailedReporterTest"/>
       <class name="test.failedreporter.skippedposition.SkippedPositionRerunTest"/>
@@ -233,7 +233,7 @@
       <class name="test.objectfactory.ObjectFactoryTest"/>
       <class name="test.github1490.VerifyDataProviderListener"/>
       <class name="test.listeners.issue2456.IssueTest"/>
-      <class name="test.methodselection.MethodSelectionTest"/>
+      <class name="org.testng.methodselection.MethodSelectionTest"/>
       <class name="test.beforegroups.BeforeGroupsTest"/>
       <class name="test.invocationcount.issue1719.IssueTest"/>
       <class name="org.testng.internal.listeners.parameterindex.ParameterIndexListenerTest"/>

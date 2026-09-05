@@ -41,7 +41,7 @@ tests:
       - test.multiple.TestMultiple
       - test.ClassConfigurations
       - test.alwaysrun.AlwaysRunTest
-      - test.conffailure.ConfigurationFailure
+      - org.testng.conffailure.ConfigurationFailure
       - test.superclass.MainTest
       - test.superclass.Test3
       - test.failures.FailuresTest
