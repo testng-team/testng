@@ -1,8 +1,8 @@
 package org.testng.internal;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Supplier;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
@@ -16,7 +16,7 @@ import org.testng.xml.XmlTest;
  */
 public class RunInfo {
 
-  private final Set<MethodSelectorDescriptor> m_methodSelectors = new TreeSet<>();
+  private final List<MethodSelectorDescriptor> m_methodSelectors = new ArrayList<>();
   private final Supplier<XmlTest> xmlTest;
 
   public RunInfo(Supplier<XmlTest> xmlTest) {
@@ -29,8 +29,8 @@ public class RunInfo {
 
   public void addMethodSelector(IMethodSelector selector, int priority) {
     Utils.log("RunInfo", 3, "Adding method selector: " + selector + " priority: " + priority);
-    MethodSelectorDescriptor md = new MethodSelectorDescriptor(selector, priority);
-    m_methodSelectors.add(md);
+    m_methodSelectors.add(new MethodSelectorDescriptor(selector, priority));
+    m_methodSelectors.sort(Comparator.comparingInt(MethodSelectorDescriptor::getPriority));
   }
 
   /** @return true as soon as we fond a Method Selector that returns true for the method "tm". */

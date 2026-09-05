@@ -6,6 +6,8 @@ import org.testng.annotations.Test;
 import test.BaseTest;
 import test.methodselectors.issue1985.FilteringMethodSelector;
 import test.methodselectors.issue1985.TestClassSample;
+import test.methodselectors.issue2595.Issue2595Sample;
+import test.methodselectors.issue2595.OnlyDoNothingSelector;
 
 public class MethodSelectorTest extends BaseTest {
 
@@ -86,6 +88,15 @@ public class MethodSelectorTest extends BaseTest {
     assertThat(getPassedTests().isEmpty()).isTrue();
     assertThat(getFailedTests().isEmpty()).isTrue();
     assertThat(getSkippedTests().isEmpty()).isTrue();
+  }
+
+  @Test(description = "GITHUB-2595")
+  public void programmaticSelectorAtPriorityTenIsConsulted() {
+    addClass(Issue2595Sample.class);
+    addMethodSelector(OnlyDoNothingSelector.class.getName(), 10);
+    run();
+    verifyTests("Passed", new String[] {"doNothing"}, getPassedTests());
+    verifyTests("Failed", new String[] {}, getFailedTests());
   }
 
   @Test(description = "GITHUB-1985")
