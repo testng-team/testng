@@ -1,0 +1,30 @@
+# Classes named in src/test/resources/testng.xml that produce no test results.
+#
+# verifyTestExecution fails on any class named in the suite that does not run, because that is how
+# GitHub issue #1362 stayed invisible for years. Everything below predates the GitHub issue #3446
+# migration and is listed so the guard can be switched on without fixing eleven unrelated things
+# first. The list must shrink, never grow.
+#
+# A class here that starts running is also an error: the entry is stale and must be removed.
+
+# --- no source file exists. The suite names a class that is not in the tree, and TestNG says
+# --- nothing. These entries are simply dead.
+test.distributed.DistributedTest
+test.jar.JarTest
+test.timeout.TimeOutThreadLocalSampleTest
+
+# --- the class exists but declares no @Test method, so there is nothing to run.
+test.factory.FactoryTest
+test.factory.FactoryWithInstanceInfoTest
+test.groupinvocation.GroupConfiguration
+
+# --- every @Test is in group "broken", and the owning <test> block excludes that group. This is
+# --- deliberate and is the one category here that is not a defect.
+test.SerializationTest
+test.thread.ThreadTest
+
+# --- not diagnosed. Each has plain @Test methods, and the <test> block that names it applies no
+# --- group filter, so there is no visible reason for the silence. Worth an issue of its own.
+test.dependent.MissingGroupTest
+test.dependent.MissingMethodTest
+test.factory.FactoryAndTestMethodTest

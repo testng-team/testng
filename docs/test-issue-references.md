@@ -3,14 +3,20 @@
 Every `@Test(description = "GITHUB-<n>")` this reorganization relies on, and the evidence behind it.
 Regenerate with `scripts/verify-issue-refs.sh`.
 
+`GITHUB-182` and `GITHUB-1496` were found by running the check over **every** class in a phase's
+scope rather than only the ones that already carried a description. Both tests had none and both
+deserved one. `GITHUB-1461` was verified in an earlier round and then lost when this branch was
+rebuilt from master; the same sweep caught that too.
+
 ## The rule
 
 A reference is written only when **both** ends check out:
 
 1. **Provenance** — the commit that introduced the test names the issue, or the merge that brought
    it in does.
-2. **The issue exists and fits** — `#<n>` on GitHub is a real *issue* (not a pull request), it is
-   closed, and its subject is what the test asserts.
+2. **The issue exists and fits** — `#<n>` on GitHub is a real *issue* and not a pull request, and
+   its subject is what the test asserts. The state is reported, never enforced; a regression test
+   may reference an issue that is still open.
 
 Package names are not evidence. `test.testng173` and `test.testng317` look identical; one is a
 GitHub issue and the other is nothing.
@@ -18,10 +24,12 @@ GitHub issue and the other is nothing.
 Where GitHub's own timeline for the issue links the introducing commit, that is recorded as
 `timeline` below — the issue itself points at the code, which is as strong as this gets.
 
-## Verified — 15 references
+## Verified — 17 references
 
 | Ref | Issue title on GitHub | Provenance | Timeline |
 | --- | --- | --- | --- |
+| `GITHUB-182` | Inherited test methods do not get expected group behavior | "Inherited test methods do not inherit groups. Closes #182" | links commit |
+| `GITHUB-1496` | If method contains "$", run only one method, all methods will be run | "Add test case for #1496" | links commit |
 | `GITHUB-173` | Dependent methods executed out-of-order if method names match across classes | "Fix for the issue #173" | links commit |
 | `GITHUB-565` | Deadlock when using group dependency (plus other factors) | "Add test for #565" | links commit |
 | `GITHUB-674` | TestNG is not reporting any log for skip tests | "Inject config failure data into test results. Fixes #674" | links commit |
@@ -38,7 +46,7 @@ Where GitHub's own timeline for the issue links the introducing commit, that is 
 | `GITHUB-1417` | Class param injection is not working with @BeforeClass | PR #1447, branch `krmahadevan-fix-1417` | links PR 1447 |
 | `GITHUB-107` | TestNG printout wrong statistic number | "Improve Issue 107 test, add it to testng.xml" | **no link** |
 
-All fifteen are closed issues, none is a pull request.
+All seventeen are issues rather than pull requests. All happen to be closed, which the check reports but does not require.
 
 `GITHUB-107` is the weakest of the set: issue #107 was closed by hand in 2011 and its timeline links
 no commit or PR at all. It rests on the commit saying "Issue 107" in words and on the issue title

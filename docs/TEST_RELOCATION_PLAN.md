@@ -31,8 +31,9 @@ A reference is now written only when **both** ends check out, via
 
 1. **Provenance** — the commit that introduced the test names the issue, or the merge that brought
    it in does.
-2. **The issue** — `#<n>` is a real, closed GitHub *issue*, not a pull request, and its subject is
-   what the test asserts.
+2. **The issue** — `#<n>` is a real GitHub *issue* and not a pull request, and its subject is what
+   the test asserts. The issue's state is reported but never enforced: a regression test may
+   legitimately reference an issue that is still open.
 
 Where GitHub's own timeline for the issue links the introducing commit, the issue points back at
 the code, which is as strong as this gets.
@@ -41,10 +42,12 @@ The script refuses to answer rather than guess. Looking a file up by basename al
 different `TestClassSample.java`, and picking the first invents provenance that reads exactly like
 the real thing — so it reports `AMBIGUOUS` and asks for the original path.
 
-Run across all 21 references: **15 verified, 6 dropped.** Full evidence in
-`docs/test-issue-references.md`.
+Run across every class in phase 1's scope, not only the ones that already carried a description:
+**17 verified, 6 dropped.** Full evidence in `docs/test-issue-references.md`.
 
-- **15 GitHub references stand.** Twelve have the introducing commit in the issue's own timeline.
+- **17 GitHub references stand.** Twelve have the introducing commit in the issue's own timeline.
+  Three of the seventeen -- `GITHUB-182`, `GITHUB-1461` and `GITHUB-1496` -- were found only by
+  sweeping every class in the phase rather than checking the descriptions that already existed.
   Two more — 765 and 1417 — say only "Fixing review comments" in the commit and resolve through
   PRs #1374 and #1447, which the issues do link. `GITHUB-107` is the weakest: issue #107 was closed
   by hand in 2011 and links nothing, so it rests on the commit saying "Issue 107" in words plus a
@@ -145,8 +148,16 @@ problem then.
 Phase 1 improvised and produced a bug that compiled cleanly and failed only in the suite loader.
 Follow the order.
 
-1. **Verify the issue references first, before anything moves.** `git log --follow` cannot see an
-   uncommitted rename, so a reference checked after the move needs its old path passed by hand.
+1. **Run `scripts/verify-issue-refs.sh` over every test class in this phase's scope, before
+   anything moves.** Not only the classes that already carry a description: a class with no
+   description may still deserve one, and a class that has one may be wrong. Do it first, because
+   `git log --follow` cannot see an uncommitted rename, so a reference checked after the move needs
+   its old path passed by hand.
+
+   A description is written only when the script returns 0. Exit 1 means the provenance does not
+   name that issue, or the number is a pull request; exit 2 means the path is ambiguous; exit 3
+   means the API could not be reached, which is not a verdict. Record the outcome for the phase in
+   `docs/test-issue-references.md`.
 2. **Recompute the executable set.** It drifts as master moves, so do not trust the table above.
 
    ```bash
@@ -171,12 +182,39 @@ Follow the order.
 6. **Update the resources.** Grep, do not work from a list:
 
    ```bash
-   grep -rl "test\.<feature>\." testng-core/src/test/resources testng-yaml/src/test/resources \
+   feature=listeners   # the package this phase is moving
+   grep -rl "test\.$feature\." testng-core/src/test/resources testng-yaml/src/test/resources \
      testng-core/src/test/java testng-test-kit/src testng-jcommander/src
    ```
 7. **`autostyleApply`, then compile, then the phase's tests, then the full build.**
-8. **Compare the executable set before and after.** Same count, a clean 1:1 rename, nothing
-   dropped. A green build does not prove this.
+8. **Let the build check the execution set.** `verifyTestExecution` runs inside `check` and fails
+   when a class named in `testng.xml` did not run, when anything under `.samples.` ran as a root
+   test, or when the set of tests that ran differs from `testng-core/execution-inventory.txt`.
+   A phase that deliberately changes what runs updates the baseline in the same commit:
+
+   ```bash
+   ./gradlew :testng-core:verifyTestExecution -PupdateExecutionInventory
+   ```
+
+   Read that diff. It is the review's evidence that the phase moved tests without losing any.
+
+## The execution guard
+
+Phase 1 proved the parity by hand and reported the numbers. That does not survive the next seven
+phases, so `verifyTestExecution` in `testng-core-build.gradle.kts` now enforces three things on
+every `check`:
+
+1. **Every class named in `testng.xml` actually ran.** This is the GitHub issue #1362 failure mode:
+   compiled, green, never executed, invisible for years.
+2. **Nothing under `.samples.` ran as a root test.** Samples are TestNG input and several are meant
+   to fail, so a sample running as a test is both a false failure and a sign the boundary leaked.
+3. **The set of tests that ran matches `testng-core/execution-inventory.txt`** — 1,539 entries of
+   `class#method`. Data-provider rows and invocation indices are stripped, so `m[3](arg)` counts as
+   `m`; raw counts move about with parallelism and would make the check flaky.
+
+Check 3 is the one that catches a silent loss during a move, because a class dropped from both the
+suite and the code passes checks 1 and 2. The baseline changes whenever tests are added or removed,
+which is exactly when a reviewer should be looking.
 
 ## Things that will bite
 
@@ -240,16 +278,43 @@ on an answer:
 
 Neither of these belongs to a phase, and both are easy to forget once the migration is done.
 
-1. **Take the scaffolding out of the tree.** `docs/TEST_RELOCATION_PLAN.md`,
-   `docs/test-issue-references.md` and `scripts/verify-issue-refs.sh` exist to carry the plan and
-   the evidence while the phases run. Delete them at the end, or move whatever is still worth
-   keeping into `.github/CONTRIBUTING.md` — the executable/sample convention is the part a
-   contributor will still need after the migration.
+1. **Take the scaffolding out of the tree.** `docs/TEST_RELOCATION_PLAN.md` and
+   `docs/test-issue-references.md` carry the plan and the evidence while the phases run. Delete them
+   at the end.
+
+   `scripts/verify-issue-refs.sh` goes too. Guessing an issue number from a package name is a
+   bulk-conversion mistake, and bulk conversion ends with phase 8. After that the person adding a
+   test knows the issue number, and review catches the rest -- it already did, finding all six wrong
+   references and only those six.
+
+   `verifyTestExecution` is **not** scaffolding. It is the guard that makes GitHub issue #3446's
+   central promise hold, and it matters more once the suite XML is gone. It stays.
+
+   | File | Lifetime |
+   | --- | --- |
+   | `docs/TEST_RELOCATION_PLAN.md` | delete after phase 8 |
+   | `docs/test-issue-references.md` | delete after phase 8 |
+   | `scripts/verify-issue-refs.sh` | delete after phase 8 |
+   | `testng-core/execution-inventory.txt` | **permanent** |
+   | `testng-core/execution-known-silent.txt` | shrinks to two entries, then see below |
+
+   `execution-inventory.txt` is not a migration artefact and does not go away. It matters more once
+   the suite XML is deleted, not less: under classpath discovery a test can stop being discovered —
+   renamed out of the pattern, moved into a `samples` package by mistake — and nothing else in the
+   build would notice.
+
+   `execution-known-silent.txt` cannot reach zero as written. Nine of its eleven entries are
+   defects and should be fixed and deleted. The other two, `test.SerializationTest` and
+   `test.thread.ThreadTest`, are in group `broken` which their `<test>` block excludes on purpose,
+   so "named but never runs" is correct behaviour for them. Either the file keeps those two
+   forever, or `verifyTestExecution` learns to read group filters and the file goes entirely. The
+   second is better and is not hard; it was left out here to keep this PR to one subject.
 2. **Decide what happens to `test.test111`.** It is the same shape as the packages this work
    removed, but it does not match `testng<number>` so it was never in scope. Nothing else in the
    tree is named that way now.
 
-There is also a job this migration uncovered but did not take on: **452 `GITHUB-*` descriptions
-elsewhere in the test tree that nobody has verified.** `GITHUB-317` was wrong, so others will be.
-`scripts/verify-issue-refs.sh` audits them. That wants its own issue under #3446 rather than being
-folded into a phase.
+**The 452 `GITHUB-*` descriptions elsewhere in the tree are deliberately not audited.** Every
+description checked so far that someone else wrote was correct -- 165, 182, 990, 1834, 1880, 2152
+and 2232, seven for seven. The six wrong ones were all introduced by this migration, by inference
+from package names. There is no evidence of a wider problem, and the tool that would audit them is
+deleted at the end, so this is a decision rather than a deferred task.

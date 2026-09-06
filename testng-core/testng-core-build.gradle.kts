@@ -5,6 +5,7 @@ plugins {
     id("testng.kotlin-library")
     groovy
     id("testng.sonarqube")
+    id("testng.test-execution")
 }
 
 // Optional features: the transitive dependency is exposed only to consumers that ask for the
