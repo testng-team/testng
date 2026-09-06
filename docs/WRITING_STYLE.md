@@ -71,16 +71,18 @@ through, and do not reliably follow links out of it.
 - Copilot running inside VS Code or IntelliJ.
 - CI, once `actions/checkout` has restored the tree.
 
-**They do not resolve** for anything that reads the file out of git instead. Git stores a symlink
-as a small blob holding the target path, so:
+**GitHub's Contents API resolves them too.** Measured against this repository: a request for
+`.github/copilot-instructions.md` comes back as `type=file` with the full 23 KB of `AGENTS.md`, not
+as a link. So a tool that reads repository files through that API sees the rules.
 
-- The GitHub Contents API returns the twelve characters `../AGENTS.md`, not the 23 KB behind them.
-- The GitHub web view and `github.dev` show those same twelve characters.
+**Two things still do not resolve them:**
+
+- `raw.githubusercontent.com` serves the blob as stored, which is 12 bytes reading `../AGENTS.md`.
+  Anything fetching a raw URL gets that instead of the rules.
 - A Windows clone without symlink support writes the target path into an ordinary text file.
 
-So the pointers hold for anyone working in a checkout, and break for anything reading the
-repository through an API. If that starts to matter, generate the copies from `AGENTS.md` with a
-script and have CI fail when they drift apart. Never keep a second copy by hand.
+If either starts to matter, generate the copies from `AGENTS.md` with a script and have CI fail
+when they drift apart. Never keep a second copy by hand.
 
 ## Running the check
 
@@ -94,10 +96,14 @@ Two Gradle tasks, because there are two different questions:
 ./gradlew writingStyleCheck
 ```
 
-`writingStyleCheckChanges` is the one you want day to day. It checks what this branch touched:
+`writingStyleCheckChanges` is the one you want day to day. It reports only problems your change
+introduced, the same way CI does with `filter_mode: added`. It looks at:
 
-- Files committed on the branch, compared against the base branch.
+- Files committed on the branch, compared against the base branch, renames included.
 - Anything staged, unstaged or untracked in your working copy.
+
+Within those files it keeps only findings that sit on lines the change added. Anything older is
+counted and mentioned, so you know it is there, but it is not yours to fix.
 
 It picks the base by comparing merge bases and taking the most recent. Taking the first remote it
 finds would be wrong, because a fork's `origin/master` is often far behind the canonical
