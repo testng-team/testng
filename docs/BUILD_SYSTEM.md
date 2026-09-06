@@ -161,6 +161,9 @@ testng.published-java-library (for published modules)
 ├── testng.java-library
 └── testng.maven-publish
     └── maven-publish
+
+testng.writing-style (root project only)
+└── build-logic.build-params
 ```
 
 ### Key Plugins

@@ -30,6 +30,7 @@ Read this documentation when you need to:
 - 📦 **Publishing a release**: Go directly to [RELEASE_PROCESS.md](RELEASE_PROCESS.md)
 - ☕ **Confused about Java versions**: See [JAVA_VERSIONS_QUICK_REFERENCE.md](JAVA_VERSIONS_QUICK_REFERENCE.md)
 - 🔧 **Build system deep dive**: Read [BUILD_SYSTEM.md](BUILD_SYSTEM.md)
+- ✍️ **Writing javadoc, comments or an issue**: See [WRITING_STYLE.md](WRITING_STYLE.md)
 
 ## Documentation Index
 
@@ -56,6 +57,13 @@ Read this documentation when you need to:
   - How toolchains enable multi-version testing
   - Common scenarios and FAQ
   - Visual diagrams and examples
+
+- **[WRITING_STYLE.md](WRITING_STYLE.md)** - How we write javadoc, comments and issues, and what checks it
+  - Where the rules live, and why there is only one copy
+  - Running `vale` on your own machine and in CI
+  - What Vale sees, and what it does not
+  - Turning a rule off, and adding a new one
+  - What the checks miss
 
 - **[CI_TEST_WORKFLOW.md](CI_TEST_WORKFLOW.md)** - CI test workflow and matrix builder
   - How the GitHub Actions test workflow works
@@ -211,6 +219,12 @@ testng/
 
 # Apply code formatting
 ./gradlew autostyleApply
+
+# Check the writing style of what this branch touched (docs/WRITING_STYLE.md)
+./gradlew writingStyleCheckChanges
+
+# Check the writing style of the whole repository
+./gradlew writingStyleCheck
 
 # Run all checks
 ./gradlew check

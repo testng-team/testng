@@ -1,0 +1,29 @@
+name: prose
+
+on:
+  pull_request:
+    # .vale.ini and .vale/** are here so a pull request that breaks the rules themselves still
+    # runs the check. *.txt is not: .vale.ini deliberately covers only *.md and *.java.
+    paths: ['**.java', '**.md', '.vale.ini', '.vale/**', '.github/workflows/prose.yml']
+
+# No write scope. github-pr-annotations reports through workflow commands rather than the API.
+permissions:
+  contents: read
+
+jobs:
+  vale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # errata-ai/vale-action moved here. Pinned to a commit, like every other action in this
+      # repository, so Dependabot can bump it and a branch push cannot change what runs.
+      - uses: vale-cli/vale-action@518a9136acc6e6668ce7c00d367051e0941e87ff # v3.0.0
+        with:
+          # Only lines the pull request added. Existing prose is not the author's problem.
+          filter_mode: added
+          # Annotations, not review comments. A pull request from a fork gets a read-only
+          # GITHUB_TOKEN, so github-pr-review would fail with 403 on most contributions here.
+          reporter: github-pr-annotations
+          # Comment, do not block. Promote to true once the warning rate settles.
+          fail_on_error: false
+          version: 3.20.0

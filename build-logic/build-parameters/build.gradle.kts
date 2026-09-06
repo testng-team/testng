@@ -55,6 +55,10 @@ buildParameters {
         defaultValue.set(false)
         description.set("Fail rewriteDryRun when OpenRewrite still has changes to make")
     }
+    bool("failOnWritingStyle") {
+        defaultValue.set(false)
+        description.set("Fail the writing-style tasks when they report findings")
+    }
     bool("skipErrorProne") {
         defaultValue.set(false)
         description.set("Skip Error Prone verifications")

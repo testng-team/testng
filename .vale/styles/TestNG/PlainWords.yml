@@ -1,0 +1,21 @@
+extends: substitution
+message: "Use '%s' instead of '%s'."
+link: AGENTS.md#writing
+level: warning
+ignorecase: true
+swap:
+  utilize: use
+  utilise: use
+  leverage: use
+  initiate: start
+  commence: start
+  terminate: end
+  facilitate: help
+  endeavour: try
+  prior to: before
+  subsequent to: after
+  in the event that: if
+  a number of: some
+  the majority of: most
+  at this point in time: now
+  is able to: can

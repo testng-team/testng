@@ -1,0 +1,32 @@
+# American spelling. It already wins in the corpus, and the Java API itself
+# spells it that way: Serializable, synchronized, Externalizable.
+extends: substitution
+message: "Use '%s', not '%s'. This codebase spells it the American way."
+link: AGENTS.md#writing
+level: warning
+ignorecase: true
+swap:
+  behaviour: behavior
+  behaviours: behaviors
+  initialise: initialize
+  initialised: initialized
+  initialising: initializing
+  initialiser: initializer
+  normalise: normalize
+  normalises: normalizes
+  normalised: normalized
+  recognise: recognize
+  recognised: recognized
+  unrecognised: unrecognized
+  serialised: serialized
+  synchronised: synchronized
+  scrutinised: scrutinized
+  capitalisation: capitalization
+  organisation: organization
+  initialisation: initialization
+  normalisation: normalization
+  serialisation: serialization
+  synchronisation: synchronization
+  customise: customize
+  customised: customized
+  customisation: customization
