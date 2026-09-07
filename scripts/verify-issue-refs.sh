@@ -25,10 +25,16 @@ rc=0
 reject_if_ambiguous() {
   local pattern=$1
   local paths
-  paths=$(git log --all --diff-filter=A --format= --name-only -- "$pattern" | grep -E '\.java$|\.kt$|\.groovy$' | sort -u)
+  # -M is passed on purpose. Git turns rename detection on by default, but a repository that sets
+  # diff.renames=false would report every rename of a file as a new add. One file that moved three
+  # times then looks like four different files, and this rejects it as ambiguous.
+  paths=$(git log --all --diff-filter=A -M --format= --name-status -- "$pattern" \
+            | awk '$1 == "A" { print $2 }' | grep -E '\.java$|\.kt$|\.groovy$' | sort -u)
   if [ "$(printf '%s\n' "$paths" | grep -c .)" -gt 1 ]; then
-    echo "AMBIGUOUS   '$pattern' was added at more than one path; pass the full original path:"
-    printf '%s\n' "$paths" | sed 's/^/              /'
+    # stderr, not stdout: callers redirect this function's stdout away, and a refusal that nobody
+    # sees is worse than no check at all.
+    echo "AMBIGUOUS   '$pattern' was added at more than one path; pass the full original path:" >&2
+    printf '%s\n' "$paths" | sed 's/^/              /' >&2
     exit 2
   fi
   printf '%s' "$paths"
@@ -52,7 +58,7 @@ if [ -z "$sha" ]; then
   short=$(last_two "$frag")
   for _ in 1 2 3 4 5 6 7 8 9 10; do
     reject_if_ambiguous "*$short" >/dev/null
-    found=$(git log --all --reverse --diff-filter=A --format=%H -- "*$short" | head -1)
+    found=$(git log --all --reverse --diff-filter=A -M --format=%H -- "*$short" | head -1)
     [ -z "$found" ] && break
     sha=$found
     # git log reports a rename as an add unless -M is given, so re-read the commit with it.
@@ -66,7 +72,7 @@ fi
 # Last resort: the file name alone.
 if [ -z "$sha" ]; then
   reject_if_ambiguous "*/$(basename "$frag")" >/dev/null
-  sha=$(git log --all --reverse --diff-filter=A --format=%H -- "*/$(basename "$frag")" | head -1)
+  sha=$(git log --all --reverse --diff-filter=A -M --format=%H -- "*/$(basename "$frag")" | head -1)
 fi
 if [ -z "$sha" ]; then echo "no introducing commit found for $frag"; exit 1; fi
 
@@ -87,17 +93,24 @@ printf 'message     %s\n' "${msg:-<EMPTY -- no provenance here>}"
 
 # Provenance must name the number being checked. Any issue marker is not enough: a commit that says
 # "#123" does not prove anything about issue 765.
-# Accepts "#765", "TESTNG-765", "issues/765" and a branch name such as "fix-765". The last form
-# is common in merge commits and is real evidence, so the matched text is printed for a human to
-# judge rather than hidden behind a yes or no.
-names_num() { printf '%s' "$1" | grep -qE "(TESTNG-|#|issues/|[-/])${num}([^0-9]|$)"; }
+# A commit message must name the issue outright: "#765", "TESTNG-765" or "issues/765".
+# Anything looser accepts text that proves nothing, such as "src/765/data.txt" or "release-765".
+names_num() { printf '%s' "$1" | grep -qE "(TESTNG-|#|issues/)${num}([^0-9]|$)"; }
+
+# A merge line may instead carry the issue in the branch it merges, such as
+# "Merge pull request #1374 from krmahadevan/krmahadevan-fix-765". Only the branch is read, and
+# only after "from", so an issue number elsewhere in the subject cannot stand in for it.
+branch_names_num() {
+  printf '%s' "$1" | sed -n 's/.*Merge pull request [^ ]* from \([^ |]*\).*/\1/p' \
+    | grep -qE "(^|[^0-9])${num}([^0-9]|$)"
+}
 matched_text() { printf '%s' "$1" | grep -oE "[A-Za-z/#-]*${num}([^0-9]|$)" | head -1; }
 if names_num "$msg"; then
   printf 'provenance  the introducing commit names it: %s\n' "$(matched_text "$msg")"
 else
   merge=$(git log --merges --ancestry-path --format=%H "$sha".."$BASE" 2>/dev/null | tail -1)
   mmsg=$([ -n "$merge" ] && git log -1 --format='%s | %b' "$merge" | tr '\n' ' ' | sed 's/  */ /g')
-  if [ -n "${mmsg:-}" ] && names_num "$mmsg"; then
+  if [ -n "${mmsg:-}" ] && { names_num "$mmsg" || branch_names_num "$mmsg"; }; then
     printf 'provenance  the merge names it (%s): %s\n' "$(matched_text "$mmsg")" "$mmsg"
   else
     printf 'provenance  NOT PROVEN -- neither the commit nor its merge names #%s\n' "$num"

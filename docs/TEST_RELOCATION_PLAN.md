@@ -217,7 +217,7 @@ every `check`:
 3. **Every test in `testng-core/execution-inventory.txt` still runs, with the same outcome.** Each
    line holds `class#method`, a status, and how many times it ran:
 
-   ```
+   ```text
    org.testng.memory.MemoryLeakTestNg#testMemoryLeak	PASS 1
    ```
 

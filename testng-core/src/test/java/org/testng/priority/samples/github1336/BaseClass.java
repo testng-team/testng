@@ -35,7 +35,7 @@ public class BaseClass {
     }
   }
 
-  public void runTest(String url) {
+  protected void runTest(String url) {
     getDriver().get(url);
     assertThat(getDriver().getCurrentUrl()).isEqualTo(url);
   }

@@ -1,4 +1,4 @@
-package test;
+package org.testng.reflect;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

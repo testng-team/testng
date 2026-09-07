@@ -251,6 +251,7 @@ org.testng.reflect.InterningRegressionTest$Bean5#one	PASS 1
 org.testng.reflect.InterningRegressionTest$Bean5#two	PASS 1
 org.testng.reflect.InterningRegressionTest$Bean6#one	PASS 1
 org.testng.reflect.InterningRegressionTest$Bean6#two	PASS 1
+org.testng.reflect.ReflectionHelperTest#testMethodCount	PASS 1
 org.testng.reflect.ReflectionRecipesTest#exactMatchTest	PASS 10
 org.testng.reflect.ReflectionRecipesTest#generateMessageStringifiesPrimitiveArray	PASS 1
 org.testng.reflect.ReflectionRecipesTest#leftoverArgumentsWithNullMethodKeepDiagnostic	PASS 1
@@ -441,7 +442,6 @@ test.MethodTest#includeMethodsOnly	PASS 1
 test.Misc#makeSureSetUpWithParameterWithNoParametersFails	PASS 1
 test.NestedStaticTest#nestedClassShouldBeIncluded	PASS 1
 test.ParameterConstructorTest#verify	PASS 1
-test.ReflectionHelperTest#testMethodCount	PASS 1
 test.ReporterApiTest#testApi	PASS 1
 test.ReturnValueTest#suiteReturnValueTestShouldBeRun	PASS 1
 test.ReturnValueTest#suiteReturnValueTestShouldNotBeRun	PASS 1

@@ -24,7 +24,7 @@ GitHub issue and the other is nothing.
 Where GitHub's own timeline for the issue links the introducing commit, that is recorded as
 `timeline` below — the issue itself points at the code, which is as strong as this gets.
 
-## Verified — 17 references
+## Verified in phase 1
 
 | Ref | Issue title on GitHub | Provenance | Timeline |
 | --- | --- | --- | --- |
@@ -46,7 +46,7 @@ Where GitHub's own timeline for the issue links the introducing commit, that is 
 | `GITHUB-1417` | Class param injection is not working with @BeforeClass | PR #1447, branch `krmahadevan-fix-1417` | links PR 1447 |
 | `GITHUB-107` | TestNG printout wrong statistic number | "Improve Issue 107 test, add it to testng.xml" | **no link** |
 
-All seventeen are issues rather than pull requests. All happen to be closed, which the check reports but does not require.
+Every one is an issue rather than a pull request. All happen to be closed. The check reports the state but does not require it.
 
 `GITHUB-107` is the weakest of the set: issue #107 was closed by hand in 2011 and its timeline links
 no commit or PR at all. It rests on the commit saying "Issue 107" in words and on the issue title
@@ -54,7 +54,29 @@ matching what the test asserts — it counts passed tests. It is also **not some
 added**: the description predates it. Left as it stands; flagged so nobody assumes it carries the
 same weight as the rest.
 
-## No reference — 6 tests
+## Verified in phase 2
+
+| Ref | Issue title on GitHub | Provenance |
+| --- | --- | --- |
+| `GITHUB-392` | AfterClass method is not fired when an IMethodInterceptor removes test methods | "Fix #392" |
+| `GITHUB-521` | If test methods are filtered using IMethodInterceptor, beforeclass method is not executed | "Add test case for #521" |
+| `GITHUB-1480` | Parallel=methods not working when tests have different priorities | "Fix #1480: Priority/parallel=methods issue" |
+| `GITHUB-1632` | throwing SkipException sets iTestResult status to Failure instead of Skip | "Streamline skipped test results in listeners. Closes #1632" |
+| `GITHUB-1726` | Need a way to exclude built-in interceptors from being added | "Re-order to ensure built-in interceptor added first. Closes #1726" |
+| `GITHUB-3437` | ClassHelper.getAvailableMethods is uncached and re-derived | "perf: cache ClassHelper.getAvailableMethods per class" |
+
+`GITHUB-173`, `GITHUB-674`, `GITHUB-765`, `GITHUB-1336`, `GITHUB-1396` and `GITHUB-1430` also belong
+to phase 2 packages. Phase 1 verified them and the table above records them already.
+
+`GITHUB-521` is the one worth reading twice. The test was written in 2015 and was in no suite file,
+so it had never run. Phase 2 registers it.
+
+Eight classes in phase 2 get no reference. No commit in their history names an issue:
+`ExecutableCacheClassLoaderTest`, `InterningRegressionTest`, `ReflectionRecipesTest`,
+`TestMethodMatcher`, `PreserveOrderTest`, `PriorityTest`, `MethodInterceptorTest` and
+`MultipleInterceptorsTest`.
+
+## No reference
 
 These get **no** `description`. Their class and package names already say what they cover.
 

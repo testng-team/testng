@@ -3,6 +3,6 @@
  * <exclude>} in a suite file, regular-expression selectors and custom {@code IMethodSelector}
  * implementations.
  *
- * <p>Classes handed to TestNG to produce that behaviour live in {@code samples}, not here.
+ * <p>Classes handed to TestNG to produce that behavior live in {@code samples}, not here.
  */
 package org.testng.methodselection;

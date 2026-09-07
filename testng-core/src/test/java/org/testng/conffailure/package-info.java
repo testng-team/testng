@@ -5,6 +5,6 @@
  *
  * <p>Compare {@code org.testng.skip}, which is about how a skip is described once it has happened.
  *
- * <p>Classes handed to TestNG to produce that behaviour live in {@code samples}, not here.
+ * <p>Classes handed to TestNG to produce that behavior live in {@code samples}, not here.
  */
 package org.testng.conffailure;
