@@ -1,11 +1,14 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -500,7 +503,15 @@ public class MethodHelper {
     return result;
   }
 
-  /** @return A sorted array containing all the methods 'method' depends on */
+  /**
+   * Methods {@code method} depends on, including {@code dependsOnMethods} predecessors from the
+   * ordering graph and, for a test method, the test methods of each {@code dependsOnGroups} group.
+   * The work queue walks only direct graph predecessors and handles transitivity itself. Group
+   * members are walked the same way, so a member's own method and group dependencies stay in the
+   * closure. The graph itself still omits those group edges for test methods: runtime scheduling
+   * carries them in {@code DynamicGraphHelper}. FailedReporter is the caller that needs the group
+   * members as well, so a passed member of a depended-upon group is kept in testng-failed.xml.
+   */
   public static List<ITestNGMethod> getMethodsDependedUpon(
       ITestNGMethod method, ITestNGMethod[] methods, Comparator<ITestNGMethod> comparator) {
     Graph<ITestNGMethod> g = GRAPH_CACHE.get(methods);
@@ -511,7 +522,53 @@ public class MethodHelper {
       GRAPH_CACHE.put(methods, g);
     }
 
-    return g.findPredecessors(method);
+    LinkedHashSet<ITestNGMethod> result = new LinkedHashSet<>();
+    Deque<ITestNGMethod> work = new ArrayDeque<>();
+    Set<ITestNGMethod> seen = new HashSet<>();
+    seen.add(method);
+    work.add(method);
+    while (!work.isEmpty()) {
+      ITestNGMethod current = work.removeFirst();
+      for (ITestNGMethod predecessor : directPredecessors(g, current)) {
+        enqueueDependency(predecessor, result, seen, work);
+      }
+      if (!current.isTest()) {
+        continue;
+      }
+      String[] groupsDependedUpon =
+          Optional.ofNullable(current.getGroupsDependedUpon()).orElse(new String[0]);
+      for (String group : groupsDependedUpon) {
+        ITestNGMethod[] groupMembers =
+            MethodGroupsHelper.findMethodsThatBelongToGroup(current, methods, group);
+        for (ITestNGMethod groupMember : groupMembers) {
+          if (groupMember.isTest() && !groupMember.equals(current)) {
+            enqueueDependency(groupMember, result, seen, work);
+          }
+        }
+      }
+    }
+    return new ArrayList<>(result);
+  }
+
+  private static void enqueueDependency(
+      ITestNGMethod candidate,
+      Set<ITestNGMethod> result,
+      Set<ITestNGMethod> seen,
+      Deque<ITestNGMethod> work) {
+    if (seen.add(candidate)) {
+      result.add(candidate);
+      work.add(candidate);
+    }
+  }
+
+  // Interceptor-added methods can be absent from the ordering graph.
+  private static Collection<ITestNGMethod> directPredecessors(
+      Graph<ITestNGMethod> graph, ITestNGMethod method) {
+    try {
+      return graph.getPredecessors(method);
+    } catch (TestNGException ignored) {
+      return List.of();
+    }
   }
 
   // TODO: This needs to be revisited so that, we dont update the parameter list "methodList"
