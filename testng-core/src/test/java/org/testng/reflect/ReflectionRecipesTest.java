@@ -1,4 +1,4 @@
-package test.reflect;
+package org.testng.reflect;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -28,6 +28,7 @@ import org.testng.internal.reflect.InjectableParameter;
 import org.testng.internal.reflect.MethodMatcherException;
 import org.testng.internal.reflect.ReflectionRecipes;
 import org.testng.log4testng.Logger;
+import org.testng.reflect.samples.TestContextJustForTesting;
 import org.testng.xml.XmlTest;
 
 /** @author <a href="mailto:nitin.matrix@gmail.com">Nitin Verma</a> */

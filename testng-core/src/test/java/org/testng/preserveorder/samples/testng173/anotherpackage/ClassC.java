@@ -1,4 +1,4 @@
-package test.testng173.anotherpackage;
+package org.testng.preserveorder.samples.testng173.anotherpackage;
 
 import org.testng.annotations.Test;
 

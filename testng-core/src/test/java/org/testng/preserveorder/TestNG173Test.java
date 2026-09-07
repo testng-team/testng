@@ -1,4 +1,4 @@
-package test.testng173;
+package org.testng.preserveorder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,14 +14,14 @@ import test.SimpleBaseTest;
 
 public class TestNG173Test extends SimpleBaseTest {
 
-  @Test
+  @Test(description = "GITHUB-173")
   public void orderShouldBePreservedInMethodsWithSameNameAndInDifferentClasses() {
     TestNG tng = create();
     XmlSuite s = createXmlSuite("PreserveOrder");
     XmlTest t = new XmlTest(s);
 
-    t.getXmlClasses().add(new XmlClass("test.testng173.ClassA"));
-    t.getXmlClasses().add(new XmlClass("test.testng173.ClassB"));
+    t.getXmlClasses().add(new XmlClass("org.testng.preserveorder.samples.testng173.ClassA"));
+    t.getXmlClasses().add(new XmlClass("org.testng.preserveorder.samples.testng173.ClassB"));
 
     t.setPreserveOrder(true);
 
@@ -39,15 +39,16 @@ public class TestNG173Test extends SimpleBaseTest {
         .containsExactly("test1", "test2", "testX", "test2", "test1");
   }
 
-  @Test
+  @Test(description = "GITHUB-173")
   public void
       orderShouldBePreservedInMethodsWithSameNameAndInDifferentClassesAndDifferentPackage() {
     TestNG tng = create();
     XmlSuite s = createXmlSuite("PreserveOrder");
     XmlTest t = new XmlTest(s);
 
-    t.getXmlClasses().add(new XmlClass("test.testng173.ClassA"));
-    t.getXmlClasses().add(new XmlClass("test.testng173.anotherpackage.ClassC"));
+    t.getXmlClasses().add(new XmlClass("org.testng.preserveorder.samples.testng173.ClassA"));
+    t.getXmlClasses()
+        .add(new XmlClass("org.testng.preserveorder.samples.testng173.anotherpackage.ClassC"));
 
     t.setPreserveOrder(true);
 

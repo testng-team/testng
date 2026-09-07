@@ -1,4 +1,4 @@
-package test.reflect;
+package org.testng.reflect;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,6 +9,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Executable;
 import org.testng.annotations.Test;
 import org.testng.internal.ExecutableCache;
+import org.testng.reflect.samples.LoneClass;
 
 /**
  * Proves the main reason for building the cache on {@link ClassValue}: interning a class's method

@@ -1,4 +1,4 @@
-package test.priority.issue2137;
+package org.testng.priority.samples.issue2137;
 
 import org.testng.annotations.Test;
 

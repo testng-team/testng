@@ -1,4 +1,4 @@
-package test.methodinterceptors.multipleinterceptors;
+package org.testng.methodinterceptors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,6 +7,10 @@ import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.methodinterceptors.samples.multipleinterceptors.FirstInterceptor;
+import org.testng.methodinterceptors.samples.multipleinterceptors.FooTest;
+import org.testng.methodinterceptors.samples.multipleinterceptors.SecondInterceptor;
+import org.testng.methodinterceptors.samples.multipleinterceptors.ThirdInterceptor;
 import test.SimpleBaseTest;
 
 public class MultipleInterceptorsTest extends SimpleBaseTest {

@@ -1,4 +1,4 @@
-package test.priority;
+package org.testng.priority;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,12 +8,17 @@ import java.util.stream.Collectors;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.priority.samples.SampleTest01;
+import org.testng.priority.samples.SampleTest02;
+import org.testng.priority.samples.WithPriorityAndDependsMethodsSample;
+import org.testng.priority.samples.WithPrioritySample2Test;
+import org.testng.priority.samples.WithPrioritySampleTest;
+import org.testng.priority.samples.issue2075.InterruptTest;
+import org.testng.priority.samples.issue2137.IssueTest;
+import org.testng.priority.samples.issue2137.OrderListener;
 import org.testng.xml.XmlSuite;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
-import test.priority.issue2075.InterruptTest;
-import test.priority.issue2137.IssueTest;
-import test.priority.issue2137.OrderListener;
 
 public class PriorityTest extends SimpleBaseTest {
 

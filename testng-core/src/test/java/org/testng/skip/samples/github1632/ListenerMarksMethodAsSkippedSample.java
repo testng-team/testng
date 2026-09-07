@@ -1,4 +1,4 @@
-package test.skip.github1632;
+package org.testng.skip.samples.github1632;
 
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;

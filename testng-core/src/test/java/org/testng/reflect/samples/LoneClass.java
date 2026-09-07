@@ -1,4 +1,4 @@
-package test.reflect;
+package org.testng.reflect.samples;
 
 /**
  * A deliberately dependency-free class used by {@link ExecutableCacheClassLoaderTest}. It is loaded

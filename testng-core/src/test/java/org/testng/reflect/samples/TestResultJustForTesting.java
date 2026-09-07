@@ -1,4 +1,4 @@
-package test.reflect;
+package org.testng.reflect.samples;
 
 import java.util.List;
 import java.util.Set;

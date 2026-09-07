@@ -1,4 +1,4 @@
-package test.methodinterceptors.issue1726;
+package org.testng.methodinterceptors.samples.issue1726;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

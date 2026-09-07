@@ -1,4 +1,4 @@
-package test.github765;
+package org.testng.reflect.samples.github765;
 
 public abstract class TestTemplate<T> {
 

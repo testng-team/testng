@@ -1,4 +1,4 @@
-package test.testng1396;
+package org.testng.methodinterceptors;
 
 import static org.assertj.core.api.Assertions.fail;
 
@@ -14,11 +14,13 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.methodinterceptors.samples.testng1396.SampleFor1396;
+import org.testng.methodinterceptors.samples.testng1396.TestNG1396HighPriority;
 import org.testng.xml.XmlSuite;
 
 public class ParallelByInstancesInterceptorTest {
 
-  @Test(description = "test for https://github.com/cbeust/testng/issues/1396")
+  @Test(description = "GITHUB-1396")
   public void should_honor_interceptor_order_when_running_parallel_instances() {
     TestNG tng = new TestNG();
 

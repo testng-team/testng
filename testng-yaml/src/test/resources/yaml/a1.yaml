@@ -7,7 +7,7 @@ parallel: false
 configFailurePolicy: continue
 
 listeners:
-  - test.methodinterceptors.FastTestsFirstInterceptor
+  - org.testng.methodinterceptors.samples.FastTestsFirstInterceptor
   - test.invokedmethodlistener.MyListener
 
 packages:

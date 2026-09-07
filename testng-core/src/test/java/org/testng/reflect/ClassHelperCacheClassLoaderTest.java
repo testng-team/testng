@@ -1,4 +1,4 @@
-package test.reflect;
+package org.testng.reflect;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.util.Set;
 import org.testng.annotations.Test;
 import org.testng.internal.ClassHelper;
+import org.testng.reflect.samples.LoneClass;
 
 /**
  * Proves the main reason for memoizing {@link ClassHelper#getAvailableMethods(Class)} on {@link
@@ -18,7 +19,7 @@ import org.testng.internal.ClassHelper;
  */
 public class ClassHelperCacheClassLoaderTest {
 
-  @Test
+  @Test(description = "GITHUB-3437")
   public void lookingUpAvailableMethodsDoesNotPinTheClassLoader() throws Exception {
     WeakReference<ClassLoader> loaderRef = lookupThroughThrowawayLoader();
 

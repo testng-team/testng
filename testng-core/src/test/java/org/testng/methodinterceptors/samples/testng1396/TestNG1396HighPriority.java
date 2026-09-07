@@ -1,4 +1,4 @@
-package test.testng1396;
+package org.testng.methodinterceptors.samples.testng1396;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;

@@ -1,4 +1,4 @@
-package test.priority;
+package org.testng.priority.samples;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;

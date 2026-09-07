@@ -1,4 +1,4 @@
-package test.skip.github1632;
+package org.testng.skip.samples.github1632;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;

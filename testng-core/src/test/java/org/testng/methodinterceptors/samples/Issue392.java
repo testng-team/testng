@@ -1,4 +1,4 @@
-package test.methodinterceptors;
+package org.testng.methodinterceptors.samples;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;

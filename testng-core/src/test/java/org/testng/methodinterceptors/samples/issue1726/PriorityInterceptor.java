@@ -1,4 +1,4 @@
-package test.methodinterceptors.issue1726;
+package org.testng.methodinterceptors.samples.issue1726;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;

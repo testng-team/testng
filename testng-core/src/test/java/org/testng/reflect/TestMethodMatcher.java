@@ -1,4 +1,4 @@
-package test.reflect;
+package org.testng.reflect;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -14,6 +14,9 @@ import org.testng.internal.reflect.MethodMatcher;
 import org.testng.internal.reflect.MethodMatcherContext;
 import org.testng.internal.reflect.MethodMatcherException;
 import org.testng.log4testng.Logger;
+import org.testng.reflect.samples.TestContextJustForTesting;
+import org.testng.reflect.samples.TestResultJustForTesting;
+import org.testng.reflect.samples.XmlTestJustForTesting;
 import org.testng.xml.XmlTest;
 
 /**

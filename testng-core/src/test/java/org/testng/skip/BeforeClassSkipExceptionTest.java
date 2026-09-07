@@ -1,51 +1,53 @@
-package test.testng674;
+package org.testng.skip;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.skip.samples.testng674.ReportingListenerFor674;
+import org.testng.skip.samples.testng674.TestClassSampleContainer;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
 public class BeforeClassSkipExceptionTest extends SimpleBaseTest {
 
-  @Test
+  @Test(description = "GITHUB-674")
   public void testIfTestMethodHasException() {
     ReportingListenerFor674 reporter = new ReportingListenerFor674();
     createTestNGInstanceAndRun(
         reporter, TestClassSampleContainer.SampleClassWithFailingBeforeClassMethod.class);
   }
 
-  @Test
+  @Test(description = "GITHUB-674")
   public void testIfTestMethodHasExceptionInInheritance() {
     ReportingListenerFor674 reporter = new ReportingListenerFor674();
     createTestNGInstanceAndRun(reporter, TestClassSampleContainer.ChildClass.class);
   }
 
-  @Test
+  @Test(description = "GITHUB-674")
   public void testExceptionDetailsWhenClassHasMultipleFailures() {
     ReportingListenerFor674 reporter = new ReportingListenerFor674();
     createTestNGInstanceAndRun(
         reporter, TestClassSampleContainer.SampleClassWithMultipleFailures.class);
   }
 
-  @Test
+  @Test(description = "GITHUB-674")
   public void testExceptionDetailsWhenClassHasExplicitSkipInConfiguration() {
     ReportingListenerFor674 reporter = new ReportingListenerFor674();
     createTestNGInstanceAndRun(
         reporter, TestClassSampleContainer.SampleClassWithExplicitConfigSkip.class);
   }
 
-  @Test
+  @Test(description = "GITHUB-674")
   public void testExceptionDetailsWhenConfigHasAlwaysRun() {
     ReportingListenerFor674 reporter = new ReportingListenerFor674();
     createTestNGInstanceAndRun(
         reporter, TestClassSampleContainer.SampleClassWithMultipleFailuresAndAlwaysRun.class);
   }
 
-  @Test
+  @Test(description = "GITHUB-674")
   public void testExceptionDetailsUsingGroupsWithFailures() {
     ReportingListenerFor674 reporter = new ReportingListenerFor674();
     Class<?>[] classes = {
@@ -55,7 +57,7 @@ public class BeforeClassSkipExceptionTest extends SimpleBaseTest {
     createTestNGInstanceAndRun(reporter, 2, true, classes);
   }
 
-  @Test
+  @Test(description = "GITHUB-674")
   public void testExceptionDetailsWhenFailuresExistInSuiteConfigs() {
     XmlSuite xmlSuite = createXmlSuite("Suite");
     XmlTest xmlTest1 = createXmlTest(xmlSuite, "Test1");
@@ -73,7 +75,7 @@ public class BeforeClassSkipExceptionTest extends SimpleBaseTest {
     }
   }
 
-  @Test
+  @Test(description = "GITHUB-674")
   public void testExceptionDetailsWhenFailuresExistInABaseClass() {
     ReportingListenerFor674 reporter = new ReportingListenerFor674();
     Class<?>[] classes = {TestClassSampleContainer.A.class, TestClassSampleContainer.B.class};

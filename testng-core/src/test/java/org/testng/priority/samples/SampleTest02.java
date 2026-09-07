@@ -1,4 +1,4 @@
-package test.priority;
+package org.testng.priority.samples;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

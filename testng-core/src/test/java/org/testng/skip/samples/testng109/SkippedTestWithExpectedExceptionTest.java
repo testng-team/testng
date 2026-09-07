@@ -1,4 +1,4 @@
-package test.testng109;
+package org.testng.skip.samples.testng109;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;

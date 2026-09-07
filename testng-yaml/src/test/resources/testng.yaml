@@ -70,7 +70,7 @@ tests:
       - test.abstractconfmethod.C
       - test.issue78.NonPublicClassTest
       - test.listeners.ListenerTest
-      - test.preserveorder.PreserveOrderTest
+      - org.testng.preserveorder.PreserveOrderTest
       - test.listeners.ResultEndMillisTest
 
   - name: Injection
@@ -335,7 +335,7 @@ tests:
 
   - name: MethodInterceptor
     classes:
-      - test.methodinterceptors.MethodInterceptorTest
+      - org.testng.methodinterceptors.MethodInterceptorTest
 
   - name: Asserts
     classes:

@@ -1,4 +1,4 @@
-package test.priority.parallel;
+package org.testng.priority;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo;
@@ -29,6 +29,8 @@ import org.testng.TestNG;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.log4testng.Logger;
+import org.testng.priority.samples.parallel.HighPriorityTestSample;
+import org.testng.priority.samples.parallel.LowPriorityTestSample;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.thread.parallelization.BaseParallelizationTest;
@@ -131,7 +133,7 @@ public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTe
   // Verifies that the expected number of suite, test and test method level events were logged for
   // each of the three
   // suites.
-  @Test
+  @Test(description = "GITHUB-1480")
   public void sanityCheck() {
     assertThat(suiteLevelEventLogs.size())
         .withFailMessage(
@@ -182,12 +184,12 @@ public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTe
   // overlapping timestamps. Verify that there are two separate threads executing the suite-level
   // and test-level
   // events for each suite.
-  @Test
+  @Test(description = "GITHUB-1480")
   public void verifyThatSuitesRunInParallelThreads() {
     verifyParallelSuitesWithUnequalExecutionTimes(suiteLevelEventLogs, THREAD_POOL_SIZE);
   }
 
-  @Test
+  @Test(description = "GITHUB-1480")
   public void verifyTestLevelEventsRunInSequentialOrderForIndividualSuites() {
     verifySequentialTests(
         suiteOneSuiteAndTestLevelEventLogs,
@@ -196,7 +198,7 @@ public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTe
         suiteOneSuiteListenerOnFinishEventLog);
   }
 
-  @Test
+  @Test(description = "GITHUB-1480")
   public void verifyOnlyOneInstanceOfTestClassForAllTestMethodsForAllSuites() {
 
     verifyNumberOfInstancesOfTestClassForMethods(
@@ -215,7 +217,7 @@ public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTe
   // Verify that the test method listener's onTestStart method runs after the test listener's
   // onStart method for
   // all the test methods in all tests and suites.
-  @Test
+  @Test(description = "GITHUB-1480")
   public void
       verifyTestLevelMethodLevelEventLogsOccurBetweenAfterTestListenerStartAndFinishEventLogs() {
     verifyEventsOccurBetween(
@@ -239,7 +241,7 @@ public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTe
   // level events.
   // Verifies that the test method listener and execution events for a given test method all run in
   // the same thread.
-  @Test
+  @Test(description = "GITHUB-1480")
   public void verifyThatMethodLevelEventsRunInDifferentThreadsFromSuiteAndTestLevelEvents() {
 
     verifyEventThreadsSpawnedAfter(
@@ -262,7 +264,7 @@ public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTe
 
   // Verifies that the slow, high-priority method started before and ended after the faster,
   // low-priority methods.
-  @Test
+  @Test(description = "GITHUB-1480")
   public void verifyThatSlowMethodStartedFirstAndEndedLast() {
     EventLog highPriStart =
         suiteOneTestOneTestMethodLevelEventLogs.stream()

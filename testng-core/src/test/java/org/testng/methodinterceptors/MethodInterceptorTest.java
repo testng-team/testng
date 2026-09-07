@@ -1,4 +1,4 @@
-package test.methodinterceptors;
+package org.testng.methodinterceptors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,6 +12,10 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.methodinterceptors.samples.FastTestsFirstInterceptor;
+import org.testng.methodinterceptors.samples.FooTest;
+import org.testng.methodinterceptors.samples.LockUpInterceptorSampleTest;
+import org.testng.methodinterceptors.samples.NullMethodInterceptor;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.internal.Parser;
 import test.SimpleBaseTest;
@@ -23,11 +27,11 @@ public class MethodInterceptorTest extends SimpleBaseTest {
       TestHelper.SUITE_XML_HEADER
           + "<suite name=\"Single\" verbose=\"0\">"
           + "<listeners>"
-          + "  <listener class-name=\"test.methodinterceptors.NullMethodInterceptor\" />"
+          + "  <listener class-name=\"org.testng.methodinterceptors.samples.NullMethodInterceptor\" />"
           + "</listeners>"
           + "  <test name=\"Single\" >"
           + "    <classes>"
-          + "      <class name=\"test.methodinterceptors.FooTest\" />"
+          + "      <class name=\"org.testng.methodinterceptors.samples.FooTest\" />"
           + "     </classes>"
           + "  </test>"
           + "</suite>";

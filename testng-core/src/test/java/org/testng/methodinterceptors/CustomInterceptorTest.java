@@ -1,4 +1,4 @@
-package test.methodinterceptors.issue1726;
+package org.testng.methodinterceptors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,13 +11,16 @@ import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.methodinterceptors.samples.issue1726.PriorityInterceptor;
+import org.testng.methodinterceptors.samples.issue1726.TestClassSample1;
+import org.testng.methodinterceptors.samples.issue1726.TestClassSample2;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
 public class CustomInterceptorTest extends SimpleBaseTest {
 
-  @Test
+  @Test(description = "GITHUB-1726")
   public void testOrderingWhenInvolvingCustomInterceptors() {
     XmlSuite suite = createXmlSuite("suite");
     suite.setPreserveOrder(false);

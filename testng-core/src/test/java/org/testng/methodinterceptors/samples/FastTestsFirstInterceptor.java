@@ -1,4 +1,4 @@
-package test.methodinterceptors;
+package org.testng.methodinterceptors.samples;
 
 import java.util.ArrayList;
 import java.util.Arrays;

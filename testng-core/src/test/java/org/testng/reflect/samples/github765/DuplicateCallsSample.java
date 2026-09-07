@@ -1,4 +1,4 @@
-package test.github765;
+package org.testng.reflect.samples.github765;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

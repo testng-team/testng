@@ -1,4 +1,4 @@
-package test.preserveorder;
+package org.testng.preserveorder.samples;
 
 import org.testng.annotations.Test;
 

@@ -25,17 +25,17 @@
 
   <test name="1336_Tests_With_Priority" parallel="classes" thread-count="10">
     <classes>
-      <class name="test.github1336.TestNG1"/>
-      <class name="test.github1336.TestNG2"/>
-      <class name="test.github1336.TestNG3"/>
+      <class name="org.testng.priority.github1336.TestNG1"/>
+      <class name="org.testng.priority.github1336.TestNG2"/>
+      <class name="org.testng.priority.github1336.TestNG3"/>
     </classes>
   </test>
 
   <test name="1336_Tests_No_Priority" parallel="classes" thread-count="10">
     <classes>
-      <class name="test.github1336.TestNG1NoPriority"/>
-      <class name="test.github1336.TestNG2NoPriority"/>
-      <class name="test.github1336.TestNG3NoPriority"/>
+      <class name="org.testng.priority.github1336.TestNG1NoPriority"/>
+      <class name="org.testng.priority.github1336.TestNG2NoPriority"/>
+      <class name="org.testng.priority.github1336.TestNG3NoPriority"/>
     </classes>
   </test>
 
@@ -116,7 +116,7 @@
       <class name="test.thread.DataProviderThreadPoolSizeTest" />
       <class name="test.thread.MultiThreadedDependentTest" />
       <class name="test.thread.TrueParallelTest" />
-      <class name="test.github765.ExcludeSyntheticMethodsFromTemplateCallsTest"/>
+      <class name="org.testng.reflect.ExcludeSyntheticMethodsFromTemplateCallsTest"/>
       <class name="test.cli.CliTest"/>
       <class name="test.cli.github2974.OverrideGroupsCliTest"/>
       <class name="test.thread.ParallelSuiteTest"/>
@@ -151,7 +151,7 @@
       <class name="test.attributes.issue2346.IssueTest"/>
       <class name="test.verify.VerifyTest"/>
       <class name="test.abstractconfmethod.C" />
-      <class name="test.preserveorder.PreserveOrderTest" />
+      <class name="org.testng.preserveorder.PreserveOrderTest" />
       <class name="test.SerializationTest" />
       <class name="test.CountTest" />
       <class name="test.EclipseTest" />
@@ -162,7 +162,7 @@
       <class name="test.junitreports.JUnitReportsTest"/>
       <class name="test.abstractmethods.AbstractTest" />
       <class name="test.override.OverrideTest" />
-      <class name="test.priority.PriorityTest" />
+      <class name="org.testng.priority.PriorityTest" />
       <class name="test.NestedStaticTest" />
       <class name="test.configuration.ConfigurationListenerTest" />
       <class name="test.groupinvocation.GroupSuiteTest" />
@@ -191,11 +191,11 @@
       <class name="test.testng387.TestNG387"/>
       <class name="test.testng1231.TestExecutionListenerInvocationOrder"/>
       <class name="test.testng1232.TestListenerInstances"/>
-      <class name="test.testng674.BeforeClassSkipExceptionTest"/>
+      <class name="org.testng.skip.BeforeClassSkipExceptionTest"/>
       <class name="org.testng.conffailure.TestNG106"/>
       <class name="test.issue107.Issue107Test"/>
       <class name="test.test111.Test1" />
-      <class name="test.testng173.TestNG173Test" />
+      <class name="org.testng.preserveorder.TestNG173Test" />
       <class name="test.listeners.ordering.ListenerInvocationDefaultBehaviorTest"/>
       <class name="test.listeners.ordering.ListenerInvocationListenerInvocationDisabledBehaviorTest"/>
       <class name="test.listeners.github551.Test551"/>
@@ -204,14 +204,14 @@
       <class name="test.listeners.github1602.IssueTest"/>
       <class name="test.listeners.issue1777.IssueTest"/>
       <class name="test.listeners.ListenersTest"/>
-      <class name="test.skip.github1632.IssueTest"/>
+      <class name="org.testng.skip.github1632.IssueTest"/>
       <class name="test.listeners.issue2220.IssueTest"/>
       <class name="test.listeners.issue2328.IssueTest"/>
       <class name="test.listeners.factory.TestNGFactoryTest"/>
       <class name="test_result.ResultStatusTest"/>
       <class name="test_result.TestResultTest"/>
       <class name="test.listeners.github1319.TestResultInstanceCheckTest"/>
-      <class name="test.testng1396.ParallelByInstancesInterceptorTest"/>
+      <class name="org.testng.methodinterceptors.ParallelByInstancesInterceptorTest"/>
       <class name="test.github1417.TestParamsInjectionInBeforeClass"/>
       <class name="test.order.OrderTest" />
       <class name="org.testng.memory.MemoryLeakTestNg" />
@@ -276,11 +276,11 @@
 
   <test name="Reflection">
   <classes>
-    <class name="test.reflect.ReflectionRecipesTest" />
-    <class name="test.reflect.TestMethodMatcher" />
-    <class name="test.reflect.ExecutableCacheClassLoaderTest" />
-    <class name="test.reflect.ClassHelperCacheClassLoaderTest" />
-    <class name="test.reflect.InterningRegressionTest" />
+    <class name="org.testng.reflect.ReflectionRecipesTest" />
+    <class name="org.testng.reflect.TestMethodMatcher" />
+    <class name="org.testng.reflect.ExecutableCacheClassLoaderTest" />
+    <class name="org.testng.reflect.ClassHelperCacheClassLoaderTest" />
+    <class name="org.testng.reflect.InterningRegressionTest" />
   </classes>
   </test>
 
@@ -752,7 +752,7 @@
     <classes>
       <class name="test.skipex.SkippedExceptionTest" />
       <class name="test.skipex.SkipAndExpectedTest" />
-      <class name="test.skip.ReasonForSkipTest"/>
+      <class name="org.testng.skip.ReasonForSkipTest"/>
     </classes>
   </test>
 
@@ -768,10 +768,11 @@
 
   <test name="MethodInterceptor">
     <classes>
-      <class name="test.methodinterceptors.MethodInterceptorTest" />
-      <class name="test.methodinterceptors.Issue392Test" />
-      <class name="test.methodinterceptors.multipleinterceptors.MultipleInterceptorsTest" />
-      <class name="test.methodinterceptors.issue1726.CustomInterceptorTest"/>
+      <class name="org.testng.methodinterceptors.MethodInterceptorTest" />
+      <class name="org.testng.methodinterceptors.Issue392Test" />
+      <class name="org.testng.methodinterceptors.Issue521Test" />
+      <class name="org.testng.methodinterceptors.MultipleInterceptorsTest" />
+      <class name="org.testng.methodinterceptors.CustomInterceptorTest"/>
     </classes>
   </test>
 
@@ -785,7 +786,7 @@
       <class name="org.testng.internal.TestResultParametersTest"/>
       <class name="org.testng.internal.objects.InstanceCreatorTest"/>
       <class name="org.testng.util.StringsTest"/>
-      <class name="test.issue1430.TestFileToClass"/>
+      <class name="org.testng.reflect.TestFileToClass"/>
     </classes>
   </test>
 
@@ -936,8 +937,8 @@
 
   <test name="Efficient Thread Use With Priority">
     <classes>
-      <class name="test.priority.parallel.EfficientPriorityParallelizationTest"/>
-      <class name="test.priority.parallel.EfficientPriorityParallelizationTest2"/>
+      <class name="org.testng.priority.EfficientPriorityParallelizationTest"/>
+      <class name="org.testng.priority.EfficientPriorityParallelizationTest2"/>
     </classes>
   </test>
 

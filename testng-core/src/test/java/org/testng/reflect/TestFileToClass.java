@@ -1,4 +1,4 @@
-package test.issue1430;
+package org.testng.reflect;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,7 +7,7 @@ import org.testng.internal.ClassHelper;
 
 public class TestFileToClass {
 
-  @Test
+  @Test(description = "GITHUB-1430")
   public void testFileToClass() {
     Class c1 = this.getClass();
     String p = c1.getResource("TestFileToClass.class").getPath();

@@ -1,4 +1,4 @@
-package test.github1336;
+package org.testng.priority.samples.github1336;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +35,7 @@ public class BaseClass {
     }
   }
 
-  void runTest(String url) {
+  public void runTest(String url) {
     getDriver().get(url);
     assertThat(getDriver().getCurrentUrl()).isEqualTo(url);
   }

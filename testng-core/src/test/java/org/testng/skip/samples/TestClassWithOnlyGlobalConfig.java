@@ -1,4 +1,4 @@
-package test.skip;
+package org.testng.skip.samples;
 
 import org.testng.annotations.BeforeTest;
 

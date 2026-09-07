@@ -1,4 +1,4 @@
-package test.skip;
+package org.testng.skip.samples;
 
 import java.util.HashMap;
 import java.util.List;

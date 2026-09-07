@@ -1,4 +1,4 @@
-package test.skip;
+package org.testng.skip;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -9,10 +9,20 @@ import java.util.Map;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.skip.samples.ReasonReporter;
+import org.testng.skip.samples.TestClassWithFailedConfig;
+import org.testng.skip.samples.TestClassWithFailedConfigInParentClass;
+import org.testng.skip.samples.TestClassWithFailedMethod;
+import org.testng.skip.samples.TestClassWithFailedMethodInParentClass;
+import org.testng.skip.samples.TestClassWithGroupFailures;
+import org.testng.skip.samples.TestClassWithMultipleFailures;
+import org.testng.skip.samples.TestClassWithMultipleGroupFailures;
+import org.testng.skip.samples.TestClassWithOnlyGlobalConfig;
+import org.testng.skip.samples.TestClassWithOnlyTestMethods;
+import org.testng.skip.samples.github1967.TestClassSample;
 import org.testng.xml.XmlSuite;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
-import test.skip.github1967.TestClassSample;
 
 public class ReasonForSkipTest extends SimpleBaseTest {
 
@@ -106,7 +116,7 @@ public class ReasonForSkipTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-2674")
   public void ensureUpstreamFailuresTriggerSkipsForAllDataProviderValues() {
-    TestNG testng = create(test.skip.issue2674.TestClassSample.class);
+    TestNG testng = create(org.testng.skip.samples.issue2674.TestClassSample.class);
     testng.setReportAllDataDrivenTestsAsSkipped(true);
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     testng.addListener(listener);

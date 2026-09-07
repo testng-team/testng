@@ -1,4 +1,4 @@
-package test.reflect;
+package org.testng.reflect.samples;
 
 import java.time.Instant;
 import java.util.Collection;

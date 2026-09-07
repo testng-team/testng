@@ -1,4 +1,4 @@
-package test.methodinterceptors;
+package org.testng.methodinterceptors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,12 +10,13 @@ import org.testng.ITestContext;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.methodinterceptors.samples.Issue392;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
 public class Issue392Test extends SimpleBaseTest {
 
-  @Test(description = "test for https://github.com/cbeust/testng/issues/392")
+  @Test(description = "GITHUB-392")
   public void AfterClass_method_should_be_fired_when_IMethodInterceptor_removes_test_methods() {
     TestNG tng = create(Issue392.class);
     tng.setMethodInterceptor(

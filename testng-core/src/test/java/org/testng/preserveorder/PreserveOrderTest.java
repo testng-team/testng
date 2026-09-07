@@ -1,4 +1,4 @@
-package test.preserveorder;
+package org.testng.preserveorder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,6 +9,13 @@ import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.preserveorder.samples.A;
+import org.testng.preserveorder.samples.B;
+import org.testng.preserveorder.samples.C;
+import org.testng.preserveorder.samples.Chuck3Sample;
+import org.testng.preserveorder.samples.Chuck4Sample;
+import org.testng.preserveorder.samples.ClassSampleFactory;
+import org.testng.preserveorder.samples.Issue1122Sample;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;

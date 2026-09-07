@@ -1,4 +1,4 @@
-package test.skip.issue2674;
+package org.testng.skip.samples.issue2674;
 
 import static org.assertj.core.api.Assertions.fail;
 

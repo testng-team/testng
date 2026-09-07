@@ -1,4 +1,4 @@
-package test.github1405;
+package org.testng.reflect.samples.github1405;
 
 import org.testng.annotations.Test;
 

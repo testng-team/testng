@@ -1,4 +1,4 @@
-package test.testng1396;
+package org.testng.methodinterceptors.samples.testng1396;
 
 import org.testng.annotations.Test;
 

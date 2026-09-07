@@ -6,7 +6,7 @@
  * WOLFGANG & MONIKA BALTES PROPRIETARY/CONFIDENTIAL.
  * Use is subject to license terms.
  */
-package test.preserveorder;
+package org.testng.preserveorder.samples;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.testng.annotations.Test;
 import org.testng.internal.reflect.ReflectionHelper;
-import test.github1405.TestClassSample;
-import test.github765.DuplicateCallsSample;
+import org.testng.reflect.samples.github1405.TestClassSample;
+import org.testng.reflect.samples.github765.DuplicateCallsSample;
 
 public class ReflectionHelperTest {
 

@@ -1,4 +1,4 @@
-package test.testng674;
+package org.testng.skip.samples.testng674;
 
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;

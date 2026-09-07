@@ -1,4 +1,4 @@
-package test.methodinterceptors.multipleinterceptors;
+package org.testng.methodinterceptors.samples.multipleinterceptors;
 
 public class SecondInterceptor extends MethodNameFilterInterceptor {
 

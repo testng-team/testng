@@ -1,4 +1,4 @@
-package test.priority.parallel;
+package org.testng.priority.samples.parallel;
 
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_INSTANCE;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_NAME;
