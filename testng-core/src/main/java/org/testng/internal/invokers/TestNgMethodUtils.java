@@ -166,7 +166,7 @@ class TestNgMethodUtils {
 
   private static boolean doesSetupMethodPassFirstTimeFilter(
       ConfigurationMethod cm, ITestNGMethod tm) {
-    if (cm.isFirstTimeOnly() && skipsTimeScopedConfigs(tm)) {
+    if (cm.isFirstTimeOnly() && isPooledInvocationClone(tm)) {
       // This is one invocation of a parallel invocationCount; the firstTimeOnly
       // @BeforeMethod is run once around the thread pool, not inside the invocation.
       return false;
@@ -176,7 +176,7 @@ class TestNgMethodUtils {
 
   private static boolean doesTeardownMethodPassLastTimeFilter(
       ConfigurationMethod cm, ITestNGMethod tm) {
-    if (cm.isLastTimeOnly() && skipsTimeScopedConfigs(tm)) {
+    if (cm.isLastTimeOnly() && isPooledInvocationClone(tm)) {
       // This is one invocation of a parallel invocationCount; the lastTimeOnly
       // @AfterMethod is run once around the thread pool, not inside the invocation.
       return false;
@@ -184,8 +184,30 @@ class TestNgMethodUtils {
     return !cm.isLastTimeOnly() || !tm.hasMoreInvocation();
   }
 
-  private static boolean skipsTimeScopedConfigs(ITestNGMethod tm) {
+  /**
+   * @return {@code true} when {@code tm} is one invocation of a parallel {@code invocationCount},
+   *     i.e. one of the clones {@code TestInvoker.invokePooledTestMethods} runs in its thread pool.
+   *     Whatever must happen once for the whole method - running the firstTimeOnly/lastTimeOnly
+   *     configuration methods, reporting an empty data provider - is handled around the pool
+   *     instead of inside these invocations.
+   */
+  static boolean isPooledInvocationClone(ITestNGMethod tm) {
     return tm instanceof BaseTestMethod && ((BaseTestMethod) tm).skipFirstAndLastTimeOnlyConfigs();
+  }
+
+  /**
+   * Records that {@code tm}, one invocation of a parallel {@code invocationCount}, ran against an
+   * empty data provider.
+   */
+  static void markEmptyDataProviderSeen(ITestNGMethod tm) {
+    if (tm instanceof BaseTestMethod) {
+      ((BaseTestMethod) tm).setEmptyDataProviderSeen(true);
+    }
+  }
+
+  /** @return {@code true} when {@code tm} recorded an empty data provider. */
+  static boolean sawEmptyDataProvider(ITestNGMethod tm) {
+    return tm instanceof BaseTestMethod && ((BaseTestMethod) tm).emptyDataProviderSeen();
   }
 
   /**

@@ -327,8 +327,9 @@ public class DataProviderTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = run(EmptyStreamDataProviderSample.class);
 
     assertThat(listener.getFailedMethodNames()).isEmpty();
-    assertThat(listener.getSkippedMethodNames()).isEmpty();
+    assertThat(listener.getSkippedMethodNames()).containsExactly("test");
     assertThat(listener.getSucceedMethodNames()).isEmpty();
+    assertThat(listener.getInvokedMethodNames()).isEmpty();
   }
 
   @Test(description = "GITHUB-3290")
@@ -446,8 +447,13 @@ public class DataProviderTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = run(EmptyDataProviderSample.class);
 
     assertThat(listener.getFailedMethodNames()).isEmpty();
-    assertThat(listener.getSkippedMethodNames()).isEmpty();
+    assertThat(listener.getSkippedMethodNames()).containsExactly("test1", "test2");
     assertThat(listener.getSucceedMethodNames()).isEmpty();
+    assertThat(listener.getInvokedMethodNames()).isEmpty();
+    assertThat(listener.getResult("test1").getParameters()).isEmpty();
+    assertThat(listener.getResult("test1").getStatus()).isEqualTo(ITestResult.SKIP);
+    assertThat(listener.getResult("test2").getParameters()).isEmpty();
+    assertThat(listener.getResult("test2").getStatus()).isEqualTo(ITestResult.SKIP);
   }
 
   @Test(description = "TESTNG-576: Prefer DataProvider explicit name")

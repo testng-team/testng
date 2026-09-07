@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.jspecify.annotations.Nullable;
+import org.testng.EmptyDataProviderBehavior;
 import org.testng.IConfigurable;
 import org.testng.IConfigurationListener;
 import org.testng.IExecutionListener;
@@ -50,6 +51,8 @@ public class Configuration implements IConfiguration {
   private boolean useGlobalThreadPool = false;
 
   private boolean lazyFactoryInstantiation = false;
+
+  private EmptyDataProviderBehavior emptyDataProviderBehavior = EmptyDataProviderBehavior.SKIP;
 
   public Configuration() {
     this(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
@@ -227,5 +230,15 @@ public class Configuration implements IConfiguration {
   @Override
   public void setLazyFactoryInstantiation(boolean lazyFactoryInstantiation) {
     this.lazyFactoryInstantiation = lazyFactoryInstantiation;
+  }
+
+  @Override
+  public EmptyDataProviderBehavior getEmptyDataProviderBehavior() {
+    return this.emptyDataProviderBehavior;
+  }
+
+  @Override
+  public void setEmptyDataProviderBehavior(EmptyDataProviderBehavior emptyDataProviderBehavior) {
+    this.emptyDataProviderBehavior = Objects.requireNonNull(emptyDataProviderBehavior);
   }
 }

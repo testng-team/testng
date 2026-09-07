@@ -85,6 +85,7 @@ public abstract class BaseTestMethod
   // lastTimeOnly @AfterMethod are run once - as a barrier - around the whole pool
   // instead of inside each parallel invocation, so the clones must not run them.
   private boolean m_skipFirstAndLastTimeOnlyConfigs;
+  private volatile boolean m_emptyDataProviderSeen;
   private @Nullable Callable<Boolean> m_moreInvocationChecker;
   private @Nullable IRetryAnalyzer m_retryAnalyzer = null;
   private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass = DisabledRetryAnalyzer.class;
@@ -837,6 +838,19 @@ public abstract class BaseTestMethod
 
   public void setSkipFirstAndLastTimeOnlyConfigs(boolean skip) {
     m_skipFirstAndLastTimeOnlyConfigs = skip;
+  }
+
+  /**
+   * @return {@code true} when this (cloned) invocation of a parallel {@code invocationCount} found
+   *     its data provider empty. The invocations stay silent about it so that the thread pool can
+   *     report a single skipped result for the method they all stand for.
+   */
+  public boolean emptyDataProviderSeen() {
+    return m_emptyDataProviderSeen;
+  }
+
+  public void setEmptyDataProviderSeen(boolean seen) {
+    m_emptyDataProviderSeen = seen;
   }
 
   @Override

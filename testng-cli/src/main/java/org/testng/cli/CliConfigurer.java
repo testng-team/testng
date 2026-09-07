@@ -113,6 +113,8 @@ public final class CliConfigurer {
     Optional.ofNullable(cli.propagateDataProviderFailureAsTestFailure)
         .ifPresent(value -> testng.propagateDataProviderFailureAsTestFailure());
     testng.setReportAllDataDrivenTestsAsSkipped(cli.includeAllDataDrivenTestsWhenSkipping);
+    Optional.ofNullable(cli.emptyDataProviderBehavior)
+        .ifPresent(testng::setEmptyDataProviderBehavior);
 
     Optional.ofNullable(cli.listenerFactory)
         .map(ClassHelper::forName)

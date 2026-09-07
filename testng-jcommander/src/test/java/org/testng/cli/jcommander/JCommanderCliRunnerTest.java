@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ServiceLoader;
+import org.testng.EmptyDataProviderBehavior;
 import org.testng.ITestNGCliRunner;
 import org.testng.annotations.Test;
 import org.testng.cli.CliOptions;
@@ -159,6 +160,8 @@ public class JCommanderCliRunnerTest {
             "-failwheneverythingskipped",
             "-overrideincludedmethods",
             "-includeAllDataDrivenTestsWhenSkipping",
+            "-emptydataproviderbehavior",
+            "IGNORE",
             "-propagateDataProviderFailureAsTestFailure",
             "-generateResultsPerSuite",
             "-shareThreadPoolForDataProviders",
@@ -198,6 +201,7 @@ public class JCommanderCliRunnerTest {
     assertThat(cli.failIfAllTestsSkipped).isTrue();
     assertThat(cli.overrideIncludedMethods).isTrue();
     assertThat(cli.includeAllDataDrivenTestsWhenSkipping).isTrue();
+    assertThat(cli.emptyDataProviderBehavior).isEqualTo(EmptyDataProviderBehavior.IGNORE);
     assertThat(cli.propagateDataProviderFailureAsTestFailure).isTrue();
     assertThat(cli.generateResultsPerSuite).isTrue();
     assertThat(cli.shareThreadPoolForDataProviders).isTrue();

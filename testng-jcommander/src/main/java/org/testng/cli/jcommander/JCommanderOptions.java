@@ -4,6 +4,7 @@ import com.beust.jcommander.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
+import org.testng.EmptyDataProviderBehavior;
 import org.testng.cli.CliOptions;
 import org.testng.xml.XmlSuite;
 
@@ -196,6 +197,12 @@ public class JCommanderOptions {
   public Boolean includeAllDataDrivenTestsWhenSkipping = false;
 
   @Parameter(
+      names = CliOptions.EMPTY_DATA_PROVIDER_BEHAVIOR,
+      description =
+          "What to do with a test method whose data provider hands out no row: SKIP reports it as skipped, IGNORE leaves it out of the results.")
+  public @Nullable EmptyDataProviderBehavior emptyDataProviderBehavior;
+
+  @Parameter(
       names = CliOptions.PROPAGATE_DATA_PROVIDER_FAILURES_AS_TEST_FAILURE,
       description = "Should TestNG consider failures in Data Providers  as test failures.")
   public Boolean propagateDataProviderFailureAsTestFailure = false;
@@ -262,6 +269,7 @@ public class JCommanderOptions {
     cli.spiListenersToSkip = spiListenersToSkip;
     cli.overrideIncludedMethods = overrideIncludedMethods;
     cli.includeAllDataDrivenTestsWhenSkipping = includeAllDataDrivenTestsWhenSkipping;
+    cli.emptyDataProviderBehavior = emptyDataProviderBehavior;
     cli.propagateDataProviderFailureAsTestFailure = propagateDataProviderFailureAsTestFailure;
     cli.generateResultsPerSuite = generateResultsPerSuite;
     cli.shareThreadPoolForDataProviders = shareThreadPoolForDataProviders;

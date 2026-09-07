@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -650,6 +651,14 @@ public class TestNG {
 
   public boolean isLazyFactoryInstantiation() {
     return this.m_configuration.isLazyFactoryInstantiation();
+  }
+
+  public EmptyDataProviderBehavior getEmptyDataProviderBehavior() {
+    return this.m_configuration.getEmptyDataProviderBehavior();
+  }
+
+  public void setEmptyDataProviderBehavior(EmptyDataProviderBehavior emptyDataProviderBehavior) {
+    this.m_configuration.setEmptyDataProviderBehavior(emptyDataProviderBehavior);
   }
 
   /**
@@ -1545,6 +1554,8 @@ public class TestNG {
     Optional.ofNullable(cla.propagateDataProviderFailureAsTestFailure)
         .ifPresent(value -> propagateDataProviderFailureAsTestFailure());
     setReportAllDataDrivenTestsAsSkipped(cla.includeAllDataDrivenTestsWhenSkipping);
+    Optional.ofNullable(cla.emptyDataProviderBehavior)
+        .ifPresent(this::setEmptyDataProviderBehavior);
 
     Optional.ofNullable(cla.listenerFactory)
         .map(ClassHelper::forName)
@@ -1820,6 +1831,14 @@ public class TestNG {
     Object tmpValue = cmdLineArgs.get(CommandLineArgs.INCLUDE_ALL_DATA_DRIVEN_TESTS_WHEN_SKIPPING);
     if (tmpValue != null) {
       result.includeAllDataDrivenTestsWhenSkipping = Boolean.parseBoolean(tmpValue.toString());
+    }
+    Object emptyDpBehavior = cmdLineArgs.get(CommandLineArgs.EMPTY_DATA_PROVIDER_BEHAVIOR);
+    if (emptyDpBehavior != null) {
+      result.emptyDataProviderBehavior =
+          emptyDpBehavior instanceof EmptyDataProviderBehavior
+              ? (EmptyDataProviderBehavior) emptyDpBehavior
+              : EmptyDataProviderBehavior.valueOf(
+                  emptyDpBehavior.toString().toUpperCase(Locale.ROOT));
     }
     result.skipFailedInvocationCounts =
         (Boolean) cmdLineArgs.get(CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);

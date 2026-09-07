@@ -3,6 +3,7 @@ package org.testng.cli;
 import java.util.ArrayList;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
+import org.testng.EmptyDataProviderBehavior;
 import org.testng.xml.XmlSuite;
 
 /**
@@ -61,6 +62,7 @@ public class CliOptions {
   public static final String OVERRIDE_INCLUDED_METHODS = "-overrideincludedmethods";
   public static final String INCLUDE_ALL_DATA_DRIVEN_TESTS_WHEN_SKIPPING =
       "-includeAllDataDrivenTestsWhenSkipping";
+  public static final String EMPTY_DATA_PROVIDER_BEHAVIOR = "-emptydataproviderbehavior";
   public static final String PROPAGATE_DATA_PROVIDER_FAILURES_AS_TEST_FAILURE =
       "-propagateDataProviderFailureAsTestFailure";
   public static final String GENERATE_RESULTS_PER_SUITE = "-generateResultsPerSuite";
@@ -187,6 +189,12 @@ public class CliOptions {
    * upstream failures.
    */
   public Boolean includeAllDataDrivenTestsWhenSkipping = false;
+
+  /**
+   * What TestNG does with a test method whose data provider hands out no row: report it as skipped
+   * ({@code SKIP}) or leave it out of the results entirely ({@code IGNORE}).
+   */
+  public @Nullable EmptyDataProviderBehavior emptyDataProviderBehavior;
 
   /** Should TestNG consider failures in Data Providers as test failures. */
   public Boolean propagateDataProviderFailureAsTestFailure = false;
