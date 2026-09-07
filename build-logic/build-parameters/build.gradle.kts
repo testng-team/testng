@@ -55,6 +55,19 @@ buildParameters {
         defaultValue.set(false)
         description.set("Fail rewriteDryRun when OpenRewrite still has changes to make")
     }
+    bool("failOnWritingStyle") {
+        defaultValue.set(false)
+        description.set("Fail the writing-style tasks when they report findings")
+    }
+    string("writingStyleSince") {
+        description.set("Base git ref writingStyleCheckChanges compares against")
+    }
+    string("writingStyleBaseRefs") {
+        description.set("Comma separated base refs to try when writingStyleSince is unset")
+    }
+    string("writingStyleValePath") {
+        description.set("Exact Vale binary to run, instead of PATH or the npx fallback")
+    }
     bool("skipErrorProne") {
         defaultValue.set(false)
         description.set("Skip Error Prone verifications")

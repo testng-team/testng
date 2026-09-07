@@ -1,0 +1,59 @@
+# American spelling. It already wins in the corpus, and the Java API itself
+# spells it that way: Serializable, synchronized, Externalizable.
+#
+# ignorecase is off and each word is listed twice on purpose. With it on, Vale matches
+# "Behaviour" against the lower-case key and then suggests "behavior", losing the capital.
+extends: substitution
+message: "Use '%s', not '%s'. This codebase spells it the American way."
+link: AGENTS.md#writing
+level: warning
+ignorecase: false
+swap:
+  behaviour: behavior
+  Behaviour: Behavior
+  behaviours: behaviors
+  Behaviours: Behaviors
+  initialise: initialize
+  Initialise: Initialize
+  initialised: initialized
+  Initialised: Initialized
+  initialising: initializing
+  Initialising: Initializing
+  initialiser: initializer
+  Initialiser: Initializer
+  normalise: normalize
+  Normalise: Normalize
+  normalises: normalizes
+  Normalises: Normalizes
+  normalised: normalized
+  Normalised: Normalized
+  recognise: recognize
+  Recognise: Recognize
+  recognised: recognized
+  Recognised: Recognized
+  unrecognised: unrecognized
+  Unrecognised: Unrecognized
+  serialised: serialized
+  Serialised: Serialized
+  synchronised: synchronized
+  Synchronised: Synchronized
+  scrutinised: scrutinized
+  Scrutinised: Scrutinized
+  capitalisation: capitalization
+  Capitalisation: Capitalization
+  organisation: organization
+  Organisation: Organization
+  initialisation: initialization
+  Initialisation: Initialization
+  normalisation: normalization
+  Normalisation: Normalization
+  serialisation: serialization
+  Serialisation: Serialization
+  synchronisation: synchronization
+  Synchronisation: Synchronization
+  customise: customize
+  Customise: Customize
+  customised: customized
+  Customised: Customized
+  customisation: customization
+  Customisation: Customization

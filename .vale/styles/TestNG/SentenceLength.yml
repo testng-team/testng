@@ -1,0 +1,7 @@
+extends: occurrence
+message: "This sentence is over 25 words. Split it."
+link: AGENTS.md#writing
+scope: sentence
+level: suggestion
+max: 25
+token: '\b\w+\b'

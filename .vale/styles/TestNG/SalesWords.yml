@@ -1,0 +1,14 @@
+extends: existence
+message: "'%s' is a sales word. Say what it does instead."
+link: AGENTS.md#writing
+level: warning
+ignorecase: true
+tokens:
+  - powerful
+  - robust
+  - seamless(ly)?
+  - comprehensive
+  - cutting.edge
+  - state.of.the.art
+  - blazing(ly)? fast
+  - effortless(ly)?

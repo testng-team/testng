@@ -1,0 +1,13 @@
+extends: existence
+message: "'%s' narrates the change. Say what the code does instead."
+link: AGENTS.md#writing
+level: warning
+ignorecase: true
+tokens:
+  - we now
+  - this fix
+  - this patch
+  - as discussed
+  - as mentioned above
+  - for now
+  - "TODO: revisit"

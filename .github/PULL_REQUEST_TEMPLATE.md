@@ -5,6 +5,8 @@ Fixes # .
 - [ ] Add test case(s)
 - [ ] Update `CHANGES.txt`
 - [ ] Auto applied styling via `./gradlew autostyleApply`
+- [ ] Checked the wording of any javadoc, comments or docs you touched, via
+      `./gradlew writingStyleCheckChanges` ([writing style](../docs/WRITING_STYLE.md))
 
 We encourage pull requests that:
 

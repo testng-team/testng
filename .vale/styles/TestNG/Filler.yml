@@ -1,0 +1,16 @@
+extends: existence
+message: "'%s' adds nothing. Delete it."
+link: AGENTS.md#writing
+level: warning
+ignorecase: true
+tokens:
+  - simply
+  - basically
+  - essentially
+  - obviously
+  - of course
+  - note that
+  - please note
+  - it should be noted
+  - in order to
+  - as a matter of fact

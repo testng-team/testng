@@ -1,0 +1,7 @@
+---
+description: TestNG house style for all prose
+alwaysApply: true
+---
+
+Read `AGENTS.md` in the repository root, and follow the `## Writing` section for every javadoc
+comment, code comment, commit message, issue and pull request you produce. `vale` checks it in CI.

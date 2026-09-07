@@ -339,3 +339,54 @@ edits that follow it, so a reviewer can tell which hunks a human actually judged
   or `/simplify` round that arrives after it buys another one. When a cleanup pass is plausible,
   propose "guard set, then the review, then one gate" up front: the cost is yours to know, not the
   reader's to guess.
+
+## Writing
+
+These rules cover javadoc, code comments, commit messages, and issue and pull request text. They
+apply whether a person or a tool wrote it. They come from ASD-STE100, trimmed to what this codebase
+needs. `vale` checks what a machine can check, and a reviewer catches the rest.
+[`docs/WRITING_STYLE.md`](docs/WRITING_STYLE.md) explains how the tooling works, how to switch a rule
+off, and what it cannot reach.
+
+Keep the domain words. A TestNG reader needs `annotation`, `listener`, `suite` and `data provider`,
+and STE allows words like these as technical names. Cut ordinary English that is longer or vaguer
+than it needs to be.
+
+Everywhere:
+
+- One idea per sentence. Instructions: 20 words. Descriptions: 25. A reviewer checks this, because
+  `vale` cannot measure sentence length inside Java comments.
+- Active voice, and name who acts. "The listener reads the suite", not "the suite is read".
+- Present tense for behavior. Past tense only for what already happened.
+- The same word for the same thing, every time. No synonyms for variety.
+- Keep the articles. "the suite", not "suite".
+- Turn three or more related points into a list, not a paragraph.
+- Spell out an abbreviation the first time in a file.
+
+<!-- vale off -->
+- No filler: simply, basically, essentially, obviously, of course, note that, in order to.
+- No sales words: powerful, robust, seamless, leverage, comprehensive.
+- Plain verbs: use not utilize, start not initiate, end not terminate, help not facilitate.
+- American spelling: behavior, initialize, normalize. The Java API already spells it that way.
+<!-- vale on -->
+
+Javadoc is stricter, because users read it on javadoc.io:
+
+- **Start with a summary sentence.** `/** @return The status of this result. */` renders with an
+  empty description. Write the summary first, then the tags.
+- **Put every identifier in `{@code}` or `{@link}`.** A bare `paramIndex` looks like a typo, and
+  the spell checker reports it as one. Wrap it and Vale skips it, and it renders as code.
+- Call the reader "you". That is how our javadoc already reads, and it is fine.
+- No first person, no contractions, no `TODO`. Keep those in `//` comments. `vale` cannot tell the
+  two apart in Java, so a reviewer checks this one.
+- Do not point at a position. "the constants above" breaks as soon as someone reorders the file.
+
+Comments that start with `//` are looser. First person, contractions and `TODO` are all fine. Say
+what the code does and why, in whatever wording reads clearly.
+
+Check what this branch touched, or the whole repository:
+
+```bash
+./gradlew writingStyleCheckChanges          # what you are about to commit
+./gradlew writingStyleCheck                 # everything; add -PfailOnWritingStyle=true to make either fail
+```
