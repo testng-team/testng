@@ -330,14 +330,13 @@ public class TestNGClassFinder extends BaseClassFinder {
       return result;
 
     } catch (NoClassDefFoundError e) {
-      Utils.log(
-          PREFIX,
-          1,
+      String message =
           "Unable to read methods on class "
               + cls.getName()
               + " - unable to resolve class reference "
-              + e.getMessage());
-      return false;
+              + e.getMessage();
+      Utils.log(PREFIX, 1, message);
+      throw new TestNGException(message, e);
     }
   }
 

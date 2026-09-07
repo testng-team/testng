@@ -89,6 +89,7 @@
       <class name="org.testng.reporters.TestHTMLReporterTest"/>
       <class name="org.testng.internal.invokers.ParameterHandlerTest"/>
       <class name="org.testng.internal.TestListenerHelperTest"/>
+      <class name="test.github3234.IssueTest"/>
       <class name="org.testng.internal.GroupsHelperTest"/>
       <class name="org.testng.internal.DynamicGraphHelperTest"/>
       <class name="org.testng.internal.thread.graph.TestNGFutureTaskTest"/>
