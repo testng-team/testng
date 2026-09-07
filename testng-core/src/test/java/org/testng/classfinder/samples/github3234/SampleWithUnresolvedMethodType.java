@@ -1,17 +1,16 @@
-package test.github3234;
+package org.testng.classfinder.samples.github3234;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
  * A test class whose unused helper names {@link MissingType} in its signature. When that type is
- * not on the class loader, {@code Class#getDeclaredMethods} throws {@code NoClassDefFoundError}.
+ * not on the class loader, reading the methods throws {@code NoClassDefFoundError}.
  */
+@Test
 public class SampleWithUnresolvedMethodType {
 
-  @Test
   public void test1() {
-    Assert.fail("should not be silently skipped");
+    throw new AssertionError("should not be silently skipped");
   }
 
   private MissingType unused() {

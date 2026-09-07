@@ -283,14 +283,14 @@ public class TestNGClassFinder extends BaseClassFinder {
     return fallback;
   }
 
-  private static boolean isNotTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
+  private boolean isNotTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
     return !isTestNGClass(c, annotationFinder);
   }
 
   /**
    * @return true if this class contains TestNG annotations (either on itself or on a superclass).
    */
-  private static boolean isTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
+  private boolean isTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
     Class<?> cls = c;
     boolean result = false;
 
@@ -336,8 +336,21 @@ public class TestNGClassFinder extends BaseClassFinder {
               + " - unable to resolve class reference "
               + e.getMessage();
       Utils.log(PREFIX, 1, message);
-      throw new TestNGException(message, e);
+      // Named <class> tags load classes. Package scanning does not (GITHUB-602).
+      if (wasNamedInSuite(c)) {
+        throw new TestNGException(message, e);
+      }
+      return false;
     }
+  }
+
+  private boolean wasNamedInSuite(Class<?> cls) {
+    for (XmlClass xmlClass : m_testContext.getCurrentXmlTest().getXmlClasses()) {
+      if (xmlClass.loadClasses() && xmlClass.getName().equals(cls.getName())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // IInstanceInfo<T> should be replaced by IInstanceInfo<?> but eclipse complains against it.

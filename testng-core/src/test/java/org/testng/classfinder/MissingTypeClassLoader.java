@@ -1,15 +1,15 @@
-package test.github3234;
+package org.testng.classfinder;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Defines this package's samples itself and refuses to load {@link MissingType}, so method
+ * Defines the github-3234 samples itself and refuses to load {@code MissingType}, so method
  * signatures that name that type fail with {@code NoClassDefFoundError}.
  */
 public class MissingTypeClassLoader extends ClassLoader {
 
-  private static final String SAMPLE_PACKAGE = "test.github3234.";
+  private static final String SAMPLE_PACKAGE = "org.testng.classfinder.samples.github3234.";
   private static final String MISSING_TYPE = SAMPLE_PACKAGE + "MissingType";
 
   public MissingTypeClassLoader() {
@@ -21,7 +21,7 @@ public class MissingTypeClassLoader extends ClassLoader {
     if (MISSING_TYPE.equals(name)) {
       throw new ClassNotFoundException(name);
     }
-    if (name.startsWith(SAMPLE_PACKAGE) && !name.equals(IssueTest.class.getName())) {
+    if (name.startsWith(SAMPLE_PACKAGE)) {
       Class<?> loadedClass = findLoadedClass(name);
       if (loadedClass == null) {
         loadedClass = findClass(name);
