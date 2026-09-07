@@ -130,6 +130,20 @@ plain binary download.
 
 Findings also land in `build/reports/writing-style/`, in `changed.txt` and `all.txt`.
 
+You do not have to read this page to find the settings. `./gradlew parameters` lists them all,
+and `./gradlew tasks --group verification` lists the tasks.
+
+| Setting | What it does |
+|---|---|
+| `-PfailOnWritingStyle=true` | Findings fail the build |
+| `-PwritingStyleSince=<ref>` | Compare against this base branch |
+| `-PwritingStyleBaseRefs=a,b,c` | Base branches to try, in order, when the one above is unset |
+| `-PwritingStyleValePath=<path>` | Run this Vale binary, instead of `PATH` or `npx` |
+
+The last one is worth setting if you run the whole-tree task often. On this machine a full
+`writingStyleCheck` took 114 seconds through `npx` and 63 seconds with the binary named directly.
+It is also the way to run offline.
+
 Both tasks live in `build-logic/code-quality/`, beside the other quality plugins.
 `testng.writing-style.gradle.kts` registers them, and `buildlogic/ValeCheck.kt` is the task itself.
 The root build applies the plugin, because Vale reads the tree in one pass.

@@ -9,6 +9,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
@@ -29,8 +30,6 @@ private val HUNK = Regex("""^@@ -\S+ \+(\d+)(?:,(\d+))? @@""")
 /** `<absolute path>:<line>:<col>:<Rule>:<message>`, as printed by `--output=line`. */
 private val FINDING = Regex("""^(.*?):(\d+):\d+:""")
 
-private val DEFAULT_BASE_REFS = listOf("upstream/master", "origin/master", "master")
-
 /**
  * Windows caps a command line at 32767 characters, and the whole tree is roughly 278 KB of paths.
  * Chunk well under the cap so one run becomes several, on every platform rather than only the one
@@ -41,11 +40,12 @@ private const val MAX_ARGUMENT_CHARS = 8000
 /**
  * Runs Vale over javadoc, code comments and Markdown.
  *
- * Named for the tool because that is what it wraps. The tasks built from it are named for the
- * question they answer: `writingStyleCheck` and `writingStyleCheckChanges`.
+ * Named for the tool because that is what it wraps. Name the tasks built from it for the question
+ * they answer instead.
  *
- * The rules are in `AGENTS.md` under `## Writing`, and `docs/WRITING_STYLE.md` explains the
- * tooling. Vale is not a JVM tool and has no Gradle plugin, so this shells out to it.
+ * Vale is not a JVM tool and has no Gradle plugin, so this shells out to it. Everything a project
+ * decides for itself is an input: which files, which rules, which base branches, and what to say
+ * in the summary. Nothing here knows about the project that uses it.
  */
 /** What a branch touched: which files, and which lines within them are new. */
 private data class ChangedFiles(
@@ -97,6 +97,21 @@ abstract class ValeCheck : DefaultTask() {
      */
     @get:Input @get:Optional abstract val changedSince: Property<String>
 
+    /**
+     * Candidate base branches, tried in order when [changedSince] is blank. Which names a project
+     * uses is project policy, so it is set by the caller rather than assumed here.
+     */
+    @get:Input abstract val baseRefs: ListProperty<String>
+
+    /** Appended to the summary line, for example a pointer to the project's writing rules. */
+    @get:Input @get:Optional abstract val helpText: Property<String>
+
+    /**
+     * An exact Vale binary to run. When set, `PATH` is not searched and npx is not used, so an
+     * offline or locked-down build can name the binary it installed.
+     */
+    @get:Input @get:Optional abstract val valeExecutable: Property<String>
+
     @get:OutputFile abstract val report: RegularFileProperty
 
     @get:Internal abstract val workingDirectory: DirectoryProperty
@@ -123,9 +138,9 @@ abstract class ValeCheck : DefaultTask() {
     /**
      * The base to compare against.
      *
-     * Taking the first ref that exists is wrong here. A fork's `origin/master` is often far behind
-     * the canonical repository, and on one branch it was 130 commits behind, which widened the
-     * diff from 20 files to 483.
+     * Taking the first ref that exists is wrong. On a fork, the copy of the upstream branch is
+     * often far behind the real one. Measured on one branch: the stale ref widened the diff from
+     * 20 files to 483.
      *
      * Ancestry decides it, not commit dates. A merge base that has every other merge base as an
      * ancestor is the closest one to HEAD, and unlike a timestamp that survives rebases, grafted
@@ -133,7 +148,7 @@ abstract class ValeCheck : DefaultTask() {
      */
     private fun discoverBaseRef(): String? {
         val bases =
-            DEFAULT_BASE_REFS.filter(::exists).mapNotNull { ref ->
+            baseRefs.get().filter(::exists).mapNotNull { ref ->
                 git("merge-base", "HEAD", ref)?.trim()?.let { ref to it }
             }
         if (bases.isEmpty()) return null
@@ -191,7 +206,7 @@ abstract class ValeCheck : DefaultTask() {
                 // silently shrink the check, and this task is documented as a pre-commit gate.
                 requested.takeIf(::exists)
                     ?: throw GradleException(
-                        "$name: -PwritingStyleSince=$requested does not resolve to a git ref."
+                        "$name: base ref '$requested' does not resolve to a git ref."
                     )
             } else {
                 discoverBaseRef()
@@ -234,6 +249,13 @@ abstract class ValeCheck : DefaultTask() {
      * Windows npm ships `npx.cmd`, and `CreateProcess` only appends `.exe`, so name it in full.
      */
     private fun launcher(): List<String> {
+        valeExecutable.orNull?.takeIf(String::isNotBlank)?.let { configured ->
+            val file = File(configured)
+            if (!file.isFile || !file.canExecute()) {
+                throw GradleException("$name: '$configured' is not an executable file.")
+            }
+            return listOf(file.absolutePath)
+        }
         val names = if (isWindows) listOf("vale.exe", "vale.bat") else listOf("vale")
         val onPath =
             System.getenv("PATH")
@@ -292,7 +314,7 @@ abstract class ValeCheck : DefaultTask() {
         if (result.exitValue != 0) {
             val hint =
                 if (launcher.first().endsWith("npx") || launcher.first().endsWith("npx.cmd")) {
-                    "\nInstall Vale, or set a valeNpmVersion that npm publishes. " +
+                    "\nInstall Vale, or ask for an npm wrapper version that npm publishes. " +
                         "@vvago/vale does not carry every Vale release."
                 } else {
                     ""
@@ -343,8 +365,8 @@ abstract class ValeCheck : DefaultTask() {
 
     @TaskAction
     fun check() {
-        // The pointer files are symlinks to AGENTS.md. Linting them would report every AGENTS.md
-        // finding once per pointer.
+        // A symlink points at a file that is very likely in the list already. Linting both would
+        // report every finding in the target twice.
         var files = sources.files.filter { it.isFile && !Files.isSymbolicLink(it.toPath()) }
 
         // Narrow to what this branch touched, intersecting so the exclusions above still hold.
@@ -393,9 +415,8 @@ abstract class ValeCheck : DefaultTask() {
             } else {
                 ""
             }
-        val summary =
-            "$name: ${findings.size} findings in ${files.size} files. " +
-                "See docs/WRITING_STYLE.md.$note"
+        val help = helpText.getOrElse("").let { if (it.isBlank()) "" else " $it" }
+        val summary = "$name: ${findings.size} findings in ${files.size} files.$help$note"
         if (failOnFindings.get()) {
             throw GradleException(summary)
         }

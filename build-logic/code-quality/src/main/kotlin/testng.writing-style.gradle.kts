@@ -25,6 +25,15 @@ plugins {
 // Vale is not installed locally, and it is versioned on its own: 3.18.0 and 3.19.0 are real Vale
 // releases with no npm wrapper. Bump them together when you can, apart when you have to.
 val valeCliVersion = "3.20.0"
+
+// Tried in order, closest merge base wins. A fork's origin/master is often behind the canonical
+// repository, so upstream/master is listed first. Override the whole list with a comma separated
+// -PwritingStyleBaseRefs, for a checkout whose remotes are named differently.
+val valeBaseRefs =
+    buildParameters.writingStyleBaseRefs
+        .map { property -> property.split(",").map(String::trim).filter(String::isNotEmpty) }
+        .orElse(listOf("upstream/master", "origin/master", "master"))
+val valeHelpText = "See docs/WRITING_STYLE.md."
 val valeNpmWrapperVersion = "3.20.0"
 
 val valeSources =
@@ -54,11 +63,14 @@ tasks.register<ValeCheck>("writingStyleCheckChanges") {
     configuration.from(valeConfiguration)
     valeVersion.set(valeCliVersion)
     valeNpmVersion.set(valeNpmWrapperVersion)
+    valeExecutable.set(buildParameters.writingStyleValePath)
+    baseRefs.set(valeBaseRefs)
+    helpText.set(valeHelpText)
     failOnFindings.set(buildParameters.failOnWritingStyle)
     workingDirectory.set(layout.projectDirectory)
     report.set(layout.buildDirectory.file("reports/writing-style/changed.txt"))
     // -PwritingStyleSince=<ref> picks the base branch. Empty means "work it out".
-    changedSince.set(providers.gradleProperty("writingStyleSince").orElse(""))
+    changedSince.set(buildParameters.writingStyleSince.orElse(""))
     // The file list comes from git, which Gradle does not track, so never skip this as up to date.
     outputs.upToDateWhen { false }
 }
@@ -71,6 +83,9 @@ tasks.register<ValeCheck>("writingStyleCheck") {
     configuration.from(valeConfiguration)
     valeVersion.set(valeCliVersion)
     valeNpmVersion.set(valeNpmWrapperVersion)
+    valeExecutable.set(buildParameters.writingStyleValePath)
+    baseRefs.set(valeBaseRefs)
+    helpText.set(valeHelpText)
     failOnFindings.set(buildParameters.failOnWritingStyle)
     workingDirectory.set(layout.projectDirectory)
     report.set(layout.buildDirectory.file("reports/writing-style/all.txt"))
