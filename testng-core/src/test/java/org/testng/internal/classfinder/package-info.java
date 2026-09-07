@@ -4,4 +4,4 @@
  *
  * <p>Classes handed to TestNG to produce that behavior live in {@code samples}, not here.
  */
-package org.testng.classfinder;
+package org.testng.internal.classfinder;

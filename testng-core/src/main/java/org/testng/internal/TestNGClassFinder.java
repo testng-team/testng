@@ -96,7 +96,7 @@ public class TestNGClassFinder extends BaseClassFinder {
       return;
     }
 
-    if (isNotTestNGClass(cls, annotationFinder)) { // if not TestNG class
+    if (isNotTestNGClass(cls, annotationFinder, cim.getXmlClass(cls))) {
       Utils.log(PREFIX, 3, "SKIPPING CLASS " + cls + " no TestNG annotations found");
       return;
     }
@@ -283,14 +283,16 @@ public class TestNGClassFinder extends BaseClassFinder {
     return fallback;
   }
 
-  private boolean isNotTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
-    return !isTestNGClass(c, annotationFinder);
+  private static boolean isNotTestNGClass(
+      Class<?> c, IAnnotationFinder annotationFinder, @Nullable XmlClass xmlClass) {
+    return !isTestNGClass(c, annotationFinder, xmlClass);
   }
 
   /**
    * @return true if this class contains TestNG annotations (either on itself or on a superclass).
    */
-  private boolean isTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
+  private static boolean isTestNGClass(
+      Class<?> c, IAnnotationFinder annotationFinder, @Nullable XmlClass xmlClass) {
     Class<?> cls = c;
     boolean result = false;
 
@@ -337,20 +339,12 @@ public class TestNGClassFinder extends BaseClassFinder {
               + e.getMessage();
       Utils.log(PREFIX, 1, message);
       // Named <class> tags load classes. Package scanning does not (GITHUB-602).
-      if (wasNamedInSuite(c)) {
+      // ClassInfoMap already ties a nested class to that enclosing tag.
+      if (xmlClass != null && xmlClass.loadClasses()) {
         throw new TestNGException(message, e);
       }
       return false;
     }
-  }
-
-  private boolean wasNamedInSuite(Class<?> cls) {
-    for (XmlClass xmlClass : m_testContext.getCurrentXmlTest().getXmlClasses()) {
-      if (xmlClass.loadClasses() && xmlClass.getName().equals(cls.getName())) {
-        return true;
-      }
-    }
-    return false;
   }
 
   // IInstanceInfo<T> should be replaced by IInstanceInfo<?> but eclipse complains against it.

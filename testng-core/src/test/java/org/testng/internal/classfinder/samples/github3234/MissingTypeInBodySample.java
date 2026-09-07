@@ -1,4 +1,4 @@
-package org.testng.classfinder.samples.github3234;
+package org.testng.internal.classfinder.samples.github3234;
 
 import org.testng.annotations.Test;
 
@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
  * succeeds; the missing type surfaces when the test runs.
  */
 @Test
-public class SampleUsingMissingTypeInBody {
+public class MissingTypeInBodySample {
 
   public void test1() {
     new MissingType();

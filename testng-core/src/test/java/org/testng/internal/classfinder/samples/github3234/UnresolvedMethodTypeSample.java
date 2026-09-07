@@ -1,4 +1,4 @@
-package org.testng.classfinder.samples.github3234;
+package org.testng.internal.classfinder.samples.github3234;
 
 import org.testng.annotations.Test;
 
@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
  * not on the class loader, reading the methods throws {@code NoClassDefFoundError}.
  */
 @Test
-public class SampleWithUnresolvedMethodType {
+public class UnresolvedMethodTypeSample {
 
   public void test1() {
     throw new AssertionError("should not be silently skipped");

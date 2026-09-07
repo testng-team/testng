@@ -1,4 +1,4 @@
-package org.testng.classfinder.samples.github3234.pkgscan;
+package org.testng.internal.classfinder.samples.github3234.pkgscan;
 
 import org.testng.annotations.Test;
 

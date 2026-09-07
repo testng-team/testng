@@ -1,4 +1,4 @@
-package org.testng.classfinder;
+package org.testng.internal.classfinder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +9,8 @@ import java.io.InputStream;
  */
 public class MissingTypeClassLoader extends ClassLoader {
 
-  private static final String SAMPLE_PACKAGE = "org.testng.classfinder.samples.github3234.";
+  private static final String SAMPLE_PACKAGE =
+      "org.testng.internal.classfinder.samples.github3234.";
   private static final String MISSING_TYPE = SAMPLE_PACKAGE + "MissingType";
 
   public MissingTypeClassLoader() {
