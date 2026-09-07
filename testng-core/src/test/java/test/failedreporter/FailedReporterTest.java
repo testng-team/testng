@@ -6,7 +6,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -24,6 +27,9 @@ import test.failedreporter.issue1297.inheritance.InheritanceFailureSample;
 import test.failedreporter.issue1297.inheritance.InheritancePassSample;
 import test.failedreporter.issue1297.straightforward.AllPassSample;
 import test.failedreporter.issue1297.straightforward.FailureSample;
+import test.failedreporter.issue2940.DependsOnGroupsDataProviderSample;
+import test.failedreporter.issue2940.DependsOnGroupsNestedClosureSample;
+import test.failedreporter.issue2940.DependsOnGroupsPassedMemberSample;
 
 public class FailedReporterTest extends SimpleBaseTest {
   public static final String DEPENDENCY_GROUP = "failed";
@@ -137,6 +143,48 @@ public class FailedReporterTest extends SimpleBaseTest {
     runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
   }
 
+  @Test(description = "github-2940")
+  public void testInclusionOfPassedGroupMembersForSkippedDependsOnGroups() {
+    triggerTest(DependsOnGroupsPassedMemberSample.class);
+    String[] substitutions = new String[] {DependsOnGroupsPassedMemberSample.class.getName()};
+    runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 1);
+    substitutions = new String[] {"passedMember", "failedMember", "skippedDependent"};
+    runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
+  }
+
+  @Test(description = "github-2940")
+  public void testRerunOfDataProviderDependsOnGroups() {
+    DependsOnGroupsDataProviderSample.remainingFailures.set(1);
+    triggerTest(DependsOnGroupsDataProviderSample.class);
+    String[] substitutions = new String[] {DependsOnGroupsDataProviderSample.class.getName()};
+    runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 1);
+    substitutions = new String[] {"test1", "test2", "test3"};
+    runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
+
+    TestListenerAdapter tla = rerunFailedXml();
+    assertTestResultsEqual(tla.getPassedTests(), Arrays.asList("test1", "test2", "test3"));
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getSkippedTests()).isEmpty();
+  }
+
+  @Test(description = "github-2940")
+  public void testRerunOfNestedGroupMemberDependencies() {
+    DependsOnGroupsNestedClosureSample.remainingFailures.set(1);
+    triggerTest(DependsOnGroupsNestedClosureSample.class);
+    String[] substitutions = new String[] {DependsOnGroupsNestedClosureSample.class.getName()};
+    runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 1);
+    substitutions =
+        new String[] {"baseSetup", "setup", "passedMember", "failedMember", "skippedDependent"};
+    runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
+
+    TestListenerAdapter tla = rerunFailedXml();
+    assertTestResultsEqual(
+        tla.getPassedTests(),
+        Arrays.asList("baseSetup", "setup", "passedMember", "failedMember", "skippedDependent"));
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getSkippedTests()).isEmpty();
+  }
+
   @Test(description = "github-1297")
   public void testInclusionOfPassedTestsDependOnFailedGroup() {
     triggerTest(
@@ -187,6 +235,24 @@ public class FailedReporterTest extends SimpleBaseTest {
     TestNG tng = create(mTempDirectory.toPath(), cls);
     tng.setUseDefaultListeners(true);
     tng.run();
+  }
+
+  private TestListenerAdapter rerunFailedXml() {
+    File rerunDir = createDirInTempDir("testng-2940-rerun");
+    try {
+      TestListenerAdapter tla = new TestListenerAdapter();
+      TestNG rerun = create();
+      rerun.addListener(tla);
+      rerun.setUseDefaultListeners(true);
+      rerun.setOutputDirectory(rerunDir.getAbsolutePath());
+      rerun.setTestSuites(
+          Collections.singletonList(
+              new File(mTempDirectory, "testng-failed.xml").getAbsolutePath()));
+      rerun.run();
+      return tla;
+    } finally {
+      deleteDir(rerunDir);
+    }
   }
 
   static void runAssertions(File outputDir, String[] expectedMethods, String expectedLine) {
