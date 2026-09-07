@@ -35,15 +35,35 @@ reject_if_ambiguous() {
 }
 
 sha=""
-# A path in the worktree is followed through renames. That misses a rename that is still
-# uncommitted, so fall back to history, rejecting ambiguity at each step.
+# A path in the worktree is followed through renames first.
 if [ -e "$frag" ]; then
   sha=$(git log --follow --reverse --diff-filter=A --format=%H -- "$frag" | head -1)
 fi
+
+# Then search history by the last two path segments, for example "github765/SomeTest.java".
+# A full path is wrong here: the modules moved in 2021, so a modern path only matches history
+# after that move, and the move itself then looks like the commit that wrote the test.
+#
+# The oldest "add" of a path is often a rename, not the original. Tests here have been moved twice
+# already: once when the modules were split, and once when they were grouped by feature. So each
+# time the add turns out to be a rename, take the old path and look again.
+last_two() { printf '%s' "$1" | awk -F/ '{ if (NF>1) print $(NF-1)"/"$NF; else print $NF }'; }
 if [ -z "$sha" ]; then
-  reject_if_ambiguous "*$frag" >/dev/null
-  sha=$(git log --all --reverse --diff-filter=A --format=%H -- "*$frag" | head -1)
+  short=$(last_two "$frag")
+  for _ in 1 2 3 4 5 6 7 8 9 10; do
+    reject_if_ambiguous "*$short" >/dev/null
+    found=$(git log --all --reverse --diff-filter=A --format=%H -- "*$short" | head -1)
+    [ -z "$found" ] && break
+    sha=$found
+    # git log reports a rename as an add unless -M is given, so re-read the commit with it.
+    older=$(git show --name-status -M --format= "$sha" \
+              | awk -v suffix="$short" '$1 ~ /^R/ && index($3, suffix) { print $2 }' | head -1)
+    [ -z "$older" ] && break
+    short=$(last_two "$older")
+  done
 fi
+
+# Last resort: the file name alone.
 if [ -z "$sha" ]; then
   reject_if_ambiguous "*/$(basename "$frag")" >/dev/null
   sha=$(git log --all --reverse --diff-filter=A --format=%H -- "*/$(basename "$frag")" | head -1)
@@ -67,14 +87,18 @@ printf 'message     %s\n' "${msg:-<EMPTY -- no provenance here>}"
 
 # Provenance must name the number being checked. Any issue marker is not enough: a commit that says
 # "#123" does not prove anything about issue 765.
-names_num() { printf '%s' "$1" | grep -qE "(TESTNG-|#|issues/)${num}([^0-9]|$)"; }
+# Accepts "#765", "TESTNG-765", "issues/765" and a branch name such as "fix-765". The last form
+# is common in merge commits and is real evidence, so the matched text is printed for a human to
+# judge rather than hidden behind a yes or no.
+names_num() { printf '%s' "$1" | grep -qE "(TESTNG-|#|issues/|[-/])${num}([^0-9]|$)"; }
+matched_text() { printf '%s' "$1" | grep -oE "[A-Za-z/#-]*${num}([^0-9]|$)" | head -1; }
 if names_num "$msg"; then
-  printf 'provenance  the introducing commit names #%s\n' "$num"
+  printf 'provenance  the introducing commit names it: %s\n' "$(matched_text "$msg")"
 else
   merge=$(git log --merges --ancestry-path --format=%H "$sha".."$BASE" 2>/dev/null | tail -1)
   mmsg=$([ -n "$merge" ] && git log -1 --format='%s | %b' "$merge" | tr '\n' ' ' | sed 's/  */ /g')
   if [ -n "${mmsg:-}" ] && names_num "$mmsg"; then
-    printf 'provenance  the merge names #%s: %s\n' "$num" "$mmsg"
+    printf 'provenance  the merge names it (%s): %s\n' "$(matched_text "$mmsg")" "$mmsg"
   else
     printf 'provenance  NOT PROVEN -- neither the commit nor its merge names #%s\n' "$num"
     [ -n "${mmsg:-}" ] && printf '            merge was: %s\n' "$mmsg"
