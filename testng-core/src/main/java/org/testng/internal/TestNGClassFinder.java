@@ -96,7 +96,7 @@ public class TestNGClassFinder extends BaseClassFinder {
       return;
     }
 
-    if (isNotTestNGClass(cls, annotationFinder)) { // if not TestNG class
+    if (isNotTestNGClass(cls, annotationFinder, cim.getXmlClass(cls))) {
       Utils.log(PREFIX, 3, "SKIPPING CLASS " + cls + " no TestNG annotations found");
       return;
     }
@@ -283,14 +283,16 @@ public class TestNGClassFinder extends BaseClassFinder {
     return fallback;
   }
 
-  private static boolean isNotTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
-    return !isTestNGClass(c, annotationFinder);
+  private static boolean isNotTestNGClass(
+      Class<?> c, IAnnotationFinder annotationFinder, @Nullable XmlClass xmlClass) {
+    return !isTestNGClass(c, annotationFinder, xmlClass);
   }
 
   /**
    * @return true if this class contains TestNG annotations (either on itself or on a superclass).
    */
-  private static boolean isTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
+  private static boolean isTestNGClass(
+      Class<?> c, IAnnotationFinder annotationFinder, @Nullable XmlClass xmlClass) {
     Class<?> cls = c;
     boolean result = false;
 
@@ -330,13 +332,17 @@ public class TestNGClassFinder extends BaseClassFinder {
       return result;
 
     } catch (NoClassDefFoundError e) {
-      Utils.log(
-          PREFIX,
-          1,
+      String message =
           "Unable to read methods on class "
               + cls.getName()
               + " - unable to resolve class reference "
-              + e.getMessage());
+              + e.getMessage();
+      Utils.log(PREFIX, 1, message);
+      // Named <class> tags load classes. Package scanning does not (GITHUB-602).
+      // ClassInfoMap already ties a nested class to that enclosing tag.
+      if (xmlClass != null && xmlClass.loadClasses()) {
+        throw new TestNGException(message, e);
+      }
       return false;
     }
   }

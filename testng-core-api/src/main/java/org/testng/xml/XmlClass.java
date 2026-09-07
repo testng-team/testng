@@ -58,6 +58,7 @@ public class XmlClass implements Cloneable {
     m_name = className;
     m_class = cls;
     m_index = index;
+    m_loadClasses = resolveClass;
 
     if (null == m_class && resolveClass) {
       loadClass();
