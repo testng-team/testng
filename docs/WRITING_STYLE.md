@@ -120,6 +120,9 @@ this build.
 
 Neither needs Vale installed. The task uses a `vale` already on your `PATH` when there is one.
 Otherwise it falls back to `npx`, which downloads a pinned binary on first use and caches it.
+The build pins two versions, not one. `valeCliVersion` is the Vale we want. `valeNpmWrapperVersion`
+is the npm package used by the fallback, and npm does not publish a wrapper for every Vale release.
+Both live in `testng.writing-style.gradle.kts`.
 Installing Vale is still worth it for the speed. A warm `writingStyleCheckChanges` takes about eight
 seconds, against a little over one for Vale on its own. The
 [Vale install guide](https://vale.sh/docs/install) covers Homebrew, apt, Chocolatey, Scoop and a

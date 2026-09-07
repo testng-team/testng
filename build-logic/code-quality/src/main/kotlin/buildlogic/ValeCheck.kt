@@ -53,7 +53,10 @@ private data class ChangedFiles(
     val addedLines: Map<String, Set<Int>>,
     val wholeFiles: Set<String>,
 ) {
-    /** Matches CI's `filter_mode: added`: a finding counts only on a line this change introduced. */
+    /**
+     * Matches CI's `filter_mode: added`. A finding counts only when it sits on a line this
+     * change introduced.
+     */
     fun introduced(finding: String): Boolean {
         val match = FINDING.find(finding) ?: return true
         val path = match.groupValues[1]
@@ -74,8 +77,17 @@ abstract class ValeCheck : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val configuration: ConfigurableFileCollection
 
-    /** Used only when Vale is not already on `PATH`. */
+    /** The Vale version this build expects. Reported, and warned about when it differs. */
     @get:Input abstract val valeVersion: Property<String>
+
+    /**
+     * The version of the npm wrapper used when Vale is not on `PATH`.
+     *
+     * Kept apart from [valeVersion] on purpose. `@vvago/vale` is versioned on its own and does not
+     * publish every Vale release: 3.18.0 and 3.19.0 exist as Vale but not on npm. Deriving this
+     * from [valeVersion] would break the fallback the moment someone moves to such a release.
+     */
+    @get:Input abstract val valeNpmVersion: Property<String>
 
     @get:Input abstract val failOnFindings: Property<Boolean>
 
@@ -141,7 +153,11 @@ abstract class ValeCheck : DefaultTask() {
      *
      * `git diff -U0` prints `@@ -a,b +c,d @@` before each hunk. Everything from c to c+d-1 is new.
      */
-    private fun collectAddedLines(top: String, diff: String, into: MutableMap<String, MutableSet<Int>>) {
+    private fun collectAddedLines(
+        top: String,
+        diff: String,
+        into: MutableMap<String, MutableSet<Int>>,
+    ) {
         var current: MutableSet<Int>? = null
         for (line in diff.lines()) {
             when {
@@ -228,7 +244,7 @@ abstract class ValeCheck : DefaultTask() {
                 ?.absolutePath
         if (onPath != null) return listOf(onPath)
         val npx = if (isWindows) "npx.cmd" else "npx"
-        return listOf(npx, "--yes", "@vvago/vale@${valeVersion.get()}")
+        return listOf(npx, "--yes", "@vvago/vale@${valeNpmVersion.get()}")
     }
 
     /** Splits the paths so no single command line approaches the platform limit. */
@@ -274,8 +290,15 @@ abstract class ValeCheck : DefaultTask() {
                 isIgnoreExitValue = true
             }
         if (result.exitValue != 0) {
+            val hint =
+                if (launcher.first().endsWith("npx") || launcher.first().endsWith("npx.cmd")) {
+                    "\nInstall Vale, or set a valeNpmVersion that npm publishes. " +
+                        "@vvago/vale does not carry every Vale release."
+                } else {
+                    ""
+                }
             throw GradleException(
-                "Vale failed to run (exit ${result.exitValue}):\n" +
+                "Vale failed to run (exit ${result.exitValue}):$hint\n" +
                     stdout.toString(Charsets.UTF_8.name()) +
                     stderr.toString(Charsets.UTF_8.name())
             )
@@ -365,7 +388,11 @@ abstract class ValeCheck : DefaultTask() {
         }
         findings.forEach { logger.lifecycle(it) }
         val note =
-            if (preexisting > 0) " $preexisting more sit on lines this change did not touch." else ""
+            if (preexisting > 0) {
+                " $preexisting more sit on lines this change did not touch."
+            } else {
+                ""
+            }
         val summary =
             "$name: ${findings.size} findings in ${files.size} files. " +
                 "See docs/WRITING_STYLE.md.$note"

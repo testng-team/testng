@@ -21,6 +21,12 @@ plugins {
 // swapping it would not change the question either task answers. The neighbouring tool-named
 // tasks, autostyleCheck and rewriteDryRun, are named by their third-party plugins, not by us.
 
+// Two versions, not one. The first is the Vale we want. The second is the npm package used when
+// Vale is not installed locally, and it is versioned on its own: 3.18.0 and 3.19.0 are real Vale
+// releases with no npm wrapper. Bump them together when you can, apart when you have to.
+val valeCliVersion = "3.20.0"
+val valeNpmWrapperVersion = "3.20.0"
+
 val valeSources =
     fileTree(layout.projectDirectory) {
         include("**/*.java", "**/*.md")
@@ -46,7 +52,8 @@ tasks.register<ValeCheck>("writingStyleCheckChanges") {
     description = "Checks the javadoc, comments and Markdown this branch touched."
     sources.from(valeSources)
     configuration.from(valeConfiguration)
-    valeVersion.set("3.20.0")
+    valeVersion.set(valeCliVersion)
+    valeNpmVersion.set(valeNpmWrapperVersion)
     failOnFindings.set(buildParameters.failOnWritingStyle)
     workingDirectory.set(layout.projectDirectory)
     report.set(layout.buildDirectory.file("reports/writing-style/changed.txt"))
@@ -58,10 +65,12 @@ tasks.register<ValeCheck>("writingStyleCheckChanges") {
 
 tasks.register<ValeCheck>("writingStyleCheck") {
     group = "verification"
-    description = "Checks all javadoc, comments and Markdown against the writing rules in AGENTS.md."
+    description =
+        "Checks all javadoc, comments and Markdown against the writing rules in AGENTS.md."
     sources.from(valeSources)
     configuration.from(valeConfiguration)
-    valeVersion.set("3.20.0")
+    valeVersion.set(valeCliVersion)
+    valeNpmVersion.set(valeNpmWrapperVersion)
     failOnFindings.set(buildParameters.failOnWritingStyle)
     workingDirectory.set(layout.projectDirectory)
     report.set(layout.buildDirectory.file("reports/writing-style/all.txt"))
