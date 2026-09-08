@@ -248,15 +248,22 @@ From a fork, pull requests are cross-fork:
 gh pr create --repo testng-team/testng --base master --head <fork-owner>:<branch>
 ```
 
-Conventional Commits. Record user-visible changes in `CHANGES.txt`, newest first, under the current
-version heading.
+Conventional Commits. Record user-visible changes in `CHANGELOG.md`, newest first, under
+`## [Unreleased]`, in the `### Added`, `### Changed`, `### Deprecated`, `### Removed`, `### Fixed`
+or `### Security` subsection the change belongs to. The file follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-A change under `org.testng.internal` earns two `CHANGES.txt` entries: the `Changed:` line in prose,
-and a bullet under `Possible backward incompatible changes:` naming what stops compiling and what to
-use instead. The package is OSGi exported yet excluded from javadoc, which reads as a contradiction
-and invites deprecated bridges; the project does the opposite, breaking them and recording it, each
-entry naming the export and doing it anyway. Grep `CHANGES.txt` for `internal` before arguing
-about compatibility — the precedents are the argument.
+Put your entry under a subsection that is already there whenever you can. `.gitattributes` merges
+the changelog with the `union` strategy, which takes both sides of a concurrent edit rather than
+raising a conflict: two pull requests that each open the same missing subsection land two copies of
+that heading, silently, and nothing reads the file to catch it.
+
+A change under `org.testng.internal` earns two `CHANGELOG.md` entries: the `### Changed` line in
+prose, and a bullet under `#### Possible backward incompatible changes` naming what stops compiling
+and what to use instead. The package is OSGi exported yet excluded from javadoc, which reads as a
+contradiction and invites deprecated bridges; the project does the opposite, breaking them and
+recording it, each entry naming the export and doing it anyway. Grep `CHANGELOG.md` for `internal`
+before arguing about compatibility — the precedents are the argument.
 
 Split a pull request that mixes a large mechanical sweep with changes that need judgement. The two
 halves have different review costs: a tool's output — an OpenRewrite run, a formatter pass, a
@@ -313,7 +320,7 @@ edits that follow it, so a reviewer can tell which hunks a human actually judged
 - Running a documented command proves it executes, not that it does what the text claims. If the
   text promises an effect — filtering, failing, producing a value — measure that effect.
 - Report what you actually observed. If a run was flaky, say so and show both runs.
-- **What the characterization made fail is the minimum the fix has to cover.** A `CHANGES.txt`
+- **What the characterization made fail is the minimum the fix has to cover.** A `CHANGELOG.md`
   entry that has to disclaim part of it — "not covered until X migrates" — is the tell that the fix
   sits too high. Count the failing sites, then enumerate the callers of the shared primitive one
   level down. On GITHUB-2830 that primitive was `Utils.toString`, located by its already-failsafe

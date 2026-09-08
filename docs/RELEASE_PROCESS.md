@@ -63,18 +63,20 @@ TestNG uses GitHub Actions to automate the release process. The workflow:
                     │                           │
                     └───────────┬───────────────┘
                                 ▼
-                    ┌───────────────────────┐
-                    │ Artifacts on Maven    │
-                    │ Central (~30 minutes) │
-                    └───────────────────────┘
+                    ┌─────────────────────────┐
+                    │ Artifacts on Maven      │
+                    │ Central (~30 minutes)   │
+                    └─────────────────────────┘
                                 │
                                 ▼
-                    ┌───────────────────────┐
-                    │ Post-Release Tasks    │
-                    │ - Create Git tag      │
-                    │ - Send announcement   │
-                    │ - Update README       │
-                    └───────────────────────┘
+                    ┌─────────────────────────┐
+                    │ Post-Release Tasks      │
+                    │ - Create Git tag        │
+                    │ - Promote changelog     │
+                    │ - Create GitHub release │
+                    │ - Send announcement     │
+                    │ - Update README + docs  │
+                    └─────────────────────────┘
 ```
 
 ## Prerequisites
@@ -102,6 +104,10 @@ The following secrets must be configured in GitHub repository settings. The GitH
 
 ## Release Workflow
 
+Releases are made from `master`, and only from `master`. The branches that carry a release tag
+further back, `release_7.5` above all, are history rather than a supported path: they explain how a
+tag such as 7.5.1 came about, and nothing is published from them today.
+
 ### Option 1: Automatic Release (Recommended)
 
 This is the simplest approach - artifacts are automatically published to Maven Central without manual intervention.
@@ -113,7 +119,7 @@ This is the simplest approach - artifacts are automatically published to Maven C
 3. Click **"Run workflow"** button
 4. Select:
 
-   - **Branch**: `master` (or your release branch)
+   - **Branch**: `master`
    - **Publishing type**: `AUTOMATIC`
 
 5. Click **"Run workflow"**.
@@ -173,7 +179,7 @@ This approach uploads artifacts to Central Portal but waits for you to manually 
 3. Click **"Run workflow"** button
 4. Select:
 
-   - **Branch**: `master` (or your release branch)
+   - **Branch**: `master`
    - **Publishing type**: `USER_MANAGED`
 
 5. Click **"Run workflow"**
@@ -313,35 +319,163 @@ After artifacts are published to Maven Central, complete these tasks:
 
 ### 1. Create Git Tag
 
-Every release must be tagged in Git.
+Every release must be tagged in Git, and tagging comes first: the next step adds commits, and the
+tag has to point at the commit the artifacts were built from.
+
+That commit is not always your local `HEAD`. `Publish to Maven Central` is a `workflow_dispatch`,
+and its checkout takes the head of the branch it was dispatched on, at the moment it was dispatched
+— while you reach this step half an hour later, once Central has synced, on a branch that may have
+moved. Read the commit off the run instead of assuming it:
+
+Name the run outright. Picking the newest successful one would be a guess: a re-run, a
+`USER_MANAGED` run that staged but was never published, and a second dispatch of the same version
+are all successful runs, and all of them build a commit that declares this version.
 
 ```bash
-# Get the version number from the release
 VERSION="7.10.0"  # Replace with actual version
 
-# Create and push the tag
-git tag -a v${VERSION} -m "Release ${VERSION}"
-git push origin v${VERSION}
+# Find the run you dispatched and watched above; its id is also the last path
+# segment of its URL, .../actions/runs/<id>
+gh run list --repo testng-team/testng --workflow "Publish to Maven Central" --limit 5 \
+  --json databaseId,headSha,conclusion,createdAt
+
+RUN_ID="21236984900"  # Replace with that run's id
 ```
 
-**Note**: The tag should point to the exact commit that was released.
+Two guards before the tag is written. The first is the run, the second the commit, and neither is
+implied by the other:
 
-### 2. Create GitHub Release
+```bash
+gh run view "${RUN_ID}" --repo testng-team/testng --json conclusion --jq .conclusion \
+  | grep -qx success || { echo "Run ${RUN_ID} did not succeed"; exit 1; }
+
+RELEASE_COMMIT=$(gh run view "${RUN_ID}" --repo testng-team/testng --json headSha --jq .headSha)
+
+git show "${RELEASE_COMMIT}:gradle.properties" | grep -qx "testng.version=${VERSION}" \
+  || { echo "Run ${RUN_ID} built $(git show "${RELEASE_COMMIT}:gradle.properties" \
+       | grep '^testng.version='), not ${VERSION}"; exit 1; }
+
+git log -1 --oneline "${RELEASE_COMMIT}"
+git tag -a "v${VERSION}" "${RELEASE_COMMIT}" -m "TestNG ${VERSION}"
+git push origin "v${VERSION}"
+```
+
+**Note**: The tag is the version with a `v` in front, `v7.10.0`. The `v` belongs to the tag name and
+not to the version: the release is `7.10.0`, which is what `gradle.properties` and Maven Central
+carry. Prefixing marks a ref as a version at a glance, keeps release tags apart from every other
+ref, and is what the surrounding tooling expects — `npm version`, GoReleaser and Go modules all
+assume it, and the Semantic Versioning FAQ names it as the usual way to write a version tag.
+
+Releases up to and including `7.12.0` are tagged without the prefix, so the first `v` tag compares
+against a bare one. Only that one link is mixed; the rest follow.
+
+### 2. Promote the Changelog
+
+`CHANGELOG.md` follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), so releasing turns
+the section contributors have been filling in into a dated one, and opens a fresh one for the
+version that comes next.
+
+All of it happens on `master`, in a working copy, in one commit. The example below releases
+`7.10.0` and opens `7.11.0`.
+
+```bash
+git checkout master
+git pull origin master
+
+# Still holding RELEASE_COMMIT from step 1. Anything the changelog gained since that
+# commit is not in the release.
+git diff "${RELEASE_COMMIT}" HEAD -- CHANGELOG.md
+```
+
+An empty diff means the whole `## [Unreleased]` section is what shipped, and the steps below apply
+to it as written. A non-empty one means a pull request merged while Central was syncing: its entries
+are under `## [Unreleased]` but its code is not in the artifacts. Dating the section wholesale would
+file that work under a version that never carried it, and remove it from the version that will —
+wrong in both directions, and invisible afterwards. Leave those entries under the new
+`## [Unreleased]` you open in step 2.1, and date only the rest.
+
+#### 2.1 Date the section being released
+
+At the top of `CHANGELOG.md`, turn this:
+
+```markdown
+## [Unreleased]
+
+Next release: 7.10.0.
+
+### Added
+```
+
+into this, using the date the artifacts reached Maven Central:
+
+```markdown
+## [Unreleased]
+
+Next release: 7.11.0.
+
+## [7.10.0] - 2024-04-07
+
+### Added
+```
+
+The `### Added`, `### Changed` and other subsections stay where they are: they describe the release
+you just dated. The new `## [Unreleased]` starts empty, with only its `Next release:` line.
+
+A release that had to be pulled keeps its section and gains a `[YANKED]` marker in the heading,
+with the reason on the line underneath:
+
+```markdown
+## [7.10.0] - 2024-04-07 [YANKED]
+
+Bad release: wrong internal version.
+```
+
+#### 2.2 Update the link definitions
+
+At the foot of `CHANGELOG.md`, point `[Unreleased]` at the tag you just pushed and add a line for
+the release itself. The base is the release this one follows in the commit graph, which for a
+release made from `master` is the one before it there:
+
+```markdown
+[Unreleased]: https://github.com/testng-team/testng/compare/v7.10.0...HEAD
+[7.10.0]: https://github.com/testng-team/testng/compare/7.9.0...v7.10.0
+```
+
+It is not the section above it in the file. Sections are ordered by release date, while a comparison
+link describes a Git delta, and the two orders part company for the maintenance releases already in
+the file: 7.5.1 was cut from a branch and shipped after 7.7.1, so its section sits between 7.8.0 and
+7.7.1 while its changes belong to the 7.5 line. That is why `[7.8.0]` compares against 7.7.1 rather
+than the section above it — taking 7.5.1 there would answer with 150 commits of divergence instead
+of the 25 that release delivered. Since releases now come from `master` only, a new entry cannot
+land in that position.
+
+#### 2.3 Bump the version
+
+In `gradle.properties`, set `testng.version` to the version you named in `Next release:`:
+
+```properties
+testng.version=7.11.0
+```
+
+#### 2.4 Commit and push
+
+```bash
+git add CHANGELOG.md gradle.properties
+git commit -m "Bumping version for next release"
+git push origin master
+```
+
+### 3. Create GitHub Release
 
 1. Go to https://github.com/testng-team/testng/releases
 2. Click **"Draft a new release"**
 3. Select the tag you just created (`v7.10.0`)
 4. Set release title: `TestNG 7.10.0`
-5. Add release notes:
-
-   - Highlight major features
-   - List bug fixes
-   - Link to issues/PRs
-   - Credit contributors
-
+5. Add release notes, taken from the section you just dated in `CHANGELOG.md`. That file is the
+   source; the release page repeats it rather than restating it in other words.
 6. Click **"Publish release"**
 
-### 3. Send Release Announcement
+### 4. Send Release Announcement
 
 Send an email to the TestNG users mailing list:
 
@@ -382,24 +516,22 @@ Thanks to all contributors who made this release possible!
 [Your Name]
 ```
 
-### 4. Update README.md
+### 5. Link the Announcement from README.md
 
-Update the version badge and links in README.md:
+The `### Release Notes` list in `README.md` points at one mailing list thread per release, because a
+single release is hard to find in the archive otherwise. Add the thread you just sent, at the top:
+
+```markdown
+* [7.10.0](https://groups.google.com/g/testng-users/c/<thread-id>)
+```
 
 ```bash
-# Edit README.md
-# Update version numbers in:
-# - Maven dependency example
-# - Gradle dependency example
-# - Download links
-# - Version badges
-
 git add README.md
-git commit -m "Update README for 7.10.0 release"
+git commit -m "Add 7.10.0 release notes link"
 git push origin master
 ```
 
-### 5. Update Documentation
+### 6. Update Documentation
 
 If there are documentation changes:
 
