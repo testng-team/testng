@@ -415,26 +415,45 @@ public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
   }
 
   /**
-   * Name shown for one invocation in the summary table: the {@code ITest} custom name when it
-   * differs from the Java method name.
+   * Returns the name shown for one invocation in the summary table. The Java method name is always
+   * kept. A non-blank {@code ITest} custom name is appended only for actual test methods.
    */
   private static String invocationDisplayName(ITestResult result) {
     String methodName = result.getMethod().getMethodName();
-    String name = result.getName();
-    if (name == null || name.equals(methodName)) {
+    String customName = customTestName(result);
+    if (customName.isEmpty()) {
       return methodName;
     }
-    return name;
+    return methodName + " (" + customName + ")";
   }
 
-  /** Scenario heading that keeps the method identity and, when present, the custom result name. */
+  /**
+   * Returns the scenario heading for one invocation. The heading keeps the class and method
+   * identity. A non-blank {@code ITest} custom name is appended only for actual test methods.
+   */
   private static String scenarioHeading(String className, ITestResult result) {
     String methodName = result.getMethod().getMethodName();
-    String name = result.getName();
-    if (name == null || name.equals(methodName)) {
+    String customName = customTestName(result);
+    if (customName.isEmpty()) {
       return className + "#" + methodName;
     }
-    return className + "#" + methodName + " (" + name + ")";
+    return className + "#" + methodName + " (" + customName + ")";
+  }
+
+  /**
+   * Returns the {@code ITest} custom name when it should appear next to the Java method name.
+   * Configuration methods and blank names yield an empty string, so the Java method name stays the
+   * identity.
+   */
+  private static String customTestName(ITestResult result) {
+    if (!result.getMethod().isTest()) {
+      return "";
+    }
+    String name = result.getName();
+    if (name == null || name.trim().isEmpty() || name.equals(result.getMethod().getMethodName())) {
+      return "";
+    }
+    return name;
   }
 
   /** Writes the details for all test scenarios. */
