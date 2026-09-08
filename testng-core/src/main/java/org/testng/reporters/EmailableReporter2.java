@@ -344,8 +344,7 @@ public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
           }
           int resultsCount = results.size();
 
-          ITestResult firstResult = results.iterator().next();
-          String methodName = Utils.escapeHtml(firstResult.getMethod().getMethodName());
+          ITestResult firstResult = results.get(0);
           long start = firstResult.getStartMillis();
           long duration = firstResult.getEndMillis() - start;
 
@@ -361,7 +360,7 @@ public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
               .append("<td><a href=\"#m")
               .append(scenarioIndex)
               .append("\">")
-              .append(methodName)
+              .append(Utils.escapeHtml(invocationDisplayName(firstResult)))
               .append("</a></td>")
               .append("<td rowspan=\"")
               .append(resultsCount)
@@ -384,7 +383,7 @@ public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
                 .append("<td><a href=\"#m")
                 .append(scenarioIndex)
                 .append("\">")
-                .append(methodName)
+                .append(Utils.escapeHtml(invocationDisplayName(results.get(i))))
                 .append("</a></td></tr>");
             scenarioIndex++;
           }
@@ -413,6 +412,29 @@ public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
 
   protected String getFormattedStartTime(long startTimeInMillisFromEpoch) {
     return String.valueOf(startTimeInMillisFromEpoch);
+  }
+
+  /**
+   * Name shown for one invocation in the summary table: the {@code ITest} custom name when it
+   * differs from the Java method name.
+   */
+  private static String invocationDisplayName(ITestResult result) {
+    String methodName = result.getMethod().getMethodName();
+    String name = result.getName();
+    if (name == null || name.equals(methodName)) {
+      return methodName;
+    }
+    return name;
+  }
+
+  /** Scenario heading that keeps the method identity and, when present, the custom result name. */
+  private static String scenarioHeading(String className, ITestResult result) {
+    String methodName = result.getMethod().getMethodName();
+    String name = result.getName();
+    if (name == null || name.equals(methodName)) {
+      return className + "#" + methodName;
+    }
+    return className + "#" + methodName + " (" + name + ")";
   }
 
   /** Writes the details for all test scenarios. */
@@ -448,10 +470,8 @@ public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
           throw new IllegalStateException("There should have been at-least 1 test result");
         }
 
-        String label =
-            Utils.escapeHtml(
-                className + "#" + results.iterator().next().getMethod().getMethodName());
         for (ITestResult result : results) {
+          String label = Utils.escapeHtml(scenarioHeading(className, result));
           writeScenario(scenarioIndex, label, result);
           scenarioIndex++;
         }

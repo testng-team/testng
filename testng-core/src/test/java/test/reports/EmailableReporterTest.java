@@ -14,6 +14,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.reporters.EmailableReporter2;
 import test.SimpleBaseTest;
+import test.name.ITestSample;
 import test.reports.issue3038.AnotherTestCaseSample;
 import test.reports.issue3038.ExceptionAwareEmailableReporter;
 import test.reports.issue3038.TestCaseSample;
@@ -65,6 +66,27 @@ public class EmailableReporterTest extends SimpleBaseTest {
             "<table class=\"result\"><tr class=\"param\"><th>Factory Parameter #1</th></tr>"
                 + "<tr class=\"param stripe\"><td>alpha</td></tr></table>")
         .doesNotContain("<tr><th class=\"invisible\"/></tr>");
+  }
+
+  @Test
+  public void emailableReportShowsITestCustomNames() throws IOException {
+    File output = createDirInTempDir("emailable-3121");
+    EmailableReporter2 reporter = new EmailableReporter2();
+    TestNG testng = create(ITestSample.class);
+    testng.setOutputDirectory(output.getAbsolutePath());
+    testng.addListener(reporter);
+    testng.run();
+
+    File report = new File(output, reporter.getFileName());
+    assertThat(report).exists();
+    String html = Files.readString(report.toPath());
+    assertThat(html)
+        .contains(">test1</a>", ">test2</a>", ">test3</a>", ">test4</a>", ">test5</a>")
+        .contains("ITestSample#run (test1)")
+        .contains("ITestSample#run (test2)")
+        .contains("ITestSample#run (test3)")
+        .contains("ITestSample#run (test4)")
+        .contains("ITestSample#run (test5)");
   }
 
   private static void runTest(Class<?>... classes) {
