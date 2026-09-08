@@ -19,6 +19,19 @@ BASE=${BASE:-master}
 # Set to 1 to stop after step 1 and skip step 2. Step 2 needs the network and a GitHub token.
 # The tests use this: they check the provenance rules, which is the part with logic in it.
 PROVENANCE_ONLY=${PROVENANCE_ONLY:-0}
+# Set to 1 when the description is already in the code, and the file holds more than one of them.
+# The commit that wrote the file then proves nothing about one method in it. This finds the commit
+# that wrote the text "GITHUB-<n>" instead. ParameterTest.java carries four such references, and
+# ListenerTest.java carries seventeen.
+#
+# The search covers every Java file, not the path given. Restricting it to one path repeats the
+# fault this script was written to fix: the 2021 module split moved every file, so the text looks
+# added at the new path, and the split becomes the answer for six references out of nine. The path
+# is still read, to say which file is being checked.
+#
+# It searches for a regex, not a plain string. "GITHUB-182" is the start of "GITHUB-1827", so a
+# plain string finds whichever came first. Ten such pairs already exist in this tree.
+BY_DESCRIPTION=${BY_DESCRIPTION:-0}
 frag=${1:?usage: verify-issue-refs.sh <path-fragment> [issue-number]}
 num=${2:-}
 rc=0
@@ -44,8 +57,22 @@ reject_if_ambiguous() {
 }
 
 sha=""
+# The commit that first wrote this description. -G reports every commit whose diff holds a line
+# matching the pattern, so the oldest is the one that added it. The pattern ends the number, or
+# a search for issue 182 answers with the commit that wrote GITHUB-1827.
+if [ "$BY_DESCRIPTION" = 1 ]; then
+  [ -n "$num" ] || { echo "BY_DESCRIPTION needs an issue number"; exit 1; }
+  sha=$(git log -G "GITHUB-${num}([^0-9]|\$)" --all --reverse --format=%H -- '*.java' | head -1)
+  if [ -z "$sha" ]; then
+    echo "no commit wrote \"GITHUB-$num\" into any Java file"
+    exit 1
+  fi
+  printf 'wrote it    %s\n' \
+    "$(git show --name-only --format= "$sha" | grep -E '\.java$' | tr '\n' ' ')"
+fi
+
 # A path in the worktree is followed through renames first.
-if [ -e "$frag" ]; then
+if [ -z "$sha" ] && [ -e "$frag" ]; then
   sha=$(git log --follow --reverse --diff-filter=A --format=%H -- "$frag" | head -1)
 fi
 
@@ -138,6 +165,15 @@ else
   else
     printf 'provenance  NOT PROVEN -- neither the commit nor its merge names #%s\n' "$num"
     [ -n "${mmsg:-}" ] && printf '            merge was: %s\n' "$mmsg"
+    if [ "$BY_DESCRIPTION" = 1 ]; then
+      # An earlier phase of this migration may have written the description itself. Its commit
+      # names no issue, because the proof came from the file, not from the text. Do not delete a
+      # reference on this answer alone.
+      echo "            This mode judges the commit that wrote the text. If an earlier phase of"
+      echo "            this migration wrote it, that commit names no issue. Check the same"
+      echo "            reference without BY_DESCRIPTION, and check docs/test-issue-references.md,"
+      echo "            before removing it."
+    fi
     rc=1
   fi
 fi

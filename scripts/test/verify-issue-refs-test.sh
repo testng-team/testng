@@ -182,5 +182,56 @@ check "the refusal is not on stdout" no "$(says_ambiguous "$out")"
 (cd "$r" && PROVENANCE_ONLY=1 bash "$SCRIPT" TestClassSample.java 1405 >/dev/null 2>&1)
 check "ambiguity exits 2" 2 "$?"
 
+# --- BY_DESCRIPTION --------------------------------------------------------------------------
+# One file can carry many descriptions, added by many commits. The commit that created the file
+# proves nothing about a description added to it years later.
+r=$(new_repo)
+add "$r" src/foo/ManyTest.java "Create the test class"
+printf 'class X { /* GITHUB-765 */ }\n' > "$r/src/foo/ManyTest.java"
+git -C "$r" commit -q -am "Reject the empty name. Fixes #765"
+printf 'class X { /* GITHUB-765 GITHUB-1632 */ }\n' > "$r/src/foo/ManyTest.java"
+git -C "$r" commit -q -am "Report the skip reason. Closes #1632"
+
+# Without the mode the script finds the commit that created the file, which names no issue.
+check "the file's own commit proves nothing" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/ManyTest.java 1632)"
+
+# With the mode it finds the commit that wrote that description.
+check "by description finds the right commit" PROVEN \
+  "$(verdict "$r" src/foo/ManyTest.java 1632 BY_DESCRIPTION=1)"
+check "by description works for the earlier one" PROVEN \
+  "$(verdict "$r" src/foo/ManyTest.java 765 BY_DESCRIPTION=1)"
+
+# A rename after the description was written must not become the answer. Restricting the search to
+# the path does exactly that: the text looks added at the new path. The 2021 module split moved
+# every file in this repository, and it claimed six references out of nine.
+r=$(new_repo)
+add "$r" old/place/RenamedTest.java "Create the test class"
+printf 'class X { /* GITHUB-765 */ }\n' > "$r/old/place/RenamedTest.java"
+git -C "$r" commit -q -am "Reject the empty name. Fixes #765"
+move "$r" old/place/RenamedTest.java new/place/RenamedTest.java
+check "a later rename is not the answer" PROVEN \
+  "$(verdict "$r" new/place/RenamedTest.java 765 BY_DESCRIPTION=1)"
+
+# "GITHUB-182" is the start of "GITHUB-1827". A plain-string search answers with whichever came
+# first. Ten such pairs already exist in the TestNG tree, and GITHUB-182 answered with the commit
+# that wrote GITHUB-1827.
+r=$(new_repo)
+add "$r" src/foo/LongTest.java "Create the test class"
+printf 'class X { /* GITHUB-7654 */ }\n' > "$r/src/foo/LongTest.java"
+git -C "$r" commit -q -am "Speed up the parser. Closes #7654"
+printf 'class X { /* GITHUB-7654 GITHUB-765 */ }\n' > "$r/src/foo/LongTest.java"
+git -C "$r" commit -q -am "Reject the empty name. Closes #765"
+check "a longer number is not this one" PROVEN \
+  "$(verdict "$r" src/foo/LongTest.java 765 BY_DESCRIPTION=1)"
+
+# The mode changes how the commit is found. It does not soften the rules.
+r=$(new_repo)
+add "$r" src/foo/OneTest.java "Create the test class"
+printf 'class X { /* GITHUB-765 */ }\n' > "$r/src/foo/OneTest.java"
+git -C "$r" commit -q -am "Cut release-765"
+check "by description still applies the rules" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/OneTest.java 765 BY_DESCRIPTION=1)"
+
 printf '\n%s passed, %s failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]
