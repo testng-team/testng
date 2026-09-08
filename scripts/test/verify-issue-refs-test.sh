@@ -107,14 +107,38 @@ git -C "$r" merge -q --no-ff -m "Merge pull request #1374 from krmahadevan/krmah
   krmahadevan-fix-765
 check "merge branch names the issue" PROVEN "$(verdict "$r" src/foo/BetaTest.java 765)"
 
-# The number sits in the subject, not in the branch. A pull request number is not an issue number.
+# Pull requests and issues share one number space. "Merge pull request #765" says the pull request
+# was numbered 765. It says nothing about issue 765, so it is not provenance.
 r=$(new_repo)
 add "$r" README.md "First commit"
 git -C "$r" checkout -q -b some-other-work
 add "$r" src/foo/GammaTest.java "Fixing review comments"
 git -C "$r" checkout -q master
-git -C "$r" merge -q --no-ff -m "Merge pull request #999 from someone/unrelated" some-other-work
-check "merge branch without the number" "NOT PROVEN" "$(verdict "$r" src/foo/GammaTest.java 765)"
+git -C "$r" merge -q --no-ff -m "Merge pull request #765 from someone/unrelated" some-other-work
+check "a merged PR number is not the issue" "NOT PROVEN" "$(verdict "$r" src/foo/GammaTest.java 765)"
+
+# The same rule for a squashed pull request, where GitHub puts the number at the end of the subject.
+r=$(new_repo); add "$r" src/foo/AlphaTest.java "Speed up the parser. (#765)"
+check "a squashed PR number is not the issue" "NOT PROVEN" "$(verdict "$r" src/foo/AlphaTest.java 765)"
+
+# The branch still counts, even when the pull request number happens to match the issue number.
+r=$(new_repo)
+add "$r" README.md "First commit"
+git -C "$r" checkout -q -b fix-765
+add "$r" src/foo/DeltaTest.java "Fixing review comments"
+git -C "$r" checkout -q master
+git -C "$r" merge -q --no-ff -m "Merge pull request #765 from someone/fix-765" fix-765
+check "the branch still counts" PROVEN "$(verdict "$r" src/foo/DeltaTest.java 765)"
+
+# A real issue reference in the merge body still counts, next to a pull request number.
+r=$(new_repo)
+add "$r" README.md "First commit"
+git -C "$r" checkout -q -b some-work
+add "$r" src/foo/EpsilonTest.java "Fixing review comments"
+git -C "$r" checkout -q master
+git -C "$r" merge -q --no-ff -m "Merge pull request #765 from someone/some-work" -m "Closes #1632" \
+  some-work
+check "the merge body still counts" PROVEN "$(verdict "$r" src/foo/EpsilonTest.java 1632)"
 
 # --- renames ----------------------------------------------------------------------------------
 # A file that moved twice must be walked back to the commit that wrote it. The cases below pass

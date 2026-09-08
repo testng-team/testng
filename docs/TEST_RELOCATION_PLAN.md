@@ -30,7 +30,9 @@ A reference is now written only when **both** ends check out, via
 `scripts/verify-issue-refs.sh <path-fragment> <issue-number>`:
 
 1. **Provenance** — the commit that introduced the test names the issue, or the merge that brought
-   it in does.
+   it in does. A pull request number does not count. Pull requests and issues share one number
+   space, so "Merge pull request #765" and "Some fix (#765)" say nothing about issue #765. Both
+   forms are removed before the text is searched.
 2. **The issue** — `#<n>` is a real GitHub *issue* and not a pull request, and its subject is what
    the test asserts. The issue's state is reported but never enforced: a regression test may
    legitimately reference an issue that is still open.

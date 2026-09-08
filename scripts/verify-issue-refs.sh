@@ -94,11 +94,24 @@ printf 'message     %s\n' "${msg:-<EMPTY -- no provenance here>}"
 
 [ -z "$num" ] && exit 0
 
+# GitHub writes the pull request number into the subject of a merge commit and of a squash commit.
+# Pull requests and issues share one number space, so "Merge pull request #765" and "Some fix
+# (#765)" say nothing about issue #765. Remove those two forms before the text is searched.
+#
+# Removing them can only make this check stricter. A reference this drops was never proof. A
+# reference it kept and should not have puts a false issue number into the code, which nobody sees.
+without_pr_number() {
+  printf '%s' "$1" | sed -e 's/Merge pull request #[0-9][0-9]*/Merge pull request/g' \
+                         -e 's/(#[0-9][0-9]*)//g'
+}
+
 # Provenance must name the number being checked. Any issue marker is not enough: a commit that says
 # "#123" does not prove anything about issue 765.
 # A commit message must name the issue outright: "#765", "TESTNG-765" or "issues/765".
 # Anything looser accepts text that proves nothing, such as "src/765/data.txt" or "release-765".
-names_num() { printf '%s' "$1" | grep -qE "(TESTNG-|#|issues/)${num}([^0-9]|$)"; }
+names_num() {
+  printf '%s' "$(without_pr_number "$1")" | grep -qE "(TESTNG-|#|issues/)${num}([^0-9]|$)"
+}
 
 # A merge line may instead carry the issue in the branch it merges, such as
 # "Merge pull request #1374 from krmahadevan/krmahadevan-fix-765". Only the branch is read, and
@@ -107,14 +120,21 @@ branch_names_num() {
   printf '%s' "$1" | sed -n 's/.*Merge pull request [^ ]* from \([^ |]*\).*/\1/p' \
     | grep -qE "(^|[^0-9])${num}([^0-9]|$)"
 }
-matched_text() { printf '%s' "$1" | grep -oE "[A-Za-z/#-]*${num}([^0-9]|$)" | head -1; }
+# Reports the text that matched, so a reader can judge it. It searches the same cleaned string the
+# rules did, never the raw message, or it would print a pull request number as the evidence.
+matched_text() {
+  printf '%s' "$(without_pr_number "$1")" | grep -oE "[A-Za-z/#-]*${num}([^0-9]|$)" | head -1
+}
 if names_num "$msg"; then
   printf 'provenance  the introducing commit names it: %s\n' "$(matched_text "$msg")"
 else
   merge=$(git log --merges --ancestry-path --format=%H "$sha".."$BASE" 2>/dev/null | tail -1)
   mmsg=$([ -n "$merge" ] && git log -1 --format='%s | %b' "$merge" | tr '\n' ' ' | sed 's/  */ /g')
   if [ -n "${mmsg:-}" ] && { names_num "$mmsg" || branch_names_num "$mmsg"; }; then
-    printf 'provenance  the merge names it (%s): %s\n' "$(matched_text "$mmsg")" "$mmsg"
+    if names_num "$mmsg"; then evidence=$(matched_text "$mmsg")
+    else evidence=$(printf '%s' "$mmsg" | sed -n 's/.*Merge pull request [^ ]* from \([^ |]*\).*/branch \1/p')
+    fi
+    printf 'provenance  the merge names it (%s): %s\n' "$evidence" "$mmsg"
   else
     printf 'provenance  NOT PROVEN -- neither the commit nor its merge names #%s\n' "$num"
     [ -n "${mmsg:-}" ] && printf '            merge was: %s\n' "$mmsg"

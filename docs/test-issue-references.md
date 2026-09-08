@@ -13,7 +13,8 @@ rebuilt from master; the same sweep caught that too.
 A reference is written only when **both** ends check out:
 
 1. **Provenance** — the commit that introduced the test names the issue, or the merge that brought
-   it in does.
+   it in does. A pull request number does not count. Pull requests and issues share one number
+   space, so "Merge pull request #765" and "Some fix (#765)" say nothing about issue #765.
 2. **The issue exists and fits** — `#<n>` on GitHub is a real *issue* and not a pull request, and
    its subject is what the test asserts. The state is reported, never enforced; a regression test
    may reference an issue that is still open.
@@ -49,8 +50,8 @@ That is why Vale is turned off over the two tables and nowhere else in this file
 | `GITHUB-1430` | Cannot load class from file  XXX when using with ant and classfileset | "Issue #1430 : Fix loading class from file with ant and classfileset" | links commit |
 | `GITHUB-1461` | Memory leak (TestNG seems to keep all test object in memory) | "Add test case for #1461" | links commit |
 | `GITHUB-1490` | Add a listener for data provider interception | "…Closes #1490" | links commit |
-| `GITHUB-765` | Test invoked twice when implements abstract method from parameterized parent. | PR #1374, branch `krmahadevan-fix-765` | links PR 1374 |
-| `GITHUB-1417` | Class param injection is not working with @BeforeClass | PR #1447, branch `krmahadevan-fix-1417` | links PR 1447 |
+| `GITHUB-765` | Test invoked twice when implements abstract method from parameterized parent. | branch `krmahadevan-fix-765`, merged by PR #1374 | links PR 1374 |
+| `GITHUB-1417` | Class param injection is not working with @BeforeClass | branch `krmahadevan-fix-1417`, merged by PR #1447 | links PR 1447 |
 | `GITHUB-107` | TestNG printout wrong statistic number | "Improve Issue 107 test, add it to testng.xml" | **no link** |
 
 <!-- vale on -->
