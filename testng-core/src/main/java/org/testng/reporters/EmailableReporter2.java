@@ -344,8 +344,7 @@ public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
           }
           int resultsCount = results.size();
 
-          ITestResult firstResult = results.iterator().next();
-          String methodName = Utils.escapeHtml(firstResult.getMethod().getMethodName());
+          ITestResult firstResult = results.get(0);
           long start = firstResult.getStartMillis();
           long duration = firstResult.getEndMillis() - start;
 
@@ -361,7 +360,7 @@ public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
               .append("<td><a href=\"#m")
               .append(scenarioIndex)
               .append("\">")
-              .append(methodName)
+              .append(Utils.escapeHtml(invocationDisplayName(firstResult)))
               .append("</a></td>")
               .append("<td rowspan=\"")
               .append(resultsCount)
@@ -384,7 +383,7 @@ public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
                 .append("<td><a href=\"#m")
                 .append(scenarioIndex)
                 .append("\">")
-                .append(methodName)
+                .append(Utils.escapeHtml(invocationDisplayName(results.get(i))))
                 .append("</a></td></tr>");
             scenarioIndex++;
           }
@@ -413,6 +412,48 @@ public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
 
   protected String getFormattedStartTime(long startTimeInMillisFromEpoch) {
     return String.valueOf(startTimeInMillisFromEpoch);
+  }
+
+  /**
+   * Returns the name shown for one invocation in the summary table. The Java method name is always
+   * kept. A non-blank {@code ITest} custom name is appended only for actual test methods.
+   */
+  private static String invocationDisplayName(ITestResult result) {
+    String methodName = result.getMethod().getMethodName();
+    String customName = customTestName(result);
+    if (customName.isEmpty()) {
+      return methodName;
+    }
+    return methodName + " (" + customName + ")";
+  }
+
+  /**
+   * Returns the scenario heading for one invocation. The heading keeps the class and method
+   * identity. A non-blank {@code ITest} custom name is appended only for actual test methods.
+   */
+  private static String scenarioHeading(String className, ITestResult result) {
+    String methodName = result.getMethod().getMethodName();
+    String customName = customTestName(result);
+    if (customName.isEmpty()) {
+      return className + "#" + methodName;
+    }
+    return className + "#" + methodName + " (" + customName + ")";
+  }
+
+  /**
+   * Returns the {@code ITest} custom name when it should appear next to the Java method name.
+   * Configuration methods and blank names yield an empty string, so the Java method name stays the
+   * identity.
+   */
+  private static String customTestName(ITestResult result) {
+    if (!result.getMethod().isTest()) {
+      return "";
+    }
+    String name = result.getName();
+    if (name == null || name.trim().isEmpty() || name.equals(result.getMethod().getMethodName())) {
+      return "";
+    }
+    return name;
   }
 
   /** Writes the details for all test scenarios. */
@@ -448,10 +489,8 @@ public class EmailableReporter2 implements IReporter, ParameterSnapshotReader {
           throw new IllegalStateException("There should have been at-least 1 test result");
         }
 
-        String label =
-            Utils.escapeHtml(
-                className + "#" + results.iterator().next().getMethod().getMethodName());
         for (ITestResult result : results) {
+          String label = Utils.escapeHtml(scenarioHeading(className, result));
           writeScenario(scenarioIndex, label, result);
           scenarioIndex++;
         }
