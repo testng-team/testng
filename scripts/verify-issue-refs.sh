@@ -16,6 +16,9 @@ set -u
 REPO=${REPO:-testng-team/testng}
 # The branch that provenance is judged against. Overridable for a fork or a release branch.
 BASE=${BASE:-master}
+# Set to 1 to stop after step 1 and skip step 2. Step 2 needs the network and a GitHub token.
+# The tests use this: they check the provenance rules, which is the part with logic in it.
+PROVENANCE_ONLY=${PROVENANCE_ONLY:-0}
 frag=${1:?usage: verify-issue-refs.sh <path-fragment> [issue-number]}
 num=${2:-}
 rc=0
@@ -118,6 +121,8 @@ else
     rc=1
   fi
 fi
+
+[ "$PROVENANCE_ONLY" = 1 ] && exit $rc
 
 # Distinguish "no such issue" from an API that is unreachable, rate limited or unauthenticated.
 # Treating those alike would delete valid references.

@@ -1,0 +1,22 @@
+name: scripts
+
+on:
+  pull_request:
+    # The workflow file is listed too, so a pull request that changes the check still runs it.
+    paths: ['scripts/**', '.github/workflows/scripts.yml']
+
+# The tests only read the checkout and write to a temporary directory.
+permissions:
+  contents: read
+
+jobs:
+  verify-issue-refs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The tests build their own git repositories in a temporary directory. They never push,
+          # so the token does not need to stay in .git/config.
+          persist-credentials: false
+      - name: Test verify-issue-refs.sh
+        run: scripts/test/verify-issue-refs-test.sh

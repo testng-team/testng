@@ -5,14 +5,18 @@
 # wrong answer puts a false reference in the code, or drops a true one. Both are silent. So the
 # rules it applies are checked here rather than by hand.
 #
-# Run it from the repository root:
+# Run it from anywhere:
 #
 #     scripts/test/verify-issue-refs-test.sh
 #
-# It needs the real git history. It does not call the GitHub API: every case below stops at the
-# provenance step, which is the part with the rules worth testing.
+# Every case builds its own small git repository in a temporary directory. Nothing here reads the
+# TestNG history, so moving a test file later cannot break these tests. Nothing here calls the
+# GitHub API either: PROVENANCE_ONLY=1 stops the script after the provenance step, which is the
+# step with the rules worth testing.
 set -u
-cd "$(dirname "$0")/../.." || exit 1
+SCRIPT=$(cd "$(dirname "$0")/../.." && pwd)/scripts/verify-issue-refs.sh
+WORK=$(mktemp -d)
+trap 'rm -rf "$WORK"' EXIT
 
 pass=0; fail=0
 
@@ -26,46 +30,133 @@ check() {
   fi
 }
 
-# Runs the script and prints the provenance line, or the first word of an error line.
-provenance() {
-  local out
-  out=$(bash scripts/verify-issue-refs.sh "$1" "${2:-}" 2>&1)
-  if printf '%s' "$out" | grep -q AMBIGUOUS; then printf 'AMBIGUOUS'; return; fi
-  if printf '%s' "$out" | grep -q 'OWN COMMIT'; then printf 'OWN COMMIT'; return; fi
-  if printf '%s' "$out" | grep -q 'NOT PROVEN'; then printf 'NOT PROVEN'; return; fi
-  if printf '%s' "$out" | grep -q '^provenance'; then printf 'PROVEN'; return; fi
-  printf 'NO COMMIT'
+# Prints yes when the text holds the refusal word, no when it does not.
+says_ambiguous() { case "$1" in *AMBIGUOUS*) printf yes ;; *) printf no ;; esac; }
+
+# Makes an empty git repository and prints its path.
+new_repo() {
+  local dir
+  dir=$(mktemp -d "$WORK/repo.XXXXXX")
+  git -C "$dir" init -q -b master
+  git -C "$dir" config user.email test@example.com
+  git -C "$dir" config user.name "Test"
+  git -C "$dir" config commit.gpgsign false
+  printf '%s' "$dir"
 }
 
-R=testng-core/src/test/java/org/testng
+# add <repo> <path> <message>  -- writes a file and commits it.
+add() {
+  mkdir -p "$1/$(dirname "$2")"
+  printf 'class X {}\n' > "$1/$2"
+  git -C "$1" add -A && git -C "$1" commit -q -m "$3"
+}
 
-# The commit that wrote the test names the issue outright.
-check "commit names the issue" PROVEN \
-  "$(provenance "$R/preserveorder/TestNG173Test.java" 173)"
+# move <repo> <from> <to>  -- renames a file and commits it.
+move() {
+  mkdir -p "$1/$(dirname "$3")"
+  git -C "$1" mv "$2" "$3" && git -C "$1" commit -q -m "Move the file"
+}
 
-# The commit says only "Fixing review comments". The merge names the branch krmahadevan-fix-765.
-check "merge branch names the issue" PROVEN \
-  "$(provenance "$R/reflect/ExcludeSyntheticMethodsFromTemplateCallsTest.java" 765)"
+# Runs the script inside a repository and reduces its output to one word.
+# $1 is the repository, $2 the path fragment, $3 the issue number.
+# Extra arguments after that are passed to the environment, for example diff.renames=false.
+verdict() {
+  local repo=$1 frag=$2 num=$3 out
+  shift 3
+  out=$(cd "$repo" && env "$@" PROVENANCE_ONLY=1 bash "$SCRIPT" "$frag" "$num" 2>&1)
+  case "$out" in
+    *AMBIGUOUS*)    printf 'AMBIGUOUS' ;;
+    *"OWN COMMIT"*) printf 'OWN COMMIT' ;;
+    *"NOT PROVEN"*) printf 'NOT PROVEN' ;;
+    *provenance*)   printf 'PROVEN' ;;
+    *)              printf 'NO COMMIT' ;;
+  esac
+}
 
-# This file moved twice before the migration: once when the modules were split, once when the
-# tests were grouped by feature. Both moves must be walked back.
-check "file moved twice still resolves" PROVEN \
-  "$(provenance "$R/skip/github1632/IssueTest.java" 1632)"
+# --- the commit message names the issue ------------------------------------------------------
+# These three forms are the only ones a commit message may use as proof.
+for form in '#765' 'TESTNG-765' 'issues/765'; do
+  r=$(new_repo)
+  add "$r" src/foo/AlphaTest.java "Fix $form: something was broken"
+  check "commit says $form" PROVEN "$(verdict "$r" src/foo/AlphaTest.java 765)"
+done
 
-# The same file, with git's rename detection turned off. Without -M on the queries, one file that
-# moved three times looks like four files, and the ambiguity check rejects it.
+# --- a number that is not an issue reference -------------------------------------------------
+# Each of these carries "765" but proves nothing. The earlier matcher accepted all three.
+r=$(new_repo); add "$r" src/foo/AlphaTest.java "Update src/765/data.txt"
+check "src/765 is not provenance" "NOT PROVEN" "$(verdict "$r" src/foo/AlphaTest.java 765)"
+
+r=$(new_repo); add "$r" src/foo/AlphaTest.java "Cut release-765"
+check "release-765 is not provenance" "NOT PROVEN" "$(verdict "$r" src/foo/AlphaTest.java 765)"
+
+r=$(new_repo); add "$r" src/foo/AlphaTest.java "Bump to 1.2-765"
+check "a version is not provenance" "NOT PROVEN" "$(verdict "$r" src/foo/AlphaTest.java 765)"
+
+# A different issue number is not proof either.
+r=$(new_repo); add "$r" src/foo/AlphaTest.java "Fix #173"
+check "another issue is not provenance" "NOT PROVEN" "$(verdict "$r" src/foo/AlphaTest.java 765)"
+
+# --- the merge names the issue in its branch --------------------------------------------------
+# The commit itself says nothing. The branch it merges carries the number.
+r=$(new_repo)
+add "$r" README.md "First commit"
+git -C "$r" checkout -q -b krmahadevan-fix-765
+add "$r" src/foo/BetaTest.java "Fixing review comments"
+git -C "$r" checkout -q master
+git -C "$r" merge -q --no-ff -m "Merge pull request #1374 from krmahadevan/krmahadevan-fix-765" \
+  krmahadevan-fix-765
+check "merge branch names the issue" PROVEN "$(verdict "$r" src/foo/BetaTest.java 765)"
+
+# The number sits in the subject, not in the branch. A pull request number is not an issue number.
+r=$(new_repo)
+add "$r" README.md "First commit"
+git -C "$r" checkout -q -b some-other-work
+add "$r" src/foo/GammaTest.java "Fixing review comments"
+git -C "$r" checkout -q master
+git -C "$r" merge -q --no-ff -m "Merge pull request #999 from someone/unrelated" some-other-work
+check "merge branch without the number" "NOT PROVEN" "$(verdict "$r" src/foo/GammaTest.java 765)"
+
+# --- renames ----------------------------------------------------------------------------------
+# A file that moved twice must be walked back to the commit that wrote it. The cases below pass
+# "place/DeltaTest.java", which is not a file on disk. That skips the --follow branch, so the
+# rename-walking search is the code under test.
+renamed_repo() {
+  local r
+  r=$(new_repo)
+  add "$r" old/place/DeltaTest.java "Streamline the listeners. Closes #1632"
+  move "$r" old/place/DeltaTest.java middle/place/DeltaTest.java
+  move "$r" middle/place/DeltaTest.java new/place/DeltaTest.java
+  printf '%s' "$r"
+}
+
+r=$(renamed_repo)
+check "file moved twice still resolves" PROVEN "$(verdict "$r" place/DeltaTest.java 1632)"
+
+# The same repository with git's rename detection turned off. Without -M on the queries the three
+# destinations look like three separate files, and the ambiguity check rejects them.
+r=$(renamed_repo)
 check "resolves with diff.renames=false" PROVEN \
-  "$(GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=diff.renames GIT_CONFIG_VALUE_0=false \
-     provenance "$R/skip/github1632/IssueTest.java" 1632)"
+  "$(verdict "$r" place/DeltaTest.java 1632 \
+     GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=diff.renames GIT_CONFIG_VALUE_0=false)"
 
-# A number that appears in a path or a version is not evidence. Issue 3 exists, and the commit
-# that added this file says nothing about it.
-check "unrelated number is not provenance" "NOT PROVEN" \
-  "$(provenance "$R/preserveorder/TestNG173Test.java" 3)"
+# --- ambiguity ---------------------------------------------------------------------------------
+# Two unrelated files share a name. Picking either one would invent provenance, so the script
+# refuses instead.
+r=$(new_repo)
+add "$r" one/TestClassSample.java "Fix #1405"
+add "$r" two/TestClassSample.java "Fix #2674"
+check "ambiguous file name is rejected" AMBIGUOUS "$(verdict "$r" TestClassSample.java 1405)"
 
-# A file name alone is not enough when several files share it.
-check "ambiguous file name is rejected" AMBIGUOUS \
-  "$(provenance "TestClassSample.java" 1405)"
+# The refusal must go to stderr. Callers send this script's stdout to /dev/null, so a refusal
+# written to stdout is a refusal nobody reads, and the script fails without saying why.
+out=$(cd "$r" && PROVENANCE_ONLY=1 bash "$SCRIPT" TestClassSample.java 1405 2>/dev/null)
+err=$(cd "$r" && PROVENANCE_ONLY=1 bash "$SCRIPT" TestClassSample.java 1405 2>&1 >/dev/null)
+check "the refusal is on stderr" yes "$(says_ambiguous "$err")"
+check "the refusal is not on stdout" no "$(says_ambiguous "$out")"
+
+# Exit code 2 is what a caller checks for. Anything else reads as a plain failure.
+(cd "$r" && PROVENANCE_ONLY=1 bash "$SCRIPT" TestClassSample.java 1405 >/dev/null 2>&1)
+check "ambiguity exits 2" 2 "$?"
 
 printf '\n%s passed, %s failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]
