@@ -37,6 +37,27 @@ public class TestMethodMatcher {
     return method;
   }
 
+  private static MethodMatcher matcherFor(final String methodName, final Object[] params) {
+    return new DataProviderMethodMatcher(
+        new MethodMatcherContext(
+            getMethod(methodName),
+            params,
+            new TestContextJustForTesting(),
+            new TestResultJustForTesting()));
+  }
+
+  private static void assertTypeMismatch(final String methodName, final Object[] params) {
+    final MethodMatcher matcher = matcherFor(methodName, params);
+    assertThat(matcher.conforms()).isFalse();
+    assertThatThrownBy(matcher::getConformingArguments)
+        .isInstanceOf(MethodMatcherException.class)
+        .hasMessageContaining(
+            "Data provider mismatch: argument types do not match the method parameters")
+        .hasMessageContaining("Method: ")
+        .hasMessageContaining("Arguments: ")
+        .hasMessageNotContaining("expected");
+  }
+
   @DataProvider
   public Object[][] methodParamPairs() {
     return new Object[][] {
@@ -125,12 +146,179 @@ public class TestMethodMatcher {
             .isInstanceOf(MethodMatcherException.class)
             // separate lines are used here to avoid \n vs \r\n if running tests in Windows
             .hasMessageContaining(
-                "has no parameters defined but was found to be using a data provider (either explicitly specified or inherited from class level annotation")
+                "Data provider mismatch: argument types do not match the method parameters")
             .hasMessageContaining("Method: ")
             .hasMessageContaining("Arguments: ");
     if ("takesString".equals(methodName)) {
       thrown.hasMessageContaining("[1, 2]");
     }
+  }
+
+  @Test
+  public void boxedIntegerUnboxesToInt() throws Throwable {
+    final MethodMatcher matcher = matcherFor("takesInt", new Object[] {7});
+    assertThat(matcher.conforms()).isTrue();
+    getMethod("takesInt").invoke(new TestMethodMatcher(), matcher.getConformingArguments());
+  }
+
+  @Test
+  public void primitiveIntBoxesToInteger() throws Throwable {
+    final MethodMatcher matcher = matcherFor("takesInteger", new Object[] {7});
+    assertThat(matcher.conforms()).isTrue();
+    getMethod("takesInteger").invoke(new TestMethodMatcher(), matcher.getConformingArguments());
+  }
+
+  @Test
+  public void boxedBooleanUnboxesToBoolean() throws Throwable {
+    final MethodMatcher matcher = matcherFor("takesPrimitiveBoolean", new Object[] {true});
+    assertThat(matcher.conforms()).isTrue();
+    getMethod("takesPrimitiveBoolean")
+        .invoke(new TestMethodMatcher(), matcher.getConformingArguments());
+  }
+
+  @Test
+  public void sameArityStringForIntStatesTypeMismatch() {
+    assertTypeMismatch("takesInt", new Object[] {"7"});
+  }
+
+  @Test
+  public void sameArityLongForIntStatesTypeMismatch() {
+    assertTypeMismatch("takesInt", new Object[] {7L});
+  }
+
+  @Test
+  public void nullDoesNotUnboxToInt() {
+    assertTypeMismatch("takesInt", new Object[] {null});
+  }
+
+  @Test
+  public void sameArityIntAndStringWithTwoIntsStatesTypeMismatch() {
+    assertTypeMismatch("takesIntAndString", new Object[] {7, 8});
+  }
+
+  @Test
+  public void tooFewDataProviderArgumentsStateTheCounts() {
+    final MethodMatcher matcher =
+        new DataProviderMethodMatcher(
+            new MethodMatcherContext(
+                getMethod("twoStrings"),
+                new Object[] {"only"},
+                new TestContextJustForTesting(),
+                new TestResultJustForTesting()));
+    assertThat(matcher.conforms()).isFalse();
+    assertThatThrownBy(matcher::getConformingArguments)
+        .isInstanceOf(MethodMatcherException.class)
+        .hasMessageContaining("Data provider mismatch: expected 2 arguments, got 1")
+        .hasMessageContaining("Method: ")
+        .hasMessageContaining("Arguments: ");
+  }
+
+  @Test
+  public void tooManyDataProviderArgumentsStateTheCounts() {
+    final MethodMatcher matcher =
+        new DataProviderMethodMatcher(
+            new MethodMatcherContext(
+                getMethod("twoStrings"),
+                new Object[] {"one", "two", "three"},
+                new TestContextJustForTesting(),
+                new TestResultJustForTesting()));
+    assertThat(matcher.conforms()).isFalse();
+    assertThatThrownBy(matcher::getConformingArguments)
+        .isInstanceOf(MethodMatcherException.class)
+        .hasMessageContaining("Data provider mismatch: expected 2 arguments, got 3")
+        .hasMessageContaining("Method: ")
+        .hasMessageContaining("Arguments: ");
+  }
+
+  @Test
+  public void tooFewArgumentsWithAnInjectedContextStateTheFilteredCount() {
+    final MethodMatcher matcher =
+        new DataProviderMethodMatcher(
+            new MethodMatcherContext(
+                getMethod("oneStringAndContext"),
+                new Object[] {},
+                new TestContextJustForTesting(),
+                new TestResultJustForTesting()));
+    assertThat(matcher.conforms()).isFalse();
+    assertThatThrownBy(matcher::getConformingArguments)
+        .isInstanceOf(MethodMatcherException.class)
+        .hasMessageContaining("Data provider mismatch: expected 1 argument, got 0")
+        .hasMessageContaining("Method: ")
+        .hasMessageContaining("Arguments: ");
+  }
+
+  @Test
+  public void tooFewVarargsArgumentsStateTheCounts() {
+    final MethodMatcher matcher = matcherFor("stringThenVarargs", new Object[] {"only"});
+    assertThat(matcher.conforms()).isFalse();
+    assertThatThrownBy(matcher::getConformingArguments)
+        .isInstanceOf(MethodMatcherException.class)
+        .hasMessageContaining("Data provider mismatch: expected 2 arguments, got 1")
+        .hasMessageContaining("Method: ")
+        .hasMessageContaining("Arguments: ");
+  }
+
+  @Test
+  public void tooFewArrayEndingArgumentsStateTheCounts() {
+    final MethodMatcher matcher = matcherFor("stringThenArray", new Object[] {"only"});
+    assertThat(matcher.conforms()).isFalse();
+    assertThatThrownBy(matcher::getConformingArguments)
+        .isInstanceOf(MethodMatcherException.class)
+        .hasMessageContaining("Data provider mismatch: expected 2 arguments, got 1")
+        .hasMessageContaining("Method: ")
+        .hasMessageContaining("Arguments: ");
+  }
+
+  @Test
+  public void arrayEndingWrongTypesStateTypeMismatch() {
+    assertTypeMismatch("stringThenArray", new Object[] {"first", 2});
+  }
+
+  @Test
+  public void zeroParameterMethodWithARowStatesNoParametersDefined() {
+    final MethodMatcher matcher = matcherFor("noParameters", new Object[] {"x"});
+    assertThat(matcher.conforms()).isFalse();
+    assertThatThrownBy(matcher::getConformingArguments)
+        .isInstanceOf(MethodMatcherException.class)
+        .hasMessageContaining("has no parameters defined")
+        .hasMessageContaining("data provider")
+        .hasMessageNotContaining("expected");
+  }
+
+  public void twoStrings(String first, String second) {
+    throw new AssertionError("count mismatch must fail before invoke");
+  }
+
+  public void stringThenVarargs(String first, String... rest) {
+    throw new AssertionError("count mismatch must fail before invoke");
+  }
+
+  public void stringThenArray(String first, String[] rest) {
+    throw new AssertionError("count mismatch must fail before invoke");
+  }
+
+  public void noParameters() {
+    throw new AssertionError("no-parameter mismatch must fail before invoke");
+  }
+
+  public void oneStringAndContext(String value, ITestContext iTestContext) {
+    throw new AssertionError("count mismatch must fail before invoke");
+  }
+
+  public void takesInt(int value) {
+    assertThat(value).isEqualTo(7);
+  }
+
+  public void takesInteger(Integer value) {
+    assertThat(value).isEqualTo(7);
+  }
+
+  public void takesPrimitiveBoolean(boolean value) {
+    assertThat(value).isTrue();
+  }
+
+  public void takesIntAndString(int n, String s) {
+    throw new AssertionError("type mismatch must fail before invoke");
   }
 
   public void takesShort(short value) {
