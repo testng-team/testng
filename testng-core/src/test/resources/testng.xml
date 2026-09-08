@@ -634,6 +634,7 @@
       <class name="test.dataprovider.FailingIterableDataProviderTest" />
       <class name="test.dataprovider.IndicesTest" />
       <class name="test.dataprovider.DataProviderTest"/>
+      <class name="org.testng.dataprovider.EmptyDataProviderTest"/>
       <class name="test.dataprovider.InterceptorTest"/>
       <class name="test.dataprovider.issue3237.CacheTest"/>
     </classes>

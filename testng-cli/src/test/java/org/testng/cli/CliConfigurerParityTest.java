@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.testng.CommandLineArgs;
+import org.testng.EmptyDataProviderBehavior;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
@@ -78,6 +79,7 @@ public class CliConfigurerParityTest {
     cli.spiListenersToSkip = "com.acme.Skipped";
     cli.overrideIncludedMethods = Boolean.TRUE;
     cli.includeAllDataDrivenTestsWhenSkipping = Boolean.TRUE;
+    cli.emptyDataProviderBehavior = EmptyDataProviderBehavior.IGNORE;
     cli.generateResultsPerSuite = Boolean.TRUE;
     cli.shareThreadPoolForDataProviders = Boolean.TRUE;
     cli.useGlobalThreadPool = Boolean.TRUE;

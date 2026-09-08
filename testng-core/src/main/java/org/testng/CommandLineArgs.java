@@ -204,11 +204,19 @@ public class CommandLineArgs {
   public static final String INCLUDE_ALL_DATA_DRIVEN_TESTS_WHEN_SKIPPING =
       "-includeAllDataDrivenTestsWhenSkipping";
 
+  public static final String EMPTY_DATA_PROVIDER_BEHAVIOR = "-emptydataproviderbehavior";
+
   /**
    * Should TestNG report all iterations of a data driven test as individual skips, in-case of
    * upstream failures.
    */
   public Boolean includeAllDataDrivenTestsWhenSkipping = false;
+
+  /**
+   * What TestNG does with a test method whose data provider hands out no row: report it as skipped
+   * ({@code SKIP}) or leave it out of the results entirely ({@code IGNORE}).
+   */
+  public @Nullable EmptyDataProviderBehavior emptyDataProviderBehavior;
 
   public static final String PROPAGATE_DATA_PROVIDER_FAILURES_AS_TEST_FAILURE =
       "-propagateDataProviderFailureAsTestFailure";

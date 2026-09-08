@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import org.testng.DataProviderHolder;
+import org.testng.EmptyDataProviderBehavior;
 import org.testng.IClassListener;
 import org.testng.IDataProviderListener;
 import org.testng.IDataProviderMethod;
@@ -152,25 +153,47 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         ParameterBag bag =
             handler.createParameters(
                 testMethod, new HashMap<>(), new HashMap<>(), context, instance);
-        ParameterHolder parameterHolder = Objects.requireNonNull(bag.parameterHolder);
-        try {
-          for (Object @Nullable [] next : CollectionUtils.asIterable(parameterHolder.parameters)) {
-            if (next == null) {
-              continue;
+        if (bag.parameterHolder != null) {
+          ParameterHolder parameterHolder = bag.parameterHolder;
+          try {
+            // Ask before consuming: a row the loop below drops is a row an indices restriction
+            // excluded, which is not the same thing as a data provider that has no row to give.
+            // Asking inside the try keeps the holder released when the iterator throws.
+            boolean emptyDataProvider = !parameterHolder.parameters.hasNext();
+            for (Object @Nullable [] next :
+                CollectionUtils.asIterable(parameterHolder.parameters)) {
+              if (next == null) {
+                continue;
+              }
+              Method m = testMethod.getConstructorOrMethod().requireMethod();
+              Object[] parameterValues = Parameters.injectParameters(next, m, context);
+              ITestResult result =
+                  registerSkippedTestResult(
+                      testMethod,
+                      System.currentTimeMillis(),
+                      new Throwable(okToProceed),
+                      parameterValues);
+              resultProcessor.accept(result);
+              results.add(result);
             }
-            Method m = testMethod.getConstructorOrMethod().requireMethod();
-            Object[] parameterValues = Parameters.injectParameters(next, m, context);
-            ITestResult result =
-                registerSkippedTestResult(
-                    testMethod,
-                    System.currentTimeMillis(),
-                    new Throwable(okToProceed),
-                    parameterValues);
-            resultProcessor.accept(result);
-            results.add(result);
+            if (emptyDataProvider
+                && m_configuration.getEmptyDataProviderBehavior()
+                    == EmptyDataProviderBehavior.SKIP) {
+              ITestResult result =
+                  registerSkippedTestResult(
+                      testMethod, System.currentTimeMillis(), new Throwable(okToProceed));
+              resultProcessor.accept(result);
+              results.add(result);
+            }
+          } finally {
+            parameterHolder.close();
           }
-        } finally {
-          parameterHolder.close();
+        } else {
+          ITestResult result =
+              registerSkippedTestResult(
+                  testMethod, System.currentTimeMillis(), new Throwable(okToProceed));
+          resultProcessor.accept(result);
+          results.add(result);
         }
       } else {
         ITestResult result =
@@ -222,7 +245,16 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       invocationCount = agent.invoke(invocationCount);
     }
 
-    return agent.getResult();
+    List<ITestResult> results = agent.getResult();
+    if (results.isEmpty()
+        && TestNgMethodUtils.sawEmptyDataProvider(testMethod)
+        // A pooled invocation reports through invokePooledTestMethods, once for the whole pool.
+        && !TestNgMethodUtils.isPooledInvocationClone(testMethod)
+        && m_configuration.getEmptyDataProviderBehavior() == EmptyDataProviderBehavior.SKIP) {
+      return Collections.singletonList(
+          reportEmptyDataProvider(testMethod, context, System.currentTimeMillis()));
+    }
+    return results;
   }
 
   /**
@@ -550,10 +582,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     //
     List<IWorker<ITestNGMethod>> workers = new ArrayList<>();
 
+    List<ITestNGMethod> clones = new ArrayList<>();
+
     // Create one worker per invocationCount
     for (int i = 0; i < testMethod.getInvocationCount(); i++) {
       // we use clones for reporting purposes
       ITestNGMethod clonedMethod = testMethod.clone();
+      clones.add(clonedMethod);
       clonedMethod.setInvocationCount(1);
       clonedMethod.setThreadPoolSize(1);
       // The invocations run in parallel, so the firstTimeOnly @BeforeMethod and
@@ -572,13 +607,23 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // Run the firstTimeOnly @BeforeMethod once, before the pool starts, so it acts as a
     // barrier for every parallel invocation (GITHUB-426).
     invokeTimeOnlyConfigurations(testMethod, parameters, true);
+    List<ITestResult> results;
     try {
-      return runWorkers(
-          testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, parameters);
+      results =
+          runWorkers(testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, parameters);
     } finally {
       // Run the lastTimeOnly @AfterMethod once, after every invocation has completed.
       invokeTimeOnlyConfigurations(testMethod, parameters, false);
     }
+    if (results.isEmpty()
+        && clones.stream().anyMatch(TestNgMethodUtils::sawEmptyDataProvider)
+        && m_configuration.getEmptyDataProviderBehavior() == EmptyDataProviderBehavior.SKIP) {
+      // Every invocation found the data provider empty, so the method has nothing to show for
+      // itself. Report that once. An invocation that did get rows keeps its own results.
+      return Collections.singletonList(
+          reportEmptyDataProvider(testMethod, testContext, System.currentTimeMillis()));
+    }
+    return results;
   }
 
   /**
@@ -617,6 +662,21 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               .build();
       invoker.invokeConfigurations(cfgArgs);
     }
+  }
+
+  /**
+   * Records and publishes the single skipped result that stands for a test method whose data
+   * provider produced no row.
+   */
+  private ITestResult reportEmptyDataProvider(
+      ITestNGMethod testMethod, ITestContext context, long start) {
+    TestResult result = TestResult.newEndTimeAwareTestResult(testMethod, context, null, start);
+    result.setStatus(ITestResult.SKIP);
+    result.setParameters(new Object[0]);
+    result.setHost(context.getHost());
+    m_notifier.addSkippedTest(testMethod, result);
+    runTestResultListener(result);
+    return result;
   }
 
   private void collectResults(ITestNGMethod testMethod, ITestResult result) {
@@ -1117,6 +1177,16 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       Iterator<Object @Nullable []> allParameterValues = parameterHolder.parameters;
 
       try {
+        if (parameterHolder.origin == ParameterHolder.ParameterOrigin.ORIGIN_DATA_PROVIDER
+            && !allParameterValues.hasNext()) {
+          // Only record it. This invocation produced nothing, but a later one may still get rows,
+          // and the skipped result stands for the method rather than for one invocation - so the
+          // caller reports it, once, and only if the method produced no result at all.
+          TestNgMethodUtils.markEmptyDataProviderSeen(arguments.getTestMethod());
+          if (m_configuration.getEmptyDataProviderBehavior() == EmptyDataProviderBehavior.SKIP) {
+            return invocationCount.get();
+          }
+        }
 
         IMethodRunner runner = this.invoker.getRunner();
         if (bag.runInParallel()) {

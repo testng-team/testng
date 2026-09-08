@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.util.List;
 import org.jspecify.annotations.Nullable;
+import org.testng.EmptyDataProviderBehavior;
 import org.testng.IConfigurable;
 import org.testng.IConfigurationListener;
 import org.testng.IExecutionListener;
@@ -100,4 +101,10 @@ public interface IConfiguration {
   }
 
   default void setLazyFactoryInstantiation(boolean lazyFactoryInstantiation) {}
+
+  default EmptyDataProviderBehavior getEmptyDataProviderBehavior() {
+    return EmptyDataProviderBehavior.SKIP;
+  }
+
+  default void setEmptyDataProviderBehavior(EmptyDataProviderBehavior behavior) {}
 }
