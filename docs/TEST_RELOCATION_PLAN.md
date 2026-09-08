@@ -142,8 +142,9 @@ verified descriptions, the #1362 merge — is redistributed into the phase that 
 | 8 ([#3498](https://github.com/testng-team/testng/issues/3498)) | `listeners` | 248 | 31 | 217 | 2 |
 | **total** | | **960** | **204** | **756** | **33** |
 
-Phase 3 counts 90 files, not the 96 first written here. The difference is three legacy packages
-that the count assumed phase 3 would absorb. Two of them belong elsewhere:
+Phase 3 counts 90 files, not the 96 first written here. Five legacy packages were counted into it.
+Three stay. The other two belong to later phases, and they hold the six files that make up the
+difference:
 
 | Package | Files | Owner | Why |
 | --- | --- | --- | --- |

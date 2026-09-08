@@ -225,6 +225,21 @@ git -C "$r" commit -q -am "Reject the empty name. Closes #765"
 check "a longer number is not this one" PROVEN \
   "$(verdict "$r" src/foo/LongTest.java 765 BY_DESCRIPTION=1)"
 
+# One issue number often sits in several files. GITHUB-1336 is in six of them and GITHUB-2830 in
+# five. The answer must be the commit that wrote the text into THIS file, not the oldest commit
+# that wrote it anywhere.
+r=$(new_repo)
+add "$r" src/foo/OtherTest.java "Create the other class"
+printf 'class X { /* GITHUB-765 */ }\n' > "$r/src/foo/OtherTest.java"
+git -C "$r" commit -q -am "Reject the empty name. Closes #765"
+add "$r" src/foo/MineTest.java "Create my class"
+printf 'class X { /* GITHUB-765 */ }\n' > "$r/src/foo/MineTest.java"
+git -C "$r" commit -q -am "Copy the check over here"
+check "another file is not this file's proof" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/MineTest.java 765 BY_DESCRIPTION=1)"
+check "the other file is still proven" PROVEN \
+  "$(verdict "$r" src/foo/OtherTest.java 765 BY_DESCRIPTION=1)"
+
 # The mode changes how the commit is found. It does not soften the rules.
 r=$(new_repo)
 add "$r" src/foo/OneTest.java "Create the test class"
