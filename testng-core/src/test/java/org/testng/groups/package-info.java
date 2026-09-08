@@ -5,6 +5,6 @@
  * <p>Compare {@code org.testng.aftergroups}, which is about the configuration methods bound to a
  * group rather than about selecting one.
  *
- * <p>Classes handed to TestNG to produce that behaviour live in {@code samples}, not here.
+ * <p>Classes handed to TestNG to produce that behavior live in {@code samples}, not here.
  */
 package org.testng.groups;

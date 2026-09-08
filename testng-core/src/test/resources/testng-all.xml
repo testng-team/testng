@@ -89,7 +89,7 @@
 
   <test name="Bug173">
     <classes>
-      <class name="test.testng173.TestNG173Test" />
+      <class name="org.testng.preserveorder.TestNG173Test" />
     </classes>
   </test>
 

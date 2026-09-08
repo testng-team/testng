@@ -1,0 +1,270 @@
+package org.testng.reflect;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.lang.reflect.Method;
+import org.testng.ITestContext;
+import org.testng.ITestResult;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.NoInjection;
+import org.testng.annotations.Test;
+import org.testng.internal.reflect.DataProviderMethodMatcher;
+import org.testng.internal.reflect.MethodMatcher;
+import org.testng.internal.reflect.MethodMatcherContext;
+import org.testng.internal.reflect.MethodMatcherException;
+import org.testng.log4testng.Logger;
+import org.testng.reflect.samples.TestContextJustForTesting;
+import org.testng.reflect.samples.TestResultJustForTesting;
+import org.testng.reflect.samples.XmlTestJustForTesting;
+import org.testng.xml.XmlTest;
+
+/**
+ * Created on 12/24/15
+ *
+ * @author <a href="mailto:nitin.matrix@gmail.com">Nitin Verma</a>
+ */
+public class TestMethodMatcher {
+  private static final Logger log = Logger.getLogger(TestMethodMatcher.class);
+
+  private static Method getMethod(final String methodName) {
+    Method method = null;
+    for (final Method m : TestMethodMatcher.class.getMethods()) {
+      if (m.getName().equals(methodName)) {
+        method = m;
+      }
+    }
+    return method;
+  }
+
+  @DataProvider
+  public Object[][] methodParamPairs() {
+    return new Object[][] {
+      new Object[] {"goodTestIssue122", new Object[] {"3", new String[] {"three", "four"}}},
+      new Object[] {"badTestIssue122", new Object[] {"3", new String[] {"three", "four"}}},
+      new Object[] {"goodTestIssue122", new Object[] {"3", "three", "four"}},
+      new Object[] {"badTestIssue122", new Object[] {"3", "three", "four"}},
+      new Object[] {"mixedArgs", new Object[] {3, true, new String[] {"three"}, "four"}},
+      new Object[] {
+        "mixedArgs", new Object[] {3, true, new String[] {"three"}, new String[] {"four"}}
+      },
+      new Object[] {
+        "potpourri0",
+        new Object[] {
+          getMethod("mixedArgs"),
+          new XmlTestJustForTesting(),
+          3,
+          getMethod("badTestIssue122"),
+          new TestContextJustForTesting(),
+          true,
+          new TestResultJustForTesting(),
+          new String[] {"three"},
+          new String[] {"four"}
+        }
+      },
+      new Object[] {
+        "potpourri1",
+        new Object[] {
+          getMethod("mixedArgs"),
+          new XmlTestJustForTesting(),
+          3,
+          getMethod("badTestIssue122"),
+          new TestContextJustForTesting(),
+          true,
+          new TestResultJustForTesting(),
+          new String[] {"three"},
+          new String[] {"four"}
+        }
+      },
+    };
+  }
+
+  @DataProvider
+  public Object[][] methodParamFailingPairs() {
+    return new Object[][] {
+      new Object[] {"goodTestIssue122", new Object[] {3, "three", "four"}},
+      new Object[] {"badTestIssue122", new Object[] {3, "three", "four"}},
+      new Object[] {"mixedArgs", new Object[] {3, true, "three", "four"}},
+      // char does not widen to short; reject here instead of Method.invoke()
+      new Object[] {"takesShort", new Object[] {'a'}},
+      // primitive array must stay in the diagnostic, not ClassCastException
+      new Object[] {"takesString", new Object[] {new int[] {1, 2}}},
+    };
+  }
+
+  @Test(dataProvider = "methodParamPairs")
+  public void testMatcher(
+      final String methodName,
+      final Object[] params,
+      final ITestContext iTestContext,
+      final ITestResult iTestResult)
+      throws Throwable {
+    final Method method = getMethod(methodName);
+    final MethodMatcher matcher =
+        new DataProviderMethodMatcher(
+            new MethodMatcherContext(method, params, iTestContext, iTestResult));
+    method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
+  }
+
+  @Test(dataProvider = "methodParamFailingPairs")
+  public void testNegativeCaseMatcher(
+      final String methodName,
+      final Object[] params,
+      final ITestContext iTestContext,
+      final ITestResult iTestResult) {
+    final Method method = getMethod(methodName);
+    final MethodMatcher matcher =
+        new DataProviderMethodMatcher(
+            new MethodMatcherContext(method, params, iTestContext, iTestResult));
+    assertThat(matcher.conforms()).isFalse();
+    var thrown =
+        assertThatThrownBy(
+                () -> {
+                  method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
+                })
+            .isInstanceOf(MethodMatcherException.class)
+            // separate lines are used here to avoid \n vs \r\n if running tests in Windows
+            .hasMessageContaining(
+                "has no parameters defined but was found to be using a data provider (either explicitly specified or inherited from class level annotation")
+            .hasMessageContaining("Method: ")
+            .hasMessageContaining("Arguments: ");
+    if ("takesString".equals(methodName)) {
+      thrown.hasMessageContaining("[1, 2]");
+    }
+  }
+
+  public void takesShort(short value) {
+    throw new AssertionError("char must not match short");
+  }
+
+  public void takesString(String value) {
+    throw new AssertionError("int[] must not match String");
+  }
+
+  public void goodTestIssue122(String s, String[] strings) {
+    for (String item : strings) {
+      log.debug("An item is \"" + item + "\"");
+    }
+    assertThat(s).isEqualTo("3");
+  }
+
+  public void badTestIssue122(String s, String... strings) {
+    for (String item : strings) {
+      log.debug("An item is \"" + item + "\"");
+    }
+    assertThat(s).isEqualTo("3");
+  }
+
+  public void mixedArgs(final int i, final Boolean b, final String[] s1, final String... strings) {
+    for (String item : strings) {
+      log.debug("An item is \"" + item + "\"");
+    }
+    assertThat(i).isEqualTo(3);
+    assertThat(b).isNotNull();
+    assertThat(b).isTrue();
+    assertThat(s1).isNotNull();
+    assertThat(s1.length).isEqualTo(1);
+    assertThat(s1[0]).isEqualTo("three");
+    assertThat(strings).isNotNull();
+    assertThat(strings.length).isEqualTo(1);
+    assertThat(strings[0]).isEqualTo("four");
+  }
+
+  public void potpourri0(
+      @NoInjection final Method myMethod1,
+      @NoInjection final XmlTest myXmlTest,
+      final Method currentTestMethod,
+      final int i,
+      final Method myMethod2,
+      final ITestContext iTestContext,
+      @NoInjection final ITestContext myTestContext,
+      final Boolean b,
+      @NoInjection final ITestResult myTestResult,
+      final ITestResult iTestResult,
+      final String[] s1,
+      final XmlTest xmlTest,
+      final String... strings) {
+    log.debug("MyMethod1 is \"" + myMethod1 + "\"");
+    log.debug("MyMethod2 is \"" + myMethod2 + "\"");
+    log.debug("CurrentTestMethod is \"" + currentTestMethod + "\"");
+    log.debug("MyITestContext is \"" + myTestContext + "\"");
+    log.debug("ITestContext is \"" + iTestContext + "\"");
+    log.debug("ITestResult is \"" + iTestResult + "\"");
+    log.debug("MyTestResult is \"" + myTestResult + "\"");
+    log.debug("XmlTest is \"" + xmlTest + "\"");
+    log.debug("MyXmlTest is \"" + myXmlTest + "\"");
+    for (String item : strings) {
+      log.debug("An item is \"" + item + "\"");
+    }
+    assertThat(myTestContext).isNotNull();
+    assertThat((myTestContext instanceof TestContextJustForTesting)).isTrue();
+    assertThat(myTestResult).isNotNull();
+    assertThat((myTestResult instanceof TestResultJustForTesting)).isTrue();
+    assertThat(myXmlTest).isNotNull();
+    assertThat((myXmlTest instanceof XmlTestJustForTesting)).isTrue();
+    assertThat(currentTestMethod).isNotNull();
+    assertThat("potpourri0").isEqualTo(currentTestMethod.getName());
+    assertThat(myMethod1).isNotNull();
+    assertThat("mixedArgs").isEqualTo(myMethod1.getName());
+    assertThat(myMethod2).isNotNull();
+    assertThat("badTestIssue122").isEqualTo(myMethod2.getName());
+    assertThat(i).isEqualTo(3);
+    assertThat(b).isNotNull();
+    assertThat(b).isTrue();
+    assertThat(s1).isNotNull();
+    assertThat(s1.length).isEqualTo(1);
+    assertThat(s1[0]).isEqualTo("three");
+    assertThat(strings).isNotNull();
+    assertThat(strings.length).isEqualTo(1);
+    assertThat(strings[0]).isEqualTo("four");
+  }
+
+  public void potpourri1(
+      @NoInjection final Method myMethod1,
+      @NoInjection final XmlTest myXmlTest,
+      final Method currentTestMethod,
+      final int i,
+      final Method myMethod2,
+      final ITestContext iTestContext,
+      @NoInjection final ITestContext myTestContext,
+      final Boolean b,
+      @NoInjection final ITestResult myTestResult,
+      final ITestResult iTestResult,
+      final String[] s1,
+      final XmlTest xmlTest,
+      final String[] strings) {
+    log.debug("MyMethod1 is \"" + myMethod1 + "\"");
+    log.debug("MyMethod2 is \"" + myMethod2 + "\"");
+    log.debug("CurrentTestMethod is \"" + currentTestMethod + "\"");
+    log.debug("MyITestContext is \"" + myTestContext + "\"");
+    log.debug("ITestContext is \"" + iTestContext + "\"");
+    log.debug("ITestResult is \"" + iTestResult + "\"");
+    log.debug("MyTestResult is \"" + myTestResult + "\"");
+    log.debug("XmlTest is \"" + xmlTest + "\"");
+    log.debug("MyXmlTest is \"" + myXmlTest + "\"");
+    for (String item : strings) {
+      log.debug("An item is \"" + item + "\"");
+    }
+    assertThat(myTestContext).isNotNull();
+    assertThat((myTestContext instanceof TestContextJustForTesting)).isTrue();
+    assertThat(myTestResult).isNotNull();
+    assertThat((myTestResult instanceof TestResultJustForTesting)).isTrue();
+    assertThat(myXmlTest).isNotNull();
+    assertThat((myXmlTest instanceof XmlTestJustForTesting)).isTrue();
+    assertThat(currentTestMethod).isNotNull();
+    assertThat("potpourri1").isEqualTo(currentTestMethod.getName());
+    assertThat(myMethod1).isNotNull();
+    assertThat("mixedArgs").isEqualTo(myMethod1.getName());
+    assertThat(myMethod2).isNotNull();
+    assertThat("badTestIssue122").isEqualTo(myMethod2.getName());
+    assertThat(i).isEqualTo(3);
+    assertThat(b).isNotNull();
+    assertThat(b).isTrue();
+    assertThat(s1).isNotNull();
+    assertThat(s1.length).isEqualTo(1);
+    assertThat(s1[0]).isEqualTo("three");
+    assertThat(strings).isNotNull();
+    assertThat(strings.length).isEqualTo(1);
+    assertThat(strings[0]).isEqualTo("four");
+  }
+}

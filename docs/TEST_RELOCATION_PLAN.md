@@ -30,7 +30,9 @@ A reference is now written only when **both** ends check out, via
 `scripts/verify-issue-refs.sh <path-fragment> <issue-number>`:
 
 1. **Provenance** — the commit that introduced the test names the issue, or the merge that brought
-   it in does.
+   it in does. A pull request number does not count. Pull requests and issues share one number
+   space, so "Merge pull request #765" and "Some fix (#765)" say nothing about issue #765. Both
+   forms are removed before the text is searched.
 2. **The issue** — `#<n>` is a real GitHub *issue* and not a pull request, and its subject is what
    the test asserts. The issue's state is reported but never enforced: a regression test may
    legitimately reference an issue that is still open.
@@ -96,7 +98,12 @@ A promoted test may fail — `github1362` passed, but its assertion could not ha
 regression it was written for. Expect at least one of these to need real work, and keep that work
 in the phase that surfaces it rather than deferring it.
 
-The full list is in `scratchpad/suspect-tests.txt`; per-phase counts are in the table below.
+Phase 1 found three fixtures and promoted none. Phase 2 found five fixtures and one real test:
+`test.methodinterceptors.Issue521Test`, written in 2015 for issue #521, in no suite file, never run.
+It is registered now and it passes.
+
+To list the suspects for a phase, take the classes in its packages that are named `*Test`, hold a
+`@Test` method, and are not named in `testng.xml`.
 
 ## The classification rule
 
@@ -126,7 +133,7 @@ verified descriptions, the #1362 merge — is redistributed into the phase that 
 | Phase | Features | Files | Exec | Samples | Suspect |
 | --- | --- | --- | --- | --- | --- |
 | 1 (#3444) — **done** | `aftergroups`, `memory`, `methodselection`, `conffailure`, `groups` | 37 | 9 | 28 | 3 |
-| 2 | `reflect`, `preserveorder`, `priority`, `methodinterceptors`, `skip` | 98 | 25 | 73 | 6 |
+| 2 — **done** | `reflect`, `preserveorder`, `priority`, `methodinterceptors`, `skip` | 98 | 25 | 73 | 6 |
 | 3 | `invocationcount`, `parameters`, `inheritance` | 96 | 27 | 69 | 4 |
 | 4 | `dependent` | 95 | 21 | 74 | 4 |
 | 5 | `factory` | 122 | 36 | 86 | 3 |
@@ -135,8 +142,9 @@ verified descriptions, the #1362 merge — is redistributed into the phase that 
 | 8 | `listeners` | 248 | 31 | 217 | 2 |
 | **total** | | **966** | **206** | **760** | **33** |
 
-Phase 1 also carries the two changes that are not about layout: the six corrected descriptions and
-the #1362 assertion. Neither depends on the move, and both are what the review is blocking on.
+Phase 1 also carries two changes that are not about layout. It removes six `GITHUB-*` references
+that pointed at the wrong issue, leaving those tests with no description at all. It also replaces
+the #1362 assertion. Neither depends on the move.
 
 Phase 1 additionally adds `exclude("org/testng/**/samples/**")` to the test task. With
 `suites("src/test/resources/testng.xml")` still in place Gradle does not scan, so the exclude
@@ -208,13 +216,32 @@ every `check`:
    compiled, green, never executed, invisible for years.
 2. **Nothing under `.samples.` ran as a root test.** Samples are TestNG input and several are meant
    to fail, so a sample running as a test is both a false failure and a sign the boundary leaked.
-3. **The set of tests that ran matches `testng-core/execution-inventory.txt`** — 1,539 entries of
-   `class#method`. Data-provider rows and invocation indices are stripped, so `m[3](arg)` counts as
-   `m`; raw counts move about with parallelism and would make the check flaky.
+3. **Every test in `testng-core/execution-inventory.txt` still runs, with the same outcome.** Each
+   line holds `class#method`, a status, and how many times it ran:
 
-Check 3 is the one that catches a silent loss during a move, because a class dropped from both the
-suite and the code passes checks 1 and 2. The baseline changes whenever tests are added or removed,
-which is exactly when a reviewer should be looking.
+   ```text
+   org.testng.memory.MemoryLeakTestNg#testMemoryLeak	PASS 1
+   ```
+
+   A test that stops running fails the build. So does a status change, which is how `PASS` turning
+   into `SKIP` is caught. So does a drop in the count, which is how a lost `invocationCount` or
+   data-provider row is caught.
+
+   A test the file has never seen does **not** fail the build. New tests arrive from master as
+   often as from a branch, and failing on them would turn every pull request red as soon as master
+   gained a test.
+
+   The invocation index and the data-provider arguments are dropped, so `m[3](arg)` counts as `m`.
+   The counts are then divided by their greatest common divisor. Gradle starts one test fork per two
+   CPUs and each fork runs the whole suite, so a raw count is the real count times the fork count.
+   That number changes with the machine. Dividing removes it.
+
+Check 3 is the one that catches a silent loss during a move. A class dropped from both the suite and
+the code passes checks 1 and 2.
+
+New tests are not guarded until the file is regenerated, and a contributor has no reason to know it
+exists. `.github/workflows/refresh-execution-inventory.yml` regenerates it when test sources change
+on master, and opens a pull request if it moved.
 
 ## Things that will bite
 
@@ -287,6 +314,9 @@ Neither of these belongs to a phase, and both are easy to forget once the migrat
    test knows the issue number, and review catches the rest -- it already did, finding all six wrong
    references and only those six.
 
+   Its tests, `scripts/test/verify-issue-refs-test.sh`, and the workflow that runs them,
+   `.github/workflows/scripts.yml`, go with it.
+
    `verifyTestExecution` is **not** scaffolding. It is the guard that makes GitHub issue #3446's
    central promise hold, and it matters more once the suite XML is gone. It stays.
 
@@ -295,6 +325,8 @@ Neither of these belongs to a phase, and both are easy to forget once the migrat
    | `docs/TEST_RELOCATION_PLAN.md` | delete after phase 8 |
    | `docs/test-issue-references.md` | delete after phase 8 |
    | `scripts/verify-issue-refs.sh` | delete after phase 8 |
+   | `scripts/test/verify-issue-refs-test.sh` | delete after phase 8 |
+   | `.github/workflows/scripts.yml` | delete after phase 8 |
    | `testng-core/execution-inventory.txt` | **permanent** |
    | `testng-core/execution-known-silent.txt` | shrinks to two entries, then see below |
 

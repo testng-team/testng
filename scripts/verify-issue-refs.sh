@@ -16,6 +16,9 @@ set -u
 REPO=${REPO:-testng-team/testng}
 # The branch that provenance is judged against. Overridable for a fork or a release branch.
 BASE=${BASE:-master}
+# Set to 1 to stop after step 1 and skip step 2. Step 2 needs the network and a GitHub token.
+# The tests use this: they check the provenance rules, which is the part with logic in it.
+PROVENANCE_ONLY=${PROVENANCE_ONLY:-0}
 frag=${1:?usage: verify-issue-refs.sh <path-fragment> [issue-number]}
 num=${2:-}
 rc=0
@@ -25,28 +28,54 @@ rc=0
 reject_if_ambiguous() {
   local pattern=$1
   local paths
-  paths=$(git log --all --diff-filter=A --format= --name-only -- "$pattern" | grep -E '\.java$|\.kt$|\.groovy$' | sort -u)
+  # -M is passed on purpose. Git turns rename detection on by default, but a repository that sets
+  # diff.renames=false would report every rename of a file as a new add. One file that moved three
+  # times then looks like four different files, and this rejects it as ambiguous.
+  paths=$(git log --all --diff-filter=A -M --format= --name-status -- "$pattern" \
+            | awk '$1 == "A" { print $2 }' | grep -E '\.java$|\.kt$|\.groovy$' | sort -u)
   if [ "$(printf '%s\n' "$paths" | grep -c .)" -gt 1 ]; then
-    echo "AMBIGUOUS   '$pattern' was added at more than one path; pass the full original path:"
-    printf '%s\n' "$paths" | sed 's/^/              /'
+    # stderr, not stdout: callers redirect this function's stdout away, and a refusal that nobody
+    # sees is worse than no check at all.
+    echo "AMBIGUOUS   '$pattern' was added at more than one path; pass the full original path:" >&2
+    printf '%s\n' "$paths" | sed 's/^/              /' >&2
     exit 2
   fi
   printf '%s' "$paths"
 }
 
 sha=""
-# A path in the worktree is followed through renames. That misses a rename that is still
-# uncommitted, so fall back to history, rejecting ambiguity at each step.
+# A path in the worktree is followed through renames first.
 if [ -e "$frag" ]; then
   sha=$(git log --follow --reverse --diff-filter=A --format=%H -- "$frag" | head -1)
 fi
+
+# Then search history by the last two path segments, for example "github765/SomeTest.java".
+# A full path is wrong here: the modules moved in 2021, so a modern path only matches history
+# after that move, and the move itself then looks like the commit that wrote the test.
+#
+# The oldest "add" of a path is often a rename, not the original. Tests here have been moved twice
+# already: once when the modules were split, and once when they were grouped by feature. So each
+# time the add turns out to be a rename, take the old path and look again.
+last_two() { printf '%s' "$1" | awk -F/ '{ if (NF>1) print $(NF-1)"/"$NF; else print $NF }'; }
 if [ -z "$sha" ]; then
-  reject_if_ambiguous "*$frag" >/dev/null
-  sha=$(git log --all --reverse --diff-filter=A --format=%H -- "*$frag" | head -1)
+  short=$(last_two "$frag")
+  for _ in 1 2 3 4 5 6 7 8 9 10; do
+    reject_if_ambiguous "*$short" >/dev/null
+    found=$(git log --all --reverse --diff-filter=A -M --format=%H -- "*$short" | head -1)
+    [ -z "$found" ] && break
+    sha=$found
+    # git log reports a rename as an add unless -M is given, so re-read the commit with it.
+    older=$(git show --name-status -M --format= "$sha" \
+              | awk -v suffix="$short" '$1 ~ /^R/ && index($3, suffix) { print $2 }' | head -1)
+    [ -z "$older" ] && break
+    short=$(last_two "$older")
+  done
 fi
+
+# Last resort: the file name alone.
 if [ -z "$sha" ]; then
   reject_if_ambiguous "*/$(basename "$frag")" >/dev/null
-  sha=$(git log --all --reverse --diff-filter=A --format=%H -- "*/$(basename "$frag")" | head -1)
+  sha=$(git log --all --reverse --diff-filter=A -M --format=%H -- "*/$(basename "$frag")" | head -1)
 fi
 if [ -z "$sha" ]; then echo "no introducing commit found for $frag"; exit 1; fi
 
@@ -65,22 +94,55 @@ printf 'message     %s\n' "${msg:-<EMPTY -- no provenance here>}"
 
 [ -z "$num" ] && exit 0
 
+# GitHub writes the pull request number into the subject of a merge commit and of a squash commit.
+# Pull requests and issues share one number space, so "Merge pull request #765" and "Some fix
+# (#765)" say nothing about issue #765. Remove those two forms before the text is searched.
+#
+# Removing them can only make this check stricter. A reference this drops was never proof. A
+# reference it kept and should not have puts a false issue number into the code, which nobody sees.
+without_pr_number() {
+  printf '%s' "$1" | sed -e 's/Merge pull request #[0-9][0-9]*/Merge pull request/g' \
+                         -e 's/(#[0-9][0-9]*)//g'
+}
+
 # Provenance must name the number being checked. Any issue marker is not enough: a commit that says
 # "#123" does not prove anything about issue 765.
-names_num() { printf '%s' "$1" | grep -qE "(TESTNG-|#|issues/)${num}([^0-9]|$)"; }
+# A commit message must name the issue outright: "#765", "TESTNG-765" or "issues/765".
+# Anything looser accepts text that proves nothing, such as "src/765/data.txt" or "release-765".
+names_num() {
+  printf '%s' "$(without_pr_number "$1")" | grep -qE "(TESTNG-|#|issues/)${num}([^0-9]|$)"
+}
+
+# A merge line may instead carry the issue in the branch it merges, such as
+# "Merge pull request #1374 from krmahadevan/krmahadevan-fix-765". Only the branch is read, and
+# only after "from", so an issue number elsewhere in the subject cannot stand in for it.
+branch_names_num() {
+  printf '%s' "$1" | sed -n 's/.*Merge pull request [^ ]* from \([^ |]*\).*/\1/p' \
+    | grep -qE "(^|[^0-9])${num}([^0-9]|$)"
+}
+# Reports the text that matched, so a reader can judge it. It searches the same cleaned string the
+# rules did, never the raw message, or it would print a pull request number as the evidence.
+matched_text() {
+  printf '%s' "$(without_pr_number "$1")" | grep -oE "[A-Za-z/#-]*${num}([^0-9]|$)" | head -1
+}
 if names_num "$msg"; then
-  printf 'provenance  the introducing commit names #%s\n' "$num"
+  printf 'provenance  the introducing commit names it: %s\n' "$(matched_text "$msg")"
 else
   merge=$(git log --merges --ancestry-path --format=%H "$sha".."$BASE" 2>/dev/null | tail -1)
   mmsg=$([ -n "$merge" ] && git log -1 --format='%s | %b' "$merge" | tr '\n' ' ' | sed 's/  */ /g')
-  if [ -n "${mmsg:-}" ] && names_num "$mmsg"; then
-    printf 'provenance  the merge names #%s: %s\n' "$num" "$mmsg"
+  if [ -n "${mmsg:-}" ] && { names_num "$mmsg" || branch_names_num "$mmsg"; }; then
+    if names_num "$mmsg"; then evidence=$(matched_text "$mmsg")
+    else evidence=$(printf '%s' "$mmsg" | sed -n 's/.*Merge pull request [^ ]* from \([^ |]*\).*/branch \1/p')
+    fi
+    printf 'provenance  the merge names it (%s): %s\n' "$evidence" "$mmsg"
   else
     printf 'provenance  NOT PROVEN -- neither the commit nor its merge names #%s\n' "$num"
     [ -n "${mmsg:-}" ] && printf '            merge was: %s\n' "$mmsg"
     rc=1
   fi
 fi
+
+[ "$PROVENANCE_ONLY" = 1 ] && exit $rc
 
 # Distinguish "no such issue" from an API that is unreachable, rate limited or unauthenticated.
 # Treating those alike would delete valid references.
