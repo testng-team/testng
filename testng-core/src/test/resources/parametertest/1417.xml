@@ -4,10 +4,10 @@
 
     <test name="1417_test">
         <classes>
-            <class name="test.github1417.TestClassSample">
+            <class name="org.testng.parameters.samples.github1417.TestClassSample">
                 <parameter name="browsername" value="firefox"/>
             </class>
-            <class name="test.github1417.AnotherTestClassSample">
+            <class name="org.testng.parameters.samples.github1417.AnotherTestClassSample">
                 <parameter name="browsername" value="chrome"/>
             </class>
         </classes>
@@ -16,7 +16,7 @@
     <test name="1417_test_regular">
         <parameter name="browsername" value="safari"/>
         <classes>
-            <class name="test.github1417.YetAnotherTestClassSample"/>
+            <class name="org.testng.parameters.samples.github1417.YetAnotherTestClassSample"/>
         </classes>
     </test>
 

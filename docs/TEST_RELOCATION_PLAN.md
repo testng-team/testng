@@ -125,7 +125,7 @@ This is mechanical and checkable, and it makes the executable set after the move
 ## Phases
 
 One PR per group, smallest first so the convention is settled on a reviewable diff before the large
-packages follow. **#3444 is rebuilt as phase 1** rather than merged as-is: it currently touches all
+packages follow. Phases 3 to 8 each have an issue, linked below and as sub-issues of #3446. **#3444 is rebuilt as phase 1** rather than merged as-is: it currently touches all
 18 feature packages, so leaving it intermediate is precisely the double reorganization the review
 objects to. Its existing work — the legacy `githubNNN`/`issueNNN`/`testngNNN` relocations, the
 verified descriptions, the #1362 merge — is redistributed into the phase that owns each feature.
@@ -134,13 +134,42 @@ verified descriptions, the #1362 merge — is redistributed into the phase that 
 | --- | --- | --- | --- | --- | --- |
 | 1 (#3444) — **done** | `aftergroups`, `memory`, `methodselection`, `conffailure`, `groups` | 37 | 9 | 28 | 3 |
 | 2 — **done** | `reflect`, `preserveorder`, `priority`, `methodinterceptors`, `skip` | 98 | 25 | 73 | 6 |
-| 3 | `invocationcount`, `parameters`, `inheritance` | 96 | 27 | 69 | 4 |
-| 4 | `dependent` | 95 | 21 | 74 | 4 |
-| 5 | `factory` | 122 | 36 | 86 | 3 |
-| 6 | `thread` → `org.testng.concurrency` | 126 | 30 | 96 | 7 |
-| 7 | `configuration` | 144 | 27 | 117 | 4 |
-| 8 | `listeners` | 248 | 31 | 217 | 2 |
-| **total** | | **966** | **206** | **760** | **33** |
+| 3 ([#3493](https://github.com/testng-team/testng/issues/3493)) | `invocationcount`, `parameters`, `inheritance` | 90 | 25 | 65 | 4 |
+| 4 ([#3494](https://github.com/testng-team/testng/issues/3494)) | `dependent` | 95 | 21 | 74 | 4 |
+| 5 ([#3495](https://github.com/testng-team/testng/issues/3495)) | `factory` | 122 | 36 | 86 | 3 |
+| 6 ([#3496](https://github.com/testng-team/testng/issues/3496)) | `thread` → `org.testng.concurrency` | 126 | 30 | 96 | 7 |
+| 7 ([#3497](https://github.com/testng-team/testng/issues/3497)) | `configuration` | 144 | 27 | 117 | 4 |
+| 8 ([#3498](https://github.com/testng-team/testng/issues/3498)) | `listeners` | 248 | 31 | 217 | 2 |
+| **total** | | **960** | **204** | **756** | **33** |
+
+Phase 3 counts 90 files, not the 96 first written here. The difference is three legacy packages
+that the count assumed phase 3 would absorb. Two of them belong elsewhere:
+
+| Package | Files | Owner | Why |
+| --- | --- | --- | --- |
+| `test.github1417` | 4 | phase 3, `parameters` | parameter injection into `@BeforeClass` |
+| `test.testng37` | 1 | phase 3, `parameters` | `@Parameters` with a null value |
+| `test.testng387` | 2 | phase 3, `invocationcount` | asserts `getFailedInvocationNumbers()` |
+| `test.testng317` | 3 | **phase 4**, `dependent` | `dependsOnMethods` across classes with matching names |
+| `test.issue107` | 3 | **phase 8**, `listeners` | a suite listener changing suite parameters |
+
+Two classes in phase 3 have never run. Neither is registered in any suite file, and neither appears
+in `execution-inventory.txt`.
+
+`test.testng37.NullParameterTest` moves with its feature and stays unregistered. Registering it
+needs work beyond a relocation, and the work is not small:
+
+- `testng-37.xml` sits beside the class in the source tree and declares its two parameters. No
+  suite file, no test and no build script loads it.
+- That file gives `nullvalue` the string `"NULL"`. The parameter it feeds is an `int`.
+- The method asserts `isNull()` on that `int`, which cannot hold whatever is passed.
+
+The class and its suite file move together, so the pair stays visible. Phase 3 records this rather
+than fixing it.
+
+`test.testng317.VerifyTest` stays where it is until phase 4. It asserts nothing -- it prints a
+count -- so promoting it would add no coverage. Phase 4 decides whether to give it an assertion or
+to delete it.
 
 Phase 1 also carries two changes that are not about layout. It removes six `GITHUB-*` references
 that pointed at the wrong issue, leaving those tests with no description at all. It also replaces

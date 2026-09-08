@@ -54,8 +54,8 @@
     </groups>
 
     <classes>
-      <class name="test.parameters.ParameterSample" />
-      <class name="test.parameters.ParameterTest" />
+      <class name="org.testng.parameters.ParameterSample" />
+      <class name="org.testng.parameters.ParameterTest" />
       <class name="test.Test1" />
       <class name="test.Test2" />
       <class name="test.CtorCalledOnce" />
@@ -64,8 +64,8 @@
       <class name="test.expectedexceptions.issue2235.IssueTest"/>
       <class name="test.access.PrivateAccessConfigurationMethods" />
       <class name="test.expectedexceptions.WrappedExpectedExceptionTest" />
-      <class name="test.parameters.OptionalParameterTest"/>
-      <class name="test.parameters.ParamInheritanceTest"/>
+      <class name="org.testng.parameters.OptionalParameterTest"/>
+      <class name="org.testng.parameters.ParamInheritanceTest"/>
     </classes>
   </test>
 
@@ -179,17 +179,17 @@
       <class name="org.testng.groups.issue182.IssueTest"/>
       <class name="org.testng.groups.issue2152.IssueTest"/>
       <class name="org.testng.groups.issue2232.IssueTest"/>
-      <class name="test.parameters.ShadowTest" />
-      <class name="test.parameters.ParameterOverrideTest" />
-      <class name="test.parameters.ParameterInjectAndOptionTest" />
-      <class name="test.parameters.ParametersPackageLevelMethodTest" />
-      <class name="test.parameters.issue2238.IssueTest"/>
+      <class name="org.testng.parameters.ShadowTest" />
+      <class name="org.testng.parameters.ParameterOverrideTest" />
+      <class name="org.testng.parameters.ParameterInjectAndOptionTest" />
+      <class name="org.testng.parameters.ParametersPackageLevelMethodTest" />
+      <class name="org.testng.parameters.issue2238.IssueTest"/>
       <class name="test.reports.FailedReporterTest" />
       <class name="test.reports.EmailableReporterTest"/>
       <class name="test.failedreporter.FailedReporterScenariosTest"/>
       <class name="test.failedreporter.FailedReporterParametersTest"/>
       <class name="test.reports.ReporterLogTest" />
-      <class name="test.testng387.TestNG387"/>
+      <class name="org.testng.invocationcount.testng387.TestNG387"/>
       <class name="test.testng1231.TestExecutionListenerInvocationOrder"/>
       <class name="test.testng1232.TestListenerInstances"/>
       <class name="org.testng.skip.BeforeClassSkipExceptionTest"/>
@@ -213,7 +213,7 @@
       <class name="test_result.TestResultTest"/>
       <class name="test.listeners.github1319.TestResultInstanceCheckTest"/>
       <class name="org.testng.methodinterceptors.ParallelByInstancesInterceptorTest"/>
-      <class name="test.github1417.TestParamsInjectionInBeforeClass"/>
+      <class name="org.testng.parameters.github1417.TestParamsInjectionInBeforeClass"/>
       <class name="test.order.OrderTest" />
       <class name="org.testng.memory.MemoryLeakTestNg" />
       <!-- TODO fix the random issue <class name="test.issue565.Issue565Test"/>-->
@@ -237,7 +237,7 @@
       <class name="test.listeners.issue2456.IssueTest"/>
       <class name="org.testng.methodselection.MethodSelectionTest"/>
       <class name="test.beforegroups.BeforeGroupsTest"/>
-      <class name="test.invocationcount.issue1719.IssueTest"/>
+      <class name="org.testng.invocationcount.issue1719.IssueTest"/>
       <class name="org.testng.internal.listeners.parameterindex.ParameterIndexListenerTest"/>
     </classes>
   </test>
@@ -358,14 +358,14 @@
 
   <test name="Inheritance">
     <classes>
-      <class name="test.inheritance.InheritanceConfigTest" />
-      <class name="test.inheritance.ClassScopeTest" />
-      <class name="test.inheritance.testng739.TestNG739"/>
-      <class name="test.inheritance.testng234.PolymorphicFailureTest" />
-      <class name="test.inheritance.testng471.TestNG471" />
-      <class name="test.inheritance.github980.Github980Test"/>
-      <class name="test.inheritance.github949.Github949Test"/>
-      <class name="test.inheritance.issue2489.IssueTest"/>
+      <class name="org.testng.inheritance.InheritanceConfigTest" />
+      <class name="org.testng.inheritance.ClassScopeTest" />
+      <class name="org.testng.inheritance.testng739.TestNG739"/>
+      <class name="org.testng.inheritance.testng234.PolymorphicFailureTest" />
+      <class name="org.testng.inheritance.testng471.TestNG471" />
+      <class name="org.testng.inheritance.github980.Github980Test"/>
+      <class name="org.testng.inheritance.github949.Github949Test"/>
+      <class name="org.testng.inheritance.issue2489.IssueTest"/>
     </classes>
   </test>
 
@@ -489,9 +489,9 @@
     <parameter name="count" value="10" />
     <classes>
       <class name="test.InvocationAndSuccessPercentageTest" />
-      <class name="test.invocationcount.CancelledInvocationReportingTest" />
-      <class name="test.invocationcount.FailedInvocationCountTest" />
-      <class name="test.invocationcount.FirstAndLastTimeTest" />
+      <class name="org.testng.invocationcount.CancelledInvocationReportingTest" />
+      <class name="org.testng.invocationcount.FailedInvocationCountTest" />
+      <class name="org.testng.invocationcount.FirstAndLastTimeTest" />
     </classes>
   </test>
 
@@ -605,8 +605,8 @@
 
   <test name="Method inheritance">
     <classes>
-      <class name="test.inheritance.DChild_2" />
-      <class name="test.inheritance.VerifyTest" />
+      <class name="org.testng.inheritance.DChild_2" />
+      <class name="org.testng.inheritance.VerifyTest" />
     </classes>
   </test>
 

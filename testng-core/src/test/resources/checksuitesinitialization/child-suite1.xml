@@ -3,7 +3,7 @@
 <suite name="Child Suite 1">
   <test name="Test">
     <classes>
-      <class name="test.parameters.Sample"/>
+      <class name="org.testng.parameters.samples.Sample"/>
     </classes>
   </test>
 </suite>

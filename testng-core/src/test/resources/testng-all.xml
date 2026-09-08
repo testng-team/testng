@@ -74,16 +74,16 @@
     </groups>
 
     <classes>
-      <class name="test.parameters.ParameterSample" />
-      <class name="test.parameters.ParameterTest" />
+      <class name="org.testng.parameters.ParameterSample" />
+      <class name="org.testng.parameters.ParameterTest" />
       <class name="test.Test1" />
       <class name="test.Test2" />
       <class name="test.CtorCalledOnce" />
       <class name="test.expectedexceptions.ExpectedExceptionsTest" />
       <class name="test.access.PrivateAccessConfigurationMethods" />
       <class name="test.expectedexceptions.WrappedExpectedExceptionTest" />
-      <class name="test.parameters.OptionalParameterTest"/>
-      <class name="test.parameters.ParamInheritanceTest"/>
+      <class name="org.testng.parameters.OptionalParameterTest"/>
+      <class name="org.testng.parameters.ParamInheritanceTest"/>
     </classes>
   </test>
 
