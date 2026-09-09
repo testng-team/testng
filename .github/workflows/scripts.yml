@@ -23,10 +23,11 @@ jobs:
           # The tests build their own git repositories in a temporary directory. They never push,
           # so the token does not need to stay in .git/config.
           persist-credentials: false
-      - name: Test verify-issue-refs.sh
-        run: scripts/test/verify-issue-refs-test.sh
-      - name: Test refs-in-sync.sh
-        run: scripts/test/refs-in-sync-test.sh
+      # Discovery, not a list. Naming each suite here let a new script ship with no test at all,
+      # which is how both of these did. run-all.sh fails when scripts/x.sh has no
+      # scripts/test/x-test.sh, and runs every suite it finds.
+      - name: Test the scripts
+        run: scripts/test/run-all.sh
       # A row in docs/test-issue-references.md is a claim that the code carries that description.
       # Phase 3 wrote five rows and never touched the code, and only the reviewer noticed.
       - name: Check the issue references against the code

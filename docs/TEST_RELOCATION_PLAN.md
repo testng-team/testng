@@ -360,6 +360,7 @@ Neither of these belongs to a phase, and both are easy to forget once the migrat
    | `scripts/test/verify-issue-refs-test.sh` | delete after phase 8 |
    | `scripts/refs-in-sync.sh` | delete after phase 8 |
    | `scripts/test/refs-in-sync-test.sh` | delete after phase 8 |
+   | `scripts/test/run-all.sh` | delete after phase 8 |
    | `.github/workflows/scripts.yml` | delete after phase 8 |
    | `testng-core/execution-inventory.txt` | **permanent** |
    | `testng-core/execution-known-silent.txt` | shrinks to two entries, then see below |
