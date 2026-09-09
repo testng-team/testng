@@ -12,7 +12,7 @@ import test.SimpleBaseTest;
 
 public class IssueTest extends SimpleBaseTest {
 
-  @Test(dataProvider = "dp")
+  @Test(dataProvider = "dp", description = "GITHUB-1719")
   public void testSuccessPercentageCalculation(Class<?> clazz, Expected expected) {
     TestNG testng = create(clazz);
     DummyReporter listener = new DummyReporter();

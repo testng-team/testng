@@ -15,7 +15,7 @@ import test.SimpleBaseTest;
 
 public class Github980Test extends SimpleBaseTest {
 
-  @Test
+  @Test(description = "GITHUB-980")
   public void testToEnsureDuplicateMethodsAreNotExecuted() {
     XmlSuite suite = createXmlSuite("980_suite");
     XmlTest xmltest = createXmlTest(suite, "980_test");

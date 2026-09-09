@@ -14,14 +14,14 @@ import test.SimpleBaseTest;
 
 public class IssueTest extends SimpleBaseTest {
 
-  @Test
+  @Test(description = "GITHUB-2238")
   public void ensureParametersCanBeOverriddenAtSuiteLevel() {
     XmlSuite xmlSuite = createXmlSuite("suite", "test", ExampleTestCase.class);
     xmlSuite.getParameters().put("value", "100");
     runTest(xmlSuite);
   }
 
-  @Test
+  @Test(description = "GITHUB-2238")
   public void ensureParametersCanBeOverriddenAtTestLevel() {
     XmlSuite xmlSuite = createXmlSuite("suite");
     XmlTest xmltest = createXmlTest(xmlSuite, "test", ExampleTestCase.class);
@@ -29,7 +29,7 @@ public class IssueTest extends SimpleBaseTest {
     runTest(xmlSuite);
   }
 
-  @Test
+  @Test(description = "GITHUB-2238")
   public void ensureParametersCanBeOverriddenAtClassLevel() {
     XmlSuite xmlSuite = createXmlSuite("suite");
     XmlTest xmlTest = createXmlTest(xmlSuite, "test");
@@ -38,7 +38,7 @@ public class IssueTest extends SimpleBaseTest {
     runTest(xmlSuite);
   }
 
-  @Test
+  @Test(description = "GITHUB-2238")
   public void ensureParametersCanBeOverriddenAtMethodLevel() {
     XmlSuite xmlSuite = createXmlSuite("suite");
     XmlTest xmlTest = createXmlTest(xmlSuite, "test");

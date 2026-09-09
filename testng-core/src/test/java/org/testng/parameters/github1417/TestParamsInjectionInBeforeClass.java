@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
 import org.testng.parameters.samples.github1417.YetAnotherTestClassSample;
 
 public class TestParamsInjectionInBeforeClass {
-  @Test
+  @Test(description = "GITHUB-1417")
   public void testMethod() {
     String suite = "src/test/resources/parametertest/1417.xml";
     TestNG testNG = new TestNG();

@@ -12,7 +12,7 @@ import org.testng.inheritance.samples.github949.CommonBaseClass;
 import test.SimpleBaseTest;
 
 public class Github949Test extends SimpleBaseTest {
-  @Test(dataProvider = "getdata")
+  @Test(dataProvider = "getdata", description = "GITHUB-949")
   public void runTest(Class<?> child) {
     TestNG testng = create(child);
     testng.run();

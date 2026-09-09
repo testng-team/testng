@@ -116,6 +116,27 @@ and the prose stays.
 
 `TESTNG-37`, `TESTNG-57` and `TESTNG-387` name the old JIRA tracker. They are left as they are.
 
+## Verified, description not yet written
+
+A row above is a claim that the code carries that description. These five are the exception. Phase 1
+proved them by sweeping every class in reach, but their classes still sit in top-level `test.*`
+packages that no phase has moved. The description goes in when the owning feature moves.
+
+<!-- vale off -->
+
+| Ref | Class still at |
+| --- | --- |
+| `GITHUB-565` | `test.issue565` |
+| `GITHUB-799` | `test.github799` |
+| `GITHUB-1231` | `test.testng1231` |
+| `GITHUB-1232` | `test.testng1232` |
+| `GITHUB-1490` | `test.github1490` |
+
+<!-- vale on -->
+
+`scripts/refs-in-sync.sh` in the phase skill reads this list. Move a reference out of it when the
+description is written, and the check starts requiring it.
+
 `GITHUB-521` is the one worth reading twice. The test was written in 2015 and was in no suite file,
 so it had never run. Phase 2 registers it.
 
