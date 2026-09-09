@@ -24,6 +24,7 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
+import test.dataprovider.issue1031.GitHub1031Sample;
 import test.dataprovider.issue1691.DataProviderDefinitionAtClassLevelAndNoTestMethodUsage;
 import test.dataprovider.issue1691.DataProviderDefinitionCompletelyProvidedAtClassLevel;
 import test.dataprovider.issue1691.DataProviderDefinitionCompletelyProvidedAtClassLevelAndPartiallyAtMethodLevel;
@@ -715,6 +716,32 @@ public class DataProviderTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = run(DataProviderIntegrationSample.class);
     Throwable exception = listener.getResult("theTest").getThrowable();
     assertThat(exception).isInstanceOf(MethodMatcherException.class);
+  }
+
+  @Test(description = "GITHUB-1031")
+  public void dataProviderMismatchMessagesReachTheFailedResult() {
+    TestNG testng = create(GitHub1031Sample.class);
+    TestListenerAdapter listener = new TestListenerAdapter();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getFailedTests()).hasSize(3);
+    assertFailedMismatch(
+        listener, "varargsTooFew", "Data provider mismatch: expected 2 arguments, got 1");
+    assertFailedMismatch(listener, "noParameters", "has no parameters defined");
+    assertFailedMismatch(
+        listener, "typeMismatch", "argument types do not match the method parameters");
+  }
+
+  private static void assertFailedMismatch(
+      TestListenerAdapter listener, String methodName, String fragment) {
+    ITestResult result =
+        listener.getFailedTests().stream()
+            .filter(each -> methodName.equals(each.getMethod().getMethodName()))
+            .findFirst()
+            .orElseThrow();
+    assertThat(result.getThrowable())
+        .isInstanceOf(MethodMatcherException.class)
+        .hasMessageContaining(fragment);
   }
 
   @Test
