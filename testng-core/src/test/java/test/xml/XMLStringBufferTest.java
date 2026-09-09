@@ -41,7 +41,7 @@ public class XMLStringBufferTest {
     // exists for: toXML() would read the whole of it back as a String, and copy it once more.
     XMLStringBuffer content = new XMLStringBuffer("  ");
     for (int i = 0; i < 4000; i++) {
-      content.addRequired("item", "value-" + i + " \u0007 \uFFFE " + SUPPLEMENTARY);
+      content.addRequired("item", "value-" + i + " \\u0007 \\uFFFE " + SUPPLEMENTARY);
     }
 
     XMLStringBuffer streamed = new XMLStringBuffer("");
@@ -64,6 +64,67 @@ public class XMLStringBufferTest {
     assertThat(streamed.getStringBuffer().toString()).isEqualTo(materialized.toXML());
     // And the content really did cross the threshold, so this was the streaming path.
     assertThat(materializedContent.length()).isGreaterThan(100_000);
+  }
+
+  @Test
+  public void addCDATAElementWritesTheTagAndCdataOnOneLine() {
+    IBuffer result = Buffer.create();
+    XMLStringBuffer sb = new XMLStringBuffer(result, "");
+
+    sb.addCDATAElement("value", "Some Value");
+
+    assertThat(result.toString()).isEqualTo("<value><![CDATA[Some Value]]></value>" + EOL);
+  }
+
+  @Test
+  public void addCDATAElementKeepsLeadingAndTrailingWhitespace() {
+    IBuffer result = Buffer.create();
+    XMLStringBuffer sb = new XMLStringBuffer(result, "");
+
+    sb.addCDATAElement("value", "  padded  ");
+
+    assertThat(result.toString()).isEqualTo("<value><![CDATA[  padded  ]]></value>" + EOL);
+  }
+
+  @Test
+  public void addCDATASplitsTheTerminatorSequence() {
+    IBuffer result = Buffer.create();
+    XMLStringBuffer sb = new XMLStringBuffer(result, "");
+
+    sb.addCDATA("]]>");
+
+    assertThat(result.toString()).isEqualTo("<![CDATA[]]]]><![CDATA[>]]>" + EOL);
+  }
+
+  @Test
+  public void addCDATAElementSplitsTheTerminatorSequenceInsideTheTag() {
+    IBuffer result = Buffer.create();
+    XMLStringBuffer sb = new XMLStringBuffer(result, "");
+
+    sb.addCDATAElement("value", "foo]]>bar");
+
+    assertThat(result.toString())
+        .isEqualTo("<value><![CDATA[foo]]]]><![CDATA[>bar]]></value>" + EOL);
+  }
+
+  @Test
+  public void addCDATAWritesTheWordNullForANull() {
+    IBuffer result = Buffer.create();
+    XMLStringBuffer sb = new XMLStringBuffer(result, "");
+
+    sb.addCDATA(null);
+
+    assertThat(result.toString()).isEqualTo("<![CDATA[null]]>" + EOL);
+  }
+
+  @Test
+  public void addCDATAStripsControlCharactersExceptLineBreaks() {
+    IBuffer result = Buffer.create();
+    XMLStringBuffer sb = new XMLStringBuffer(result, "");
+
+    sb.addCDATA("a\u0001b\nc");
+
+    assertThat(result.toString()).isEqualTo("<![CDATA[ab\nc]]>" + EOL);
   }
 
   /** U+1F600, so a surrogate pair, which is the one thing the two paths could read differently. */
