@@ -344,8 +344,10 @@ Neither of these belongs to a phase, and both are easy to forget once the migrat
    test knows the issue number, and review catches the rest -- it already did, finding all six wrong
    references and only those six.
 
-   Its tests, `scripts/test/verify-issue-refs-test.sh`, and the workflow that runs them,
-   `.github/workflows/scripts.yml`, go with it.
+   Its tests, `scripts/test/verify-issue-refs-test.sh`, go with it. So does
+   `scripts/refs-in-sync.sh`, which checks that every reference `docs/test-issue-references.md`
+   records is really in the code, and the workflow that runs both,
+   `.github/workflows/scripts.yml`.
 
    `verifyTestExecution` is **not** scaffolding. It is the guard that makes GitHub issue #3446's
    central promise hold, and it matters more once the suite XML is gone. It stays.
@@ -356,6 +358,7 @@ Neither of these belongs to a phase, and both are easy to forget once the migrat
    | `docs/test-issue-references.md` | delete after phase 8 |
    | `scripts/verify-issue-refs.sh` | delete after phase 8 |
    | `scripts/test/verify-issue-refs-test.sh` | delete after phase 8 |
+   | `scripts/refs-in-sync.sh` | delete after phase 8 |
    | `.github/workflows/scripts.yml` | delete after phase 8 |
    | `testng-core/execution-inventory.txt` | **permanent** |
    | `testng-core/execution-known-silent.txt` | shrinks to two entries, then see below |

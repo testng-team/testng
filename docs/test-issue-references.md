@@ -134,7 +134,7 @@ packages that no phase has moved. The description goes in when the owning featur
 
 <!-- vale on -->
 
-`scripts/refs-in-sync.sh` in the phase skill reads this list. Move a reference out of it when the
+`scripts/refs-in-sync.sh` reads this list. Move a reference out of it when the
 description is written, and the check starts requiring it.
 
 `GITHUB-521` is the one worth reading twice. The test was written in 2015 and was in no suite file,

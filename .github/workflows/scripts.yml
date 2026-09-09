@@ -2,15 +2,20 @@ name: scripts
 
 on:
   pull_request:
-    # The workflow file is listed too, so a pull request that changes the check still runs it.
-    paths: ['scripts/**', '.github/workflows/scripts.yml']
+    # The document and the test sources are listed because refs-in-sync.sh compares them. The
+    # workflow file is listed too, so a pull request that changes a check still runs it.
+    paths:
+      - 'scripts/**'
+      - 'docs/test-issue-references.md'
+      - 'testng-core/src/test/java/**'
+      - '.github/workflows/scripts.yml'
 
 # The tests only read the checkout and write to a temporary directory.
 permissions:
   contents: read
 
 jobs:
-  verify-issue-refs:
+  issue-references:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -20,3 +25,7 @@ jobs:
           persist-credentials: false
       - name: Test verify-issue-refs.sh
         run: scripts/test/verify-issue-refs-test.sh
+      # A row in docs/test-issue-references.md is a claim that the code carries that description.
+      # Phase 3 wrote five rows and never touched the code, and only the reviewer noticed.
+      - name: Check the issue references against the code
+        run: scripts/refs-in-sync.sh
