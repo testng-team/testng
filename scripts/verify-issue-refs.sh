@@ -61,27 +61,35 @@ sha=""
 # holds a line matching the pattern, so the oldest is the one that added it. The pattern ends the
 # number, or a search for issue 182 answers with the commit that wrote GITHUB-1827.
 #
-# The candidate list is repository wide, but the answer must be a commit that added the text to a
-# file of this name. One issue number often sits in several files: GITHUB-1336 is in six and
-# GITHUB-2830 in five. Taking the oldest of those would prove another file's reference, not this
-# one. The pathspec is the file name alone, so a rename does not hide the commit.
+# The candidate list is repository wide, but the answer must be a commit that added the text to
+# THIS file. One issue number often sits in several files: GITHUB-1336 is in six and GITHUB-2830 in
+# five. Taking the oldest of those would prove another file's reference, not this one.
+#
+# The file is named by its history, not by its name. 45 files here are called IssueTest.java and 60
+# TestClassSample.java, so a name matches other people's files. --follow gives every path this one
+# file has had, and a candidate counts only if it wrote the text to one of them.
 if [ "$BY_DESCRIPTION" = 1 ]; then
   [ -n "$num" ] || { echo "BY_DESCRIPTION needs an issue number"; exit 1; }
-  base=$(basename "$frag")
-  for candidate in $(git log -G "GITHUB-${num}([^0-9]|\$)" --all --reverse --format=%H -- '*.java')
-  do
-    if git show "$candidate" -M --format= -- "*/$base" \
-         | grep -qE "^\+.*GITHUB-${num}([^0-9]|\$)"; then
-      sha=$candidate
-      break
-    fi
-  done
-  if [ -z "$sha" ]; then
-    echo "no commit wrote \"GITHUB-$num\" into a file named $base"
+  lineage=$(git log --follow --format= --name-only -- "$frag" 2>/dev/null | grep -v '^$' | sort -u)
+  if [ -z "$lineage" ]; then
+    echo "no history for $frag; BY_DESCRIPTION needs a path git can follow"
     exit 1
   fi
-  printf 'wrote it    %s\n' \
-    "$(git show "$sha" -M --format= --name-only -- "*/$base" | tr '\n' ' ')"
+  for candidate in $(git log -G "GITHUB-${num}([^0-9]|\$)" --all --reverse --format=%H -- '*.java')
+  do
+    for path in $lineage; do
+      if git show "$candidate" -M --format= -- "$path" \
+           | grep -qE "^\+.*GITHUB-${num}([^0-9]|\$)"; then
+        sha=$candidate
+        break 2
+      fi
+    done
+  done
+  if [ -z "$sha" ]; then
+    echo "no commit wrote \"GITHUB-$num\" into $frag or any path it came from"
+    exit 1
+  fi
+  printf 'wrote it    %s\n' "$(git log -1 --format=%h "$sha")  in $frag"
 fi
 
 # A path in the worktree is followed through renames first.

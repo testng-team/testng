@@ -15,20 +15,48 @@
 # records which issue a test covers, not how many of its methods say so, and a count in a document
 # goes stale. Review covers that part.
 set -u
-doc=docs/test-issue-references.md
-root=testng-core/src/test/java
+# Overridable so the tests can point at a throwaway tree.
+doc=${DOC:-docs/test-issue-references.md}
+root=${ROOT:-testng-core/src/test/java}
 
 # The document's "Verified, description not yet written" section lists references whose class has
 # not moved yet. Those are not required in the code.
 waiting=$(sed -n '/## Verified, description not yet written/,$p' "$doc" \
             | grep -oE '`GITHUB-[0-9]+`' | tr -d '`' | sort -u)
 
+# True when a description attribute in the test sources carries this reference.
+#
+# A bare match is not enough. A comment, a javadoc line or an unrelated string literal all mention
+# an issue number without the code claiming it. The document claims that a @Test carries the
+# description, so that is what this looks for.
+#
+# A description often spans lines:
+#
+#     @Test(
+#         description =
+#             "GITHUB-3408: whether the data provider was parallel ...")
+#
+# so it reads a window of the three lines before the match.
+has_description() {
+  local ref=$1
+  grep -rlE "\"${ref}([^0-9]|\")" "$root" --include='*.java' 2>/dev/null | while read -r f; do
+    awk -v ref="$ref" '
+      { w3=w2; w2=w1; w1=$0 }
+      $0 ~ "\"" ref "([^0-9]|\")" {
+        joined = w3 " " w2 " " w1
+        if (joined ~ /description[[:space:]]*=/) { found=1; exit }
+      }
+      END { exit found ? 0 : 1 }
+    ' "$f" && { printf 'yes'; return; }
+  done | grep -q yes
+}
+
 missing=""
 for ref in $(sed '/## Verified, description not yet written/,$d' "$doc" \
                | grep -oE '`GITHUB-[0-9]+`' | tr -d '`' | sort -u); do
   printf '%s\n' "$waiting" | grep -qx "$ref" && continue
   # The number must end here. GITHUB-182 is the start of GITHUB-1827.
-  grep -rqE "${ref}([^0-9]|$)" "$root" 2>/dev/null || missing="$missing $ref"
+  has_description "$ref" || missing="$missing $ref"
 done
 
 if [ -n "$missing" ]; then

@@ -25,6 +25,8 @@ jobs:
           persist-credentials: false
       - name: Test verify-issue-refs.sh
         run: scripts/test/verify-issue-refs-test.sh
+      - name: Test refs-in-sync.sh
+        run: scripts/test/refs-in-sync-test.sh
       # A row in docs/test-issue-references.md is a claim that the code carries that description.
       # Phase 3 wrote five rows and never touched the code, and only the reviewer noticed.
       - name: Check the issue references against the code

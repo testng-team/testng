@@ -240,6 +240,29 @@ check "another file is not this file's proof" "NOT PROVEN" \
 check "the other file is still proven" PROVEN \
   "$(verdict "$r" src/foo/OtherTest.java 765 BY_DESCRIPTION=1)"
 
+# A file name is not a file. 45 files here are called IssueTest.java and 60 TestClassSample.java.
+# Two of them carrying the same reference must not prove each other.
+r=$(new_repo)
+add "$r" a/IssueTest.java "Create the first class"
+printf 'class X { /* GITHUB-765 */ }\n' > "$r/a/IssueTest.java"
+git -C "$r" commit -q -am "Reject the empty name. Closes #765"
+add "$r" b/IssueTest.java "Create the second class"
+printf 'class X { /* GITHUB-765 */ }\n' > "$r/b/IssueTest.java"
+git -C "$r" commit -q -am "Copy the check over here"
+check "the same file name is not the same file" "NOT PROVEN" \
+  "$(verdict "$r" b/IssueTest.java 765 BY_DESCRIPTION=1)"
+check "the first of the two is still proven" PROVEN \
+  "$(verdict "$r" a/IssueTest.java 765 BY_DESCRIPTION=1)"
+
+# The file's own history counts, including the paths it came from.
+r=$(new_repo)
+add "$r" old/place/MovedTest.java "Create the class"
+printf 'class X { /* GITHUB-765 */ }\n' > "$r/old/place/MovedTest.java"
+git -C "$r" commit -q -am "Reject the empty name. Closes #765"
+move "$r" old/place/MovedTest.java new/place/MovedTest.java
+check "a path it came from counts" PROVEN \
+  "$(verdict "$r" new/place/MovedTest.java 765 BY_DESCRIPTION=1)"
+
 # The mode changes how the commit is found. It does not soften the rules.
 r=$(new_repo)
 add "$r" src/foo/OneTest.java "Create the test class"
