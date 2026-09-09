@@ -26,6 +26,7 @@ import org.testng.reporters.snapshot.ParallelParameterSample;
 import org.testng.reporters.snapshot.ParameterShapesSample;
 import org.testng.reporters.snapshot.PassingConfigurationParameterSample;
 import org.testng.reporters.snapshot.RenderingCountSample;
+import org.testng.reporters.snapshot.SomeValueParameterSample;
 import org.testng.reporters.snapshot.UnrenderableParameterSample;
 import org.testng.reporters.snapshot.UnrenderableParameterSample.Unrenderable;
 import org.testng.reporters.snapshot.WrongArgumentCountSample;
@@ -109,6 +110,19 @@ public class XmlReporterParametersTest extends SimpleBaseTest {
     // lists a passing configuration until this file does, so reading it back here would answer
     // what the method left behind rather than what it was given.
     assertThat(reported).containsExactly(singletonList("[before-configuration]"));
+  }
+
+  @Test(
+      description =
+          "GITHUB-2187: a parameter <value> is the CDATA content, not the pretty-print whitespace"
+              + " around it")
+  public void aParameterValueIsTheCdataContentRatherThanThePrettyPrintWhitespaceAroundIt() {
+    Document report = runUnderXmlReporter(SomeValueParameterSample.class);
+
+    // The helper that reads values trims, which is how this issue survived the rest of this
+    // class: the extra newlines and indent around the CDATA are discarded before the
+    // assertion. A consumer that reads the element text, as Jackson and JAXB do, keeps them.
+    assertThat(valueOf(report, "report").getTextContent()).isEqualTo("Some Value");
   }
 
   @Test(
@@ -258,6 +272,25 @@ public class XmlReporterParametersTest extends SimpleBaseTest {
       return invocations;
     } catch (Exception reading) {
       throw new AssertionError("Could not read the reported parameters of " + methodName, reading);
+    }
+  }
+
+  /**
+   * The {@code <value>} of the first invocation of {@code methodName}, without trimming. That is
+   * what an XML consumer that reads element text sees.
+   */
+  private static Node valueOf(Document report, String methodName) {
+    try {
+      Node value =
+          (Node)
+              XPathFactory.newInstance()
+                  .newXPath()
+                  .compile("//test-method[@name='" + methodName + "']/params/param/value")
+                  .evaluate(report, XPathConstants.NODE);
+      assertThat(value).as("No <value> for " + methodName).isNotNull();
+      return value;
+    } catch (Exception reading) {
+      throw new AssertionError("Could not read the reported value of " + methodName, reading);
     }
   }
 }
