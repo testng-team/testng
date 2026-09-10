@@ -10,7 +10,8 @@
 # A script here decides whether a reference may be written into the code. A wrong answer is silent.
 # So the rule is mechanical: scripts/x.sh needs scripts/test/x-test.sh.
 set -u
-cd "$(dirname "$0")/../.." || exit 1
+# Overridable so the tests can point at a throwaway tree.
+cd "${ROOT_DIR:-$(dirname "$0")/../..}" || exit 1
 fail=0
 
 missing=""

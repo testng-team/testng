@@ -40,7 +40,7 @@ public class CancelledInvocationReportingTest extends SimpleBaseTest {
 
   @Test(
       description =
-          "GITHUB-3408: whether the data provider was parallel is not something a consumer of the"
+          "whether the data provider was parallel is not something a consumer of the"
               + " results can tell")
   public void cancellationIsReportedTheSameWayWhateverTheDataProvider() {
     assertThat(report(SkippedParallelInvocationCountSample.class))
@@ -58,7 +58,7 @@ public class CancelledInvocationReportingTest extends SimpleBaseTest {
 
   @Test(
       description =
-          "GITHUB-3408: cancelling stops the invocationCounts still to come, not the rows of the"
+          "cancelling stops the invocationCounts still to come, not the rows of the"
               + " repetition under way")
   public void everyRowStillRunsWhenOneOfThemCancels() {
     // An invocationCount counts repetitions of the whole data set, so a row failing says nothing

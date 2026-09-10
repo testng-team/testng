@@ -24,7 +24,7 @@ new_case() {
   local d
   d=$(mktemp -d "$WORK/case.XXXXXX")
   mkdir -p "$d/src/org/testng/feature"
-  printf '# Verified issue references\n\n| Ref | Title |\n| --- | --- |\n| `GITHUB-765` | something |\n' \
+  printf '# Verified issue references\n\n## Verified in phase 1\n\n| Ref | Title |\n| --- | --- |\n| `GITHUB-765` | something |\n' \
     > "$d/doc.md"
   printf '%s' "$d"
 }
@@ -84,6 +84,37 @@ d=$(new_case)
 printf 'class T {\n  @Test\n  public void a() {}\n}\n' > "$d/src/org/testng/feature/HTest.java"
 printf '\n## Verified, description not yet written\n\n| `GITHUB-765` | test.somewhere |\n' >> "$d/doc.md"
 check "a reference still waiting is allowed" ok "$(verdict "$d")"
+
+# A description belongs to a @Test. @DataProvider takes one too, and a field may be called
+# description, so neither is the code claiming the reference.
+d=$(new_case)
+printf 'class T {\n  @DataProvider(description = "GITHUB-765")\n  public Object[][] dp() { return null; }\n}\n' \
+  > "$d/src/org/testng/feature/ITest.java"
+check "a data provider is not a test" missing "$(verdict "$d")"
+
+d=$(new_case)
+printf 'class T {\n  String description = "GITHUB-765";\n}\n' \
+  > "$d/src/org/testng/feature/JTest.java"
+check "a field called description is not one" missing "$(verdict "$d")"
+
+# Prose is not a claim. The document explains why GITHUB-3408 was dropped, and reading that
+# sentence as a claim made the check demand the reference it says to remove.
+d=$(new_case)
+printf 'class T {\n  @Test\n  public void a() {}\n}\n' > "$d/src/org/testng/feature/KTest.java"
+printf '\nGITHUB-765 was removed because it names a pull request.\n' >> "$d/doc.md"
+python3 - "$d/doc.md" <<'PYEOF'
+import sys
+p=sys.argv[1]; s=open(p).read()
+open(p,'w').write(s.replace('| `GITHUB-765` | something |\n',''))
+PYEOF
+check "prose is not a claim" ok "$(verdict "$d")"
+
+# The exemption belongs to its own table. Prose after it must not exempt anything.
+d=$(new_case)
+printf 'class T {\n  @Test\n  public void a() {}\n}\n' > "$d/src/org/testng/feature/LTest.java"
+printf '\n## Verified, description not yet written\n\n| `GITHUB-999` | test.elsewhere |\n' >> "$d/doc.md"
+printf '\n## Notes\n\nGITHUB-765 is discussed here but not exempt.\n' >> "$d/doc.md"
+check "prose after the table exempts nothing" missing "$(verdict "$d")"
 
 printf '\n%s passed, %s failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]
