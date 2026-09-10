@@ -46,6 +46,20 @@ class TimesPanelTest : SimpleBaseTest() {
         assertThat(totals[2]).`as`("third call").isEqualTo(totals[0])
     }
 
+    @Test(description = "Each result gets its own row, from a builder reused across the loop")
+    fun everyResultGetsOneRowOfItsOwn() {
+        // The row builder is hoisted out of the loop and reset per iteration; forget the reset and
+        // each row carries every row before it, which no assertion on the suite total would see.
+        val suites = runAndCaptureSuites()
+        val content = TimesPanel(Model(suites)).getContent(suites[0], XMLStringBuffer(""))
+
+        val methodCells = Regex("""data\.setCell\((\d+), 1, '([^']*)'\)""").findAll(content).toList()
+        assertThat(methodCells.map { it.groupValues[2] })
+            .containsExactlyInAnyOrder("first", "second")
+        // One cell per index, so nothing was carried over from the previous iteration.
+        assertThat(methodCells.map { it.groupValues[1] }).containsExactly("0", "1")
+    }
+
     private fun totalRunningTimeOf(content: String): String =
         Regex("""<span class="suite-total-time">([^<]*)</span>""").find(content)!!.groupValues[1]
 

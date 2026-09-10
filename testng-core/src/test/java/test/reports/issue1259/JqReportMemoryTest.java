@@ -93,6 +93,46 @@ public class JqReportMemoryTest extends SimpleBaseTest {
     }
   }
 
+  @Test(description = "The frame reported is the one that ran out of heap, not merely the fact")
+  public void theOutOfMemoryFrameNamesWhereTheChildDied() {
+    // What this distinguishes: the Model this reporter builds first is GITHUB-1979 and out of
+    // scope here, and it fails after the summary is printed, so "an OutOfMemoryError happened"
+    // sent a maintainer to the streaming panels for someone else's defect.
+    String modelFailure =
+        String.join(
+            System.lineSeparator(),
+            "Total tests run: 20000",
+            "Exception in thread \"main\" java.lang.OutOfMemoryError: Java heap space",
+            "\tat java.base/java.util.Arrays.copyOf(Arrays.java:3745)",
+            "\tat org.testng.reporters.jq.Model.getTestResultName(Model.java:169)",
+            "\tat org.testng.reporters.jq.Main.generateReport(Main.java:51)");
+    String panelFailure =
+        String.join(
+            System.lineSeparator(),
+            "Exception in thread \"main\" java.lang.OutOfMemoryError: Java heap space",
+            "\tat org.testng.reporters.FileStringBuffer.toString(FileStringBuffer.java:140)",
+            "\tat org.testng.reporters.jq.NavigatorPanel.generateMethodList(NavigatorPanel.java:286)");
+
+    assertThat(outOfMemoryFrameIn(modelFailure))
+        .isEqualTo("at org.testng.reporters.jq.Model.getTestResultName(Model.java:169)");
+    assertThat(outOfMemoryFrameIn(panelFailure))
+        .isEqualTo("at org.testng.reporters.FileStringBuffer.toString(FileStringBuffer.java:140)");
+    // A run that finished says nothing, which is what the assertion above reads as a pass.
+    assertThat(
+            outOfMemoryFrameIn(
+                "Total tests run: 20000" + System.lineSeparator() + "REPORT GENERATED"))
+        .isNull();
+  }
+
+  @Test(description = "A log the child never wrote reads as empty rather than failing the report")
+  public void anAbsentChildLogIsNotAnError() throws IOException {
+    // The timeout path reads the log to say where the child stopped; a child that died before
+    // creating it must not replace "did not finish within 10 minutes" with a FileNotFoundException.
+    File missing = new File(createDirInTempDir("issue1259-absent"), "forked-output.log");
+
+    assertThat(read(missing)).isEmpty();
+  }
+
   private static Fork run(File outputDirectory) throws IOException, InterruptedException {
     List<String> command = new ArrayList<>();
     command.add(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
