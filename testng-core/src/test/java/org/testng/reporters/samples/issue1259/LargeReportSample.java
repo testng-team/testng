@@ -1,4 +1,4 @@
-package org.testng.reporters.issue1259;
+package org.testng.reporters.samples.issue1259;
 
 import java.util.Iterator;
 import java.util.stream.IntStream;

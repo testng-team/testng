@@ -13,6 +13,8 @@ import java.util.regex.Pattern;
 import org.jspecify.annotations.Nullable;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
+import org.testng.reporters.samples.issue1259.JqReportLauncher;
+import org.testng.reporters.samples.issue1259.LargeReportSample;
 import test.SimpleBaseTest;
 
 /**

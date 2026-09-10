@@ -1,4 +1,4 @@
-package org.testng.reporters.issue1259;
+package org.testng.reporters.samples.issue1259;
 
 import java.nio.file.Paths;
 import java.util.Collections;

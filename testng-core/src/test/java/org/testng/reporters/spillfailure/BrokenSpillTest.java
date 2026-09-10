@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.testng.annotations.Test;
-import org.testng.reporters.issue1259.LargeReportSample;
+import org.testng.reporters.samples.issue1259.LargeReportSample;
+import org.testng.reporters.samples.spillfailure.BrokenSpillLauncher;
 import test.SimpleBaseTest;
 
 /**

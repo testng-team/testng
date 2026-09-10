@@ -1,7 +1,8 @@
-package org.testng.reporters.spillfailure;
+package org.testng.reporters.samples.spillfailure;
 
 import java.util.Collections;
 import org.testng.TestNG;
+import org.testng.reporters.samples.issue1259.LargeReportSample;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -21,9 +22,7 @@ public class BrokenSpillLauncher {
     suite.setName("broken-spill");
     XmlTest test = new XmlTest(suite);
     test.setName("broken-spill-test");
-    test.setXmlClasses(
-        Collections.singletonList(
-            new XmlClass("org.testng.reporters.issue1259.LargeReportSample")));
+    test.setXmlClasses(Collections.singletonList(new XmlClass(LargeReportSample.class.getName())));
 
     TestNG testng = new TestNG();
     testng.setUseDefaultListeners(true);
