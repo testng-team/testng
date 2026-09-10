@@ -76,11 +76,20 @@ has_description() {
   local ref=$1
   grep -rlE "\"${ref}([^0-9]|\")" "$root" --include='*.java' 2>/dev/null | while read -r f; do
     awk -v ref="$ref" '
+      # Counts brackets that are syntax. A bracket inside a string literal is text: a description
+      # reading "expected (" would otherwise leave the depth wrong, and a real one look missing.
+      # in_string carries across lines, because a Java string cannot span them but the annotation
+      # can, and this is called once per line.
       function depth_of(t,   i, c, d) {
         d = 0
         for (i = 1; i <= length(t); i++) {
           c = substr(t, i, 1)
-          if (c == "(") d++
+          if (in_string) {
+            if (c == "\\") i++            # an escape hides the next character, quote included
+            else if (c == "\"") in_string = 0
+          }
+          else if (c == "\"") in_string = 1
+          else if (c == "(") d++
           else if (c == ")") d--
         }
         return d
@@ -89,6 +98,7 @@ has_description() {
         return t ~ /description[[:space:]]*=/ && t ~ ("\"" ref "([^0-9]|\")")
       }
       !collecting && /@Test[[:space:]]*\(/ {
+        in_string = 0
         buf = substr($0, index($0, "@Test"))
         depth = depth_of(buf)
         if (depth <= 0) { if (claims(buf)) { found = 1; exit } }
