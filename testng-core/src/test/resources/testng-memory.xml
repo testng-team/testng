@@ -8,6 +8,7 @@
   <test name="Memory">
     <classes>
       <class name="org.testng.reporters.issue1259.JqReportMemoryTest"/>
+      <class name="org.testng.reporters.spillfailure.BrokenSpillTest"/>
     </classes>
   </test>
 </suite>

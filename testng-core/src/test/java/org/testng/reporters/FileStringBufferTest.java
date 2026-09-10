@@ -142,24 +142,51 @@ public class FileStringBufferTest {
     }
   }
 
-  @Test(description = "A flush that fails keeps what it could not write")
-  public void aFailedFlushDoesNotDropWhatTheBufferHeld() throws Exception {
-    // The builder used to be replaced whether or not the write had worked, so the characters it
-    // still held vanished from the middle of the document and nothing was raised.
+  @Test(
+      description =
+          "A spill that fails is raised when the content is asked for, not while appending")
+  public void aFailedSpillIsRaisedOnTheWayOutRatherThanOnTheWayIn() throws Exception {
+    // Appending happens deep inside building a document -- for the JUnit report, inside a listener
+    // TestNG calls bare -- so raising there ends the run at whatever tag happened to overflow.
+    // The buffer records the fault and refuses to hand anything over instead.
     FileStringBuffer buffer = new FileStringBuffer(4);
     buffer.append("AAAAAA");
     buffer.append("BBBBBB");
     File temporary = temporaryFileOf(buffer);
     assertThat(temporary.setReadOnly()).isTrue();
     try {
-      assertThatThrownBy(() -> buffer.append("CCCCCC"))
-          .isInstanceOf(IllegalStateException.class)
-          .hasMessageContaining("flush");
+      buffer.append("CCCCCC");
+      buffer.append("DDDDDD");
     } finally {
       assertThat(temporary.setWritable(true)).isTrue();
     }
 
-    assertThat(buffer.toString()).isEqualTo("AAAAAABBBBBB");
+    assertThatThrownBy(buffer::toString)
+        .as("toString handed back a document with a hole in it")
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("could not be written out");
+    assertThatThrownBy(() -> buffer.toWriter(new StringWriter()))
+        .as("toWriter wrote out a document with a hole in it")
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("could not be written out");
+  }
+
+  @Test(description = "Appending to a buffer whose spill failed does not raise")
+  public void appendingAfterAFailedSpillIsSilent() throws Exception {
+    // The half of the contract the report depends on: every push and pop after the fault has to
+    // return normally, or the listener building the document dies on one of them.
+    FileStringBuffer buffer = new FileStringBuffer(4);
+    buffer.append("AAAAAA");
+    buffer.append("BBBBBB");
+    File temporary = temporaryFileOf(buffer);
+    assertThat(temporary.setReadOnly()).isTrue();
+    try {
+      for (int i = 0; i < 50; i++) {
+        buffer.append("CCCCCC");
+      }
+    } finally {
+      assertThat(temporary.setWritable(true)).isTrue();
+    }
   }
 
   @Test(description = "A buffer whose file is gone says so instead of answering an empty document")

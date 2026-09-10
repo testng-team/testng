@@ -34,6 +34,17 @@ public class FileStringBuffer implements IBuffer {
   private StringBuilder m_sb = new StringBuilder();
   private final int m_maxCharacters;
 
+  /**
+   * What went wrong while spilling, if anything did.
+   *
+   * <p>Recorded rather than raised on the spot. Appending happens deep inside building a document
+   * -- for the JUnit report, inside a listener, which TestNG calls with nothing around it -- so
+   * raising there ends the run at an arbitrary tag. Raising when the buffer is asked for its
+   * content instead puts the failure where the report is produced, and names the report rather than
+   * the tag that happened to overflow.
+   */
+  private @Nullable IOException spillFailure;
+
   public FileStringBuffer() {
     this(MAX);
   }
@@ -58,11 +69,13 @@ public class FileStringBuffer implements IBuffer {
     } else {
       // Big string, add it to the temporary file directly
       flushToFile();
-      try (FileWriter writer =
-          new FileWriter(temporaryFile(), StandardCharsets.UTF_8, true /* append */)) {
-        copy(new StringReader(s.toString()), writer);
+      try {
+        File file = temporaryFile();
+        try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8, true /* append */)) {
+          copy(new StringReader(s.toString()), writer);
+        }
       } catch (IOException e) {
-        throw new IllegalStateException("Could not append to the temporary file of a buffer", e);
+        recordSpillFailure(e);
       }
     }
     return this;
@@ -74,6 +87,7 @@ public class FileStringBuffer implements IBuffer {
       throw new IllegalArgumentException(
           "Writer (Argument 0 of FileStringBuffer#toWriter) should not be null");
     }
+    requireNothingWentWrongSpilling();
     try {
       BufferedWriter bw = new BufferedWriter(fw);
       if (m_file == null) {
@@ -110,17 +124,38 @@ public class FileStringBuffer implements IBuffer {
     if (m_sb.length() == 0) {
       return;
     }
+    if (spillFailure != null) {
+      // Already damaged. Retrying is not safe -- a failed write may have left part of the builder
+      // on disk, so writing it again would duplicate it -- and nothing will read this buffer out
+      // now, so what it still holds is discarded rather than grown without bound.
+      m_sb = new StringBuilder();
+      return;
+    }
 
-    File file = temporaryFile();
-    p("Size " + m_sb.length() + ", flushing to " + file);
-    try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8, true /* append */)) {
-      fw.append(m_sb);
+    try {
+      File file = temporaryFile();
+      p("Size " + m_sb.length() + ", flushing to " + file);
+      try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8, true /* append */)) {
+        fw.append(m_sb);
+      }
     } catch (IOException e) {
-      // The reset below stays out of reach: dropping the builder here loses what the write did
-      // not take, and the buffer then answers a document with a hole in the middle of it.
-      throw new IllegalStateException("Could not flush a buffer to its temporary file", e);
+      recordSpillFailure(e);
     }
     m_sb = new StringBuilder();
+  }
+
+  /** Keeps the first fault: the ones after it are consequences of a buffer already damaged. */
+  private void recordSpillFailure(IOException e) {
+    if (spillFailure == null) {
+      spillFailure = e;
+    }
+  }
+
+  /** Raises here, where the content is asked for, rather than where the spill went wrong. */
+  private void requireNothingWentWrongSpilling() {
+    if (spillFailure != null) {
+      throw new IllegalStateException("A buffer could not be written out", spillFailure);
+    }
   }
 
   /**
@@ -131,16 +166,13 @@ public class FileStringBuffer implements IBuffer {
    * then went straight on to write to the file it had just decided not to create.
    *
    * @return the file this buffer spills to
+   * @throws IOException if it cannot be created, which both callers record rather than raise
    */
-  private File temporaryFile() {
+  private File temporaryFile() throws IOException {
     if (m_file == null) {
-      try {
-        m_file = File.createTempFile("testng", "fileStringBuffer");
-        m_file.deleteOnExit();
-        p("Created temp file " + m_file);
-      } catch (IOException e) {
-        throw new IllegalStateException("Could not create the temporary file of a buffer", e);
-      }
+      m_file = File.createTempFile("testng", "fileStringBuffer");
+      m_file.deleteOnExit();
+      p("Created temp file " + m_file);
     }
     return m_file;
   }
@@ -153,6 +185,7 @@ public class FileStringBuffer implements IBuffer {
 
   @Override
   public String toString() {
+    requireNothingWentWrongSpilling();
     if (m_file == null) {
       return m_sb.toString();
     }

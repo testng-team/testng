@@ -136,8 +136,22 @@ public class JUnitXMLReporter implements IResultListener2 {
     createElementFromIgnoredTests(document, context);
 
     document.pop();
-    Utils.writeUtf8File(
-        context.getOutputDirectory(), generateFileName(context) + ".xml", document.toXML());
+    try {
+      Utils.writeUtf8File(
+          context.getOutputDirectory(), generateFileName(context) + ".xml", document.toXML());
+    } catch (RuntimeException reportFailed) {
+      // This class is a listener, not an IReporter: TestRunner calls onFinish with nothing around
+      // it, where TestNG wraps every IReporter in its own try/catch. So anything raised here ends
+      // the whole run, and no other report is written either. A listener handles its own faults;
+      // this one loses its file and says so.
+      //
+      // Printed rather than logged: org.testng.log4testng.Logger writes nothing until it is
+      // configured, so a logged failure here would be the silence this reporting path was just
+      // taken out of. This is the shape TestNG.generateReports already uses for a reporter that
+      // throws.
+      System.err.println("[TestNG] JUnit XML report for " + context.getName() + " failed");
+      reportFailed.printStackTrace(System.err);
+    }
   }
 
   static String formattedTime() {
