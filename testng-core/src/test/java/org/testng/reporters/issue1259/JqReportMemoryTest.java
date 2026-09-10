@@ -69,7 +69,8 @@ public class JqReportMemoryTest extends SimpleBaseTest {
           .contains("Total tests run: " + ROWS);
       // Named rather than "an OutOfMemoryError happened": the Model this reporter builds first is
       // GITHUB-1979 and out of scope here, it also fails after the summary is printed, and it
-      // would otherwise send a maintainer to the streaming panels for someone else's defect.
+      // would otherwise send a maintainer to the streaming panels for a defect that is not this
+      // one.
       assertThat(outOfMemoryFrameIn(fork.output))
           .as("report generation ran out of heap%s", fork.tail())
           .isNull();
@@ -97,15 +98,27 @@ public class JqReportMemoryTest extends SimpleBaseTest {
   public void theOutOfMemoryFrameNamesWhereTheChildDied() {
     // What this distinguishes: the Model this reporter builds first is GITHUB-1979 and out of
     // scope here, and it fails after the summary is printed, so "an OutOfMemoryError happened"
-    // sent a maintainer to the streaming panels for someone else's defect.
-    String modelFailure =
+    // sent a maintainer to the streaming panels for a defect that is not this one.
+    // Both recorded from a real child at -Xmx24m. Which frame allocated last varies between runs,
+    // and only one of the two goes through org.testng.internal.reporters at all.
+    String modelViaStringBuilder =
         String.join(
             System.lineSeparator(),
             "Total tests run: 20000",
             "Exception in thread \"main\" java.lang.OutOfMemoryError: Java heap space",
-            "\tat java.base/java.util.Arrays.copyOf(Arrays.java:3745)",
-            "\tat org.testng.reporters.jq.Model.getTestResultName(Model.java:169)",
-            "\tat org.testng.reporters.jq.Main.generateReport(Main.java:51)");
+            "\tat java.base/java.lang.StringBuilder.toString(StringBuilder.java:478)",
+            "\tat org.testng.reporters.jq.Model.getTestResultName(Model.java:176)",
+            "\tat org.testng.reporters.jq.Model.init(Model.java:63)");
+    String modelViaSnapshots =
+        String.join(
+            System.lineSeparator(),
+            "Total tests run: 20000",
+            "Exception in thread \"main\" java.lang.OutOfMemoryError: Java heap space",
+            "\tat java.base/java.util.stream.ReferencePipeline.map(ReferencePipeline.java:207)",
+            "\tat org.testng.internal.reporters.ParameterSnapshot.plainValues(ParameterSnapshot.java:105)",
+            "\tat org.testng.internal.reporters.ParameterSnapshots.reportedPlainValuesOf(ParameterSnapshots.java:270)",
+            "\tat org.testng.reporters.jq.Model.getTestResultName(Model.java:167)",
+            "\tat org.testng.reporters.jq.Model.init(Model.java:63)");
     String panelFailure =
         String.join(
             System.lineSeparator(),
@@ -113,8 +126,11 @@ public class JqReportMemoryTest extends SimpleBaseTest {
             "\tat org.testng.reporters.FileStringBuffer.toString(FileStringBuffer.java:140)",
             "\tat org.testng.reporters.jq.NavigatorPanel.generateMethodList(NavigatorPanel.java:286)");
 
-    assertThat(outOfMemoryFrameIn(modelFailure))
-        .isEqualTo("at org.testng.reporters.jq.Model.getTestResultName(Model.java:169)");
+    // Both name Model, which is the word that ties the failure to GITHUB-1979 rather than here.
+    assertThat(outOfMemoryFrameIn(modelViaStringBuilder))
+        .isEqualTo("at org.testng.reporters.jq.Model.getTestResultName(Model.java:176)");
+    assertThat(outOfMemoryFrameIn(modelViaSnapshots))
+        .isEqualTo("at org.testng.reporters.jq.Model.getTestResultName(Model.java:167)");
     assertThat(outOfMemoryFrameIn(panelFailure))
         .isEqualTo("at org.testng.reporters.FileStringBuffer.toString(FileStringBuffer.java:140)");
     // A run that finished says nothing, which is what the assertion above reads as a pass.
@@ -140,7 +156,11 @@ public class JqReportMemoryTest extends SimpleBaseTest {
     command.add("-D" + LargeReportSample.ROWS_PROPERTY + "=" + ROWS);
     command.add("-D" + JqReportLauncher.SUITE_NAME_LENGTH_PROPERTY + "=" + SUITE_NAME_LENGTH);
     // Explicit, so the log this test reads back does not depend on the child's platform default.
+    // Three spellings because no one of them covers every JDK the matrix runs: file.encoding drove
+    // System.out until 18, stdout.encoding exists from 19, and sun.stdout.encoding bridges them.
     command.add("-Dfile.encoding=UTF-8");
+    command.add("-Dstdout.encoding=UTF-8");
+    command.add("-Dsun.stdout.encoding=UTF-8");
     command.add("-cp");
     command.add(System.getProperty("java.class.path"));
     command.add(JqReportLauncher.class.getName());
@@ -178,8 +198,12 @@ public class JqReportMemoryTest extends SimpleBaseTest {
   }
 
   /**
-   * @return the first {@code OutOfMemoryError} frame under {@code org.testng}, or null if the child
-   *     did not run out of heap.
+   * @return the first {@code OutOfMemoryError} frame under {@code org.testng.reporters}, or null if
+   *     the child did not run out of heap.
+   *     <p>Not {@code org.testng}: which frame allocated last is not stable -- the same run dies at
+   *     {@code StringBuilder.toString} or inside {@code org.testng.internal.reporters} depending on
+   *     what tips the heap -- and neither of those names a reporter. Skipping to {@code
+   *     org.testng.reporters} answers the model or the panel, whichever it was.
    */
   private static @Nullable String outOfMemoryFrameIn(String output) {
     int oom = output.indexOf("OutOfMemoryError");
@@ -189,9 +213,9 @@ public class JqReportMemoryTest extends SimpleBaseTest {
     return LINES
         .splitAsStream(output.substring(oom))
         .map(String::trim)
-        .filter(line -> line.startsWith("at org.testng."))
+        .filter(line -> line.startsWith("at org.testng.reporters."))
         .findFirst()
-        .orElse("OutOfMemoryError with no org.testng frame");
+        .orElse("OutOfMemoryError with no org.testng.reporters frame");
   }
 
   /** The child's output, for a failure message: it is the only record of where it died. */

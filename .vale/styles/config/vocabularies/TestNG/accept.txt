@@ -127,8 +127,8 @@ charset
 cla
 classListeners
 classloader
-classname
 className
+classname
 classpath
 clazz
 cli
@@ -161,6 +161,7 @@ dereference
 dereferences
 dereferencing
 deserialize
+destroyForcibly
 desynchronize
 doctype
 docType
@@ -386,14 +387,14 @@ suiteRunners
 suiteXml
 superset
 tagName
-tearDown
 teardown
+tearDown
 testcase
 testClass
 testClasses
 testConstructor
-testcontext
 testContext
+testcontext
 testInstances
 testMethod
 testMethods
@@ -401,8 +402,8 @@ testName
 testNames
 testnames
 testng
-testNGMethod
 testngMethod
+testNGMethod
 testResult
 testsuite
 testsuites

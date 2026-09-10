@@ -5,8 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -89,6 +91,23 @@ public class XmlCharFilteringWriterTest {
     assertThatThrownBy(() -> writer.write("a".toCharArray(), 0, 1))
         .isInstanceOf(IOException.class)
         .hasMessageContaining("closed");
+  }
+
+  @Test(description = "A slice stays in the buffer rather than opening its temporary file")
+  public void aSliceIsSmallEnoughToStayInTheInMemoryBuilder() throws Exception {
+    // FileStringBuffer.append sends a string of MAX characters or more straight to the file. A
+    // slice at that size would open it once per drain, which is what SLICE has to stay under --
+    // MAX is private in that class, so nothing but this holds the two numbers together.
+    FileStringBuffer buffer = new FileStringBuffer();
+    buffer.append("a".repeat(XmlCharFilteringWriter.SLICE));
+
+    assertThat(spillFileOf(buffer)).as("a single slice already spilled to disk").isNull();
+  }
+
+  private static @Nullable Object spillFileOf(FileStringBuffer buffer) throws Exception {
+    Field field = FileStringBuffer.class.getDeclaredField("m_file");
+    field.setAccessible(true);
+    return field.get(buffer);
   }
 
   /** A run of text with a surrogate pair straddling the writer's slice size. */

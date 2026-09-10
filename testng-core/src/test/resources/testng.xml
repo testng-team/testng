@@ -801,6 +801,10 @@
       <class name="org.testng.reporters.jq.BaseMultiSuitePanelTest" />
       <class name="org.testng.reporters.XmlCharFilteringWriterTest" />
       <class name="org.testng.reporters.FileStringBufferTest" />
+      <!-- Forks a child JVM with a 48m heap. testng-core hands this whole suite to every Gradle
+           fork, so it runs once per fork: about 3 seconds and 121 MB of temporary files each,
+           concurrent rather than sequential. Kept in the shared suite deliberately; give it its
+           own single-fork task if that concurrent disk ever becomes the problem. -->
       <class name="org.testng.reporters.issue1259.JqReportMemoryTest" />
       <class name="org.testng.internal.reporters.ParameterValueTest" />
       <class name="org.testng.internal.reporters.ParameterSnapshotsTest" />

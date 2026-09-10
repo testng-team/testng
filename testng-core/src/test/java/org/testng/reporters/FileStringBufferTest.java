@@ -109,7 +109,12 @@ public class FileStringBufferTest {
         Arrays.asList(
             System.getProperty("java.home") + File.separator + "bin" + File.separator + "java",
             "-Dfile.encoding=" + encoding,
+            // Both spellings: stdout.encoding only exists from JDK 19, and before it System.out
+            // follows file.encoding -- which this test sets to a charset that cannot hold what the
+            // child prints back, so the assertion would fail on the way home rather than in the
+            // spill file it is about.
             "-Dstdout.encoding=UTF-8",
+            "-Dsun.stdout.encoding=UTF-8",
             "-cp",
             System.getProperty("java.class.path"),
             SpillProbe.class.getName());

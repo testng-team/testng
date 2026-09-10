@@ -26,10 +26,13 @@ class XmlCharFilteringWriter extends Writer {
   /**
    * How much is accumulated before being handed to the buffer.
    *
-   * <p>It matches {@code BufferedWriter}'s own buffer, which is what wraps this writer on the way
-   * in, so a slice arrives in one {@code write} call rather than being reassembled from several.
-   * Package-private so the tests can put a surrogate pair on this boundary rather than on a copy of
-   * the number.
+   * <p>What constrains it is the other end: {@code FileStringBuffer.append} sends a string of
+   * {@code MAX} characters or more straight to the temporary file instead of its in-memory builder,
+   * so a slice at or above that size would open the file once per drain. The value itself is not
+   * otherwise load-bearing -- this writer is handed 100 000 character calls when the source has
+   * spilled and 8192 character ones when it has not, so a slice is carved out of a write as often
+   * as it matches one. Package-private so the tests can hold it to that constraint, and put a
+   * surrogate pair on this boundary rather than on a copy of the number.
    */
   static final int SLICE = 8192;
 
