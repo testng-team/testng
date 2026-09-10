@@ -58,10 +58,14 @@ public class TimesPanel extends BaseMultiSuitePanel {
             + ");\n");
 
     int index = 0;
+    long total = 0;
+    // One builder, reused: a row is about 160 characters, so a fresh default-capacity one grows
+    // through four array copies before it fits.
+    StringBuilder row = new StringBuilder(256);
     for (ITestResult tr : allTestResults) {
       ITestNGMethod m = tr.getMethod();
       long time = tr.getEndMillis() - tr.getStartMillis();
-      StringBuilder row = new StringBuilder();
+      row.setLength(0);
       row.append("data.setCell(")
           .append(index)
           .append(", 0, ")
@@ -82,13 +86,15 @@ public class TimesPanel extends BaseMultiSuitePanel {
           .append(", 3, ")
           .append(time)
           .append(");\n");
-      Long total = m_totalTime.get(suite.getName());
-      if (total == null) {
-        total = 0L;
-      }
-      m_totalTime.put(suite.getName(), total + time);
+      total += time;
       xsb.addString(row.toString());
       index++;
+    }
+    if (!allTestResults.isEmpty()) {
+      // Assigned rather than added to: getContent is public and this method used to add each
+      // duration again on every call, so a second call reported twice the suite's running time.
+      // A suite that started nothing still records nothing, which is what maxTime reads as zero.
+      m_totalTime.put(suite.getName(), total);
     }
 
     xsb.addString(

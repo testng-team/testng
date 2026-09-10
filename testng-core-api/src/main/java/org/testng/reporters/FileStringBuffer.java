@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 import org.testng.log4testng.Logger;
 
@@ -58,10 +58,11 @@ public class FileStringBuffer implements IBuffer {
     } else {
       // Big string, add it to the temporary file directly
       flushToFile();
-      try (FileWriter writer = new FileWriter(temporaryFile(), true /* append */)) {
+      try (FileWriter writer =
+          new FileWriter(temporaryFile(), StandardCharsets.UTF_8, true /* append */)) {
         copy(new StringReader(s.toString()), writer);
       } catch (IOException e) {
-        LOGGER.error(e.getMessage(), e);
+        throw new IllegalStateException("Could not append to the temporary file of a buffer", e);
       }
     }
     return this;
@@ -80,13 +81,15 @@ public class FileStringBuffer implements IBuffer {
         bw.close();
       } else {
         flushToFile();
-        try (FileReader reader = new FileReader(m_file)) {
+        try (FileReader reader = new FileReader(m_file, StandardCharsets.UTF_8)) {
           copy(reader, bw);
         }
         bw.flush();
       }
     } catch (IOException e) {
-      LOGGER.error(e.getMessage(), e);
+      // Not logged and swallowed: the caller would receive a document silently missing everything
+      // this buffer held, which is what toString() has always refused to do.
+      throw new IllegalStateException("The temporary file of a buffer could not be read back", e);
     }
   }
 
@@ -108,10 +111,12 @@ public class FileStringBuffer implements IBuffer {
 
     File file = temporaryFile();
     p("Size " + m_sb.length() + ", flushing to " + file);
-    try (FileWriter fw = new FileWriter(file, true /* append */)) {
+    try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8, true /* append */)) {
       fw.append(m_sb);
     } catch (IOException e) {
-      LOGGER.error(e.getMessage(), e);
+      // The reset below stays out of reach: dropping the builder here loses what the write did
+      // not take, and the buffer then answers a document with a hole in the middle of it.
+      throw new IllegalStateException("Could not flush a buffer to its temporary file", e);
     }
     m_sb = new StringBuilder();
   }
@@ -146,20 +151,16 @@ public class FileStringBuffer implements IBuffer {
 
   @Override
   public String toString() {
-    String result = null;
-    if (m_file != null) {
-      flushToFile();
-      try {
-        result = new String(Files.readAllBytes(m_file.toPath()));
-      } catch (IOException e) {
-        LOGGER.error(e.getMessage(), e);
-      }
-    } else {
-      result = m_sb.toString();
+    if (m_file == null) {
+      return m_sb.toString();
     }
-    // Only null when reading the temporary file back failed. Both in-tree callers
-    // (XMLStringBuffer.setXmlDetails and toXML) dereference the result immediately, so the
-    // NullPointerException was already theirs; this raises it one frame earlier and names it.
-    return Objects.requireNonNull(result, "The temporary file could not be read back");
+    flushToFile();
+    try {
+      return new String(Files.readAllBytes(m_file.toPath()), StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      // Named rather than logged and answered as null: every caller dereferences the result
+      // immediately, so the alternative is a NullPointerException one frame further away.
+      throw new IllegalStateException("The temporary file of a buffer could not be read back", e);
+    }
   }
 }

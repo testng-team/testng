@@ -22,8 +22,12 @@ public abstract class BaseMultiSuitePanel extends BasePanel implements INavigato
    *     the {@link XMLStringBuffer#toXML()} of a buffer backed by a temporary file, and what
    *     GITHUB-2334 ran out of heap doing. {@link #generate} streams the buffer instead. The seven
    *     panels declared this method public before they had one to stream, so it stays.
+   *     <p>Final because {@link #generate} no longer calls it: an override outside this package
+   *     used to decide what the panel emitted and would now be skipped without a word. Overriding
+   *     {@link #writeContent} is what replaces it, and it is package-private, so such a subclass
+   *     has to be reported rather than left compiling against nothing.
    */
-  public String getContent(ISuite suite, XMLStringBuffer xsb) {
+  public final String getContent(ISuite suite, XMLStringBuffer xsb) {
     return contentOf(suite, xsb).toXML();
   }
 

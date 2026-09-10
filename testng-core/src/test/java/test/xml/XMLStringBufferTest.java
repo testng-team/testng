@@ -58,7 +58,10 @@ public class XMLStringBufferTest {
     materialized.addString(materializedContent);
     materialized.pop("root");
 
-    assertThat(streamed.toXML()).isEqualTo(materialized.toXML());
+    // Read raw, not through toXML(): that is the filter under test, and running it over both
+    // sides let a writer that passed an illegal character through still match -- while the report
+    // itself is written by toWriter, which does not filter.
+    assertThat(streamed.getStringBuffer().toString()).isEqualTo(materialized.toXML());
     // And the content really did cross the threshold, so this was the streaming path.
     assertThat(materializedContent.length()).isGreaterThan(100_000);
   }

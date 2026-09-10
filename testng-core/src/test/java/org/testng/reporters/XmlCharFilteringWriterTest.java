@@ -1,7 +1,9 @@
 package org.testng.reporters;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +47,7 @@ public class XmlCharFilteringWriterTest {
   }
 
   @Test(dataProvider = "contents")
-  public void whatIsWrittenIsWhatToXmlKeeps(String description, String content) {
+  public void whatIsWrittenIsWhatToXmlKeeps(String description, String content) throws IOException {
     // Every chunking around the writer's own slice size, so a pair straddles a write() call.
     int slice = XmlCharFilteringWriter.SLICE;
     for (int chunk : new int[] {1, 2, 3, slice - 1, slice, slice + 1, WHOLE}) {
@@ -58,7 +60,7 @@ public class XmlCharFilteringWriterTest {
   @Test(
       description =
           "GITHUB-1259: no slice ends between the halves of a surrogate pair, at any alignment")
-  public void aSurrogatePairIsNeverSplitAcrossTwoSlices() {
+  public void aSurrogatePairIsNeverSplitAcrossTwoSlices() throws IOException {
     // The buffer this writes into may spill to a temporary file, and FileStringBuffer encodes each
     // append on its own -- so a slice ending on a high surrogate reaches the file as '?', and the
     // low surrogate opening the next one as a second '?'. It took a CRLF line separator to shift
@@ -77,6 +79,16 @@ public class XmlCharFilteringWriterTest {
             .isFalse();
       }
     }
+  }
+
+  @Test(description = "A closed writer refuses to write, as Writer#close requires")
+  public void writingAfterCloseIsRefused() throws IOException {
+    XmlCharFilteringWriter writer = new XmlCharFilteringWriter(new RecordingBuffer());
+    writer.close();
+
+    assertThatThrownBy(() -> writer.write("a".toCharArray(), 0, 1))
+        .isInstanceOf(IOException.class)
+        .hasMessageContaining("closed");
   }
 
   /** A run of text with a surrogate pair straddling the writer's slice size. */
@@ -106,7 +118,7 @@ public class XmlCharFilteringWriterTest {
     return xsb.toXML();
   }
 
-  private static String filtered(String content, int chunk) {
+  private static String filtered(String content, int chunk) throws IOException {
     IBuffer buffer = Buffer.create();
     XmlCharFilteringWriter writer = new XmlCharFilteringWriter(buffer);
     char[] characters = content.toCharArray();

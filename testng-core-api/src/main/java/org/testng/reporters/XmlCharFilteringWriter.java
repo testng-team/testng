@@ -1,5 +1,6 @@
 package org.testng.reporters;
 
+import java.io.IOException;
 import java.io.Writer;
 
 /**
@@ -16,18 +17,19 @@ import java.io.Writer;
  * whole of U+10000..U+10FFFF is allowed -- while a surrogate that is not part of a pair is a
  * character of its own and an illegal one. A pair can therefore straddle two {@code write} calls,
  * and a high surrogate is held back until the next call says whether it opened a pair or stood
- * alone. {@link #flush()} does not resolve it, for the same reason; {@link #close()} does, and
- * drops it.
+ * alone. {@link #flush()} does not resolve it, for the same reason; {@link #close()} drops it and
+ * refuses any further write, so a surrogate held at the end of one stream can never pair with a low
+ * surrogate from the next.
  */
 class XmlCharFilteringWriter extends Writer {
 
   /**
    * How much is accumulated before being handed to the buffer.
    *
-   * <p>It has to stay below {@code FileStringBuffer.MAX}, which is where that class stops adding to
-   * its in-memory builder and opens the temporary file for the one append instead: a slice at or
-   * above it would cost two file opens each. Package-private so the tests can put a surrogate pair
-   * on this boundary rather than on a copy of the number.
+   * <p>It matches {@code BufferedWriter}'s own buffer, which is what wraps this writer on the way
+   * in, so a slice arrives in one {@code write} call rather than being reassembled from several.
+   * Package-private so the tests can put a surrogate pair on this boundary rather than on a copy of
+   * the number.
    */
   static final int SLICE = 8192;
 
@@ -41,12 +43,17 @@ class XmlCharFilteringWriter extends Writer {
    */
   private char pendingHighSurrogate;
 
+  private boolean closed;
+
   XmlCharFilteringWriter(IBuffer buffer) {
     this.buffer = buffer;
   }
 
   @Override
-  public void write(char[] characters, int offset, int length) {
+  public void write(char[] characters, int offset, int length) throws IOException {
+    if (closed) {
+      throw new IOException("This writer is closed");
+    }
     for (int i = offset; i < offset + length; i++) {
       char c = characters[i];
       if (pendingHighSurrogate != 0) {
@@ -104,6 +111,11 @@ class XmlCharFilteringWriter extends Writer {
 
   @Override
   public void close() {
+    // What is still held back never became a pair, so it never was a character. Dropped here
+    // rather than left in place: the writer would otherwise carry it into whatever is written
+    // next and pair it with a low surrogate from a different stream.
+    pendingHighSurrogate = 0;
+    closed = true;
     drain();
   }
 }

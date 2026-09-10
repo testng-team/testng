@@ -9,6 +9,9 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+import org.jspecify.annotations.Nullable;
+import org.testng.Reporter;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
@@ -51,6 +54,8 @@ public class JqReportMemoryTest extends SimpleBaseTest {
 
   private static final int TIMEOUT_MINUTES = 10;
 
+  private static final Pattern LINES = Pattern.compile("\\R");
+
   @Test(description = "GITHUB-1259, GITHUB-2334")
   public void aReportLargerThanTheHeapIsGeneratedWithoutExhaustingIt() throws Exception {
     File outputDirectory = createDirInTempDir("issue1259");
@@ -60,20 +65,31 @@ public class JqReportMemoryTest extends SimpleBaseTest {
       // The run itself is not what is being measured, so it has to have finished. Both issues
       // report their OutOfMemoryError under a summary saying every test passed.
       assertThat(fork.output)
-          .as("the run itself did not finish, so nothing here is about the report")
+          .as("the run itself did not finish, so nothing here is about the report%s", fork.tail())
           .contains("Total tests run: " + ROWS);
+      // Named rather than "an OutOfMemoryError happened": the Model this reporter builds first is
+      // GITHUB-1979 and out of scope here, it also fails after the summary is printed, and it
+      // would otherwise send a maintainer to the streaming panels for someone else's defect.
+      assertThat(outOfMemoryFrameIn(fork.output))
+          .as("report generation ran out of heap%s", fork.tail())
+          .isNull();
       assertThat(fork.output)
-          .as("the report generation ran out of heap")
-          .doesNotContain("OutOfMemoryError");
-      assertThat(fork.output).contains("REPORT GENERATED");
-      assertThat(fork.exitCode).isZero();
+          .as("the report was not written%s", fork.tail())
+          .contains("REPORT GENERATED");
+      assertThat(fork.exitCode).as("the forked run failed%s", fork.tail()).isZero();
 
       // And the page really is one the heap could not have held a copy of.
       File page = new File(outputDirectory, "index.html");
       assertThat(page).exists();
       assertThat(page.length()).isGreaterThan(SMALLEST_EXPECTED_REPORT);
     } finally {
-      deleteDir(outputDirectory);
+      // Best effort: a directory that will not delete -- Windows still holding the 39 MB page --
+      // must not replace the failure above with an IOException about a temporary directory.
+      try {
+        deleteDir(outputDirectory);
+      } catch (Exception cleanup) {
+        Reporter.log("Could not delete " + outputDirectory + ": " + cleanup, true);
+      }
     }
   }
 
@@ -83,6 +99,8 @@ public class JqReportMemoryTest extends SimpleBaseTest {
     command.add(HEAP);
     command.add("-D" + LargeReportSample.ROWS_PROPERTY + "=" + ROWS);
     command.add("-D" + JqReportLauncher.SUITE_NAME_LENGTH_PROPERTY + "=" + SUITE_NAME_LENGTH);
+    // Explicit, so the log this test reads back does not depend on the child's platform default.
+    command.add("-Dfile.encoding=UTF-8");
     command.add("-cp");
     command.add(System.getProperty("java.class.path"));
     command.add(JqReportLauncher.class.getName());
@@ -100,15 +118,54 @@ public class JqReportMemoryTest extends SimpleBaseTest {
       // open inside it, that deletion fails on Windows.
       process.destroyForcibly().waitFor();
       throw new AssertionError(
-          "The forked report generation did not finish within " + TIMEOUT_MINUTES + " minutes");
+          "The forked report generation did not finish within "
+              + TIMEOUT_MINUTES
+              + " minutes"
+              + tailOf(read(log)));
     }
-    return new Fork(
-        process.exitValue(), new String(Files.readAllBytes(log.toPath()), StandardCharsets.UTF_8));
+    return new Fork(process.exitValue(), read(log));
+  }
+
+  /**
+   * @return the child's output, decoded as it was written -- the child is given an explicit UTF-8
+   *     so this does not depend on the platform default charset on either side.
+   */
+  private static String read(File log) throws IOException {
+    if (!log.isFile()) {
+      return "";
+    }
+    return new String(Files.readAllBytes(log.toPath()), StandardCharsets.UTF_8);
+  }
+
+  /**
+   * @return the first {@code OutOfMemoryError} frame under {@code org.testng}, or null if the child
+   *     did not run out of heap.
+   */
+  private static @Nullable String outOfMemoryFrameIn(String output) {
+    int oom = output.indexOf("OutOfMemoryError");
+    if (oom < 0) {
+      return null;
+    }
+    return LINES
+        .splitAsStream(output.substring(oom))
+        .map(String::trim)
+        .filter(line -> line.startsWith("at org.testng."))
+        .findFirst()
+        .orElse("OutOfMemoryError with no org.testng frame");
+  }
+
+  /** The child's output, for a failure message: it is the only record of where it died. */
+  private static String tailOf(String output) {
+    return System.lineSeparator() + "--- forked output ---" + System.lineSeparator() + output;
   }
 
   private static final class Fork {
     private final int exitCode;
     private final String output;
+
+    String tail() {
+      return tailOf(output);
+    }
 
     private Fork(int exitCode, String output) {
       this.exitCode = exitCode;

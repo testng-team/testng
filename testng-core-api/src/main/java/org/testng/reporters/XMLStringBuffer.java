@@ -326,7 +326,11 @@ public class XMLStringBuffer {
           "[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
 
   /**
-   * Appends the XML of another buffer to this one, without ever holding it whole in memory.
+   * Appends the XML of another buffer to this one, a slice at a time once it has spilled to disk.
+   *
+   * <p>A buffer that never reached that size is still held whole, since that is where it already
+   * is; what this avoids is reading a spilled one back into a single {@code String}, which is what
+   * a buffer backed by a temporary file exists not to do.
    *
    * <p>This is {@code addString(other.toXML())} with the {@code String} taken out of the middle:
    * {@link XmlCharFilteringWriter} drops the same characters a slice at a time, where {@link
