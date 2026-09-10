@@ -90,6 +90,12 @@ public final class Utils {
           w.append(prefix);
         }
         xsb.toWriter(w);
+      } catch (RuntimeException writingOut) {
+        // What reached the file is the prefix and whatever the buffer managed before it gave up,
+        // which for index.html is a page header and no body. Removing it leaves no report rather
+        // than one that opens and says nothing about why it is empty.
+        boolean ignored = file.delete();
+        throw writingOut;
       }
     } catch (IOException ex) {
       LOG.error(ex.getMessage(), ex);

@@ -108,7 +108,10 @@ class XmlCharFilteringWriter extends Writer {
   }
 
   @Override
-  public void flush() {
+  public void flush() throws IOException {
+    if (closed) {
+      throw new IOException("This writer is closed");
+    }
     drain();
   }
 

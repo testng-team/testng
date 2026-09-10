@@ -93,6 +93,17 @@ public class XmlCharFilteringWriterTest {
         .hasMessageContaining("closed");
   }
 
+  @Test(description = "A closed writer refuses to flush, as it already refuses to write")
+  public void flushingAfterCloseIsRefused() throws IOException {
+    // write and flush are two halves of one contract; only write was refusing.
+    XmlCharFilteringWriter writer = new XmlCharFilteringWriter(new RecordingBuffer());
+    writer.close();
+
+    assertThatThrownBy(writer::flush)
+        .isInstanceOf(IOException.class)
+        .hasMessageContaining("closed");
+  }
+
   @Test(description = "A slice stays in the buffer rather than opening its temporary file")
   public void aSliceIsSmallEnoughToStayInTheInMemoryBuilder() throws Exception {
     // FileStringBuffer.append sends a string of MAX characters or more straight to the file. A

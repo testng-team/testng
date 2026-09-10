@@ -88,8 +88,10 @@ public class FileStringBuffer implements IBuffer {
       }
     } catch (IOException e) {
       // Not logged and swallowed: the caller would receive a document silently missing everything
-      // this buffer held, which is what toString() has always refused to do.
-      throw new IllegalStateException("The temporary file of a buffer could not be read back", e);
+      // this buffer held, which is what toString() has always refused to do. The wording covers
+      // both branches above -- a buffer that never spilled has no temporary file, and the fault
+      // there is the destination, which is the likelier one while index.html is being written.
+      throw new IllegalStateException("A buffer could not be written out", e);
     }
   }
 

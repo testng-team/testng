@@ -3,11 +3,16 @@ package org.testng.internal;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.internal.Utils.join;
 
+import java.io.File;
+import java.io.Writer;
+import java.nio.file.Files;
 import java.util.List;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.reporters.XMLStringBuffer;
 
 /**
  * Unit tests for {@link Utils}.
@@ -23,6 +28,39 @@ public class UtilsTest {
     assertThat(Utils.escapeUnicode("test")).isEqualTo("test");
     assertThat(Utils.escapeUnicode(String.valueOf(INVALID_CHAR)))
         .isEqualTo(String.valueOf(REPLACEMENT_CHAR));
+  }
+
+  @Test(description = "A report that failed part way leaves no file, not a plausible one")
+  public void aBufferThatGivesUpPartWayLeavesNoFileBehind() throws Exception {
+    // The prefix is written before the buffer, so a buffer that raises leaves a page header and no
+    // body -- 40 bytes that open as a report and say nothing about why they are empty.
+    XMLStringBuffer panel = new XMLStringBuffer("");
+    panel.addString("<body>never written</body>");
+    File directory = Files.createTempDirectory("utils-writeutf8").toFile();
+    directory.deleteOnExit();
+
+    assertThatThrownBy(
+            () ->
+                Utils.writeUtf8File(
+                    directory.getAbsolutePath(),
+                    "index.html",
+                    new FailingBuffer(panel),
+                    "<html><head><title>report</title></head>"))
+        .isInstanceOf(IllegalStateException.class);
+
+    assertThat(new File(directory, "index.html")).doesNotExist();
+  }
+
+  /** Raises where a buffer whose temporary file has gone raises, which is on the way out. */
+  private static final class FailingBuffer extends XMLStringBuffer {
+    FailingBuffer(XMLStringBuffer content) {
+      super(content.getStringBuffer(), "");
+    }
+
+    @Override
+    public void toWriter(Writer fw) {
+      throw new IllegalStateException("A buffer could not be written out");
+    }
   }
 
   @Test

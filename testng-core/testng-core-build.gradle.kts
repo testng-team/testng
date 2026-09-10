@@ -62,6 +62,26 @@ tasks.test {
     }
 }
 
+// A test that forks a child JVM with a heap of its own cannot live in testng.xml: that suite is
+// handed to every Gradle fork, so the class would run once per fork and start as many children at
+// once. This task runs the forking suite on its own, one fork at a time.
+val memoryTest by
+    tasks.registering(Test::class) {
+        description = "Runs the tests that fork a child JVM, one at a time."
+        group = LifecycleBasePlugin.VERIFICATION_GROUP
+        testClassesDirs = sourceSets.test.get().output.classesDirs
+        classpath = sourceSets.test.get().runtimeClasspath
+        maxParallelForks = 1
+        useTestNG {
+            suites("src/test/resources/testng-memory.xml")
+            maxHeapSize = "1500m"
+        }
+    }
+
+tasks.check {
+    dependsOn(memoryTest)
+}
+
 // <editor-fold defaultstate="collapsed" desc="Bundle jQuery from the webjar">
 // The HTML reporter serves jQuery from its own resources so reports work offline. Extract it from
 // the webjar at build time rather than checking the minified file in: the version then lives in a

@@ -5,8 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -170,7 +172,7 @@ public class FileStringBufferTest {
 
     assertThatThrownBy(() -> buffer.toWriter(new StringWriter()))
         .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("read back");
+        .hasMessageContaining("could not be written out");
   }
 
   /** The spill file, which no accessor exposes: these two tests are about what happens to it. */
@@ -178,6 +180,34 @@ public class FileStringBufferTest {
     Field field = FileStringBuffer.class.getDeclaredField("m_file");
     field.setAccessible(true);
     return (File) Objects.requireNonNull(field.get(buffer), "the buffer has not spilled");
+  }
+
+  @Test(description = "The failure names what failed, on a buffer that has no temporary file")
+  public void aBufferThatNeverSpilledBlamesTheDestination() {
+    // One catch covers both branches of toWriter, and it used to say the temporary file could not
+    // be read back -- on a buffer that has no temporary file, when it was the destination that
+    // broke. A full disk while index.html is being written is the likelier of the two.
+    FileStringBuffer buffer = new FileStringBuffer();
+    buffer.append("short, so nothing ever spilled");
+
+    assertThatThrownBy(() -> buffer.toWriter(new BrokenWriter()))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageNotContaining("temporary file")
+        .hasRootCauseMessage("the destination is broken");
+  }
+
+  /** A destination that fails the way a full disk does. */
+  private static final class BrokenWriter extends Writer {
+    @Override
+    public void write(char[] characters, int offset, int length) throws IOException {
+      throw new IOException("the destination is broken");
+    }
+
+    @Override
+    public void flush() {}
+
+    @Override
+    public void close() {}
   }
 
   // The package this test now sits in is @NullMarked, and passing null is the point of the test.
