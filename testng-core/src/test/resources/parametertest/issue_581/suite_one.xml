@@ -2,7 +2,7 @@
 <suite name="suite_one">
   <test name="test_one">
     <classes>
-      <class name="test.parameters.issue581.TestClassSample"/>
+      <class name="org.testng.parameters.samples.issue581.TestClassSample"/>
     </classes>
   </test>
 </suite>

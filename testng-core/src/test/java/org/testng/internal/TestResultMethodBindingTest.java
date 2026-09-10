@@ -16,8 +16,9 @@ public class TestResultMethodBindingTest {
    * In memory friendly mode a reported result holds a {@link LiteWeightTestNGMethod} snapshot, but
    * the parameter carrier must hold the live method: a configuration method that declares an {@link
    * org.testng.ITestResult} parameter is handed that carrier and reaches through it to mutate the
-   * method -- {@code test.parameters.Issue1061Sample} sets the timeout that way, and the invoker
-   * reads it back off the scheduled method. Writing it to a snapshot would lose it in silence.
+   * method -- {@code org.testng.parameters.samples.Issue1061Sample} sets the timeout that way, and
+   * the invoker reads it back off the scheduled method. Writing it to a snapshot would lose it in
+   * silence.
    */
   @Test
   public void theParameterCarrierHoldsTheLiveMethodInMemoryFriendlyMode() {

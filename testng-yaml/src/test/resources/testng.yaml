@@ -11,15 +11,15 @@ tests:
     excludedGroups: [ excludeThisGroup ]
     metaGroups: { evenodd: [ even, odd ]  }
     classes:
-      - test.parameters.ParameterSample
-      - test.parameters.ParameterTest
+      - org.testng.parameters.ParameterSample
+      - org.testng.parameters.ParameterTest
       - test.Test1
       - test.Test2
       - test.CtorCalledOnce
       - test.expectedexceptions.ExpectedExceptionsTest
       - test.access.PrivateAccessConfigurationMethods
       - test.expectedexceptions.WrappedExpectedException
-      - test.parameters.OptionalParameterTest
+      - org.testng.parameters.OptionalParameterTest
 
   - name: Regression2
     excludedGroups: [ broken ]
@@ -126,7 +126,7 @@ tests:
   - name: Inheritance
     classes:
       - test.SampleInheritance
-      - test.inheritance.ClassScopeTest
+      - org.testng.inheritance.ClassScopeTest
 
   - name: Test outer scope
     includedGroups: [ outer-group ]
@@ -186,8 +186,8 @@ tests:
     parameters: { count: 10 }
     classes:
       - test.InvocationAndSuccessPercentageTest
-      - test.invocationcount.FailedInvocationCountTest
-      - test.invocationcount.FirstAndLastTimeTest
+      - org.testng.invocationcount.FailedInvocationCountTest
+      - org.testng.invocationcount.FirstAndLastTimeTest
 
   - name: Method1
     classes:
@@ -247,8 +247,8 @@ tests:
 
   - name: Method inheritance
     classes:
-      - test.inheritance.DChild_2
-      - test.inheritance.VerifyTest
+      - org.testng.inheritance.DChild_2
+      - org.testng.inheritance.VerifyTest
 
   - name: Method selectors
     classes:

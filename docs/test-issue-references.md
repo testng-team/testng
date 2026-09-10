@@ -82,6 +82,61 @@ same weight as the rest.
 `GITHUB-173`, `GITHUB-674`, `GITHUB-765`, `GITHUB-1336`, `GITHUB-1396` and `GITHUB-1430` also belong
 to phase 2 packages. Phase 1 verified them and the table above records them already.
 
+## Verified in phase 3
+
+<!-- vale off -->
+
+| Ref | Issue title on GitHub | Provenance | Timeline |
+| --- | --- | --- | --- |
+| `GITHUB-426` | firstTimeOnly ignored for threadPoolSize > 1 | "firstTimeOnly ignored for threadPoolSize > 1. Closes #426" | links commit |
+| `GITHUB-564` | Optional always requires Parameters is this really needed? | "Support using @Optional without needing @Parameters. Closes #564" | links commit |
+| `GITHUB-581` | Parameters of nested test suites are overriden | "Dont honour params specified in suite-file tag. Closes #581" | links commit |
+| `GITHUB-949` | dependsOnMethods with alwaysRun = true and inheritance fails to find method | "Fix for Github-949. Closes #949" | links commit |
+| `GITHUB-980` | TestNG run inherited method twice | "TestNG run inherited method twice. Closes #980" | links commit |
+| `GITHUB-1061` | Feature request: Have a way to change timeout dynamically at runtime | "Ensure TestResult contains proper test method. Closes #1061" | links commit |
+| `GITHUB-1105` | Test skipped instead failed if incorrect enum value is passed as parameter in testNG xml | "Fix #1105 Test skipped instead failed if incorrect enum value" | links commit |
+| `GITHUB-1554` | @Parameters and parameter injection not wroking when used on the same method in version 6.12 | "Cant use @Parameters and parameter injection on the same method. Closes #1554" | links commit |
+| `GITHUB-1719` | successPercentage does not work correctly for tests with dataProvider | "Streamline success%age & Data driven method combo. Closes #1719" | links commit |
+| `GITHUB-2238` | Parameter values should be overridable from JVM arguments | "Streamline parameter initialization. Closes #2238" | links commit |
+| `GITHUB-2489` | Hierarchical base- and test-class @AfterClass methods out of order using groups | "Fix Config invocation order for inheritance (#2503). Closes #2489" | links commit |
+| `GITHUB-3180` | TestNG testng-failed.xml 'invocation-numbers' values are not calculated correctly with retry and dataproviders | "Streamline invocation numbers in failed xml file. Closes #3180" | links commit |
+
+<!-- vale on -->
+
+`GITHUB-1417` also belongs to a phase 3 package. Phase 1 verified it and the table above records it.
+
+Eight of these descriptions were already in the code. Five are new: `GITHUB-949`, `GITHUB-980`,
+`GITHUB-1417`, `GITHUB-1719` and `GITHUB-2238`. Each names a registered test that carried no
+description.
+
+Phase 3 also removes one. `CancelledInvocationReportingTest` described two methods as
+`GITHUB-3408`. GitHub #3408 is a pull request, not an issue. The commit that wrote those
+descriptions names no issue at all, and no commit ties that test to an issue. The prefix is gone
+and the prose stays.
+
+`TESTNG-37`, `TESTNG-57` and `TESTNG-387` name the old JIRA tracker. They are left as they are.
+
+## Verified, description not yet written
+
+A row above is a claim that the code carries that description. These five are the exception. Phase 1
+proved them by sweeping every class in reach, but their classes still sit in top-level `test.*`
+packages that no phase has moved. The description goes in when the owning feature moves.
+
+<!-- vale off -->
+
+| Ref | Class still at |
+| --- | --- |
+| `GITHUB-565` | `test.issue565` |
+| `GITHUB-799` | `test.github799` |
+| `GITHUB-1231` | `test.testng1231` |
+| `GITHUB-1232` | `test.testng1232` |
+| `GITHUB-1490` | `test.github1490` |
+
+<!-- vale on -->
+
+`scripts/refs-in-sync.sh` reads this list. Move a reference out of it when the
+description is written, and the check starts requiring it.
+
 `GITHUB-521` is the one worth reading twice. The test was written in 2015 and was in no suite file,
 so it had never run. Phase 2 registers it.
 

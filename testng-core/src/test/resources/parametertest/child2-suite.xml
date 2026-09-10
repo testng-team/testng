@@ -6,7 +6,7 @@
   <parameter name="parameter3" value="c2p3"/>
   <test name="InheritedParametersTest Child2">
       <classes>
-          <class name="test.parameters.InheritFromSuiteChild2" />
+          <class name="org.testng.parameters.samples.InheritFromSuiteChild2" />
       </classes>
   </test>
   
