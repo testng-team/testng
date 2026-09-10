@@ -775,6 +775,7 @@
       <class name="org.testng.methodinterceptors.Issue521Test" />
       <class name="org.testng.methodinterceptors.MultipleInterceptorsTest" />
       <class name="org.testng.methodinterceptors.CustomInterceptorTest"/>
+      <class name="org.testng.methodinterceptors.Issue1263Test"/>
     </classes>
   </test>
 
