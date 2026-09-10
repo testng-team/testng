@@ -1,3 +1,4 @@
+import buildlogic.VerifyTestExecution
 import buildlogic.registerOptionalFeatureVariants
 
 plugins {
@@ -78,8 +79,27 @@ val memoryTest by
         }
     }
 
+// The project-wide verifyTestExecution is wired to tasks.test: it reads testng.xml and
+// build/test-results/test, so it cannot see a suite that names neither. Without this second one a
+// class that fell out of testng-memory.xml would leave the build green and silent -- which is the
+// failure that check exists to catch, arriving by a different route. It shares
+// execution-known-silent.txt because the memory suite has no silent classes and one list is one
+// place to look; an entry there would have to name a class of this suite to affect it.
+val verifyMemoryTestExecution by
+    tasks.registering(VerifyTestExecution::class) {
+        description = "Verifies the memory suite ran every class it names, and did not change"
+        group = LifecycleBasePlugin.VERIFICATION_GROUP
+
+        dependsOn(memoryTest)
+        suite.set(layout.projectDirectory.file("src/test/resources/testng-memory.xml"))
+        inventory.set(layout.projectDirectory.file("execution-inventory-memory.txt"))
+        knownSilent.set(layout.projectDirectory.file("execution-known-silent.txt"))
+        results.set(layout.buildDirectory.dir("test-results/memoryTest"))
+        update.set(providers.gradleProperty("updateExecutionInventory").map { true }.orElse(false))
+    }
+
 tasks.check {
-    dependsOn(memoryTest)
+    dependsOn(memoryTest, verifyMemoryTestExecution)
 }
 
 // <editor-fold defaultstate="collapsed" desc="Bundle jQuery from the webjar">

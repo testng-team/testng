@@ -1,0 +1,4 @@
+org.testng.reporters.issue1259.JqReportMemoryTest#aReportLargerThanTheHeapIsGeneratedWithoutExhaustingIt	PASS 1
+org.testng.reporters.issue1259.JqReportMemoryTest#anAbsentChildLogIsNotAnError	PASS 1
+org.testng.reporters.issue1259.JqReportMemoryTest#theOutOfMemoryFrameNamesWhereTheChildDied	PASS 1
+org.testng.reporters.spillfailure.BrokenSpillTest#aRunWhoseBuffersCannotSpillStillFinishes	PASS 1
