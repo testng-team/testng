@@ -42,24 +42,48 @@ rows_in() {
 
 # True when a @Test in the test sources carries this reference in its description.
 #
-# A bare match is not enough. A comment, a javadoc line or an unrelated string literal all mention
-# an issue number without a test claiming it. Neither is a description on its own: @DataProvider
-# takes one too, and a field may simply be called description. So both @Test and description have
-# to sit in the window with the reference.
+# It reads the @Test annotation rather than a window of lines. A window says only that @Test and
+# description both appeared near the reference, which is not the same claim: an @Test followed by
+# @DataProvider(description = "GITHUB-765") satisfied a window and means nothing.
 #
-# The window is four lines, because a description often spans them:
+# So it tracks the parentheses of @Test( and collects the text until they close. A bare @Test
+# opens nothing and carries no description. Any other annotation is outside that text.
 #
-#     @Test(
+#     @Test(description = "GITHUB-980")                        one line
+#     @Test(dataProvider = "dp", description = "GITHUB-949")   with other members
+#     @Test(                                                   over three lines
 #         description =
-#             "GITHUB-3408: whether the data provider was parallel ...")
+#             "GITHUB-3408: whether the data provider ...")
 has_description() {
   local ref=$1
   grep -rlE "\"${ref}([^0-9]|\")" "$root" --include='*.java' 2>/dev/null | while read -r f; do
     awk -v ref="$ref" '
-      { w4=w3; w3=w2; w2=w1; w1=$0 }
-      $0 ~ "\"" ref "([^0-9]|\")" {
-        joined = w4 " " w3 " " w2 " " w1
-        if (joined ~ /@Test/ && joined ~ /description[[:space:]]*=/) { found=1; exit }
+      function depth_of(t,   i, c, d) {
+        d = 0
+        for (i = 1; i <= length(t); i++) {
+          c = substr(t, i, 1)
+          if (c == "(") d++
+          else if (c == ")") d--
+        }
+        return d
+      }
+      function claims(t) {
+        return t ~ /description[[:space:]]*=/ && t ~ ("\"" ref "([^0-9]|\")")
+      }
+      !collecting && /@Test[[:space:]]*\(/ {
+        buf = substr($0, index($0, "@Test"))
+        depth = depth_of(buf)
+        if (depth <= 0) { if (claims(buf)) { found = 1; exit } }
+        else collecting = 1
+        next
+      }
+      collecting {
+        buf = buf " " $0
+        depth += depth_of($0)
+        if (depth <= 0) {
+          collecting = 0
+          if (claims(buf)) { found = 1; exit }
+        }
       }
       END { exit found ? 0 : 1 }
     ' "$f" && { printf 'yes'; return; }

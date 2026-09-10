@@ -97,6 +97,29 @@ printf 'class T {\n  String description = "GITHUB-765";\n}\n' \
   > "$d/src/org/testng/feature/JTest.java"
 check "a field called description is not one" missing "$(verdict "$d")"
 
+# The description has to belong to the @Test, not merely sit near it. A window of lines cannot
+# tell the difference, and these three shapes all satisfied one.
+d=$(new_case)
+printf 'class T {\n  @Test\n  @DataProvider(description = "GITHUB-765")\n  public Object[][] dp() { return null; }\n}\n' \
+  > "$d/src/org/testng/feature/MTest.java"
+check "a bare @Test above a data provider" missing "$(verdict "$d")"
+
+d=$(new_case)
+printf 'class T {\n  @Test\n  public void a() {}\n\n  @DataProvider(description = "GITHUB-765")\n  public Object[][] dp() { return null; }\n}\n' \
+  > "$d/src/org/testng/feature/NTest.java"
+check "a @Test method above a data provider" missing "$(verdict "$d")"
+
+d=$(new_case)
+printf 'class T {\n  @Test(enabled = true)\n  @DataProvider(description = "GITHUB-765")\n  public Object[][] dp() { return null; }\n}\n' \
+  > "$d/src/org/testng/feature/OTest.java"
+check "a @Test with its own members above one" missing "$(verdict "$d")"
+
+# A description beside other members of the same @Test still counts.
+d=$(new_case)
+printf 'class T {\n  @Test(dataProvider = "dp", description = "GITHUB-765")\n  public void a() {}\n}\n' \
+  > "$d/src/org/testng/feature/PTest.java"
+check "a description beside other members" ok "$(verdict "$d")"
+
 # Prose is not a claim. The document explains why GITHUB-3408 was dropped, and reading that
 # sentence as a claim made the check demand the reference it says to remove.
 d=$(new_case)
