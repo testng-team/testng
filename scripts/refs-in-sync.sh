@@ -76,6 +76,33 @@ has_description() {
   local ref=$1
   grep -rlE "\"${ref}([^0-9]|\")" "$root" --include='*.java' 2>/dev/null | while read -r f; do
     awk -v ref="$ref" '
+      # Removes comments, so an annotation shown in a comment or a javadoc line is not read as
+      # code, and a bracket inside one is not counted. in_block carries across lines, because a
+      # javadoc runs over several and its continuation lines carry no marker of their own. A // or
+      # a /* inside a string literal is text, so it walks the line rather than cutting at the
+      # first one it sees.
+      function strip_comment(t,   i, c, n, out, s) {
+        s = 0
+        for (i = 1; i <= length(t); i++) {
+          c = substr(t, i, 1); n = substr(t, i + 1, 1)
+          if (in_block) {
+            if (c == "*" && n == "/") { in_block = 0; i++ }
+            continue
+          }
+          if (s) {
+            out = out c
+            if (c == "\\") { out = out n; i++ }
+            else if (c == "\"") s = 0
+            continue
+          }
+          if (c == "\"") { s = 1; out = out c }
+          else if (c == "/" && n == "/") return out
+          else if (c == "/" && n == "*") { in_block = 1; i++ }
+          else out = out c
+        }
+        return out
+      }
+
       # Counts brackets that are syntax. A bracket inside a string literal is text: a description
       # reading "expected (" would otherwise leave the depth wrong, and a real one look missing.
       # in_string carries across lines, because a Java string cannot span them but the annotation
@@ -97,17 +124,18 @@ has_description() {
       function claims(t) {
         return t ~ /description[[:space:]]*=/ && t ~ ("\"" ref "([^0-9]|\")")
       }
-      !collecting && /@Test[[:space:]]*\(/ {
+      { line = strip_comment($0) }
+      !collecting && line ~ /@Test[[:space:]]*\(/ {
         in_string = 0
-        buf = substr($0, index($0, "@Test"))
+        buf = substr(line, index(line, "@Test"))
         depth = depth_of(buf)
         if (depth <= 0) { if (claims(buf)) { found = 1; exit } }
         else collecting = 1
         next
       }
       collecting {
-        buf = buf " " $0
-        depth += depth_of($0)
+        buf = buf " " line
+        depth += depth_of(line)
         if (depth <= 0) {
           collecting = 0
           if (claims(buf)) { found = 1; exit }

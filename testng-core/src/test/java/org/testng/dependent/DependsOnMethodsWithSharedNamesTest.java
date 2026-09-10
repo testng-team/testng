@@ -35,22 +35,32 @@ public class DependsOnMethodsWithSharedNamesTest extends SimpleBaseTest {
 
     String b = ClassB.class.getName() + ".";
     String a = ClassA.class.getName() + ".";
+
+    // Each chain runs in its own order. The two chains do not depend on each other, so nothing
+    // fixes the order between them, and this does not assert one.
     assertThat(m_methods)
-        .containsExactly(
-            // Each class runs its own chain in order.
+        .containsSubsequence(
             b + "sameNameAA",
             b + "uniqueNameBB",
             b + "uniqueNameCC",
             b + "uniqueNameDD",
-            b + "sameNameE",
+            b + "sameNameE");
+    assertThat(m_methods)
+        .containsSubsequence(
             a + "sameNameA",
             a + "uniqueNameB",
             a + "uniqueNameC",
             a + "uniqueNameD",
+            // sameNameF waits for ClassA.sameNameE. ClassB declares a method of that name too,
+            // and it does not release sameNameF.
             a + "sameNameE",
-            // sameNameF waits for ClassA.sameNameE, not for ClassB.sameNameE, which ran earlier.
             a + "sameNameF",
             a + "sameNameG",
             a + "sameNameH");
+
+    // ClassB.sameNameE is the wrong one, and it running first proves it was not what released
+    // ClassA.sameNameF.
+    assertThat(m_methods.indexOf(b + "sameNameE")).isLessThan(m_methods.indexOf(a + "sameNameF"));
+    assertThat(m_methods).hasSize(13).doesNotHaveDuplicates();
   }
 }
