@@ -1,4 +1,4 @@
-package test;
+package org.testng.reporters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import org.testng.annotations.Test;
-import org.testng.reporters.FileStringBuffer;
 
 /**
  * What a buffer gives back, whether or not it spilled to its temporary file.
@@ -176,6 +175,8 @@ public class FileStringBufferTest {
     return (File) Objects.requireNonNull(field.get(buffer), "the buffer has not spilled");
   }
 
+  // The package this test now sits in is @NullMarked, and passing null is the point of the test.
+  @SuppressWarnings("NullAway")
   @Test
   public void appendingNothingIsRejectedByName() {
     assertThatThrownBy(() -> new FileStringBuffer(5).append(null))

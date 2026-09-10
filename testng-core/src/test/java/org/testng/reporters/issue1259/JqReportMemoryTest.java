@@ -1,4 +1,4 @@
-package test.reports.issue1259;
+package org.testng.reporters.issue1259;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

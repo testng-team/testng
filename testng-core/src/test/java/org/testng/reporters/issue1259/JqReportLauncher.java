@@ -1,4 +1,4 @@
-package test.reports.issue1259;
+package org.testng.reporters.issue1259;
 
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -23,7 +23,7 @@ import test.TestHelper;
  * XMLStringBuffer one does not, so it would change what they write.
  *
  * <p>This class is a {@code main} rather than a test method because it is started as a child JVM
- * with a heap of its own; see {@code test.reports.issue1259.JqReportMemoryTest}.
+ * with a heap of its own; see {@code org.testng.reporters.issue1259.JqReportMemoryTest}.
  */
 public class JqReportLauncher {
 

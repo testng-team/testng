@@ -39,7 +39,7 @@ class XmlCharFilteringWriter extends Writer {
   /**
    * A high surrogate whose pair, if any, is in the characters not written yet. Zero when none is
    * held back, which no high surrogate can be. It is never written on its own, so what is held here
-   * when the last character has been written is simply dropped.
+   * when the last character has been written is dropped.
    */
   private char pendingHighSurrogate;
 

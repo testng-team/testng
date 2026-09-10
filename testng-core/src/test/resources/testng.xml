@@ -800,8 +800,8 @@
       <class name="org.testng.reporters.jq.ModelParametersTest" />
       <class name="org.testng.reporters.jq.BaseMultiSuitePanelTest" />
       <class name="org.testng.reporters.XmlCharFilteringWriterTest" />
-      <class name="test.FileStringBufferTest" />
-      <class name="test.reports.issue1259.JqReportMemoryTest" />
+      <class name="org.testng.reporters.FileStringBufferTest" />
+      <class name="org.testng.reporters.issue1259.JqReportMemoryTest" />
       <class name="org.testng.internal.reporters.ParameterValueTest" />
       <class name="org.testng.internal.reporters.ParameterSnapshotsTest" />
       <class name="org.testng.internal.reporters.ParameterSnapshotLifecycleTest" />
