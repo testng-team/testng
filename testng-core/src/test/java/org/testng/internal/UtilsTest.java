@@ -30,8 +30,10 @@ public class UtilsTest {
         .isEqualTo(String.valueOf(REPLACEMENT_CHAR));
   }
 
-  @Test(description = "A report that failed part way leaves no file, not a plausible one")
-  public void aBufferThatGivesUpPartWayLeavesNoFileBehind() throws Exception {
+  @Test(
+      dataProvider = "failuresOnTheWayOut",
+      description = "A report that failed part way leaves no file, not a plausible one")
+  public void aBufferThatGivesUpPartWayLeavesNoFileBehind(Throwable failure) throws Exception {
     // The prefix is written before the buffer, so a buffer that raises leaves a page header and no
     // body -- 40 bytes that open as a report and say nothing about why they are empty.
     XMLStringBuffer panel = new XMLStringBuffer("");
@@ -44,22 +46,63 @@ public class UtilsTest {
                 Utils.writeUtf8File(
                     directory.getAbsolutePath(),
                     "index.html",
-                    new FailingBuffer(panel),
+                    new FailingBuffer(panel, failure),
                     "<html><head><title>report</title></head>"))
-        .isInstanceOf(IllegalStateException.class);
+        .isSameAs(failure);
 
     assertThat(new File(directory, "index.html")).doesNotExist();
   }
 
+  /**
+   * An {@code Error} as well as a {@code RuntimeException}, because the failure this guard exists
+   * for is the {@code OutOfMemoryError} of GITHUB-1259 and GITHUB-2334, and {@code Error} is a
+   * sibling of {@code RuntimeException} rather than a subtype. It is also the case where the stub
+   * matters most: nothing downstream is going to write a better file over it.
+   */
+  @DataProvider(name = "failuresOnTheWayOut")
+  public Object[][] failuresOnTheWayOut() {
+    return new Object[][] {
+      {new IllegalStateException("A buffer could not be written out")},
+      {new OutOfMemoryError("Java heap space")},
+    };
+  }
+
+  @Test(description = "The file is removed when the writer itself fails, not only the buffer")
+  public void aFileTheWriterCouldNotBeOpenedOnIsNotLeftBehind() throws Exception {
+    // The failure this stands in for is the disk filling up, which surfaces as an IOException from
+    // the final flush of the try-with-resources and leaves a nearly complete report rather than an
+    // obvious stub. That one cannot be provoked on every platform the build runs on; occupying the
+    // report's own path reaches the same catch by the one means that behaves identically
+    // everywhere, and asserts the same thing -- a report that could not be written leaves nothing.
+    File directory = Files.createTempDirectory("utils-writeutf8-io").toFile();
+    directory.deleteOnExit();
+    File occupied = new File(directory, "index.html");
+    assertThat(occupied.mkdir()).isTrue();
+
+    XMLStringBuffer panel = new XMLStringBuffer("");
+    panel.addString("<body>never written</body>");
+
+    // An IOException is reported, not raised: writeUtf8File has never thrown one at its callers.
+    Utils.writeUtf8File(directory.getAbsolutePath(), "index.html", panel, null);
+
+    assertThat(occupied).doesNotExist();
+  }
+
   /** Raises where a buffer whose temporary file has gone raises, which is on the way out. */
   private static final class FailingBuffer extends XMLStringBuffer {
-    FailingBuffer(XMLStringBuffer content) {
+    private final Throwable failure;
+
+    FailingBuffer(XMLStringBuffer content, Throwable failure) {
       super(content.getStringBuffer(), "");
+      this.failure = failure;
     }
 
     @Override
     public void toWriter(Writer fw) {
-      throw new IllegalStateException("A buffer could not be written out");
+      if (failure instanceof Error) {
+        throw (Error) failure;
+      }
+      throw (RuntimeException) failure;
     }
   }
 

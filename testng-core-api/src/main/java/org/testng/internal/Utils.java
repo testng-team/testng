@@ -90,10 +90,17 @@ public final class Utils {
           w.append(prefix);
         }
         xsb.toWriter(w);
-      } catch (RuntimeException writingOut) {
+      } catch (Throwable writingOut) {
         // What reached the file is the prefix and whatever the buffer managed before it gave up,
         // which for index.html is a page header and no body. Removing it leaves no report rather
         // than one that opens and says nothing about why it is empty.
+        //
+        // Throwable rather than RuntimeException, because Error is its sibling and not its
+        // subtype: GITHUB-1259 and GITHUB-2334 both end in an OutOfMemoryError inside the
+        // reporter, which is the case this branch exists for and the one where the stub matters
+        // most -- nothing downstream is going to write a better file over it. It also covers the
+        // IOException the final flush raises when the disk fills, which reaches the enclosing
+        // catch below and is reported there exactly as before.
         boolean ignored = file.delete();
         throw writingOut;
       }
