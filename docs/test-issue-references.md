@@ -116,6 +116,39 @@ and the prose stays.
 
 `TESTNG-37`, `TESTNG-57` and `TESTNG-387` name the old JIRA tracker. They are left as they are.
 
+## Verified in phase 4
+
+<!-- vale off -->
+
+| Ref | Issue title on GitHub | Provenance | Timeline |
+| --- | --- | --- | --- |
+| `GITHUB-141` | regular expression in "dependsOnMethods" not work | "Honour regex in dependsOnMethods. Closes: #141" | links commit |
+| `GITHUB-550` | Weird @BeforeMethod and @AfterMethod behaviour with dependsOnMethods | "Streamline dependsOnMethods for configurations. Closes #550" | links commit |
+| `GITHUB-893` | TestNG should provide an Api which allow to find all dependent of a specific test | "Support getting dependencies info for a test. Closes #893" | links commit |
+| `GITHUB-1156` | test execution dependant upon class name order and fails with TestNGException:  No free nodes found | "Detect circular dependencies asap #1156" | links commit |
+| `GITHUB-1380` | DynamicGraph should manage transitive dependencies | "Add test cases for #1380" | links commit |
+| `GITHUB-1648` | Depends on method is not respected on the sequential run on second test that extends same base testClass | "DependsOnMethods not respected on the sequential run on 2nd test with same base testClass. Closes #1648" | links commit |
+| `GITHUB-2658` | Inheritance + dependsOnMethods | "Streamline Inheritance + dependsOnMethods. Closes #2658" | links commit |
+| `GITHUB-3222` | Failing to detect test dependsOn methods in static nested class | "fix(depends): resolve dependsOnMethods in static nested classes. Fixes #3222" | links commit |
+
+<!-- vale on -->
+
+Every one was already in the code. Phase 4 adds no new reference. The 19 registered classes in
+`test.dependent` that carry no description have introducing commits that name no issue at all, so
+there is nothing to prove.
+
+Phase 4 brings three tests back into the suite instead. None had run for years.
+
+- `DependsOnMethodsWithSharedNamesTest`, which was `test.testng317.VerifyTest`, was in no suite file
+  and asserted nothing. It printed a count. It now asserts that `dependsOnMethods` finds the method
+  in its own class when another class in the run declares one of the same name.
+- `MissingGroupTest` and `MissingMethodTest` were commented out in `testng.xml`. Both expected a
+  skip. TestNG refuses the run instead, which is what their own method names say. Their bodies had
+  drifted from their names, and both now assert the exception.
+
+`test.testng317` is renamed rather than kept. GitHub #317 is a pull request, so the number points at
+nothing a reader can open.
+
 ## Verified, description not yet written
 
 A row above is a claim that the code carries that description. These five are the exception. Phase 1

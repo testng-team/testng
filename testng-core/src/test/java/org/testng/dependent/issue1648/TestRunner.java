@@ -1,0 +1,42 @@
+package org.testng.dependent.issue1648;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.testng.TestNG;
+import org.testng.annotations.Test;
+import org.testng.dependent.samples.issue1648.LogExtractor;
+import org.testng.dependent.samples.issue1648.TestOneSample;
+import org.testng.dependent.samples.issue1648.TestTwoSample;
+import test.InvokedMethodNameListener;
+import test.SimpleBaseTest;
+
+public class TestRunner extends SimpleBaseTest {
+  @Test(description = "GITHUB-1648")
+  public void testMethod() {
+    List<String> expected =
+        Arrays.asList(
+            "A TestOne 1",
+            "A test Two",
+            "B test 1",
+            "B test 2",
+            "A TestOne 1",
+            "A test Two",
+            "B test 1",
+            "B test 2");
+    TestNG tng = create(TestOneSample.class, TestTwoSample.class);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener(listener);
+
+    tng.run();
+    List<String> actual = new ArrayList<>();
+    for (Object instance : listener.getTestInstances()) {
+      if (instance instanceof LogExtractor) {
+        actual.addAll(((LogExtractor) instance).getLogs());
+      }
+    }
+    assertThat(actual).containsExactlyElementsOf(expected);
+  }
+}

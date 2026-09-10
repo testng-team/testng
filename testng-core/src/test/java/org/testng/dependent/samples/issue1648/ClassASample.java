@@ -1,0 +1,28 @@
+package org.testng.dependent.samples.issue1648;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.testng.annotations.Test;
+
+public class ClassASample implements LogExtractor {
+  private final List<String> logs = new ArrayList<>();
+
+  @Test
+  protected void test1() {
+    addLog("A TestOne 1");
+  }
+
+  @Test(dependsOnMethods = {"test1"})
+  protected void test2() {
+    addLog("A test Two");
+  }
+
+  @Override
+  public List<String> getLogs() {
+    return logs;
+  }
+
+  protected void addLog(String log) {
+    logs.add(log);
+  }
+}

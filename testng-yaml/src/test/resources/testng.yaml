@@ -104,23 +104,23 @@ tests:
   - name: Dependents
     parameters: { foo: Cedric }
     classes:
-      - test.dependent.MissingGroupTest
-      - test.dependent.MissingMethodTest
-      - test.dependent.OrderMethodTest
-      - test.dependent.DependentTest
-      - test.dependent.SampleDependentMethods
-      - test.dependent.SampleDependentMethods2
-      - test.dependent.SampleDependentMethods3
-      - test.dependent.SampleDependentConfigurationMethods
-      - test.dependent.ClassDependsOnGroups
-      - test.dependent.DependentAlwaysRunTest
-      - test.dependent.MultiGroupTest
-      - test.dependent.ImplicitGroupInclusionTest
-      - test.dependent.ClassWide1Test
-      - test.dependent.ClassWide2Test
-      - test.dependent.DepBugSampleTest
-      - test.dependent.DepBugVerifyTest
-      - test.dependent.DependsOnProtectedMethodTest
+      - org.testng.dependent.MissingGroupTest
+      - org.testng.dependent.MissingMethodTest
+      - org.testng.dependent.OrderMethodTest
+      - org.testng.dependent.DependentTest
+      - org.testng.dependent.SampleDependentMethods
+      - org.testng.dependent.samples.SampleDependentMethods2
+      - org.testng.dependent.SampleDependentMethods3
+      - org.testng.dependent.SampleDependentConfigurationMethods
+      - org.testng.dependent.ClassDependsOnGroups
+      - org.testng.dependent.DependentAlwaysRunTest
+      - org.testng.dependent.MultiGroupTest
+      - org.testng.dependent.ImplicitGroupInclusionTest
+      - org.testng.dependent.ClassWide1Test
+      - org.testng.dependent.ClassWide2Test
+      - org.testng.dependent.DepBugSampleTest
+      - org.testng.dependent.DepBugVerifyTest
+      - org.testng.dependent.DependsOnProtectedMethodTest
       - test.dependsongroup.DependsOnGroupsTest
 
   - name: Inheritance
