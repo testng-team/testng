@@ -6,14 +6,32 @@
 # Phase 3 verified five new references, wrote them into the document, and claimed them in the pull
 # request. None of them reached the code. The document said the work was done and nothing checked.
 #
-# It checks one direction only. The document records what this migration verified or added, not
-# every reference that happens to sit in a moved package, so a reference in the code without a row
-# is not a fault.
+# What it promises, and what it does not.
 #
-# It asks whether a reference is in the code at all. It does not count the methods that carry one.
-# GITHUB-2238 sits on four methods, and dropping one of them still passes here. The document
-# records which issue a test covers, not how many of its methods say so, and a count in a document
-# goes stale. Review covers that part.
+# It answers one question: does a description this document records exist in the code at all. That
+# is the whole contract. Everything below is outside it, on purpose:
+#
+#   - It checks one direction. The document records what this migration verified or added, not
+#     every reference in a moved package, so a reference in the code without a row is not a fault.
+#   - It does not count occurrences. GITHUB-2238 sits on four methods, and dropping one still
+#     passes. A count in a document goes stale, so there is nothing to check it against.
+#   - It does not judge whether the description is the right one for that test. Only the commit
+#     history proves that, and scripts/verify-issue-refs.sh is the tool for it.
+#
+# This is frozen. It has taken four rounds of review, every one a hole in reading Java source and
+# markdown as text. Patching the next hole buys less than it costs. If a case gets past it, record
+# the case here and leave the code alone. A reviewer reading the diff catches what this cannot, and
+# in practice caught what this did not.
+#
+# If a fifth case turns up and someone judges it worth fixing, move the evidence out of markdown
+# rather than patching a pattern. One row per reference in a CSV, with the document generated from
+# it, and this script reads columns.
+#
+# Be clear about what that buys. Two of the four faults here came from reading a document written
+# for people: a sentence read as a table row, and an exemption that ran past its own table. A CSV
+# removes both. The other two came from reading Java as text: a marker matched anywhere, and a
+# window of lines mistaken for an annotation. A CSV does nothing for those. Removing them needs a
+# real Java parser, which is a bigger job than the migration it serves.
 set -u
 # Overridable so the tests can point at a throwaway tree.
 doc=${DOC:-docs/test-issue-references.md}
