@@ -15,7 +15,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlSuite.ParallelMode;
 import test.BaseTest;
 import test.timeout.github1493.TestClassSample;
-import test.timeout.issue2009.TimeOutWithParallelSample;
 
 public class TimeOutTest extends BaseTest {
   private final long m_id;
@@ -27,12 +26,27 @@ public class TimeOutTest extends BaseTest {
   private void privateTimeOutTest(XmlSuite.ParallelMode parallel) {
     addClass(TimeOutSampleTest.class);
     if (parallel != null) {
-      setParallel(parallel);
+      // On the <suite>, not the <test>: ParallelMode.TESTS is declared isParallel = false at test
+      // level, so setting it there left this row running exactly like "none" and never reaching
+      // the suite-level parallel="tests" path it names.
+      setSuiteParallel(parallel);
     }
     run();
 
     verifyPassedTests("timeoutShouldPass");
     verifyFailedTests("timeoutShouldFailByException", "timeoutShouldFailByTimeOut");
+
+    // The statuses above hold whether or not the time-out was enforced: a method that overruns is
+    // failed once it returns, so a run that let it sleep its full ten seconds reports exactly the
+    // same thing. Only the duration says the method was actually cut short, which is the guarantee
+    // GITHUB-2009 established for the in-place path and the one the executor path has always given
+    // the rest. It guards those two mechanisms, not which of them a given mode is routed to: every
+    // row here stays green under either routing, because both cut the method short at about 1s.
+    ITestResult timedOut = getFailedTests().get("timeoutShouldFailByTimeOut").get(0);
+    assertThat(timedOut.getEndMillis() - timedOut.getStartMillis())
+        .as(
+            "timeoutShouldFailByTimeOut must be cut short by its 1s time-out, not sleep its full 10s")
+        .isLessThan(5_000L);
   }
 
   @DataProvider(name = "parallelModes")
