@@ -6,8 +6,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.internal.Utils.join;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintStream;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import org.testng.annotations.DataProvider;
@@ -83,9 +86,26 @@ public class UtilsTest {
     panel.addString("<body>never written</body>");
 
     // An IOException is reported, not raised: writeUtf8File has never thrown one at its callers.
-    Utils.writeUtf8File(directory.getAbsolutePath(), "index.html", panel, null);
+    String stderr =
+        stderrOf(() -> Utils.writeUtf8File(directory.getAbsolutePath(), "index.html", panel, null));
 
     assertThat(occupied).doesNotExist();
+    // The file was just removed, so this is the only record that a report was expected there. It
+    // goes to stderr because org.testng.log4testng.Logger prints nothing until it is configured.
+    assertThat(stderr).contains("index.html");
+  }
+
+  /** What a call printed on stderr, with the real stream restored whatever happened. */
+  private static String stderrOf(Runnable call) {
+    PrintStream err = System.err;
+    ByteArrayOutputStream captured = new ByteArrayOutputStream();
+    try (PrintStream capturing = new PrintStream(captured, true, StandardCharsets.UTF_8)) {
+      System.setErr(capturing);
+      call.run();
+    } finally {
+      System.setErr(err);
+    }
+    return captured.toString(StandardCharsets.UTF_8);
   }
 
   /** Raises where a buffer whose temporary file has gone raises, which is on the way out. */

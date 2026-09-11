@@ -75,12 +75,12 @@ public final class Utils {
 
   public static void writeUtf8File(
       @Nullable String outputDir, String fileName, XMLStringBuffer xsb, @Nullable String prefix) {
+    final File outDir = outputDir != null ? new File(outputDir) : new File("").getAbsoluteFile();
+    if (!outDir.exists()) {
+      boolean ignored = outDir.mkdirs();
+    }
+    final File file = new File(outDir, fileName);
     try {
-      final File outDir = outputDir != null ? new File(outputDir) : new File("").getAbsoluteFile();
-      if (!outDir.exists()) {
-        boolean ignored = outDir.mkdirs();
-      }
-      final File file = new File(outDir, fileName);
       if (!file.exists()) {
         boolean ignored = file.createNewFile();
       }
@@ -105,7 +105,11 @@ public final class Utils {
         throw writingOut;
       }
     } catch (IOException ex) {
-      LOG.error(ex.getMessage(), ex);
+      // Printed rather than logged: the file was just removed, so this is the only record that a
+      // report was expected there, and org.testng.log4testng.Logger writes nothing until it is
+      // configured. The shape JUnitXMLReporter uses for the same situation.
+      System.err.println("[TestNG] Could not write " + file);
+      ex.printStackTrace(System.err);
     }
   }
 
