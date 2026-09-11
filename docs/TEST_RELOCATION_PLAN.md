@@ -199,10 +199,29 @@ Follow the order.
 2. **Recompute the executable set.** It drifts as master moves, so do not trust the table above.
 
    ```bash
-   grep -hoE '<class name="[^"]+"' testng-core/src/test/resources/testng.xml \
-     testng-core/src/test/resources/parent-module-suite.xml \
-     testng-core/src/test/resources/188.xml | sed 's/<class name="//;s/"//' | sort -u
+   # Strip XML comments first. A commented-out <class> is not a listing, and grep alone reads it
+   # as one. Phase 4 filed two disabled tests as executable that way, and the build disagrees:
+   # VerifyTestExecution.declaredClasses() strips comments before it reads anything.
+   for f in testng-core/src/test/resources/testng.xml \
+            testng-core/src/test/resources/parent-module-suite.xml \
+            testng-core/src/test/resources/188.xml; do
+     perl -0777 -pe 's/<!--.*?-->//gs' "$f"
+   done | grep -hoE '<class name="[^"]+"' | sed 's/<class name="//;s/"//' | sort -u
    ```
+
+   A class that is commented out is a decision somebody made and did not write down. Find out
+   whether it still passes before filing it anywhere. Phase 4 found two, and both passed once
+   their assertions were brought up to date.
+
+   Four more are commented out today. Each belongs to a later phase or to none, and each needs the
+   same question asked:
+
+   | Class | Owner |
+   | --- | --- |
+   | `test.distributed.DistributedTest` | no phase owns it |
+   | `test.issue565.Issue565Test` | no phase owns it, and `GITHUB-565` is already verified |
+   | `test.jar.JarTest` | no phase owns it |
+   | `test.timeout.TimeOutThreadLocalSampleTest` | no phase owns it |
 
    Also check `<package name="..."/>` in `testng.xml`. A class selected that way is executable
    without being named, and the rule above would file it under `samples`. Three such tags exist
@@ -217,6 +236,19 @@ Follow the order.
    ```
 5. **Add imports** for each sample a relocated test now references, and widen only what the split
    forces. A static import of a member does not import the type.
+
+   When registering a class in `testng.xml`, check the insert point is not inside a comment:
+
+   ```bash
+   python3 -c "
+   s=open('testng-core/src/test/resources/testng.xml').read()
+   i=s.index('<CLASS NAME>')
+   print('inside a comment:', s[:i].count('<!--') != s[:i].count('-->'))"
+   ```
+
+   A class registered inside a comment compiles, passes review, and never runs. `verifyTestExecution`
+   does not catch it either: it strips comments before reading, so the class never counts as
+   declared. Phase 4 did this and caught it by looking.
 6. **Update the resources.** Grep, do not work from a list:
 
    ```bash

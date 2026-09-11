@@ -329,30 +329,30 @@
   <test name="Dependents">
     <parameter name="foo" value="Cedric" />
     <classes>
-<!--
-      <class name="test.dependent.MissingGroupTest" />
-      <class name="test.dependent.MissingMethodTest" />
--->
-      <class name="test.dependent.OrderMethodTest" />
-      <class name="test.dependent.DependentTest" />
-      <class name="test.dependent.SampleDependentTest" />
-      <class name="test.dependent.SampleDependentMethods" />
-      <class name="test.dependent.SampleDependentMethods3" />
-      <class name="test.dependent.SampleDependentConfigurationMethods" />
-      <class name="test.dependent.ClassDependsOnGroups"/>
-      <class name="test.dependent.DependentAlwaysRunTest" />
-      <class name="test.dependent.MultiGroupTest" />
-      <class name="test.dependent.ImplicitGroupInclusionTest" />
-      <class name="test.dependent.ClassWide1Test" />
-      <class name="test.dependent.ClassWide2Test" />
-      <class name="test.dependent.DepBugSampleTest" />
-      <class name="test.dependent.DepBugVerifyTest" />
-      <class name="test.dependent.DependsOnProtectedMethodTest" />
+      <class name="org.testng.dependent.MissingGroupTest" />
+      <class name="org.testng.dependent.MissingMethodTest" />
+      <class name="org.testng.dependent.DependsOnMethodsWithSharedNamesTest" />
+      <class name="org.testng.dependent.GitHub261Test" />
+      <class name="org.testng.dependent.OrderMethodTest" />
+      <class name="org.testng.dependent.DependentTest" />
+      <class name="org.testng.dependent.SampleDependentTest" />
+      <class name="org.testng.dependent.SampleDependentMethods" />
+      <class name="org.testng.dependent.SampleDependentMethods3" />
+      <class name="org.testng.dependent.SampleDependentConfigurationMethods" />
+      <class name="org.testng.dependent.ClassDependsOnGroups"/>
+      <class name="org.testng.dependent.DependentAlwaysRunTest" />
+      <class name="org.testng.dependent.MultiGroupTest" />
+      <class name="org.testng.dependent.ImplicitGroupInclusionTest" />
+      <class name="org.testng.dependent.ClassWide1Test" />
+      <class name="org.testng.dependent.ClassWide2Test" />
+      <class name="org.testng.dependent.DepBugSampleTest" />
+      <class name="org.testng.dependent.DepBugVerifyTest" />
+      <class name="org.testng.dependent.DependsOnProtectedMethodTest" />
       <class name="test.dependsongroup.DependsOnGroupsTest" />
-      <class name="test.dependent.GroupByInstancesTest" />
-      <class name="test.dependent.xml.GroupDependencyTest" />
-      <class name="test.dependent.DependencyFixTest"/>
-      <class name="test.dependent.issue1648.TestRunner"/>
+      <class name="org.testng.dependent.GroupByInstancesTest" />
+      <class name="org.testng.dependent.xml.GroupDependencyTest" />
+      <class name="org.testng.dependent.DependencyFixTest"/>
+      <class name="org.testng.dependent.issue1648.TestRunner"/>
     </classes>
   </test>
 
