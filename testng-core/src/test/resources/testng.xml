@@ -332,6 +332,7 @@
       <class name="org.testng.dependent.MissingGroupTest" />
       <class name="org.testng.dependent.MissingMethodTest" />
       <class name="org.testng.dependent.DependsOnMethodsWithSharedNamesTest" />
+      <class name="org.testng.dependent.GitHub261Test" />
       <class name="org.testng.dependent.OrderMethodTest" />
       <class name="org.testng.dependent.DependentTest" />
       <class name="org.testng.dependent.SampleDependentTest" />

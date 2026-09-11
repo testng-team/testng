@@ -1,9 +1,11 @@
-package org.testng.dependent.samples;
+package org.testng.dependent;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.dependent.samples.GitHub261AlphaSample;
+import org.testng.dependent.samples.GitHub261BetaSample;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 

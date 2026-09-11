@@ -102,8 +102,10 @@ org.testng.dependent.DependentTest#testConfigDependenciesHappyCase	PASS 1
 org.testng.dependent.DependentTest#testDownstreamDependencyRetrieval	PASS 4
 org.testng.dependent.DependentTest#testMethodDependencyAmidstInheritance	PASS 1
 org.testng.dependent.DependentTest#testUpstreamDependencyRetrieval	PASS 4
-org.testng.dependent.DependsOnMethodsWithSharedNamesTest#eachChainKeepsItsOwnSameNamedMethod	PASS 1
+org.testng.dependent.DependsOnMethodsWithSharedNamesTest#eachChainRunsInItsOwnOrder	PASS 1
+org.testng.dependent.DependsOnMethodsWithSharedNamesTest#sameNameFDependsOnItsOwnClassOnly	PASS 1
 org.testng.dependent.DependsOnProtectedMethodTest#verifyBeforeInvocations	PASS 1
+org.testng.dependent.GitHub261Test#testGitHub261	PASS 1
 org.testng.dependent.GroupByInstancesTest#dontGroupByInstances	PASS 1
 org.testng.dependent.GroupByInstancesTest#groupByInstances	PASS 1
 org.testng.dependent.ImplicitGroupInclusionTest#verifyImplicitGroupInclusion	PASS 1
@@ -111,8 +113,12 @@ org.testng.dependent.ImplicitGroupInclusionTest#verifyImplicitGroupInclusion2	PA
 org.testng.dependent.ImplicitGroupInclusionTest#verifyImplicitGroupInclusion3	PASS 1
 org.testng.dependent.ImplicitGroupInclusionTest#verifyImplicitGroupInclusion4	PASS 1
 org.testng.dependent.ImplicitGroupInclusionTest#verifyImplicitMethodInclusion	PASS 1
-org.testng.dependent.MissingGroupTest#verifyThatExceptionIsThrownIfMissingGroup	PASS 1
-org.testng.dependent.MissingMethodTest#verifyThatExceptionIsThrownIfMissingMethod	PASS 1
+org.testng.dependent.MissingGroupTest#aMissingGroupStopsTheRun	PASS 1
+org.testng.dependent.MissingGroupTest#alwaysRunDoesNotLetItRun	PASS 1
+org.testng.dependent.MissingGroupTest#ignoreMissingDependenciesLetsItRun	PASS 1
+org.testng.dependent.MissingMethodTest#aMissingMethodStopsTheRun	PASS 1
+org.testng.dependent.MissingMethodTest#alwaysRunDoesNotLetItRun	PASS 1
+org.testng.dependent.MissingMethodTest#ignoreMissingDependenciesLetsItRun	PASS 1
 org.testng.dependent.MultiGroupTest#verifyDependsOnMultiGroups	PASS 1
 org.testng.dependent.OrderMethodTest#a_second0	PASS 1
 org.testng.dependent.OrderMethodTest#a_second1	PASS 1
