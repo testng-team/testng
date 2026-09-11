@@ -148,7 +148,7 @@ public class JUnitXMLReporter implements IResultListener2 {
       // this one loses its file and says so.
       //
       // Error as well, since toXML() holds the whole report in memory twice over and an
-      // OutOfMemoryError is not a RuntimeException; see Utils.writeUtf8File.
+      // OutOfMemoryError is not a RuntimeException.
       LOG.error("JUnit XML report for " + context.getName() + " failed", reportFailed);
     }
   }

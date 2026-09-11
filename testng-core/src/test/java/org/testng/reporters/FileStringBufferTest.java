@@ -158,12 +158,12 @@ public class FileStringBufferTest {
       assertThat(temporary.setWritable(true)).isTrue();
     }
 
-    assertThatThrownBy(buffer::toString)
-        .as("toString handed back a document with a hole in it")
+    assertThatThrownBy(buffer::toString, "toString handed back a document with a hole in it")
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("could not be written out");
-    assertThatThrownBy(() -> buffer.toWriter(new StringWriter()))
-        .as("toWriter wrote out a document with a hole in it")
+    assertThatThrownBy(
+            () -> buffer.toWriter(new StringWriter()),
+            "toWriter wrote out a document with a hole in it")
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("could not be written out");
   }
@@ -182,12 +182,16 @@ public class FileStringBufferTest {
     FileStringBuffer forToWriter = spilledOnceWithATailHeldBack();
     File second = temporaryFileOf(forToWriter);
     try {
-      assertThatThrownBy(forToString::toString)
-          .as("toString handed back the file without the tail the builder still held")
+      // The two-argument form: a description attached after assertThatThrownBy is lost when the
+      // call does not throw, which is the one moment these are written for.
+      assertThatThrownBy(
+              forToString::toString,
+              "toString handed back the file without the tail the builder still held")
           .isInstanceOf(IllegalStateException.class)
           .hasMessageContaining("could not be written out");
-      assertThatThrownBy(() -> forToWriter.toWriter(new StringWriter()))
-          .as("toWriter wrote out the file without the tail the builder still held")
+      assertThatThrownBy(
+              () -> forToWriter.toWriter(new StringWriter()),
+              "toWriter wrote out the file without the tail the builder still held")
           .isInstanceOf(IllegalStateException.class)
           .hasMessageContaining("could not be written out");
     } finally {
