@@ -21,8 +21,9 @@ import org.gradle.api.tasks.TaskAction
  * it recurring, so the build checks three things instead:
  *
  *  1. every class the suite names produced results;
- *  2. nothing under `.samples.` ran as a root test -- those classes are TestNG input, and several
- *     are written to fail, so one running is both a false failure and a sign the boundary leaked;
+ *  2. nothing under `.samples.` ran, unless [factoryProduced] says a registered `@Factory` makes
+ *     it -- those classes are TestNG input, and several are written to fail, so one running is
+ *     both a false failure and a sign the boundary leaked;
  *  3. the set of tests that ran still matches [inventory].
  *
  * The third is the one that survives a package migration. The first two both read the suite file,
@@ -46,6 +47,11 @@ abstract class VerifyTestExecution : DefaultTask() {
     @get:PathSensitive(PathSensitivity.NONE)
     abstract val knownSilent: RegularFileProperty
 
+    /** Classes under `.samples.` that run because a registered `@Factory` creates them. */
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    abstract val factoryProduced: RegularFileProperty
+
     /** Where the test task wrote its JUnit XML. */
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -61,8 +67,7 @@ abstract class VerifyTestExecution : DefaultTask() {
         val (executedClasses, ranNow) = actualExecution()
         val problems = mutableListOf<String>()
 
-        val silent = knownSilent.get().asFile.readLines()
-            .map { it.substringBefore('#').trim() }.filter { it.isNotEmpty() }.toSortedSet()
+        val silent = knownSilent.entries()
 
         val neverRan = declared - executedClasses - silent
         if (neverRan.isNotEmpty()) {
@@ -77,10 +82,51 @@ abstract class VerifyTestExecution : DefaultTask() {
                 staleEntries.joinToString("\n  ")
         }
 
-        val samplesThatRan = executedClasses.filter { it.contains(".samples.") }
+        // An entry only ever failed the build when the class it names RAN. So an entry whose class
+        // was renamed away matched nothing and was invisible. Two such entries survived a package
+        // move and a green merge, and this change deletes them by hand. Comments count as a
+        // mention here: a commented-out <class> is a decision somebody made, not a dead name.
+        val forgotten = silent - mentionedClasses()
+        if (forgotten.isNotEmpty()) {
+            problems += "Listed in ${knownSilent.get().asFile.name} but no suite file mentions it:\n  " +
+                forgotten.joinToString("\n  ") +
+                "\n  The class was renamed or deleted, so the entry guards nothing. Delete it."
+        }
+
+        val byFactory = factoryProduced.entries()
+
+        // An entry here says "a registered @Factory creates this sample". Two halves of that are
+        // free to check, and without them one line in the file turns rule 2 off for good.
+        val notASample = byFactory.filterNot { it.contains(".samples.") }
+        if (notASample.isNotEmpty()) {
+            problems += "Listed in ${factoryProduced.get().asFile.name} but not under .samples.:\n  " +
+                notASample.joinToString("\n  ") +
+                "\n  This list exempts samples. A class outside .samples. needs no exemption."
+        }
+        // A sample a factory produces is never named in the suite. One that is named is a root
+        // test under .samples. -- the leak rule 2 exists to catch, endorsed by the exemption.
+        val exemptAndDeclared = byFactory intersect declared
+        if (exemptAndDeclared.isNotEmpty()) {
+            problems += "Listed in ${factoryProduced.get().asFile.name} AND named in the suite:\n  " +
+                exemptAndDeclared.joinToString("\n  ") +
+                "\n  The suite runs it as a root test, so no @Factory is what makes it run."
+        }
+
+        val samplesThatRan = executedClasses.filter { it.contains(".samples.") } - byFactory
         if (samplesThatRan.isNotEmpty()) {
-            problems += "Ran as a root test but lives under .samples. -- these are TestNG input:\n  " +
-                samplesThatRan.joinToString("\n  ")
+            problems += "Ran but lives under .samples. -- these are TestNG input:\n  " +
+                samplesThatRan.joinToString("\n  ") +
+                "\n  Move it out of .samples., or add it to ${factoryProduced.get().asFile.name} " +
+                "if a registered @Factory creates it."
+        }
+
+        // An entry that stops running is as wrong as one that should not run. The factory that fed
+        // it has gone, or the class has, and the list would go on claiming otherwise.
+        val silentFactoryEntries = byFactory - executedClasses
+        if (silentFactoryEntries.isNotEmpty()) {
+            problems += "Listed in ${factoryProduced.get().asFile.name} but no longer running:\n  " +
+                silentFactoryEntries.joinToString("\n  ") +
+                "\n  The @Factory that created it is gone, or the class is."
         }
 
         val baseline = inventory.get().asFile
@@ -124,18 +170,37 @@ abstract class VerifyTestExecution : DefaultTask() {
         if (problems.isNotEmpty()) throw GradleException(problems.joinToString("\n\n"))
     }
 
+    /** One entry per line, `#` starts a comment, blank lines are skipped. */
+    private fun RegularFileProperty.entries(): Set<String> =
+        get().asFile.readLines()
+            .map { it.substringBefore('#').trim() }.filter { it.isNotEmpty() }.toSortedSet()
+
+    /**
+     * Every class name any suite file holds, comments included. Used only to tell a live entry
+     * from a dead one: a commented-out `<class>` still names a class somebody parked on purpose,
+     * while a name no suite file holds at all belongs to nothing.
+     */
+    private fun mentionedClasses(): Set<String> = collectClasses(stripComments = false)
+
     /**
      * The suite declares a DOCTYPE on testng.org, so it is read as text rather than letting a
      * parser reach for the network. Comments are stripped first: a commented-out `<class>` is not
      * registered, and matching inside one reports a parked class as silently missing.
      */
-    private fun declaredClasses(): Set<String> {
+    private fun declaredClasses(): Set<String> = collectClasses(stripComments = true)
+
+    private fun collectClasses(stripComments: Boolean): Set<String> {
         val found = sortedSetOf<String>()
         val seen = mutableSetOf<java.io.File>()
         fun visit(file: java.io.File) {
             val canonical = file.canonicalFile
             if (!seen.add(canonical) || !canonical.isFile) return
-            val text = canonical.readText().replace(Regex("<!--.*?-->", RegexOption.DOT_MATCHES_ALL), "")
+            val raw = canonical.readText()
+            val text = if (stripComments) {
+                raw.replace(Regex("<!--.*?-->", RegexOption.DOT_MATCHES_ALL), "")
+            } else {
+                raw
+            }
             found += CLASS_ENTRY.findAll(text).map { it.groupValues[1] }
             // A suite pulls in others with <suite-file>. Classes named only in one of those are
             // still part of the run, so they belong under the same check.

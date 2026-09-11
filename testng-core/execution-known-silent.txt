@@ -14,8 +14,8 @@ test.jar.JarTest
 test.timeout.TimeOutThreadLocalSampleTest
 
 # --- the class exists but declares no @Test method, so there is nothing to run.
-test.factory.FactoryTest
-test.factory.FactoryWithInstanceInfoTest
+org.testng.factory.FactoryTest
+org.testng.factory.FactoryWithInstanceInfoTest
 test.groupinvocation.GroupConfiguration
 
 # --- every @Test is in group "broken", and the owning <test> block excludes that group. This is
@@ -25,6 +25,4 @@ test.thread.ThreadTest
 
 # --- not diagnosed. Each has plain @Test methods, and the <test> block that names it applies no
 # --- group filter, so there is no visible reason for the silence. Worth an issue of its own.
-test.dependent.MissingGroupTest
-test.dependent.MissingMethodTest
-test.factory.FactoryAndTestMethodTest
+org.testng.factory.FactoryAndTestMethodTest

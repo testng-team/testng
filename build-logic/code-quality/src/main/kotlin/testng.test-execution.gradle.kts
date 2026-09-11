@@ -14,6 +14,7 @@ val verifyTestExecution = tasks.register<VerifyTestExecution>("verifyTestExecuti
     suite.convention(layout.projectDirectory.file("src/test/resources/testng.xml"))
     inventory.convention(layout.projectDirectory.file("execution-inventory.txt"))
     knownSilent.convention(layout.projectDirectory.file("execution-known-silent.txt"))
+    factoryProduced.convention(layout.projectDirectory.file("execution-factory-produced.txt"))
     results.convention(layout.buildDirectory.dir("test-results/test"))
     update.convention(providers.gradleProperty("updateExecutionInventory").map { true }.orElse(false))
 }
