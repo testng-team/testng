@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.internal.Utils.join;
 import static test.TestHelper.createRandomDirectory;
-import static test.TestHelper.stderrOf;
 
 import java.io.Writer;
 import java.nio.file.Files;
@@ -73,17 +72,10 @@ public class UtilsTest {
     Path directory = createRandomDirectory();
     Path occupied = Files.createDirectory(directory.resolve("index.html"));
 
-    // An IOException is reported, not raised: writeUtf8File has never thrown one at its callers.
-    String stderr =
-        stderrOf(
-            () ->
-                Utils.writeUtf8File(
-                    directory.toString(), "index.html", new XMLStringBuffer(""), null));
+    // An IOException is logged, not raised: writeUtf8File has never thrown one at its callers.
+    Utils.writeUtf8File(directory.toString(), "index.html", new XMLStringBuffer(""), null);
 
     assertThat(occupied).doesNotExist();
-    // The file was just removed, so this is the only record that a report was expected there. It
-    // goes to stderr because org.testng.log4testng.Logger prints nothing until it is configured.
-    assertThat(stderr).contains("index.html");
   }
 
   /** Raises where a buffer whose temporary file has gone raises, which is on the way out. */

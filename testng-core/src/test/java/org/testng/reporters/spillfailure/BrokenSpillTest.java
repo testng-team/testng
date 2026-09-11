@@ -45,8 +45,8 @@ public class BrokenSpillTest extends SimpleBaseTest {
         .as("the run did not finish%s", tail(output))
         .contains(BrokenSpillLauncher.MARKER);
     assertThat(exitCode).as("the run failed%s", tail(output)).isZero();
-    // And it said so rather than losing the file in silence, which is what a logger nobody has
-    // configured would have done.
+    // And it said so rather than losing the file in silence. Through its logger: the child runs
+    // with the test classpath, whose slf4j-simple writes to a System.out that is this log file.
     assertThat(output)
         .as("nothing said the JUnit XML report had been lost%s", tail(output))
         .contains("JUnit XML report for");

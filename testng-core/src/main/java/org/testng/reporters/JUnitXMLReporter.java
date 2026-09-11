@@ -18,6 +18,7 @@ import org.testng.ITestResult;
 import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.IResultListener2;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 import org.testng.util.TimeUtils;
 
 /**
@@ -27,6 +28,7 @@ import org.testng.util.TimeUtils;
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
 public class JUnitXMLReporter implements IResultListener2 {
+  private static final Logger LOG = Logger.getLogger(JUnitXMLReporter.class);
   private static final Pattern ENTITY = Pattern.compile("&[a-zA-Z]+;.*");
   private static final Pattern LESS = Pattern.compile("<");
   private static final Pattern GREATER = Pattern.compile(">");
@@ -147,13 +149,7 @@ public class JUnitXMLReporter implements IResultListener2 {
       //
       // Error as well, since toXML() holds the whole report in memory twice over and an
       // OutOfMemoryError is not a RuntimeException; see Utils.writeUtf8File.
-      //
-      // Printed rather than logged: org.testng.log4testng.Logger writes nothing until it is
-      // configured, so a logged failure here would be the silence this reporting path was just
-      // taken out of. This is the shape TestNG.generateReports already uses for a reporter that
-      // throws.
-      System.err.println("[TestNG] JUnit XML report for " + context.getName() + " failed");
-      reportFailed.printStackTrace(System.err);
+      LOG.error("JUnit XML report for " + context.getName() + " failed", reportFailed);
     }
   }
 

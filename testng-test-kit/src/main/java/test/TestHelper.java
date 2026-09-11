@@ -2,9 +2,7 @@ package test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -130,18 +128,5 @@ public class TestHelper {
     Path directory = Files.createTempDirectory("testng-tmp-");
     directory.toFile().deleteOnExit();
     return directory;
-  }
-
-  /** What a call printed on stderr, with the real stream restored whatever happened. */
-  public static String stderrOf(Runnable call) {
-    PrintStream err = System.err;
-    ByteArrayOutputStream captured = new ByteArrayOutputStream();
-    try (PrintStream capturing = new PrintStream(captured, true, StandardCharsets.UTF_8)) {
-      System.setErr(capturing);
-      call.run();
-    } finally {
-      System.setErr(err);
-    }
-    return captured.toString(StandardCharsets.UTF_8);
   }
 }

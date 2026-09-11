@@ -104,11 +104,9 @@ public final class Utils {
         throw writingOut;
       }
     } catch (IOException ex) {
-      // Printed rather than logged: the file was just removed, so this is the only record that a
-      // report was expected there, and org.testng.log4testng.Logger writes nothing until it is
-      // configured. The shape JUnitXMLReporter uses for the same situation.
-      System.err.println("[TestNG] Could not write " + file);
-      ex.printStackTrace(System.err);
+      // Names the file: it was just removed, so this is the only record a report was expected
+      // there.
+      LOG.error("Could not write " + file, ex);
     }
   }
 

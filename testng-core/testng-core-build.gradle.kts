@@ -32,6 +32,10 @@ dependencies {
     implementation(projects.testngRunnerApi)
     testImplementation("org.testng:testng-asserts:1.0.0")
     testImplementation(projects.testngTestKit)
+    // The binding src/test/resources/simplelogger.properties configures; without it slf4j is NOP
+    // here and a report a listener logs as lost is lost in silence. The same one testng-core-api
+    // and testng-yaml already use, and what the forked children of the memory suite read.
+    testImplementation("org.slf4j:slf4j-simple:2.0.18")
     testImplementation("org.apache.groovy:groovy-all:5.0.7") {
         exclude("org.testng", "testng")
     }
