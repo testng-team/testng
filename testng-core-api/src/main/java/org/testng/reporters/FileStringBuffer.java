@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -69,18 +68,7 @@ public class FileStringBuffer implements IBuffer {
     } else {
       // Big string, add it to the temporary file directly
       flushToFile();
-      if (spillFailure != null) {
-        // Same rule as flushToFile: nothing more goes to a file that is already damaged.
-        return this;
-      }
-      try {
-        File file = temporaryFile();
-        try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8, true /* append */)) {
-          copy(new StringReader(s.toString()), writer);
-        }
-      } catch (IOException e) {
-        recordSpillFailure(e);
-      }
+      spill(s);
     }
     return this;
   }
@@ -91,14 +79,7 @@ public class FileStringBuffer implements IBuffer {
       throw new IllegalArgumentException(
           "Writer (Argument 0 of FileStringBuffer#toWriter) should not be null");
     }
-    // The flush first, then the guard: the fault that lands inside this very flush -- the disk
-    // filling between the last append and the report, a cleaner removing the file -- is recorded
-    // by it, and a guard that ran before it would let the read go on and hand back the file
-    // without the builder's tail.
-    if (m_file != null) {
-      flushToFile();
-    }
-    requireNothingWentWrongSpilling();
+    settleBeforeReading();
     try {
       BufferedWriter bw = new BufferedWriter(fw);
       if (m_file == null) {
@@ -134,24 +115,43 @@ public class FileStringBuffer implements IBuffer {
     if (m_sb.length() == 0) {
       return;
     }
+    spill(m_sb);
+    // Unconditionally: once a spill has failed nothing will read this buffer out, so what it still
+    // holds is discarded rather than grown without bound.
+    m_sb = new StringBuilder();
+  }
+
+  /**
+   * The one way onto the temporary file, for the builder and for a string too large to go through
+   * it. Nothing more goes to a file that is already damaged: retrying is not safe, since a failed
+   * write may have left part of what it was given on disk, and writing it again would duplicate it.
+   */
+  private void spill(CharSequence content) {
     if (spillFailure != null) {
-      // Already damaged. Retrying is not safe -- a failed write may have left part of the builder
-      // on disk, so writing it again would duplicate it -- and nothing will read this buffer out
-      // now, so what it still holds is discarded rather than grown without bound.
-      m_sb = new StringBuilder();
       return;
     }
-
     try {
       File file = temporaryFile();
-      p("Size " + m_sb.length() + ", flushing to " + file);
+      p("Size " + content.length() + ", flushing to " + file);
       try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8, true /* append */)) {
-        fw.append(m_sb);
+        fw.append(content);
       }
     } catch (IOException e) {
       recordSpillFailure(e);
     }
-    m_sb = new StringBuilder();
+  }
+
+  /**
+   * What both readers do first: the flush, then the guard, in that order. The fault that lands
+   * inside this very flush -- the disk filling between the last append and the report, a cleaner
+   * removing the file -- is recorded by it, and a guard that ran before it would let the read go on
+   * and hand back the file without the builder's tail.
+   */
+  private void settleBeforeReading() {
+    if (m_file != null) {
+      flushToFile();
+    }
+    requireNothingWentWrongSpilling();
   }
 
   /** Keeps the first fault: the ones after it are consequences of a buffer already damaged. */
@@ -176,7 +176,7 @@ public class FileStringBuffer implements IBuffer {
    * then went straight on to write to the file it had just decided not to create.
    *
    * @return the file this buffer spills to
-   * @throws IOException if it cannot be created, which both callers record rather than raise
+   * @throws IOException if it cannot be created, which the caller records rather than raises
    */
   private File temporaryFile() throws IOException {
     if (m_file == null) {
@@ -195,11 +195,7 @@ public class FileStringBuffer implements IBuffer {
 
   @Override
   public String toString() {
-    // The flush first, then the guard, for the reason given in toWriter.
-    if (m_file != null) {
-      flushToFile();
-    }
-    requireNothingWentWrongSpilling();
+    settleBeforeReading();
     if (m_file == null) {
       return m_sb.toString();
     }

@@ -5,13 +5,12 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.internal.Utils.join;
+import static test.TestHelper.createRandomDirectory;
+import static test.TestHelper.stderrOf;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.PrintStream;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -41,27 +40,21 @@ public class UtilsTest {
     // body -- 40 bytes that open as a report and say nothing about why they are empty.
     XMLStringBuffer panel = new XMLStringBuffer("");
     panel.addString("<body>never written</body>");
-    File directory = Files.createTempDirectory("utils-writeutf8").toFile();
-    directory.deleteOnExit();
+    Path directory = createRandomDirectory();
 
     assertThatThrownBy(
             () ->
                 Utils.writeUtf8File(
-                    directory.getAbsolutePath(),
+                    directory.toString(),
                     "index.html",
                     new FailingBuffer(panel, failure),
                     "<html><head><title>report</title></head>"))
         .isSameAs(failure);
 
-    assertThat(new File(directory, "index.html")).doesNotExist();
+    assertThat(directory.resolve("index.html")).doesNotExist();
   }
 
-  /**
-   * An {@code Error} as well as a {@code RuntimeException}, because the failure this guard exists
-   * for is the {@code OutOfMemoryError} of GITHUB-1259 and GITHUB-2334, and {@code Error} is a
-   * sibling of {@code RuntimeException} rather than a subtype. It is also the case where the stub
-   * matters most: nothing downstream is going to write a better file over it.
-   */
+  /** An {@code Error} as well, which a {@code RuntimeException} catch does not cover. */
   @DataProvider(name = "failuresOnTheWayOut")
   public Object[][] failuresOnTheWayOut() {
     return new Object[][] {
@@ -77,35 +70,20 @@ public class UtilsTest {
     // obvious stub. That one cannot be provoked on every platform the build runs on; occupying the
     // report's own path reaches the same catch by the one means that behaves identically
     // everywhere, and asserts the same thing -- a report that could not be written leaves nothing.
-    File directory = Files.createTempDirectory("utils-writeutf8-io").toFile();
-    directory.deleteOnExit();
-    File occupied = new File(directory, "index.html");
-    assertThat(occupied.mkdir()).isTrue();
-
-    XMLStringBuffer panel = new XMLStringBuffer("");
-    panel.addString("<body>never written</body>");
+    Path directory = createRandomDirectory();
+    Path occupied = Files.createDirectory(directory.resolve("index.html"));
 
     // An IOException is reported, not raised: writeUtf8File has never thrown one at its callers.
     String stderr =
-        stderrOf(() -> Utils.writeUtf8File(directory.getAbsolutePath(), "index.html", panel, null));
+        stderrOf(
+            () ->
+                Utils.writeUtf8File(
+                    directory.toString(), "index.html", new XMLStringBuffer(""), null));
 
     assertThat(occupied).doesNotExist();
     // The file was just removed, so this is the only record that a report was expected there. It
     // goes to stderr because org.testng.log4testng.Logger prints nothing until it is configured.
     assertThat(stderr).contains("index.html");
-  }
-
-  /** What a call printed on stderr, with the real stream restored whatever happened. */
-  private static String stderrOf(Runnable call) {
-    PrintStream err = System.err;
-    ByteArrayOutputStream captured = new ByteArrayOutputStream();
-    try (PrintStream capturing = new PrintStream(captured, true, StandardCharsets.UTF_8)) {
-      System.setErr(capturing);
-      call.run();
-    } finally {
-      System.setErr(err);
-    }
-    return captured.toString(StandardCharsets.UTF_8);
   }
 
   /** Raises where a buffer whose temporary file has gone raises, which is on the way out. */

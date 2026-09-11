@@ -149,11 +149,8 @@ public class FileStringBufferTest {
     // Appending happens deep inside building a document -- for the JUnit report, inside a listener
     // TestNG calls bare -- so raising there ends the run at whatever tag happened to overflow.
     // The buffer records the fault and refuses to hand anything over instead.
-    FileStringBuffer buffer = new FileStringBuffer(4);
-    buffer.append("AAAAAA");
-    buffer.append("BBBBBB");
+    FileStringBuffer buffer = spilledOnceWithATailHeldBack();
     File temporary = temporaryFileOf(buffer);
-    assertThat(temporary.setReadOnly()).isTrue();
     try {
       buffer.append("CCCCCC");
       buffer.append("DDDDDD");
@@ -218,12 +215,9 @@ public class FileStringBufferTest {
     // have left part of the builder on disk. The direct-to-file branch of append went on writing,
     // so anything of that size kept reaching the disk after the fault -- and the two branches
     // disagreed about whether that was safe.
-    FileStringBuffer buffer = new FileStringBuffer(4);
-    buffer.append("AAAAAA");
-    buffer.append("BBBBBB");
+    FileStringBuffer buffer = spilledOnceWithATailHeldBack();
     File temporary = temporaryFileOf(buffer);
     long spilled = temporary.length();
-    assertThat(temporary.setReadOnly()).isTrue();
     try {
       buffer.append("CCCCCC");
     } finally {
@@ -242,11 +236,8 @@ public class FileStringBufferTest {
   public void appendingAfterAFailedSpillIsSilent() throws Exception {
     // The half of the contract the report depends on: every push and pop after the fault has to
     // return normally, or the listener building the document dies on one of them.
-    FileStringBuffer buffer = new FileStringBuffer(4);
-    buffer.append("AAAAAA");
-    buffer.append("BBBBBB");
+    FileStringBuffer buffer = spilledOnceWithATailHeldBack();
     File temporary = temporaryFileOf(buffer);
-    assertThat(temporary.setReadOnly()).isTrue();
     try {
       for (int i = 0; i < 50; i++) {
         buffer.append("CCCCCC");
@@ -269,7 +260,7 @@ public class FileStringBufferTest {
         .hasMessageContaining("could not be written out");
   }
 
-  /** The spill file, which no accessor exposes: these two tests are about what happens to it. */
+  /** The spill file, which no accessor exposes. */
   private static File temporaryFileOf(FileStringBuffer buffer) throws Exception {
     Field field = FileStringBuffer.class.getDeclaredField("m_file");
     field.setAccessible(true);

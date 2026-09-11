@@ -99,8 +99,7 @@ public final class Utils {
         // subtype: GITHUB-1259 and GITHUB-2334 both end in an OutOfMemoryError inside the
         // reporter, which is the case this branch exists for and the one where the stub matters
         // most -- nothing downstream is going to write a better file over it. It also covers the
-        // IOException the final flush raises when the disk fills, which reaches the enclosing
-        // catch below and is reported there exactly as before.
+        // IOException the final flush raises when the disk fills, which the catch below reports.
         boolean ignored = file.delete();
         throw writingOut;
       }

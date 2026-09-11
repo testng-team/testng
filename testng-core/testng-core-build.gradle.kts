@@ -99,7 +99,7 @@ val verifyMemoryTestExecution by
     }
 
 tasks.check {
-    dependsOn(memoryTest, verifyMemoryTestExecution)
+    dependsOn(verifyMemoryTestExecution)
 }
 
 // <editor-fold defaultstate="collapsed" desc="Bundle jQuery from the webjar">

@@ -145,10 +145,8 @@ public class JUnitXMLReporter implements IResultListener2 {
       // the whole run, and no other report is written either. A listener handles its own faults;
       // this one loses its file and says so.
       //
-      // Error as well, the form TestHTMLReporter already uses: toXML() reads the whole spilled
-      // file into one String and the regular expression copies it again, which is the shape
-      // GITHUB-1259 and GITHUB-2334 run out of heap in -- and an OutOfMemoryError is not a
-      // RuntimeException.
+      // Error as well, since toXML() holds the whole report in memory twice over and an
+      // OutOfMemoryError is not a RuntimeException; see Utils.writeUtf8File.
       //
       // Printed rather than logged: org.testng.log4testng.Logger writes nothing until it is
       // configured, so a logged failure here would be the silence this reporting path was just
