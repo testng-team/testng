@@ -171,6 +171,73 @@ public class FileStringBufferTest {
         .hasMessageContaining("could not be written out");
   }
 
+  @Test(
+      description =
+          "A spill that fails inside the reader's own flush is raised, not handed back short")
+  public void aFaultInsideTheReadersOwnFlushIsRaisedRatherThanTruncating() throws Exception {
+    // The guard used to run before the flush, so a fault landing in that flush -- the disk filling
+    // between the last append and the report, a cleaner removing the file -- was recorded and the
+    // read went on regardless, returning the file without the builder's tail. Only the second read
+    // complained, by which time the report was written. Two buffers because the first read of
+    // either records the fault, and the second reader would then be raising for the recorded one.
+    FileStringBuffer forToString = spilledOnceWithATailHeldBack();
+    File first = temporaryFileOf(forToString);
+    FileStringBuffer forToWriter = spilledOnceWithATailHeldBack();
+    File second = temporaryFileOf(forToWriter);
+    try {
+      assertThatThrownBy(forToString::toString)
+          .as("toString handed back the file without the tail the builder still held")
+          .isInstanceOf(IllegalStateException.class)
+          .hasMessageContaining("could not be written out");
+      assertThatThrownBy(() -> forToWriter.toWriter(new StringWriter()))
+          .as("toWriter wrote out the file without the tail the builder still held")
+          .isInstanceOf(IllegalStateException.class)
+          .hasMessageContaining("could not be written out");
+    } finally {
+      assertThat(first.setWritable(true)).isTrue();
+      assertThat(second.setWritable(true)).isTrue();
+    }
+  }
+
+  /**
+   * Spilled exactly once, with the next append still in the builder and the spill file made
+   * read-only -- so the very first fault is the one the reader's own flush runs into. The caller
+   * makes the file writable again.
+   */
+  private static FileStringBuffer spilledOnceWithATailHeldBack() throws Exception {
+    FileStringBuffer buffer = new FileStringBuffer(4);
+    buffer.append("AAAAAA");
+    buffer.append("BBBBBB");
+    assertThat(temporaryFileOf(buffer).setReadOnly()).isTrue();
+    return buffer;
+  }
+
+  @Test(description = "A string large enough to go to the file directly stops at a recorded fault")
+  public void aLargeStringAppendedAfterAFailedSpillDoesNotReachTheDisk() throws Exception {
+    // flushToFile stops writing once a spill has failed, on the grounds that a failed write may
+    // have left part of the builder on disk. The direct-to-file branch of append went on writing,
+    // so anything of that size kept reaching the disk after the fault -- and the two branches
+    // disagreed about whether that was safe.
+    FileStringBuffer buffer = new FileStringBuffer(4);
+    buffer.append("AAAAAA");
+    buffer.append("BBBBBB");
+    File temporary = temporaryFileOf(buffer);
+    long spilled = temporary.length();
+    assertThat(temporary.setReadOnly()).isTrue();
+    try {
+      buffer.append("CCCCCC");
+    } finally {
+      assertThat(temporary.setWritable(true)).isTrue();
+    }
+
+    // Writable again, so the write below would succeed if it were attempted.
+    buffer.append(TEN.repeat(DIRECT_TO_FILE / TEN.length()));
+
+    assertThat(temporary.length())
+        .as("the spill file grew after the fault was recorded")
+        .isEqualTo(spilled);
+  }
+
   @Test(description = "Appending to a buffer whose spill failed does not raise")
   public void appendingAfterAFailedSpillIsSilent() throws Exception {
     // The half of the contract the report depends on: every push and pop after the fault has to

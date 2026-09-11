@@ -69,6 +69,10 @@ public class FileStringBuffer implements IBuffer {
     } else {
       // Big string, add it to the temporary file directly
       flushToFile();
+      if (spillFailure != null) {
+        // Same rule as flushToFile: nothing more goes to a file that is already damaged.
+        return this;
+      }
       try {
         File file = temporaryFile();
         try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8, true /* append */)) {
@@ -87,6 +91,13 @@ public class FileStringBuffer implements IBuffer {
       throw new IllegalArgumentException(
           "Writer (Argument 0 of FileStringBuffer#toWriter) should not be null");
     }
+    // The flush first, then the guard: the fault that lands inside this very flush -- the disk
+    // filling between the last append and the report, a cleaner removing the file -- is recorded
+    // by it, and a guard that ran before it would let the read go on and hand back the file
+    // without the builder's tail.
+    if (m_file != null) {
+      flushToFile();
+    }
     requireNothingWentWrongSpilling();
     try {
       BufferedWriter bw = new BufferedWriter(fw);
@@ -94,7 +105,6 @@ public class FileStringBuffer implements IBuffer {
         bw.write(m_sb.toString());
         bw.close();
       } else {
-        flushToFile();
         try (FileReader reader = new FileReader(m_file, StandardCharsets.UTF_8)) {
           copy(reader, bw);
         }
@@ -185,11 +195,14 @@ public class FileStringBuffer implements IBuffer {
 
   @Override
   public String toString() {
+    // The flush first, then the guard, for the reason given in toWriter.
+    if (m_file != null) {
+      flushToFile();
+    }
     requireNothingWentWrongSpilling();
     if (m_file == null) {
       return m_sb.toString();
     }
-    flushToFile();
     try {
       return new String(Files.readAllBytes(m_file.toPath()), StandardCharsets.UTF_8);
     } catch (IOException e) {
