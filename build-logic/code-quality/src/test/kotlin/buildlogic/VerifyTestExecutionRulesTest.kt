@@ -278,6 +278,46 @@ class VerifyTestExecutionRulesTest {
         }
     }
 
+    // --- what counts as a count ---------------------------------------------------------------------
+    //
+    // A generated count is always one or more. Each key is created with its first status, and the
+    // fork count is the greatest common divisor of every raw size, which divides each of them. So
+    // zero or less can only arrive by damage, and it is damage that switches a rule off: a baseline
+    // of 0 makes "now.invocations < was.invocations" false for every real count.
+
+    @Test(description = "a count of zero is refused, because it hides every later count")
+    fun aZeroCountIsRefused() {
+        assert(Outcome.parse("PASS 0") == null) { "PASS 0 was accepted" }
+    }
+
+    @Test(description = "a negative count is refused")
+    fun aNegativeCountIsRefused() {
+        assert(Outcome.parse("PASS -1") == null) { "PASS -1 was accepted" }
+    }
+
+    @Test(description = "one is a real count, so it is read")
+    fun aCountOfOneIsRead() {
+        assert(Outcome.parse("PASS 1") == Outcome("PASS", 1)) { "PASS 1 was not read" }
+    }
+
+    @Test(description = "an inventory line with a zero count fails the build")
+    fun aZeroCountInTheFileIsRefused() {
+        val message = refused("test.A#one\tPASS 0")
+        assert(message.contains(":1")) { "expected the line number, got: $message" }
+    }
+
+    @Test(description = "the Outcome itself refuses a count below one, whoever builds it")
+    fun theOutcomeRefusesACountBelowOne() {
+        for (bad in listOf(0, -1)) {
+            try {
+                Outcome("PASS", bad)
+                throw AssertionError("Outcome accepted a count of $bad")
+            } catch (expected: IllegalArgumentException) {
+                // the point of the test
+            }
+        }
+    }
+
     // --- the whole set together ---------------------------------------------------------------------
 
     @Test(description = "the shape this repository is in today passes")

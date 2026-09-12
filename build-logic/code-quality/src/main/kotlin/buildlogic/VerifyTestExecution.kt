@@ -188,12 +188,24 @@ abstract class VerifyTestExecution : DefaultTask() {
 
     /** What happened to one test method across all of its invocations. */
     data class Outcome(val status: String, val invocations: Int) {
+        init {
+            // A generated count is always one or more. Each key is created with its first status,
+            // and the fork count is the greatest common divisor of every raw size, which divides
+            // each of them. So zero or less can only arrive by damage, and this damage switches a
+            // rule off rather than tripping it: with a baseline of 0, the invocation comparison
+            // `now.invocations < was.invocations` is false for every real count, so a lost
+            // data-provider row would go unreported for that test forever.
+            require(invocations > 0) { "an outcome runs at least once, got $invocations" }
+        }
+
         override fun toString() = "$status $invocations"
 
         companion object {
             fun parse(text: String): Outcome? {
                 val parts = text.trim().split(Regex("\\s+"))
-                return if (parts.size == 2) Outcome(parts[0], parts[1].toIntOrNull() ?: return null) else null
+                if (parts.size != 2) return null
+                val invocations = parts[1].toIntOrNull() ?: return null
+                return if (invocations > 0) Outcome(parts[0], invocations) else null
             }
         }
     }
