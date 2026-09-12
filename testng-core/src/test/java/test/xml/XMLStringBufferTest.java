@@ -41,7 +41,7 @@ public class XMLStringBufferTest {
     // exists for: toXML() would read the whole of it back as a String, and copy it once more.
     XMLStringBuffer content = new XMLStringBuffer("  ");
     for (int i = 0; i < 4000; i++) {
-      content.addRequired("item", "value-" + i + " \\u0007 \\uFFFE " + SUPPLEMENTARY);
+      content.addRequired("item", "value-" + i + " \u0007 \uFFFE " + SUPPLEMENTARY);
     }
 
     XMLStringBuffer streamed = new XMLStringBuffer("");
