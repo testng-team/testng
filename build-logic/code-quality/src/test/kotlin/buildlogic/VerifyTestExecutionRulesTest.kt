@@ -224,6 +224,60 @@ class VerifyTestExecutionRulesTest {
         )
     }
 
+    // --- reading the inventory ----------------------------------------------------------------------
+    //
+    // A line that does not parse used to be dropped in silence. The entry then looked like a test
+    // that never existed, so the rule above could not report its loss. That is the one rule the
+    // class doc calls "the one that survives a package migration", switched off by a bad merge or
+    // by an editor that turned a tab into spaces.
+
+    private fun refused(vararg lines: String): String {
+        try {
+            readInventory("execution-inventory.txt", lines.toList())
+        } catch (e: Exception) {
+            return e.message ?: ""
+        }
+        throw AssertionError("expected a refusal for ${lines.toList()}")
+    }
+
+    @Test(description = "a line with no tab is refused, and the message says which line")
+    fun aLineWithNoTabIsRefused() {
+        val message = refused("test.A#one\tPASS 1", "test.B#two PASS 1")
+        assert(message.contains(":2")) { "expected the line number, got: $message" }
+        assert(message.contains("test.B#two")) { "expected the line text, got: $message" }
+    }
+
+    @Test(description = "a tab with no count is refused")
+    fun aStatusWithNoCountIsRefused() {
+        refused("test.A#one\tPASS")
+    }
+
+    @Test(description = "a count that is not a number is refused")
+    fun aCountThatIsNotANumberIsRefused() {
+        refused("test.A#one\tPASS many")
+    }
+
+    @Test(description = "extra fields are refused, because the shape is not the one that was written")
+    fun extraFieldsAreRefused() {
+        refused("test.A#one\tPASS 1 2")
+    }
+
+    @Test(description = "an empty outcome is refused")
+    fun anEmptyOutcomeIsRefused() {
+        refused("test.A#one\t")
+    }
+
+    @Test(description = "a well-formed file is read, and blank lines are skipped")
+    fun aWellFormedFileIsRead() {
+        val read = readInventory(
+            "execution-inventory.txt",
+            listOf("test.A#one\tPASS 1", "", "test.B#two\tSKIP 3", "   "),
+        )
+        assert(read == mapOf("test.A#one" to Outcome("PASS", 1), "test.B#two" to Outcome("SKIP", 3))) {
+            "read the wrong thing: $read"
+        }
+    }
+
     // --- the whole set together ---------------------------------------------------------------------
 
     @Test(description = "the shape this repository is in today passes")

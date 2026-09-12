@@ -79,7 +79,7 @@ abstract class VerifyTestExecution : DefaultTask() {
             mentioned = mentionedClasses(),
             executed = executedClasses,
             ranNow = ranNow,
-            expected = if (updating) emptyMap() else readInventory(baseline),
+            expected = if (updating) emptyMap() else readInventory(baseline.name, baseline.readLines()),
             silent = knownSilent.entries(),
             byFactory = factoryProduced.entries(),
             silentFile = knownSilent.get().asFile.name,
@@ -99,12 +99,6 @@ abstract class VerifyTestExecution : DefaultTask() {
         val problems = problemsIn(evidence)
         if (problems.isNotEmpty()) throw GradleException(problems.joinToString("\n\n"))
     }
-
-    private fun readInventory(file: java.io.File): Map<String, Outcome> =
-        file.readLines().filter { it.isNotBlank() }.mapNotNull { line ->
-            val name = line.substringBefore('\t')
-            Outcome.parse(line.substringAfter('\t', ""))?.let { name to it }
-        }.toMap()
 
     /** One entry per line, `#` starts a comment, blank lines are skipped. */
     private fun RegularFileProperty.entries(): Set<String> =
@@ -244,6 +238,27 @@ internal data class Evidence(
     /** True while the inventory is being rewritten, so the inventory rules have nothing to compare. */
     val updatingInventory: Boolean = false,
 )
+
+/**
+ * Reads the inventory. Every non-blank line must be `class#method`, a tab, then a status and a count.
+ *
+ * A line that does not parse is refused, not skipped. Skipping one made the entry look like a test
+ * that had never existed, so the rule that reports a lost test could not report it -- and that rule
+ * is the only one that survives a package move. A bad merge, or an editor that turns a tab into
+ * spaces, would have switched it off in silence.
+ */
+internal fun readInventory(name: String, lines: List<String>): Map<String, VerifyTestExecution.Outcome> =
+    lines.mapIndexedNotNull { index, line ->
+        if (line.isBlank()) return@mapIndexedNotNull null
+        val outcome = VerifyTestExecution.Outcome.parse(line.substringAfter('\t', ""))
+            ?: throw GradleException(
+                "Malformed entry at $name:${index + 1}: <$line>\n" +
+                    "  Each line is class#method, a tab, then a status and a count, as in\n" +
+                    "  org.testng.memory.MemoryLeakTestNg#testMemoryLeak\tPASS 1\n" +
+                    "  Rebuild the file with -PupdateExecutionInventory if it was damaged."
+            )
+        line.substringBefore('\t') to outcome
+    }.toMap()
 
 /** Every problem the evidence holds, one message each. Empty means the build passes. */
 internal fun problemsIn(e: Evidence): List<String> {
