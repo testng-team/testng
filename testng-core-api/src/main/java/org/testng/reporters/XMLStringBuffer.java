@@ -288,11 +288,26 @@ public class XMLStringBuffer {
   }
 
   public void addCDATA(@Nullable String content) {
+    m_buffer.append(m_currentIndent);
+    appendCDATA(content);
+    m_buffer.append(EOL);
+  }
+
+  /**
+   * Writes {@code <tag><![CDATA[content]]></tag>} on one line so the element's text is the CDATA
+   * value rather than the pretty-print whitespace around it.
+   */
+  public void addCDATAElement(String tagName, @Nullable String content) {
+    m_buffer.append(m_currentIndent).append("<").append(tagName).append(">");
+    appendCDATA(content);
+    m_buffer.append("</").append(tagName).append(">").append(EOL);
+  }
+
+  private void appendCDATA(@Nullable String content) {
     if (content != null) {
       // Solution from https://coderanch.com/t/455930/java/Remove-control-characters
       content = content.replaceAll("[\\p{Cc}&&[^\\r\\n]]", "");
     }
-    m_buffer.append(m_currentIndent);
     if (content == null) {
       m_buffer.append("<![CDATA[null]]>");
     } else if (!content.contains("]]>")) {
@@ -311,7 +326,6 @@ public class XMLStringBuffer {
         m_buffer.append("<![CDATA[]]]]>").append("<![CDATA[>]]>");
       }
     }
-    m_buffer.append(EOL);
   }
 
   /** @return The StringBuffer used to create the document. */

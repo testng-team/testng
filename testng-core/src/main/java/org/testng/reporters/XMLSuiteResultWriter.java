@@ -291,9 +291,7 @@ public class XMLSuiteResultWriter {
       valueAttrs.setProperty(XMLReporterConfig.ATTR_IS_NULL, "true");
       xmlBuffer.addEmptyElement(XMLReporterConfig.TAG_PARAM_VALUE, valueAttrs);
     } else {
-      xmlBuffer.push(XMLReporterConfig.TAG_PARAM_VALUE);
-      xmlBuffer.addCDATA(parameter.value());
-      xmlBuffer.pop();
+      xmlBuffer.addCDATAElement(XMLReporterConfig.TAG_PARAM_VALUE, parameter.value());
     }
     xmlBuffer.pop();
   }
