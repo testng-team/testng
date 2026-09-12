@@ -1392,6 +1392,7 @@ test.reports.ReportTest$DpArrays#testMethod	PASS 2
 test.reports.ReportTest$NullParameter#testMethod	PASS 1
 test.reports.ReporterLogTest#shouldLogFromListener	PASS 3
 test.reports.UniqueReporterInjectionTest#testPruningOfDuplicateReporter	PASS 1
+test.reports.XmlReporterParametersTest#aParameterValueIsTheCdataContentRatherThanThePrettyPrintWhitespaceAroundIt	PASS 1
 test.reports.XmlReporterParametersTest#aPassingConfigurationIsRenderedOnce	PASS 1
 test.reports.XmlReporterParametersTest#aResultThatNeverGotItsValuesReportsNone	PASS 1
 test.reports.XmlReporterParametersTest#anUnrenderableParameterIsDescribedRatherThanLosingTheReport	PASS 1
@@ -1644,6 +1645,12 @@ test.xml.TestNGContentHandlerTest#resolverFollowsOnlyOneRedirect	PASS 1
 test.xml.TestNGContentHandlerTest#testDescriptionInclusion	PASS 1
 test.xml.TestNGContentHandlerTest$LocalTestClass#helloWorld	PASS 1
 test.xml.XMLStringBufferTest#addBufferAppendsWhatAddingItsXmlWouldHave	PASS 1
+test.xml.XMLStringBufferTest#addCDATAElementKeepsLeadingAndTrailingWhitespace	PASS 1
+test.xml.XMLStringBufferTest#addCDATAElementSplitsTheTerminatorSequenceInsideTheTag	PASS 1
+test.xml.XMLStringBufferTest#addCDATAElementWritesTheTagAndCdataOnOneLine	PASS 1
+test.xml.XMLStringBufferTest#addCDATASplitsTheTerminatorSequence	PASS 1
+test.xml.XMLStringBufferTest#addCDATAStripsControlCharactersExceptLineBreaks	PASS 1
+test.xml.XMLStringBufferTest#addCDATAWritesTheWordNullForANull	PASS 1
 test.xml.XMLStringBufferTest#testMethod	PASS 1
 test.xml.XmlVerifyTest#handleInvalidSuites	PASS 1
 test.xml.XmlVerifyTest#preserverOrderAttribute	PASS 1
