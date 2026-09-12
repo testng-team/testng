@@ -14,6 +14,11 @@ val verifyTestExecution = tasks.register<VerifyTestExecution>("verifyTestExecuti
     suite.convention(layout.projectDirectory.file("src/test/resources/testng.xml"))
     inventory.convention(layout.projectDirectory.file("execution-inventory.txt"))
     knownSilent.convention(layout.projectDirectory.file("execution-known-silent.txt"))
+    // Every suite file, so the known-silent list can be judged. See mentionedIn for why the task
+    // that verifies one suite must not judge a list two suites share.
+    mentionedIn.from(
+        layout.projectDirectory.dir("src/test/resources").asFileTree.matching { include("**/*.xml") }
+    )
     factoryProduced.convention(layout.projectDirectory.file("execution-factory-produced.txt"))
     results.convention(layout.buildDirectory.dir("test-results/test"))
     update.convention(providers.gradleProperty("updateExecutionInventory").map { true }.orElse(false))

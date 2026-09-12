@@ -143,9 +143,20 @@ class VerifyTestExecutionRulesTest {
     @Test(description = "an entry no suite file mentions is dead text")
     fun anEntryNoSuiteMentionsIsReported() {
         assertProblem(
-            Evidence(silent = setOf("test.dependent.MissingGroupTest")),
+            Evidence(
+                mentioned = setOf("test.dependent.SomeOtherTest"),
+                silent = setOf("test.dependent.MissingGroupTest"),
+            ),
             "but no suite file mentions it",
         )
+    }
+
+    @Test(description = "a task that cannot see every suite does not judge the shared list")
+    fun aPartialViewDoesNotJudgeTheList() {
+        // execution-known-silent.txt is shared by the task that verifies testng.xml and the one
+        // that verifies testng-memory.xml. The memory task sees one suite, which names none of the
+        // entries. Judging the list from that view reports every entry of the other suite as dead.
+        assertNoProblem(Evidence(silent = setOf("test.jar.JarTest"), mentioned = null))
     }
 
     @Test(description = "a commented-out class is still a mention, so its entry stands")

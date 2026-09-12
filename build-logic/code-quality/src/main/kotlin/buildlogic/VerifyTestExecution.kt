@@ -2,11 +2,13 @@ package buildlogic
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.PathSensitive
@@ -68,6 +70,20 @@ abstract class VerifyTestExecution : DefaultTask() {
     @get:PathSensitive(PathSensitivity.NONE)
     abstract val factoryProduced: RegularFileProperty
 
+    /**
+     * Every suite file that could name a [knownSilent] entry.
+     *
+     * Optional, and empty means this task does not police that list. `execution-known-silent.txt` is
+     * shared: one task verifies `testng.xml` and another verifies `testng-memory.xml`. An entry is a
+     * dead name only when NO suite names it, so a task that sees one suite cannot judge the list --
+     * it would report every entry of the other suite as dead. Only the task given the whole view
+     * judges it.
+     */
+    @get:InputFiles
+    @get:Optional
+    @get:PathSensitive(PathSensitivity.NONE)
+    abstract val mentionedIn: ConfigurableFileCollection
+
     /** Where the test task wrote its JUnit XML. */
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -85,7 +101,7 @@ abstract class VerifyTestExecution : DefaultTask() {
 
         val evidence = Evidence(
             declared = declaredClasses(),
-            mentioned = mentionedClasses(),
+            mentioned = if (mentionedIn.isEmpty) null else mentionedClasses(),
             executed = executedClasses,
             ranNow = ranNow,
             expected = if (updating) emptyMap() else readInventory(baseline.name, baseline.readLines()),
@@ -115,31 +131,31 @@ abstract class VerifyTestExecution : DefaultTask() {
             .map { it.substringBefore('#').trim() }.filter { it.isNotEmpty() }.toSortedSet()
 
     /**
-     * Every class name any suite file holds, comments included. Used only to tell a live entry
-     * from a dead one: a commented-out `<class>` still names a class somebody parked on purpose,
-     * while a name no suite file holds at all belongs to nothing.
+     * Every class name [mentionedIn] holds, comments included. Used only to tell a live entry from a
+     * dead one: a commented-out `<class>` still names a class somebody parked on purpose, while a
+     * name no suite file holds at all belongs to nothing.
      */
-    private fun mentionedClasses(): Set<String> = collectClasses(stripComments = false)
+    private fun mentionedClasses(): Set<String> {
+        val found = sortedSetOf<String>()
+        mentionedIn.files.filter { it.isFile }.forEach { file ->
+            found += CLASS_ENTRY.findAll(file.readText()).map { it.groupValues[1] }
+        }
+        return found
+    }
 
     /**
      * The suite declares a DOCTYPE on testng.org, so it is read as text rather than letting a
      * parser reach for the network. Comments are stripped first: a commented-out `<class>` is not
      * registered, and matching inside one reports a parked class as silently missing.
      */
-    private fun declaredClasses(): Set<String> = collectClasses(stripComments = true)
-
-    private fun collectClasses(stripComments: Boolean): Set<String> {
+    private fun declaredClasses(): Set<String> {
         val found = sortedSetOf<String>()
         val seen = mutableSetOf<java.io.File>()
         fun visit(file: java.io.File) {
             val canonical = file.canonicalFile
             if (!seen.add(canonical) || !canonical.isFile) return
-            val raw = canonical.readText()
-            val text = if (stripComments) {
-                raw.replace(Regex("<!--.*?-->", RegexOption.DOT_MATCHES_ALL), "")
-            } else {
-                raw
-            }
+            val text = canonical.readText()
+                .replace(Regex("<!--.*?-->", RegexOption.DOT_MATCHES_ALL), "")
             found += CLASS_ENTRY.findAll(text).map { it.groupValues[1] }
             // A suite pulls in others with <suite-file>. Classes named only in one of those are
             // still part of the run, so they belong under the same check.
@@ -242,8 +258,11 @@ abstract class VerifyTestExecution : DefaultTask() {
 internal data class Evidence(
     /** Classes `testng.xml` names outside a comment. These must run. */
     val declared: Set<String> = emptySet(),
-    /** Classes any suite file names, comments included. Used only to tell a live name from a dead one. */
-    val mentioned: Set<String> = emptySet(),
+    /**
+     * Classes any suite file names, comments included, or null when this task cannot see every
+     * suite. Null means it does not judge the known-silent list.
+     */
+    val mentioned: Set<String>? = null,
     /** Classes that produced results in this run. */
     val executed: Set<String> = emptySet(),
     /** `class#method` to what happened, from this run. */
@@ -302,11 +321,13 @@ internal fun problemsIn(e: Evidence): List<String> {
     // renamed away matched nothing and was invisible. Two survived a package move and a green
     // merge that way. Comments count as a mention: a commented-out <class> is a decision somebody
     // made, not a dead name.
-    val forgotten = e.silent - e.mentioned
-    if (forgotten.isNotEmpty()) {
-        problems += "Listed in ${e.silentFile} but no suite file mentions it:\n  " +
-            forgotten.joinToString("\n  ") +
-            "\n  The class was renamed or deleted, so the entry guards nothing. Delete it."
+    if (e.mentioned != null) {
+        val forgotten = e.silent - e.mentioned
+        if (forgotten.isNotEmpty()) {
+            problems += "Listed in ${e.silentFile} but no suite file mentions it:\n  " +
+                forgotten.joinToString("\n  ") +
+                "\n  The class was renamed or deleted, so the entry guards nothing. Delete it."
+        }
     }
 
     // An entry in the factory list says "a registered @Factory creates this sample". Two halves of
