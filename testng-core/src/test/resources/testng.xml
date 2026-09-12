@@ -798,6 +798,10 @@
       <class name="org.testng.reporters.jq.ChronologicalPanelTest" />
       <class name="org.testng.reporters.jq.TimesPanelTest" />
       <class name="org.testng.reporters.jq.ModelParametersTest" />
+      <class name="org.testng.reporters.jq.BaseMultiSuitePanelTest" />
+      <class name="org.testng.reporters.XmlCharFilteringWriterTest" />
+      <class name="org.testng.reporters.FileStringBufferTest" />
+      <class name="org.testng.reporters.JUnitXMLReporterTest" />
       <class name="org.testng.internal.reporters.ParameterValueTest" />
       <class name="org.testng.internal.reporters.ParameterSnapshotsTest" />
       <class name="org.testng.internal.reporters.ParameterSnapshotLifecycleTest" />

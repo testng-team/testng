@@ -25,8 +25,7 @@ public class ChronologicalPanel extends BaseMultiSuitePanel {
   }
 
   @Override
-  public String getContent(ISuite suite, XMLStringBuffer main) {
-    XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
+  void writeContent(ISuite suite, XMLStringBuffer xsb) {
     List<IInvokedMethod> invokedMethods = suite.getAllInvokedMethods();
 
     invokedMethods.sort(
@@ -66,12 +65,11 @@ public class ChronologicalPanel extends BaseMultiSuitePanel {
       xsb.addRequired(S, tr.getStartMillis() - start + " ms", C, "method-start");
       xsb.pop(D);
     }
-    // The block the last class opened has no transition left to close it, and toXML() returns the
-    // buffer without closing what is still on its tag stack.
+    // The block the last class opened has no transition left to close it, and nothing downstream
+    // closes what is still on this buffer's tag stack -- neither toXML() nor addBuffer() does.
     if (!"".equals(currentClass)) {
       xsb.pop(D);
     }
-    return xsb.toXML();
   }
 
   private static String extractMethodType(ITestNGMethod m) {

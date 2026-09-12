@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- Tests that fork a child JVM with a heap of their own. They live outside testng.xml because
+     testng-core hands that suite to every Gradle fork, so a class listed there runs once per
+     fork: this one would start six concurrent children on a twelve core machine, each writing
+     about 121 MB of temporary files. The task that runs this file sets maxParallelForks to 1. -->
+<suite name="TestNG-memory" parallel="false">
+  <test name="Memory">
+    <classes>
+      <class name="org.testng.reporters.issue1259.JqReportMemoryTest"/>
+      <class name="org.testng.reporters.spillfailure.BrokenSpillTest"/>
+    </classes>
+  </test>
+</suite>

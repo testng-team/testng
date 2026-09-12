@@ -18,6 +18,7 @@ import org.testng.ITestResult;
 import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.IResultListener2;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 import org.testng.util.TimeUtils;
 
 /**
@@ -27,6 +28,7 @@ import org.testng.util.TimeUtils;
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
 public class JUnitXMLReporter implements IResultListener2 {
+  private static final Logger LOG = Logger.getLogger(JUnitXMLReporter.class);
   private static final Pattern ENTITY = Pattern.compile("&[a-zA-Z]+;.*");
   private static final Pattern LESS = Pattern.compile("<");
   private static final Pattern GREATER = Pattern.compile(">");
@@ -136,8 +138,19 @@ public class JUnitXMLReporter implements IResultListener2 {
     createElementFromIgnoredTests(document, context);
 
     document.pop();
-    Utils.writeUtf8File(
-        context.getOutputDirectory(), generateFileName(context) + ".xml", document.toXML());
+    try {
+      Utils.writeUtf8File(
+          context.getOutputDirectory(), generateFileName(context) + ".xml", document.toXML());
+    } catch (RuntimeException | Error reportFailed) {
+      // This class is a listener, not an IReporter: TestRunner calls onFinish with nothing around
+      // it, where TestNG wraps every IReporter in its own try/catch. So anything raised here ends
+      // the whole run, and no other report is written either. A listener handles its own faults;
+      // this one loses its file and says so.
+      //
+      // Error as well, since toXML() holds the whole report in memory twice over and an
+      // OutOfMemoryError is not a RuntimeException.
+      LOG.error("JUnit XML report for " + context.getName() + " failed", reportFailed);
+    }
   }
 
   static String formattedTime() {

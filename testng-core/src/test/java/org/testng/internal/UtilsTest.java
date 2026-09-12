@@ -3,11 +3,17 @@ package org.testng.internal;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.internal.Utils.join;
+import static test.TestHelper.createRandomDirectory;
 
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.reporters.XMLStringBuffer;
 
 /**
  * Unit tests for {@link Utils}.
@@ -23,6 +29,71 @@ public class UtilsTest {
     assertThat(Utils.escapeUnicode("test")).isEqualTo("test");
     assertThat(Utils.escapeUnicode(String.valueOf(INVALID_CHAR)))
         .isEqualTo(String.valueOf(REPLACEMENT_CHAR));
+  }
+
+  @Test(
+      dataProvider = "failuresOnTheWayOut",
+      description = "A report that failed part way leaves no file, not a plausible one")
+  public void aBufferThatGivesUpPartWayLeavesNoFileBehind(Throwable failure) throws Exception {
+    // The prefix is written before the buffer, so a buffer that raises leaves a page header and no
+    // body -- 40 bytes that open as a report and say nothing about why they are empty.
+    XMLStringBuffer panel = new XMLStringBuffer("");
+    panel.addString("<body>never written</body>");
+    Path directory = createRandomDirectory();
+
+    assertThatThrownBy(
+            () ->
+                Utils.writeUtf8File(
+                    directory.toString(),
+                    "index.html",
+                    new FailingBuffer(panel, failure),
+                    "<html><head><title>report</title></head>"))
+        .isSameAs(failure);
+
+    assertThat(directory.resolve("index.html")).doesNotExist();
+  }
+
+  /** An {@code Error} as well, which a {@code RuntimeException} catch does not cover. */
+  @DataProvider(name = "failuresOnTheWayOut")
+  public Object[][] failuresOnTheWayOut() {
+    return new Object[][] {
+      {new IllegalStateException("A buffer could not be written out")},
+      {new OutOfMemoryError("Java heap space")},
+    };
+  }
+
+  @Test(description = "The file is removed when the writer itself fails, not only the buffer")
+  public void aFileTheWriterCouldNotBeOpenedOnIsNotLeftBehind() throws Exception {
+    // The failure this stands in for is the disk filling up, which surfaces as an IOException from
+    // the final flush of the try-with-resources and leaves a nearly complete report rather than an
+    // obvious stub. That one cannot be provoked on every platform the build runs on; occupying the
+    // report's own path reaches the same catch by the one means that behaves identically
+    // everywhere, and asserts the same thing -- a report that could not be written leaves nothing.
+    Path directory = createRandomDirectory();
+    Path occupied = Files.createDirectory(directory.resolve("index.html"));
+
+    // An IOException is logged, not raised: writeUtf8File has never thrown one at its callers.
+    Utils.writeUtf8File(directory.toString(), "index.html", new XMLStringBuffer(""), null);
+
+    assertThat(occupied).doesNotExist();
+  }
+
+  /** Raises where a buffer whose temporary file has gone raises, which is on the way out. */
+  private static final class FailingBuffer extends XMLStringBuffer {
+    private final Throwable failure;
+
+    FailingBuffer(XMLStringBuffer content, Throwable failure) {
+      super(content.getStringBuffer(), "");
+      this.failure = failure;
+    }
+
+    @Override
+    public void toWriter(Writer fw) {
+      if (failure instanceof Error) {
+        throw (Error) failure;
+      }
+      throw (RuntimeException) failure;
+    }
   }
 
   @Test
