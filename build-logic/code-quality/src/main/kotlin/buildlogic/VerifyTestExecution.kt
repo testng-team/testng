@@ -8,6 +8,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
@@ -54,8 +55,16 @@ abstract class VerifyTestExecution : DefaultTask() {
     @get:PathSensitive(PathSensitivity.NONE)
     abstract val knownSilent: RegularFileProperty
 
-    /** Classes under `.samples.` that run because a registered `@Factory` creates them. */
+    /**
+     * Classes under `.samples.` that run because a registered `@Factory` creates them.
+     *
+     * Optional, and absent means no class is exempt. A second task of this type verifies the memory
+     * suite, which no factory feeds, and pointing it at the main suite's list would report all three
+     * of those classes as having stopped running. Leaving it out is the stricter reading, not the
+     * looser one: with no list, every `.samples.` class that runs is reported.
+     */
     @get:InputFile
+    @get:Optional
     @get:PathSensitive(PathSensitivity.NONE)
     abstract val factoryProduced: RegularFileProperty
 
@@ -81,9 +90,9 @@ abstract class VerifyTestExecution : DefaultTask() {
             ranNow = ranNow,
             expected = if (updating) emptyMap() else readInventory(baseline.name, baseline.readLines()),
             silent = knownSilent.entries(),
-            byFactory = factoryProduced.entries(),
+            byFactory = if (factoryProduced.isPresent) factoryProduced.entries() else emptySet(),
             silentFile = knownSilent.get().asFile.name,
-            factoryFile = factoryProduced.get().asFile.name,
+            factoryFile = factoryProduced.orNull?.asFile?.name ?: "execution-factory-produced.txt",
             updatingInventory = updating,
         )
 
