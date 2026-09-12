@@ -71,14 +71,25 @@ move() {
   git -C "$1" mv "$2" "$3" && git -C "$1" commit -q -m "Move the file"
 }
 
-# fake_pr_body <text>  -- makes a command that prints <text> as a pull request body.
-# The script under test runs it as "<cmd> <pr-number>". This one ignores the number, because a
-# test that needs two different bodies makes two commands.
+# fake_pr_body <text> [expected-pr-number]  -- makes a command that prints <text> as a body.
+#
+# The script under test runs it as "<cmd> <pr-number>". Give the second argument when the test is
+# about WHICH pull request gets read: the reader then prints nothing for any other number, so
+# choosing the wrong pull request fails the test instead of passing it by accident.
+#
+# Leave it out when the test is about the body TEXT. The number is then irrelevant, and pinning it
+# would make an unrelated change to pr_number_of fail a body-matching test.
 fakes=0
 fake_pr_body() {
   fakes=$((fakes + 1))
   printf '%s' "$1" > "$WORK/body.$fakes"
-  { printf '#!/bin/sh\n'; printf 'cat "%s"\n' "$WORK/body.$fakes"; } > "$WORK/prbody.$fakes.sh"
+  {
+    printf '#!/bin/sh\n'
+    if [ -n "${2:-}" ]; then
+      printf 'case "$1" in %s) ;; *) exit 1 ;; esac\n' "$2"
+    fi
+    printf 'cat "%s"\n' "$WORK/body.$fakes"
+  } > "$WORK/prbody.$fakes.sh"
   chmod +x "$WORK/prbody.$fakes.sh"
   printf '%s' "$WORK/prbody.$fakes.sh"
 }
@@ -321,7 +332,7 @@ check "by description still applies the rules" "NOT PROVEN" \
 
 r=$(new_repo); merged_pr "$r" src/foo/AlphaTest.java "Merge pull request #1308 from someone/feature-x"
 check "the body closes the issue" PROVEN \
-  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765')")"
+  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765' 1308)")"
 
 r=$(new_repo); merged_pr "$r" src/foo/AlphaTest.java "Merge pull request #1308 from someone/feature-x"
 check "closes counts too" PROVEN \
@@ -335,7 +346,7 @@ check "an upper case closing word counts" PROVEN \
 # A squash merge puts the pull request number in the subject instead of making a merge commit.
 r=$(new_repo); add "$r" src/foo/AlphaTest.java "Adding a fix (#1308)"
 check "a squashed subject names the pull request" PROVEN \
-  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Resolves #765')")"
+  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Resolves #765' 1308)")"
 
 # --- bodies that must be REJECTED --------------------------------------------------------------
 # A mention is not a claim. These five bodies all hold "765" and none of them says this pull
@@ -370,11 +381,22 @@ This re-adds coverage lost when we reverted (#1308)."
 check "a (#n) in the body is not this pull request" "NOT PROVEN" \
   "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765')")"
 
-# When a subject holds two, the one GitHub appended is the last, not the first.
+# When a subject holds two, the one GitHub appended is the last, not the first. The reader below
+# answers only for 1308, so reading #900 instead fails rather than passing.
 r=$(new_repo)
 add "$r" src/foo/BetaTest.java "Revert the change from (#900) (#1308)"
 check "the appended number is the last one" PROVEN \
-  "$(verdict "$r" src/foo/BetaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765')")"
+  "$(verdict "$r" src/foo/BetaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765' 1308)")"
+
+# The merge subject names the pull request, not the squashed tail of the commit it merged.
+r=$(new_repo)
+add "$r" README.md "First commit"
+git -C "$r" checkout -q -b work
+add "$r" src/foo/GammaTest.java "An earlier squash (#900)"
+git -C "$r" checkout -q master
+git -C "$r" merge -q --no-ff -m "Merge pull request #1308 from someone/work" work
+check "the merge wins over the commit subject" PROVEN \
+  "$(verdict "$r" src/foo/GammaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765' 1308)")"
 
 # No pull request number means no body to read. The command must never run.
 r=$(new_repo); add "$r" src/foo/AlphaTest.java "Adding a fix"

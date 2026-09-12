@@ -29,6 +29,13 @@ import org.gradle.api.tasks.TaskAction
  * The third is the one that survives a package migration. The first two both read the suite file,
  * so neither can see a class that disappeared from the suite *and* the code in the same edit --
  * which is exactly what a mishandled move looks like.
+ *
+ * Both list files are guarded from rotting as well. An entry of [knownSilent] that no suite file
+ * mentions is dead text, and an entry of [factoryProduced] must sit under `.samples.`, must not be
+ * named in the suite, and must keep running.
+ *
+ * The rules themselves are [problemsIn], a pure function over [Evidence]. This class only gathers
+ * the evidence, so `VerifyTestExecutionRulesTest` can put each case to the rules directly.
  */
 abstract class VerifyTestExecution : DefaultTask() {
 
@@ -63,112 +70,41 @@ abstract class VerifyTestExecution : DefaultTask() {
 
     @TaskAction
     fun verify() {
-        val declared = declaredClasses()
         val (executedClasses, ranNow) = actualExecution()
-        val problems = mutableListOf<String>()
-
-        val silent = knownSilent.entries()
-
-        val neverRan = declared - executedClasses - silent
-        if (neverRan.isNotEmpty()) {
-            problems += "Named in the suite but never ran -- compiled, and invisible:\n  " +
-                neverRan.joinToString("\n  ") +
-                "\n  Register it so it runs, or add it to ${knownSilent.get().asFile.name} with a reason."
-        }
-
-        val staleEntries = silent intersect executedClasses
-        if (staleEntries.isNotEmpty()) {
-            problems += "Listed in ${knownSilent.get().asFile.name} but running now. Delete these entries:\n  " +
-                staleEntries.joinToString("\n  ")
-        }
-
-        // An entry only ever failed the build when the class it names RAN. So an entry whose class
-        // was renamed away matched nothing and was invisible. Two such entries survived a package
-        // move and a green merge, and this change deletes them by hand. Comments count as a
-        // mention here: a commented-out <class> is a decision somebody made, not a dead name.
-        val forgotten = silent - mentionedClasses()
-        if (forgotten.isNotEmpty()) {
-            problems += "Listed in ${knownSilent.get().asFile.name} but no suite file mentions it:\n  " +
-                forgotten.joinToString("\n  ") +
-                "\n  The class was renamed or deleted, so the entry guards nothing. Delete it."
-        }
-
-        val byFactory = factoryProduced.entries()
-
-        // An entry here says "a registered @Factory creates this sample". Two halves of that are
-        // free to check, and without them one line in the file turns rule 2 off for good.
-        val notASample = byFactory.filterNot { it.contains(".samples.") }
-        if (notASample.isNotEmpty()) {
-            problems += "Listed in ${factoryProduced.get().asFile.name} but not under .samples.:\n  " +
-                notASample.joinToString("\n  ") +
-                "\n  This list exempts samples. A class outside .samples. needs no exemption."
-        }
-        // A sample a factory produces is never named in the suite. One that is named is a root
-        // test under .samples. -- the leak rule 2 exists to catch, endorsed by the exemption.
-        val exemptAndDeclared = byFactory intersect declared
-        if (exemptAndDeclared.isNotEmpty()) {
-            problems += "Listed in ${factoryProduced.get().asFile.name} AND named in the suite:\n  " +
-                exemptAndDeclared.joinToString("\n  ") +
-                "\n  The suite runs it as a root test, so no @Factory is what makes it run."
-        }
-
-        val samplesThatRan = executedClasses.filter { it.contains(".samples.") } - byFactory
-        if (samplesThatRan.isNotEmpty()) {
-            problems += "Ran but lives under .samples. -- these are TestNG input:\n  " +
-                samplesThatRan.joinToString("\n  ") +
-                "\n  Move it out of .samples., or add it to ${factoryProduced.get().asFile.name} " +
-                "if a registered @Factory creates it."
-        }
-
-        // An entry that stops running is as wrong as one that should not run. The factory that fed
-        // it has gone, or the class has, and the list would go on claiming otherwise.
-        val silentFactoryEntries = byFactory - executedClasses
-        if (silentFactoryEntries.isNotEmpty()) {
-            problems += "Listed in ${factoryProduced.get().asFile.name} but no longer running:\n  " +
-                silentFactoryEntries.joinToString("\n  ") +
-                "\n  The @Factory that created it is gone, or the class is."
-        }
-
         val baseline = inventory.get().asFile
-        if (update.getOrElse(false)) {
+        val updating = update.getOrElse(false)
+
+        val evidence = Evidence(
+            declared = declaredClasses(),
+            mentioned = mentionedClasses(),
+            executed = executedClasses,
+            ranNow = ranNow,
+            expected = if (updating) emptyMap() else readInventory(baseline),
+            silent = knownSilent.entries(),
+            byFactory = factoryProduced.entries(),
+            silentFile = knownSilent.get().asFile.name,
+            factoryFile = factoryProduced.get().asFile.name,
+            updatingInventory = updating,
+        )
+
+        if (updating) {
             // Sorted, so the file has a stable order and its diff is readable. Without this the
             // order follows the filesystem listing and can change between runs on its own.
             baseline.writeText(
                 ranNow.entries.sortedBy { it.key }.joinToString("\n", postfix = "\n") { "${it.key}\t${it.value}" }
             )
             logger.lifecycle("Wrote ${ranNow.size} entries to ${baseline.name}. Read the diff before committing it.")
-        } else {
-            val expected = baseline.readLines().filter { it.isNotBlank() }.mapNotNull { line ->
-                val name = line.substringBefore('\t')
-                Outcome.parse(line.substringAfter('\t', ""))?.let { name to it }
-            }.toMap()
-
-            // Only losses and regressions fail. A test that is new here is not a defect: it arrives
-            // from master as often as from this branch, it is visible in the diff either way, and
-            // failing on it would make every pull request red the moment master gains a test.
-            val gone = expected.keys - ranNow.keys
-            // Any status change is flagged, not only a worsening one: a skip that starts passing
-            // is good news, but it still means the recorded outcome is stale.
-            val changed = expected.filter { (name, was) ->
-                val now = ranNow[name] ?: return@filter false
-                now.status != was.status || now.invocations < was.invocations
-            }
-
-            if (gone.isNotEmpty()) {
-                problems += "These tests no longer run:\n  " + gone.sorted().joinToString("\n  ") +
-                    "\n  A move that drops a class from both the suite and the code looks exactly like this."
-            }
-            if (changed.isNotEmpty()) {
-                problems += "These tests no longer match their recorded outcome:\n" +
-                    changed.entries.sortedBy { it.key }.joinToString("\n") { (name, was) ->
-                        "  $name: was ${was}, now ${ranNow[name]}"
-                    } +
-                    "\n  If that is intended, rerun with -PupdateExecutionInventory and commit the diff."
-            }
         }
 
+        val problems = problemsIn(evidence)
         if (problems.isNotEmpty()) throw GradleException(problems.joinToString("\n\n"))
     }
+
+    private fun readInventory(file: java.io.File): Map<String, Outcome> =
+        file.readLines().filter { it.isNotBlank() }.mapNotNull { line ->
+            val name = line.substringBefore('\t')
+            Outcome.parse(line.substringAfter('\t', ""))?.let { name to it }
+        }.toMap()
 
     /** One entry per line, `#` starts a comment, blank lines are skipped. */
     private fun RegularFileProperty.entries(): Set<String> =
@@ -279,4 +215,121 @@ abstract class VerifyTestExecution : DefaultTask() {
             RegexOption.DOT_MATCHES_ALL,
         )
     }
+}
+
+/**
+ * Everything the rules read, with no Gradle types in it.
+ *
+ * The rules decide whether a build passes, and a wrong answer is silent either way: a real defect
+ * waved through, or a green branch turned red for nothing. So they live here, apart from the task,
+ * where `VerifyTestExecutionRulesTest` can put each case to them directly.
+ */
+internal data class Evidence(
+    /** Classes `testng.xml` names outside a comment. These must run. */
+    val declared: Set<String> = emptySet(),
+    /** Classes any suite file names, comments included. Used only to tell a live name from a dead one. */
+    val mentioned: Set<String> = emptySet(),
+    /** Classes that produced results in this run. */
+    val executed: Set<String> = emptySet(),
+    /** `class#method` to what happened, from this run. */
+    val ranNow: Map<String, VerifyTestExecution.Outcome> = emptyMap(),
+    /** `class#method` to what the inventory records. Empty while the inventory is being rewritten. */
+    val expected: Map<String, VerifyTestExecution.Outcome> = emptyMap(),
+    /** Entries of the known-silent list. */
+    val silent: Set<String> = emptySet(),
+    /** Entries of the factory-produced list. */
+    val byFactory: Set<String> = emptySet(),
+    val silentFile: String = "execution-known-silent.txt",
+    val factoryFile: String = "execution-factory-produced.txt",
+    /** True while the inventory is being rewritten, so the inventory rules have nothing to compare. */
+    val updatingInventory: Boolean = false,
+)
+
+/** Every problem the evidence holds, one message each. Empty means the build passes. */
+internal fun problemsIn(e: Evidence): List<String> {
+    val problems = mutableListOf<String>()
+
+    val neverRan = e.declared - e.executed - e.silent
+    if (neverRan.isNotEmpty()) {
+        problems += "Named in the suite but never ran -- compiled, and invisible:\n  " +
+            neverRan.joinToString("\n  ") +
+            "\n  Register it so it runs, or add it to ${e.silentFile} with a reason."
+    }
+
+    val staleEntries = e.silent intersect e.executed
+    if (staleEntries.isNotEmpty()) {
+        problems += "Listed in ${e.silentFile} but running now. Delete these entries:\n  " +
+            staleEntries.joinToString("\n  ")
+    }
+
+    // An entry only ever failed the build when the class it names RAN. So an entry whose class was
+    // renamed away matched nothing and was invisible. Two survived a package move and a green
+    // merge that way. Comments count as a mention: a commented-out <class> is a decision somebody
+    // made, not a dead name.
+    val forgotten = e.silent - e.mentioned
+    if (forgotten.isNotEmpty()) {
+        problems += "Listed in ${e.silentFile} but no suite file mentions it:\n  " +
+            forgotten.joinToString("\n  ") +
+            "\n  The class was renamed or deleted, so the entry guards nothing. Delete it."
+    }
+
+    // An entry in the factory list says "a registered @Factory creates this sample". Two halves of
+    // that are free to check, and without them one line in the file turns the samples rule off.
+    val notASample = e.byFactory.filterNot { it.contains(".samples.") }
+    if (notASample.isNotEmpty()) {
+        problems += "Listed in ${e.factoryFile} but not under .samples.:\n  " +
+            notASample.joinToString("\n  ") +
+            "\n  This list exempts samples. A class outside .samples. needs no exemption."
+    }
+    // A sample a factory produces is never named in the suite. One that is named is a root test
+    // under .samples. -- the leak the samples rule exists to catch, endorsed by the exemption.
+    val exemptAndDeclared = e.byFactory intersect e.declared
+    if (exemptAndDeclared.isNotEmpty()) {
+        problems += "Listed in ${e.factoryFile} AND named in the suite:\n  " +
+            exemptAndDeclared.joinToString("\n  ") +
+            "\n  The suite runs it as a root test, so no @Factory is what makes it run."
+    }
+
+    val samplesThatRan = e.executed.filter { it.contains(".samples.") } - e.byFactory
+    if (samplesThatRan.isNotEmpty()) {
+        problems += "Ran but lives under .samples. -- these are TestNG input:\n  " +
+            samplesThatRan.joinToString("\n  ") +
+            "\n  Move it out of .samples., or add it to ${e.factoryFile} " +
+            "if a registered @Factory creates it."
+    }
+
+    // An entry that stops running is as wrong as one that should not run. The factory that fed it
+    // has gone, or the class has, and the list would go on claiming otherwise.
+    val silentFactoryEntries = e.byFactory - e.executed
+    if (silentFactoryEntries.isNotEmpty()) {
+        problems += "Listed in ${e.factoryFile} but no longer running:\n  " +
+            silentFactoryEntries.joinToString("\n  ") +
+            "\n  The @Factory that created it is gone, or the class is."
+    }
+
+    if (e.updatingInventory) return problems
+
+    // Only losses and regressions fail. A test that is new here is not a defect: it arrives from
+    // master as often as from a branch, it is visible in the diff either way, and failing on it
+    // would make every pull request red the moment master gained a test.
+    val gone = e.expected.keys - e.ranNow.keys
+    // Any status change is flagged, not only a worsening one: a skip that starts passing is good
+    // news, but it still means the recorded outcome is stale.
+    val changed = e.expected.filter { (name, was) ->
+        val now = e.ranNow[name] ?: return@filter false
+        now.status != was.status || now.invocations < was.invocations
+    }
+
+    if (gone.isNotEmpty()) {
+        problems += "These tests no longer run:\n  " + gone.sorted().joinToString("\n  ") +
+            "\n  A move that drops a class from both the suite and the code looks exactly like this."
+    }
+    if (changed.isNotEmpty()) {
+        problems += "These tests no longer match their recorded outcome:\n" +
+            changed.entries.sortedBy { it.key }.joinToString("\n") { (name, was) ->
+                "  $name: was ${was}, now ${e.ranNow[name]}"
+            } +
+            "\n  If that is intended, rerun with -PupdateExecutionInventory and commit the diff."
+    }
+    return problems
 }

@@ -21,4 +21,8 @@ val verifyTestExecution = tasks.register<VerifyTestExecution>("verifyTestExecuti
 
 tasks.check {
     dependsOn(verifyTestExecution)
+    // The rules VerifyTestExecution applies have their own tests, because a wrong answer there is
+    // silent both ways: a real defect waved through, or a green branch turned red for nothing.
+    // An included build runs no task on its own, so check has to ask, or CI would never run them.
+    dependsOn(gradle.includedBuild("build-logic").task(":code-quality:test"))
 }
