@@ -18,6 +18,7 @@ import org.testng.internal.invokers.InvokedMethod;
 import org.testng.internal.objects.ObjectFactoryImpl;
 import org.testng.internal.reporters.ParameterSnapshotRecorder;
 import org.testng.internal.reporters.ParameterSnapshots;
+import org.testng.internal.thread.ThreadTimeoutException;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
@@ -448,12 +449,84 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       tasks.add(new SuiteWorker(tr));
     }
 
-    ThreadUtil.execute(
-        configuration,
-        "tests",
-        tasks,
-        xmlSuite.getThreadCount(),
-        xmlSuite.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS));
+    long timeOut = xmlSuite.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
+    ThreadUtil.execute(configuration, "tests", tasks, xmlSuite.getThreadCount(), timeOut);
+    recordTimedOutParallelTests(timeOut);
+  }
+
+  /**
+   * {@code invokeAll} cancels a {@code <test>} worker when the suite time-out fires. A method that
+   * stops when interrupted still records its failure a moment later; a method that ignores
+   * interruption never returns, so {@link #runTest} never stores a result. The reports and the exit
+   * code then omit that {@code <test>}, and the run exits 0.
+   *
+   * <p>Wait briefly for workers that can still finish, then fail every method that still has no
+   * result and store the {@code <test>} so the reports and the exit code see it.
+   */
+  private void recordTimedOutParallelTests(long timeOut) {
+    if (timeOut == 0) {
+      return;
+    }
+    waitForStragglingParallelTests();
+    for (TestRunner tr : testRunners) {
+      if (hasSuiteResult(tr)) {
+        continue;
+      }
+      failUnfinishedMethods(tr, timeOut);
+      ISuiteResult sr = new SuiteResult(xmlSuite, tr);
+      try (AutoCloseableLock ignore = suiteResultsLock.lock()) {
+        suiteResults.putIfAbsent(tr.getName(), sr);
+      }
+    }
+  }
+
+  /**
+   * A cancelled worker that respects interruption records its result shortly after {@code
+   * invokeAll} returns. 250 ms is long enough for that path and short enough that a worker that
+   * ignores interruption does not stall the suite.
+   */
+  private void waitForStragglingParallelTests() {
+    long deadline = System.currentTimeMillis() + 250;
+    while (recordedParallelTestCount() < testRunners.size()
+        && System.currentTimeMillis() < deadline) {
+      try {
+        Thread.sleep(10);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        return;
+      }
+    }
+  }
+
+  private int recordedParallelTestCount() {
+    try (AutoCloseableLock ignore = suiteResultsLock.lock()) {
+      return suiteResults.size();
+    }
+  }
+
+  private boolean hasSuiteResult(TestRunner tr) {
+    try (AutoCloseableLock ignore = suiteResultsLock.lock()) {
+      return suiteResults.containsKey(tr.getName());
+    }
+  }
+
+  private void failUnfinishedMethods(TestRunner tr, long timeOut) {
+    for (ITestNGMethod method : tr.getAllTestMethods()) {
+      if (hasRecordedResult(tr, method)) {
+        continue;
+      }
+      ThreadTimeoutException exception = new ThreadTimeoutException(method, timeOut);
+      ITestResult result = TestResult.newTestResultWithCauseAs(method, tr, exception);
+      result.setStatus(ITestResult.FAILURE);
+      tr.addFailedTest(method, result);
+      TestListenerHelper.runTestListeners(result, tr.getTestListeners());
+    }
+  }
+
+  private static boolean hasRecordedResult(TestRunner tr, ITestNGMethod method) {
+    return !tr.getPassedTests(method).isEmpty()
+        || !tr.getFailedTests(method).isEmpty()
+        || !tr.getSkippedTests(method).isEmpty();
   }
 
   private class SuiteWorker implements Runnable {
