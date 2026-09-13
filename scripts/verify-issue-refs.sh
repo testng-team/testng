@@ -331,10 +331,16 @@ commit_prs() {
     gh api "repos/$REPO/commits/$1/pulls" --jq '.[] | "\(.number)\t\(.head.ref)"' 2>/dev/null
   fi
 }
-# A pull request's branch names the number, the way "fix-765" does. The number must stand alone, so
-# "fix-7650" does not answer for 765.
+# A pull request's branch names the issue, the way "fix-765" and "github-2321" do.
+#
+# The number must follow a word that marks an issue: fix, issue, gh, github or bug. Digits alone are
+# not enough. They put "java-17-support" behind issue 17, a dependabot branch ending in
+# "assertj-core-3.27.3" behind 27, and "release-765" behind 765, which the commit-message rule has
+# always refused. The number must also end the name or be followed by something other than a digit or
+# a dot, so "fix-7650" does not answer for 765 and neither does the version "fix-765.1".
 ref_names_num() {
-  printf '%s' "$1" | grep -qE "(^|[^0-9])${num}([^0-9]|$)"
+  printf '%s' "$1" \
+    | grep -qiE "(^|[^[:alnum:]])(fix(es|ed)?|issues?|gh|github|bug(fix)?)[-_/]?${num}([^0-9.]|$)"
 }
 # Reports the text that matched, so a reader can judge it. It searches the same cleaned string the
 # rules did, never the raw message, or it would print a pull request number as the evidence.
