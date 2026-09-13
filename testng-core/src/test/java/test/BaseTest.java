@@ -65,6 +65,15 @@ public class BaseTest extends BaseDistributedTest {
     m_suite.setTimeOut(Long.toString(n));
   }
 
+  /**
+   * Sets the parallel mode on the {@code <suite>}. {@link #setParallel(XmlSuite.ParallelMode)} sets
+   * it on the {@code <test>}, where {@code ParallelMode.TESTS} is a declared no-op, so a test that
+   * means to exercise {@code parallel="tests"} has to say it here.
+   */
+  protected void setSuiteParallel(XmlSuite.ParallelMode parallel) {
+    m_suite.setParallel(parallel);
+  }
+
   protected void setThreadCount(int count) {
     getTest().getSuite().setThreadCount(count);
   }
