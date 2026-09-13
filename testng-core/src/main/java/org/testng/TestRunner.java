@@ -1241,9 +1241,10 @@ public class TestRunner
   }
 
   /**
-   * Decides under {@code resultLock} whether test listeners may run. Callbacks execute after that
-   * lock is released so a slow listener cannot delay a freeze. A callback admitted before the
-   * freeze may complete afterward.
+   * Decides under {@code resultLock} whether test listeners may run. A finished result is recorded
+   * in that same step so a freeze cannot invent a second outcome. Callbacks execute after the lock
+   * is released so a slow listener cannot delay a freeze. A callback admitted before the freeze may
+   * complete afterward.
    *
    * @return {@code false} if results are frozen
    */
@@ -1253,10 +1254,45 @@ public class TestRunner
       if (resultsFrozen) {
         return false;
       }
+      if (tr.getStatus() != ITestResult.STARTED) {
+        recordFinishedResult(tr);
+      }
     }
     TestListenerHelper.runTestListeners(tr, listeners);
     TestListenerHelper.runTestListeners(tr, extraListeners);
     return true;
+  }
+
+  /**
+   * Records a finished invocation under {@code resultLock}. Timeout finalization then sees the
+   * result and does not add a synthetic failure for the same invocation.
+   */
+  private void recordFinishedResult(ITestResult tr) {
+    ITestNGMethod method = tr.getMethod();
+    Integer n = inFlightInvocations.get(method);
+    if (n != null) {
+      if (n <= 1) {
+        inFlightInvocations.remove(method);
+      } else {
+        inFlightInvocations.put(method, n - 1);
+      }
+    }
+    switch (tr.getStatus()) {
+      case ITestResult.SUCCESS:
+        m_passedTests.addResult(tr);
+        break;
+      case ITestResult.SKIP:
+        m_skippedTests.addResult(tr);
+        break;
+      case ITestResult.FAILURE:
+        m_failedTests.addResult(tr);
+        break;
+      case ITestResult.SUCCESS_PERCENTAGE_FAILURE:
+        m_failedButWithinSuccessPercentageTests.addResult(tr);
+        break;
+      default:
+        break;
+    }
   }
 
   private ITestNGMethod[] methodsEligibleForTimeoutReporting() {

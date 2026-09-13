@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -206,6 +207,46 @@ public class Issue3513Test extends SimpleBaseTest {
     }
   }
 
+  /**
+   * A terminal listener admitted before freeze may finish after it. The same invocation must not
+   * also get a synthetic timeout failure.
+   */
+  @Test(description = "GITHUB-3513")
+  public void aBlockingOnTestSuccessDoesNotAlsoPublishATimeoutFailure() throws Exception {
+    File outputDir = createDirInTempDir("issue3513-blocking-success");
+    XmlSuite suite = createXmlSuite("issue3513");
+    suite.setParallel(XmlSuite.ParallelMode.TESTS);
+    suite.setThreadCount(2);
+    suite.setTimeOut(Long.toString(SUITE_TIME_OUT_MILLIS));
+    createXmlTest(suite, "fast-test", FastSample.class);
+    createXmlTest(suite, "stubborn-test", StubbornSample.class);
+
+    TestNG testng = create(suite);
+    testng.setUseDefaultListeners(true);
+    testng.setOutputDirectory(outputDir.getAbsolutePath());
+    BlockingSuccessListener blocking = new BlockingSuccessListener();
+    TimeoutFailureGate gate = new TimeoutFailureGate();
+    TestListenerAdapter tla = new TestListenerAdapter();
+    testng.addListener((ITestNGListener) blocking);
+    testng.addListener((ITestNGListener) gate);
+    testng.addListener((ITestNGListener) tla);
+
+    Thread runner = new Thread(testng::run, "issue3513-blocking-success");
+    runner.start();
+    try {
+      assertThat(blocking.entered.await(5, TimeUnit.SECONDS)).isTrue();
+      assertThat(gate.stubbornFailed.await(2, TimeUnit.SECONDS)).isTrue();
+      assertThat(blocking.statuses).containsExactly(ITestResult.SUCCESS);
+    } finally {
+      blocking.release.countDown();
+      runner.join(10_000);
+    }
+
+    assertThat(blocking.statuses).containsExactly(ITestResult.SUCCESS);
+    assertThat(tla.getPassedTests()).extracting(ITestResult::getName).contains("fast");
+    assertThat(tla.getFailedTests()).extracting(ITestResult::getName).doesNotContain("fast");
+  }
+
   @Test
   public void threadUtilExecuteKeepsVoidReturnType() throws NoSuchMethodException {
     assertThat(
@@ -276,6 +317,41 @@ public class Issue3513Test extends SimpleBaseTest {
     @Override
     public void onFinish(ISuite suite) {
       this.suite = suite;
+    }
+  }
+
+  /**
+   * Parks in {@code onTestSuccess} across the suite time-out. Records every terminal outcome for
+   * {@code fast}.
+   */
+  private static final class BlockingSuccessListener implements ITestListener {
+    private final CountDownLatch entered = new CountDownLatch(1);
+    private final CountDownLatch release = new CountDownLatch(1);
+    private final List<Integer> statuses = new CopyOnWriteArrayList<>();
+
+    @Override
+    public void onTestSuccess(ITestResult result) {
+      if (!"fast".equals(result.getName())) {
+        return;
+      }
+      statuses.add(result.getStatus());
+      entered.countDown();
+      long end = System.currentTimeMillis() + 10_000;
+      while (release.getCount() > 0 && System.currentTimeMillis() < end) {
+        try {
+          release.await(50, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException ignored) {
+          // Keep the callback open across suite cancellation.
+        }
+      }
+    }
+
+    @Override
+    public void onTestFailure(ITestResult result) {
+      if (!"fast".equals(result.getName())) {
+        return;
+      }
+      statuses.add(result.getStatus());
     }
   }
 
