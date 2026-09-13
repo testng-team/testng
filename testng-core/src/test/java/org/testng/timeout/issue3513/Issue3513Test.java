@@ -6,12 +6,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestContext;
+import org.testng.ITestListener;
 import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -169,6 +172,40 @@ public class Issue3513Test extends SimpleBaseTest {
     assertThat(run.tla.getFailedTests()).isEmpty();
   }
 
+  /**
+   * A listener admitted before the freeze may finish after it. Timeout finalization must not wait
+   * for that callback.
+   */
+  @Test(description = "GITHUB-3513")
+  public void aBlockingListenerDoesNotDelayTimeoutFinalization() throws Exception {
+    File outputDir = createDirInTempDir("issue3513-blocking-listener");
+    XmlSuite suite = createXmlSuite("issue3513");
+    suite.setParallel(XmlSuite.ParallelMode.TESTS);
+    suite.setThreadCount(2);
+    suite.setTimeOut(Long.toString(SUITE_TIME_OUT_MILLIS));
+    createXmlTest(suite, "stubborn-test", StubbornSample.class);
+    createXmlTest(suite, "fast-test", FastSample.class);
+
+    TestNG testng = create(suite);
+    testng.setUseDefaultListeners(true);
+    testng.setOutputDirectory(outputDir.getAbsolutePath());
+    BlockingStartListener blocking = new BlockingStartListener();
+    TimeoutFailureGate gate = new TimeoutFailureGate();
+    testng.addListener((ITestNGListener) blocking);
+    testng.addListener((ITestNGListener) gate);
+
+    Thread runner = new Thread(testng::run, "issue3513-blocking-listener");
+    runner.start();
+    try {
+      assertThat(blocking.entered.await(5, TimeUnit.SECONDS)).isTrue();
+      assertThat(gate.stubbornFailed.await(2, TimeUnit.SECONDS)).isTrue();
+      assertThat(gate.stubborn.getThrowable()).isInstanceOf(ThreadTimeoutException.class);
+    } finally {
+      blocking.release.countDown();
+      runner.join(10_000);
+    }
+  }
+
   @Test
   public void threadUtilExecuteKeepsVoidReturnType() throws NoSuchMethodException {
     assertThat(
@@ -239,6 +276,39 @@ public class Issue3513Test extends SimpleBaseTest {
     @Override
     public void onFinish(ISuite suite) {
       this.suite = suite;
+    }
+  }
+
+  /** Parks in {@code onTestStart} so timeout finalization cannot wait on this callback. */
+  private static final class BlockingStartListener implements ITestListener {
+    private final CountDownLatch entered = new CountDownLatch(1);
+    private final CountDownLatch release = new CountDownLatch(1);
+
+    @Override
+    public void onTestStart(ITestResult result) {
+      if (!"stubborn".equals(result.getName())) {
+        return;
+      }
+      entered.countDown();
+      try {
+        release.await(10, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
+    }
+  }
+
+  private static final class TimeoutFailureGate implements ITestListener {
+    private final CountDownLatch stubbornFailed = new CountDownLatch(1);
+    private volatile ITestResult stubborn;
+
+    @Override
+    public void onTestFailure(ITestResult result) {
+      if (!"stubborn".equals(result.getName())) {
+        return;
+      }
+      stubborn = result;
+      stubbornFailed.countDown();
     }
   }
 }

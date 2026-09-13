@@ -1191,7 +1191,9 @@ public class TestRunner
       for (ITestNGMethod method : methods) {
         int missing = unfinishedInvocationCount(method);
         for (int i = 0; i < missing; i++) {
-          created.add(newTimeoutFailure(method, timeOut));
+          ITestResult failure = createTimeoutFailure(method, timeOut);
+          m_failedTests.addResult(failure);
+          created.add(failure);
         }
       }
       if (m_endInstant == null) {
@@ -1239,8 +1241,9 @@ public class TestRunner
   }
 
   /**
-   * Runs test listeners unless a suite time-out already froze the results. The freeze flag and this
-   * dispatch share one lock.
+   * Decides under {@code resultLock} whether test listeners may run. Callbacks execute after that
+   * lock is released so a slow listener cannot delay a freeze. A callback admitted before the
+   * freeze may complete afterward.
    *
    * @return {@code false} if results are frozen
    */
@@ -1250,10 +1253,10 @@ public class TestRunner
       if (resultsFrozen) {
         return false;
       }
-      TestListenerHelper.runTestListeners(tr, listeners);
-      TestListenerHelper.runTestListeners(tr, extraListeners);
-      return true;
     }
+    TestListenerHelper.runTestListeners(tr, listeners);
+    TestListenerHelper.runTestListeners(tr, extraListeners);
+    return true;
   }
 
   private ITestNGMethod[] methodsEligibleForTimeoutReporting() {
@@ -1280,11 +1283,11 @@ public class TestRunner
     return Math.max(missing, running);
   }
 
-  private ITestResult newTimeoutFailure(ITestNGMethod method, long timeOut) {
+  /** Builds a timeout failure result. The caller registers it on {@code m_failedTests}. */
+  private ITestResult createTimeoutFailure(ITestNGMethod method, long timeOut) {
     ThreadTimeoutException exception = new ThreadTimeoutException(method, timeOut);
     ITestResult result = TestResult.newTestResultWithCauseAs(method, this, exception);
     result.setStatus(ITestResult.FAILURE);
-    m_failedTests.addResult(result);
     return result;
   }
 
