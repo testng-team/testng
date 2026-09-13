@@ -35,9 +35,29 @@ BY_DESCRIPTION=${BY_DESCRIPTION:-0}
 # The command that prints a pull request body. It is given the pull request number.
 # Overridable so the tests can run offline: they pass a script that prints a fixed body.
 PR_BODY_CMD=${PR_BODY_CMD:-}
+# Set to a method name to judge the commit that added that one method, not the commit that added the
+# file. A file's first commit proves nothing about a method added to it years later: ParallelTestTest
+# came from a 2006 commit, and holds one method from a #1636 fix and two from "Unit tests for #2532".
+#
+# Bound to the file's own history, like BY_DESCRIPTION, so a method of the same name in another file
+# never answers. If no commit added the method here, the script refuses. It does not fall back to the
+# file's commit, because that answer reads exactly like the real one.
+METHOD=${METHOD:-}
 frag=${1:?usage: verify-issue-refs.sh <path-fragment> [issue-number]}
 num=${2:-}
 rc=0
+
+if [ -n "$METHOD" ]; then
+  if [ "$BY_DESCRIPTION" = 1 ]; then
+    echo "METHOD and BY_DESCRIPTION each pick the commit a different way; set only one"
+    exit 1
+  fi
+  # A Java identifier, so the name is safe inside the patterns below.
+  if ! printf '%s' "$METHOD" | grep -qE '^[A-Za-z_][A-Za-z0-9_]*$'; then
+    echo "METHOD must be a plain method name, got <$METHOD>"
+    exit 1
+  fi
+fi
 
 # Enumerate every historical path the fragment matches before picking a commit. Choosing the first
 # match would tie a test to an unrelated commit, and the output reads exactly like the real thing.
@@ -103,6 +123,35 @@ if [ "$BY_DESCRIPTION" = 1 ]; then
     exit 1
   fi
   printf 'wrote it    %s\n' "$(git log -1 --format=%h "$sha")  in $frag"
+fi
+
+# The commit that added one method to this file.
+#
+# git narrows the candidates with a loose pattern. The exact test then runs on the lines each commit
+# added to this file, so a method only shown as context or removed does not count. The boundary
+# before "void" is what keeps "// avoid target()" out, and the "(" after the name keeps
+# "targetMore" out.
+if [ -n "$METHOD" ]; then
+  lineage=$(git log --follow --format= --name-only -- "$frag" 2>/dev/null | grep -v '^$' | sort -u)
+  if [ -z "$lineage" ]; then
+    echo "no history for $frag; METHOD needs a path git can follow"
+    exit 1
+  fi
+  decl="(^|[^[:alnum:]_])void[[:space:]]+${METHOD}[[:space:]]*\\("
+  for candidate in $(git log -G "void[[:space:]][[:space:]]*${METHOD}" --all --reverse --format=%H -- '*.java')
+  do
+    while IFS= read -r path; do
+      if git show "$candidate" -M --format= -- "$path" | sed -n 's/^+//p' | grep -qE "$decl"; then
+        sha=$candidate
+        break 2
+      fi
+    done <<< "$lineage"
+  done
+  if [ -z "$sha" ]; then
+    echo "no commit added the method $METHOD to $frag or any path it came from"
+    exit 1
+  fi
+  printf 'method      %s\n' "$(git log -1 --format=%h "$sha") added $METHOD in $frag"
 fi
 
 # A path in the worktree is followed through renames first.
