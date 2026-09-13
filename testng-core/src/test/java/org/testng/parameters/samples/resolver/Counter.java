@@ -1,4 +1,4 @@
-package test.inject.parameterresolver;
+package org.testng.parameters.samples.resolver;
 
 /** A class, so that a mock of it is a generated subclass rather than a proxy. */
 public class Counter {

@@ -1,4 +1,4 @@
-package test.inject.parameterresolver;
+package org.testng.parameters.samples.resolver;
 
 /** A type TestNG knows nothing about, so only a resolver can supply one. */
 public class CustomObject {

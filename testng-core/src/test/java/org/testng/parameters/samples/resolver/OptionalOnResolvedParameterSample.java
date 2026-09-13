@@ -1,4 +1,4 @@
-package test.inject.parameterresolver;
+package org.testng.parameters.samples.resolver;
 
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;

@@ -1,4 +1,4 @@
-package test.inject.parameterresolver;
+package org.testng.parameters.samples.resolver;
 
 import java.lang.reflect.Parameter;
 import java.util.function.Function;

@@ -1,4 +1,4 @@
-package test.inject.parameterresolver;
+package org.testng.parameters.samples.resolver;
 
 import java.lang.reflect.Method;
 import org.testng.ITestContext;

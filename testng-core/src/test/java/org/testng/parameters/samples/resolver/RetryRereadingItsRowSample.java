@@ -1,4 +1,4 @@
-package test.inject.parameterresolver;
+package org.testng.parameters.samples.resolver;
 
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestContext;
