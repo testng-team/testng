@@ -325,9 +325,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         // - the test is enabled and
         // - the Configuration method belongs to the same class or a parent
         configurationAnnotation = AnnotationHelper.findConfiguration(annotationFinder(), method);
-        boolean alwaysRun = MethodHelper.isAlwaysRun(configurationAnnotation);
         boolean canProcessMethod =
-            MethodHelper.isEnabled(objectClass, annotationFinder()) || alwaysRun;
+            MethodHelper.isEnabled(objectClass, annotationFinder())
+                || MethodHelper.isAlwaysRun(configurationAnnotation);
         if (!canProcessMethod) {
           log(
               3,
@@ -342,14 +342,15 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
           continue;
         }
-        if (hasConfigurationFailureFor(
+        // GITHUB-1622. The guard is a field read, so it comes before the map walks.
+        if (!MethodHelper.canBypassConfigurationFailure(tm, configurationAnnotation)
+            && hasConfigurationFailureFor(
                 tm,
                 arguments.getTestMethod(),
                 tm.getGroups(),
                 testClass,
                 arguments.getInstance(),
-                arguments.getIgnoredFailureMark())
-            && !alwaysRun) {
+                arguments.getIgnoredFailureMark())) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
           InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), testResult);
           // Set test result as 'SKIP' in 'beforeConfiguration' & 'beforeInvocation' if
@@ -360,16 +361,11 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
           testResult.setEndMillis(testResult.getStartMillis());
           runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
-
-          handleConfigurationSkip(
-              tm,
-              testResult,
-              Objects.requireNonNull(
-                  configurationAnnotation,
-                  "a configuration method always carries a @Before/@After annotation"),
-              arguments.getTestMethod(),
-              arguments.getInstance(),
-              arguments.getSuite());
+          // The only reason for this skip is a failure that is already recorded. Recording the
+          // skip as well would reach tests that failure does not cover: it would mark the groups
+          // of a skipped @BeforeGroups, the class of a skipped @BeforeClass, and the level flags
+          // that decide where ignoreFailure is looked up.
+          runConfigurationListeners(testResult, arguments.getTestMethod(), false /* after */);
           continue;
         }
 

@@ -19,6 +19,24 @@ public class IssueTest extends SimpleBaseTest {
     assertThat(reporter.getAttributes()).containsAllEntriesOf(expected());
   }
 
+  @Test(description = "GITHUB-1753, with the failure in the parent @BeforeMethod")
+  public void testToEnsureAFailingParentConfigurationStillContributesItsAttributes() {
+
+    TestNG testng = create(ChildOfFailingParentSample.class);
+    LocalReporter reporter = new LocalReporter();
+    testng.addListener(reporter);
+    testng.run();
+    // The parent @BeforeMethod failed and still contributed. The child one contributed nothing
+    // because it never ran: since GITHUB-1622 a @Before method is skipped once a configuration
+    // before it has failed, alwaysRun or not. Both @AfterMethod are alwaysRun, so they ran.
+    String sample = ChildOfFailingParentSample.class.getSimpleName();
+    assertThat(reporter.getAttributes())
+        .containsOnlyKeys(
+            sample + "-parentClassBeforeMethod",
+            sample + "-parentClassAfterMethod",
+            sample + "-childClassAfterMethod");
+  }
+
   private static Map<String, String> expected() {
     Map<String, String> expected = new HashMap<>();
     expected.put(
