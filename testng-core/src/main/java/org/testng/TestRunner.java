@@ -151,6 +151,8 @@ public class TestRunner
   private final IResultMap m_skippedTests = new ResultMap();
 
   private final Object resultLock = new Object();
+  private final IdentityHashMap<ITestNGMethod, Integer> inFlightInvocations =
+      new IdentityHashMap<>();
   private volatile boolean resultsFrozen;
   private volatile boolean hasInterceptedMethods;
   private volatile ITestNGMethod[] interceptedTestMethods = new ITestNGMethod[0];
@@ -1192,16 +1194,6 @@ public class TestRunner
           created.add(newTimeoutFailure(method, timeOut));
         }
       }
-      if (created.isEmpty()) {
-        ITestNGMethod inFlight = findInFlightMethod(methods);
-        if (inFlight != null) {
-          created.add(newTimeoutFailure(inFlight, timeOut));
-        } else {
-          for (ITestNGMethod method : methods) {
-            created.add(newTimeoutFailure(method, timeOut));
-          }
-        }
-      }
       if (m_endInstant == null) {
         m_endInstant = Instant.now();
       }
@@ -1212,6 +1204,56 @@ public class TestRunner
 
   public boolean resultsFrozen() {
     return resultsFrozen;
+  }
+
+  /**
+   * Records that a test invocation has started and has no result yet. {@link
+   * #addTimeoutFailuresForUnfinishedInvocations} reads this count.
+   */
+  public void markInvocationStarted(ITestNGMethod method) {
+    synchronized (resultLock) {
+      if (resultsFrozen) {
+        return;
+      }
+      Integer n = inFlightInvocations.get(method);
+      inFlightInvocations.put(method, n == null ? 1 : n + 1);
+    }
+  }
+
+  /**
+   * Records that a test invocation has a result, including after a freeze. An {@code @AfterMethod}
+   * that still runs is not an unfinished invocation.
+   */
+  public void markInvocationFinished(ITestNGMethod method) {
+    synchronized (resultLock) {
+      Integer n = inFlightInvocations.get(method);
+      if (n == null) {
+        return;
+      }
+      if (n <= 1) {
+        inFlightInvocations.remove(method);
+      } else {
+        inFlightInvocations.put(method, n - 1);
+      }
+    }
+  }
+
+  /**
+   * Runs test listeners unless a suite time-out already froze the results. The freeze flag and this
+   * dispatch share one lock.
+   *
+   * @return {@code false} if results are frozen
+   */
+  public boolean notifyTestListenersIfNotFrozen(
+      ITestResult tr, List<ITestListener> listeners, List<ITestListener> extraListeners) {
+    synchronized (resultLock) {
+      if (resultsFrozen) {
+        return false;
+      }
+      TestListenerHelper.runTestListeners(tr, listeners);
+      TestListenerHelper.runTestListeners(tr, extraListeners);
+      return true;
+    }
   }
 
   private ITestNGMethod[] methodsEligibleForTimeoutReporting() {
@@ -1230,18 +1272,12 @@ public class TestRunner
     int recorded = recordedResultCount(method);
     int missing = expectedInvocationCount(method) - recorded;
     if (missing <= 0 && method.hasMoreInvocation()) {
-      return 1;
+      missing = 1;
     }
-    return Math.max(0, missing);
-  }
-
-  private @Nullable ITestNGMethod findInFlightMethod(ITestNGMethod[] methods) {
-    for (ITestNGMethod method : methods) {
-      if (recordedResultCount(method) > 0 || method.getCurrentInvocationCount() > 0) {
-        return method;
-      }
-    }
-    return null;
+    missing = Math.max(0, missing);
+    Integer inFlight = inFlightInvocations.get(method);
+    int running = inFlight == null ? 0 : inFlight;
+    return Math.max(missing, running);
   }
 
   private ITestResult newTimeoutFailure(ITestNGMethod method, long timeOut) {

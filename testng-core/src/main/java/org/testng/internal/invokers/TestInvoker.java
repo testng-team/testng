@@ -345,9 +345,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
   @Override
   public void runTestResultListener(ITestResult tr) {
-    if (resultsFrozen()) {
-      return;
-    }
     // For onTestStart method, still run as insert order
     // but regarding
     // onTestSkipped/onTestFailedButWithinSuccessPercentage/onTestFailedWithTimeout/onTestFailure/onTestSuccess, it should be reverse order.
@@ -358,9 +355,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 m_notifier.getTestListeners(), m_configuration.getListenerComparator())
             : ListenerOrderDeterminer.order(
                 m_notifier.getTestListeners(), m_configuration.getListenerComparator());
+    List<ITestListener> exitCode = Collections.singletonList(m_notifier.getExitCodeListener());
+    if (m_testContext instanceof TestRunner) {
+      ((TestRunner) m_testContext).notifyTestListenersIfNotFrozen(tr, listeners, exitCode);
+      return;
+    }
     TestListenerHelper.runTestListeners(tr, listeners);
-    TestListenerHelper.runTestListeners(
-        tr, Collections.singletonList(m_notifier.getExitCodeListener()));
+    TestListenerHelper.runTestListeners(tr, exitCode);
   }
 
   private Collection<IDataProviderListener> dataProviderListeners() {
@@ -687,7 +688,20 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return m_testContext instanceof TestRunner && ((TestRunner) m_testContext).resultsFrozen();
   }
 
+  private void markInvocationStarted(ITestNGMethod method) {
+    if (m_testContext instanceof TestRunner) {
+      ((TestRunner) m_testContext).markInvocationStarted(method);
+    }
+  }
+
+  private void markInvocationFinished(ITestNGMethod method) {
+    if (m_testContext instanceof TestRunner) {
+      ((TestRunner) m_testContext).markInvocationFinished(method);
+    }
+  }
+
   private void collectResults(ITestNGMethod testMethod, ITestResult result) {
+    markInvocationFinished(testMethod);
     if (resultsFrozen()) {
       return;
     }
@@ -869,6 +883,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               : m_configuration.getHookable();
 
       boolean willfullyIgnored = false;
+      markInvocationStarted(arguments.getTestMethod());
       if (MethodHelper.calculateTimeOut(arguments.getTestMethod()) <= 0) {
         if (hookableInstance != null) {
           willfullyIgnored =

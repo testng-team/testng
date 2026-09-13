@@ -450,7 +450,8 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
 
     long timeOut = xmlSuite.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
     boolean waitCompleted =
-        ThreadUtil.execute(configuration, "tests", tasks, xmlSuite.getThreadCount(), timeOut);
+        ThreadUtil.executeAndWait(
+            configuration, "tests", tasks, xmlSuite.getThreadCount(), timeOut);
     // An interrupted wait is not a suite time-out. Do not invent ThreadTimeoutException results.
     if (waitCompleted) {
       recordTimedOutParallelTests(timeOut);

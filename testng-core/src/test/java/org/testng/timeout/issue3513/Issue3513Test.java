@@ -18,9 +18,12 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.internal.ExitCode;
+import org.testng.internal.IConfiguration;
 import org.testng.internal.thread.ThreadTimeoutException;
+import org.testng.internal.thread.ThreadUtil;
 import org.testng.reporters.FailedReporter;
 import org.testng.reporters.RuntimeBehavior;
+import org.testng.timeout.samples.issue3513.AfterMethodBlockedSample;
 import org.testng.timeout.samples.issue3513.FastSample;
 import org.testng.timeout.samples.issue3513.InterceptorSample;
 import org.testng.timeout.samples.issue3513.InterruptibleSample;
@@ -143,6 +146,42 @@ public class Issue3513Test extends SimpleBaseTest {
         .containsExactly("stubborn");
     assertThat(run.tla.getFailedTests()).extracting(ITestResult::getName).doesNotContain("dropped");
     assertReportsContainFailedMethod(outputDir, "stubborn", true);
+  }
+
+  @Test(description = "GITHUB-3513")
+  public void aBlockedAfterMethodDoesNotInventATimeoutFailure() throws InterruptedException {
+    File outputDir = createDirInTempDir("issue3513-after-method");
+    Run run =
+        runParallelSuite(
+            outputDir, "after-test", AfterMethodBlockedSample.class, /* interceptor */ null);
+
+    assertThat(run.testng.getStatus()).isEqualTo(0);
+    assertThat(run.tla.getPassedTests())
+        .extracting(ITestResult::getName)
+        .contains("fast", "recorded");
+    assertThat(run.tla.getFailedTests()).isEmpty();
+
+    Thread.sleep(2_500);
+    assertThat(run.testng.getStatus()).isEqualTo(0);
+    assertThat(run.tla.getPassedTests())
+        .extracting(ITestResult::getName)
+        .contains("fast", "recorded");
+    assertThat(run.tla.getFailedTests()).isEmpty();
+  }
+
+  @Test
+  public void threadUtilExecuteKeepsVoidReturnType() throws NoSuchMethodException {
+    assertThat(
+            ThreadUtil.class
+                .getMethod(
+                    "execute",
+                    IConfiguration.class,
+                    String.class,
+                    List.class,
+                    int.class,
+                    long.class)
+                .getReturnType())
+        .isEqualTo(void.class);
   }
 
   private static Run runParallelSuite(
