@@ -1,4 +1,4 @@
-package test.inject.parameterresolver;
+package org.testng.parameters.resolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,6 +8,27 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.internal.reflect.MethodMatcherException;
+import org.testng.parameters.samples.resolver.CompetingParameterResolver;
+import org.testng.parameters.samples.resolver.ConfigurableParameterResolver;
+import org.testng.parameters.samples.resolver.CustomObject;
+import org.testng.parameters.samples.resolver.ListenersAnnotationSample;
+import org.testng.parameters.samples.resolver.MultipleResolvedParametersSample;
+import org.testng.parameters.samples.resolver.NativeInjectionSample;
+import org.testng.parameters.samples.resolver.NoDataProviderSample;
+import org.testng.parameters.samples.resolver.NoInjectionSample;
+import org.testng.parameters.samples.resolver.OptionalOnResolvedParameterSample;
+import org.testng.parameters.samples.resolver.ParameterRecorder;
+import org.testng.parameters.samples.resolver.ResolvedAfterDataProviderSample;
+import org.testng.parameters.samples.resolver.ResolvedBeforeDataProviderSample;
+import org.testng.parameters.samples.resolver.ResolvedBetweenDataProviderValuesSample;
+import org.testng.parameters.samples.resolver.RetryRereadingItsRowSample;
+import org.testng.parameters.samples.resolver.SampleParameterResolver;
+import org.testng.parameters.samples.resolver.SampleRun;
+import org.testng.parameters.samples.resolver.TooManyDataProviderValuesSample;
+import org.testng.parameters.samples.resolver.UnrenderableValue;
+import org.testng.parameters.samples.resolver.UnsupportedParameterSample;
+import org.testng.parameters.samples.resolver.VarargsSample;
+import org.testng.parameters.samples.resolver.XmlParametersSample;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
