@@ -2,11 +2,14 @@ package org.testng.internal.reflect;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import org.testng.IParameterResolver;
@@ -44,9 +47,10 @@ public final class ResolvedParameters {
   /**
    * Asks each resolver which parameters it owns.
    *
-   * <p>A parameter TestNG injects natively is never offered, so a resolver cannot displace one. A
-   * parameter carrying {@link org.testng.annotations.NoInjection} is not natively injected and is
-   * therefore offered.
+   * <p>A parameter TestNG injects natively is never offered, so a resolver cannot displace one:
+   * that is the first {@code Method} parameter and every {@code ITestContext}, {@code ITestResult}
+   * and {@code XmlTest} one. A second {@code Method}, or a parameter carrying {@link
+   * org.testng.annotations.NoInjection}, is not natively injected and is therefore offered.
    *
    * @throws TestNGException if more than one resolver claims the same parameter, or if a resolver
    *     throws while deciding.
@@ -59,12 +63,20 @@ public final class ResolvedParameters {
     if (parameters.length == 0 || resolvers.isEmpty()) {
       return NONE;
     }
+    // What native injection leaves over is what a resolver may claim -- decided by the same filter
+    // the matching runs, so the first-Method-only rule and @NoInjection are honoured exactly as
+    // they
+    // are there, rather than restated here.
+    Set<Parameter> offered =
+        new HashSet<>(
+            Arrays.asList(
+                ReflectionRecipes.filter(parameters, InjectableParameter.Assistant.ALL_INJECTS)));
     // Both collections stay null until something is actually claimed, which is the common case even
     // once a resolver is registered: most parameters still come from the data provider.
     Map<Parameter, Ownership> owners = null;
     for (int index = 0; index < parameters.length; index++) {
       Parameter parameter = parameters[index];
-      if (ReflectionRecipes.isNativelyInjectable(parameter)) {
+      if (!offered.contains(parameter)) {
         continue;
       }
       IParameterResolver owner = null;

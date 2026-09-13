@@ -444,6 +444,19 @@ public class ParameterResolverTest extends SimpleBaseTest {
     assertThat(resolver.answers()).as("one resolution per attempt").hasSize(4);
   }
 
+  @Test(
+      description =
+          "GITHUB-1164: TestNG injects only the first Method parameter, so a resolver may own the"
+              + " second")
+  public void secondMethodParameterIsResolvable() {
+    SampleRun run = SampleRun.of(SecondMethodParameterSample.class, new MethodAnsweringResolver());
+    assertThat(run.failureMessages()).isEmpty();
+
+    Object[] parameters = ParameterRecorder.onlyInvocationOf("test");
+    assertThat(((Method) parameters[0]).getName()).isEqualTo("test");
+    assertThat(parameters[1]).isSameAs(MethodAnsweringResolver.ANSWER);
+  }
+
   private static Throwable causeOfOnlyFailure(SampleRun run) {
     assertThat(run.failed()).hasSize(1);
     Throwable thrown = run.failed().get(0).getThrowable();
