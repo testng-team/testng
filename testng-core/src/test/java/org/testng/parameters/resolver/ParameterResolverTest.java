@@ -3,6 +3,7 @@ package org.testng.parameters.resolver;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import org.testng.ITestContext;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -10,6 +11,7 @@ import org.testng.annotations.Test;
 import org.testng.internal.reflect.MethodMatcherException;
 import org.testng.parameters.samples.resolver.CompetingParameterResolver;
 import org.testng.parameters.samples.resolver.ConfigurableParameterResolver;
+import org.testng.parameters.samples.resolver.CountingParameterResolver;
 import org.testng.parameters.samples.resolver.CustomObject;
 import org.testng.parameters.samples.resolver.FailsOnSecondResolutionResolver;
 import org.testng.parameters.samples.resolver.ListenersAnnotationSample;
@@ -22,6 +24,7 @@ import org.testng.parameters.samples.resolver.ParameterRecorder;
 import org.testng.parameters.samples.resolver.ResolvedAfterDataProviderSample;
 import org.testng.parameters.samples.resolver.ResolvedBeforeDataProviderSample;
 import org.testng.parameters.samples.resolver.ResolvedBetweenDataProviderValuesSample;
+import org.testng.parameters.samples.resolver.RetriedWithCachedRowSample;
 import org.testng.parameters.samples.resolver.RetryRereadingItsRowSample;
 import org.testng.parameters.samples.resolver.RetryWithFailingDataProviderSample;
 import org.testng.parameters.samples.resolver.RetryWithFailingResolverSample;
@@ -410,7 +413,7 @@ public class ParameterResolverTest extends SimpleBaseTest {
 
     // No resolver here. Before, the retry left the loop with nothing recorded, so the method --
     // which had failed -- ended up reported as one skip and no failure. The provider's exception
-    // is now the retry's own result, with the status a first attempt would have been given.
+    // is now the result of the retry itself, with the status a first attempt would have been given.
     assertThat(adapter.getFailedTests()).isEmpty();
     assertThat(adapter.getSkippedTests()).hasSize(2);
     assertThat(adapter.getSkippedTests())
@@ -419,6 +422,24 @@ public class ParameterResolverTest extends SimpleBaseTest {
                 assertThat(result.getThrowable())
                     .hasMessageContaining("provider broke on the retry"));
     assertThat(ParameterRecorder.invocationsOf("test")).hasSize(1);
+  }
+
+  @Test(
+      description =
+          "GITHUB-1164: every retry is an invocation of its own, so it is resolved afresh -- with"
+              + " the row cached, and with no data provider at all")
+  public void retryResolvesAfresh() {
+    CountingParameterResolver resolver = new CountingParameterResolver();
+    SampleRun.of(RetriedWithCachedRowSample.class, resolver);
+
+    for (String method : new String[] {"withDataProvider", "withoutDataProvider"}) {
+      List<Object[]> attempts = ParameterRecorder.invocationsOf(method);
+      assertThat(attempts).as(method).hasSize(2);
+      assertThat(attempts.get(0)[0])
+          .as(method + " retry gets its own value")
+          .isNotSameAs(attempts.get(1)[0]);
+    }
+    assertThat(resolver.answers()).as("one resolution per attempt").hasSize(4);
   }
 
   private static Throwable causeOfOnlyFailure(SampleRun run) {
