@@ -52,6 +52,7 @@ import org.testng.internal.TestMethodComparator;
 import org.testng.internal.TestMethodContainer;
 import org.testng.internal.TestNGClassFinder;
 import org.testng.internal.TestNGMethodFinder;
+import org.testng.internal.TestResult;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -60,6 +61,7 @@ import org.testng.internal.invokers.ConfigMethodArguments;
 import org.testng.internal.invokers.IInvoker;
 import org.testng.internal.invokers.Invoker;
 import org.testng.internal.objects.IObjectDispenser;
+import org.testng.internal.thread.ThreadTimeoutException;
 import org.testng.thread.IThreadWorkerFactory;
 import org.testng.thread.IWorker;
 import org.testng.util.Strings;
@@ -147,6 +149,11 @@ public class TestRunner
   private final IResultMap m_failedTests = new ResultMap();
   private final IResultMap m_failedButWithinSuccessPercentageTests = new ResultMap();
   private final IResultMap m_skippedTests = new ResultMap();
+
+  private final Object resultLock = new Object();
+  private volatile boolean resultsFrozen;
+  private volatile boolean hasInterceptedMethods;
+  private volatile ITestNGMethod[] interceptedTestMethods = new ITestNGMethod[0];
 
   private final RunInfo m_runInfo = new RunInfo(this::getCurrentXmlTest);
 
@@ -923,6 +930,8 @@ public class TestRunner
     this.m_classMethodMap = new ClassMethodMap(result, null);
 
     ITestNGMethod[] resultArray = result.toArray(new ITestNGMethod[0]);
+    interceptedTestMethods = resultArray;
+    hasInterceptedMethods = true;
 
     // Check if an interceptor had altered the effective test method count. If yes, then we need to
     // update our configurationGroupMethod object with that information.
@@ -1167,9 +1176,97 @@ public class TestRunner
     return m_skippedConfigurations;
   }
 
+  /**
+   * Fail each invocation that has no result yet. Then reject later results from a cancelled worker.
+   *
+   * @param timeOut the suite time-out in milliseconds
+   * @return the timeout failures that were added
+   */
+  List<ITestResult> addTimeoutFailuresForUnfinishedInvocations(long timeOut) {
+    List<ITestResult> created = new ArrayList<>();
+    synchronized (resultLock) {
+      ITestNGMethod[] methods = methodsEligibleForTimeoutReporting();
+      for (ITestNGMethod method : methods) {
+        int missing = unfinishedInvocationCount(method);
+        for (int i = 0; i < missing; i++) {
+          created.add(newTimeoutFailure(method, timeOut));
+        }
+      }
+      if (created.isEmpty()) {
+        ITestNGMethod inFlight = findInFlightMethod(methods);
+        if (inFlight != null) {
+          created.add(newTimeoutFailure(inFlight, timeOut));
+        } else {
+          for (ITestNGMethod method : methods) {
+            created.add(newTimeoutFailure(method, timeOut));
+          }
+        }
+      }
+      if (m_endInstant == null) {
+        m_endInstant = Instant.now();
+      }
+      resultsFrozen = true;
+    }
+    return created;
+  }
+
+  public boolean resultsFrozen() {
+    return resultsFrozen;
+  }
+
+  private ITestNGMethod[] methodsEligibleForTimeoutReporting() {
+    if (hasInterceptedMethods) {
+      return interceptedTestMethods;
+    }
+    return getAllTestMethods();
+  }
+
+  private static int expectedInvocationCount(ITestNGMethod method) {
+    int perRow = Math.max(1, method.getParameterInvocationCount());
+    return Math.max(1, method.getInvocationCount() * perRow);
+  }
+
+  private int unfinishedInvocationCount(ITestNGMethod method) {
+    int recorded = recordedResultCount(method);
+    int missing = expectedInvocationCount(method) - recorded;
+    if (missing <= 0 && method.hasMoreInvocation()) {
+      return 1;
+    }
+    return Math.max(0, missing);
+  }
+
+  private @Nullable ITestNGMethod findInFlightMethod(ITestNGMethod[] methods) {
+    for (ITestNGMethod method : methods) {
+      if (recordedResultCount(method) > 0 || method.getCurrentInvocationCount() > 0) {
+        return method;
+      }
+    }
+    return null;
+  }
+
+  private ITestResult newTimeoutFailure(ITestNGMethod method, long timeOut) {
+    ThreadTimeoutException exception = new ThreadTimeoutException(method, timeOut);
+    ITestResult result = TestResult.newTestResultWithCauseAs(method, this, exception);
+    result.setStatus(ITestResult.FAILURE);
+    m_failedTests.addResult(result);
+    return result;
+  }
+
+  private int recordedResultCount(ITestNGMethod method) {
+    return getPassedTests(method).size()
+        + getFailedTests(method).size()
+        + getSkippedTests(method).size()
+        + m_failedButWithinSuccessPercentageTests.getResults(method).size();
+  }
+
   @Override
   public void addPassedTest(ITestNGMethod tm, ITestResult tr) {
-    m_passedTests.addResult(tr);
+    synchronized (resultLock) {
+      if (resultsFrozen) {
+        return;
+      }
+      m_passedTests.addResult(tr);
+    }
   }
 
   @Override
@@ -1189,7 +1286,12 @@ public class TestRunner
 
   @Override
   public void addSkippedTest(ITestNGMethod tm, ITestResult tr) {
-    m_skippedTests.addResult(tr);
+    synchronized (resultLock) {
+      if (resultsFrozen) {
+        return;
+      }
+      m_skippedTests.addResult(tr);
+    }
   }
 
   @Override
@@ -1223,10 +1325,15 @@ public class TestRunner
   }
 
   private void logFailedTest(ITestResult tr, boolean withinSuccessPercentage) {
-    if (withinSuccessPercentage) {
-      m_failedButWithinSuccessPercentageTests.addResult(tr);
-    } else {
-      m_failedTests.addResult(tr);
+    synchronized (resultLock) {
+      if (resultsFrozen) {
+        return;
+      }
+      if (withinSuccessPercentage) {
+        m_failedButWithinSuccessPercentageTests.addResult(tr);
+      } else {
+        m_failedTests.addResult(tr);
+      }
     }
   }
 

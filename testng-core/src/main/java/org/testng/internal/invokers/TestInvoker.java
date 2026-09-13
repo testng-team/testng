@@ -46,6 +46,7 @@ import org.testng.SuiteRunner;
 import org.testng.TestException;
 import org.testng.TestNGException;
 import org.testng.TestNotInvokedException;
+import org.testng.TestRunner;
 import org.testng.collections.CollectionUtils;
 import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.BaseTestMethod;
@@ -344,6 +345,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
   @Override
   public void runTestResultListener(ITestResult tr) {
+    if (resultsFrozen()) {
+      return;
+    }
     // For onTestStart method, still run as insert order
     // but regarding
     // onTestSkipped/onTestFailedButWithinSuccessPercentage/onTestFailedWithTimeout/onTestFailure/onTestSuccess, it should be reverse order.
@@ -679,7 +683,14 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return result;
   }
 
+  private boolean resultsFrozen() {
+    return m_testContext instanceof TestRunner && ((TestRunner) m_testContext).resultsFrozen();
+  }
+
   private void collectResults(ITestNGMethod testMethod, ITestResult result) {
+    if (resultsFrozen()) {
+      return;
+    }
     // Collect the results
     int status = result.getStatus();
     if (ITestResult.SUCCESS == status) {

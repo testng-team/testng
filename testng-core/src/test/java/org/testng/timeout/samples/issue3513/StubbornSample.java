@@ -10,13 +10,6 @@ public class StubbornSample {
 
   @Test
   public void stubborn() {
-    long end = System.currentTimeMillis() + 2_000;
-    while (System.currentTimeMillis() < end) {
-      try {
-        Thread.sleep(50);
-      } catch (InterruptedException ignored) {
-        // Keep going, as a method that ignores interruption does.
-      }
-    }
+    IgnoreInterruption.forMillis(2_000);
   }
 }
