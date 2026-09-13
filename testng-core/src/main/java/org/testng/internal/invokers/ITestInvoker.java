@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.jspecify.annotations.Nullable;
 import org.testng.IInvokedMethod;
@@ -22,7 +21,13 @@ public interface ITestInvoker {
 
     AtomicInteger count = new AtomicInteger(0);
     List<Object> instances = new ArrayList<>();
-    AtomicBoolean representsRetriedMethod = new AtomicBoolean(false);
+    /**
+     * The configuration failures the current attempt does not have to honor: a mark from {@link
+     * IConfigInvoker#currentFailureMark()} while an attempt retries a failed test method, {@link
+     * IConfigInvoker#NO_IGNORED_FAILURES} otherwise.
+     */
+    long ignoredFailureMark = IConfigInvoker.NO_IGNORED_FAILURES;
+
     final Map<String, AtomicInteger> counter = new HashMap<>();
   }
 

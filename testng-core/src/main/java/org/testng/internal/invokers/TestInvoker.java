@@ -290,7 +290,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       ITestContext testContext) {
     FailureContext failure = new FailureContext();
     failure.count.set(failureCount);
-    failure.representsRetriedMethod.set(true);
     do {
       failure.instances = new ArrayList<>();
       boolean cacheData =
@@ -337,8 +336,14 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               .withParameters(arguments.getParameters())
               .build();
 
+      // What the attempt being retried recorded -- its own teardown failure, typically -- does
+      // not hold this attempt back. A failure recorded from here on does, and the mark is taken
+      // per attempt so that a failure during one retry holds back the next one.
+      failure.ignoredFailureMark = invoker.currentFailureMark();
       result.add(invokeMethod(tma, testContext.getSuite().getXmlSuite(), failure));
     } while (!failure.instances.isEmpty());
+    // The caller keeps this context for the invocations that follow, and those are not retries.
+    failure.ignoredFailureMark = IConfigInvoker.NO_IGNORED_FAILURES;
     return failure;
   }
 
@@ -787,17 +792,19 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     ITestNGMethod[] setupConfigMethods =
         TestNgMethodUtils.filterSetupConfigurationMethods(
             arguments.getTestMethod(), arguments.getBeforeMethods());
-    runConfigMethods(arguments, suite, testResult, setupConfigMethods);
+    runConfigMethods(
+        arguments, suite, testResult, setupConfigMethods, failureContext.ignoredFailureMark);
 
     long startTime = System.currentTimeMillis();
     InvokedMethod invokedMethod = new InvokedMethod(startTime, testResult);
 
-    if (!failureContext.representsRetriedMethod.get()
-        && invoker.hasConfigurationFailureFor(
-            arguments.getTestMethod(),
-            arguments.getTestMethod().getGroups(),
-            arguments.getTestClass(),
-            arguments.getInstance())) {
+    if (invoker.hasConfigurationFailureFor(
+        null,
+        arguments.getTestMethod(),
+        arguments.getTestMethod().getGroups(),
+        arguments.getTestClass(),
+        arguments.getInstance(),
+        failureContext.ignoredFailureMark)) {
       Throwable exception =
           ExceptionUtils.getExceptionDetails(m_testContext, arguments.getInstance());
       ITestResult result =
@@ -807,7 +814,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       arguments.getTestMethod().incrementCurrentInvocationCount();
       invokedMethod = new InvokedMethod(startTime, result);
       invokeListenersForSkippedTestResult(result, invokedMethod);
-      runAfterConfigurations(arguments, suite, result);
+      runAfterConfigurations(arguments, suite, result, failureContext.ignoredFailureMark);
       runAfterGroupsConfigurations(arguments);
 
       return result;
@@ -959,7 +966,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
       collectResults(arguments.getTestMethod(), testResult);
 
-      runAfterConfigurations(arguments, suite, testResult);
+      runAfterConfigurations(arguments, suite, testResult, failureContext.ignoredFailureMark);
       if (!willRetryMethod) {
         runAfterGroupsConfigurations(arguments);
       }
@@ -979,11 +986,14 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   }
 
   private void runAfterConfigurations(
-      TestMethodArguments arguments, XmlSuite suite, ITestResult testResult) {
+      TestMethodArguments arguments,
+      XmlSuite suite,
+      ITestResult testResult,
+      long ignoredFailureMark) {
     ITestNGMethod[] teardownConfigMethods =
         TestNgMethodUtils.filterTeardownConfigurationMethods(
             arguments.getTestMethod(), arguments.getAfterMethods());
-    runConfigMethods(arguments, suite, testResult, teardownConfigMethods);
+    runConfigMethods(arguments, suite, testResult, teardownConfigMethods, ignoredFailureMark);
   }
 
   private void runAfterGroupsConfigurations(TestMethodArguments arguments) {
@@ -1002,17 +1012,19 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       TestMethodArguments arguments,
       XmlSuite suite,
       ITestResult testResult,
-      ITestNGMethod[] teardownConfigMethods) {
+      ITestNGMethod[] configMethods,
+      long ignoredFailureMark) {
     ConfigMethodArguments cfgArgs =
         new ConfigMethodArguments.Builder()
             .forTestClass(arguments.getTestClass())
             .forTestMethod(arguments.getTestMethod())
-            .usingConfigMethodsAs(teardownConfigMethods)
+            .usingConfigMethodsAs(configMethods)
             .forSuite(suite)
             .usingParameters(arguments.getParameters())
             .usingParameterValues(arguments.getParameterValues())
             .usingInstance(arguments.getInstance())
             .withResult(testResult)
+            .ignoringFailuresUpTo(ignoredFailureMark)
             .build();
     invoker.invokeConfigurations(cfgArgs);
   }
