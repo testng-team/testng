@@ -11,6 +11,7 @@ import org.testng.internal.reflect.MethodMatcherException;
 import org.testng.parameters.samples.resolver.CompetingParameterResolver;
 import org.testng.parameters.samples.resolver.ConfigurableParameterResolver;
 import org.testng.parameters.samples.resolver.CustomObject;
+import org.testng.parameters.samples.resolver.FailsOnSecondResolutionResolver;
 import org.testng.parameters.samples.resolver.ListenersAnnotationSample;
 import org.testng.parameters.samples.resolver.MultipleResolvedParametersSample;
 import org.testng.parameters.samples.resolver.NativeInjectionSample;
@@ -22,6 +23,8 @@ import org.testng.parameters.samples.resolver.ResolvedAfterDataProviderSample;
 import org.testng.parameters.samples.resolver.ResolvedBeforeDataProviderSample;
 import org.testng.parameters.samples.resolver.ResolvedBetweenDataProviderValuesSample;
 import org.testng.parameters.samples.resolver.RetryRereadingItsRowSample;
+import org.testng.parameters.samples.resolver.RetryWithFailingDataProviderSample;
+import org.testng.parameters.samples.resolver.RetryWithFailingResolverSample;
 import org.testng.parameters.samples.resolver.SampleParameterResolver;
 import org.testng.parameters.samples.resolver.SampleRun;
 import org.testng.parameters.samples.resolver.TooManyDataProviderValuesSample;
@@ -375,6 +378,47 @@ public class ParameterResolverTest extends SimpleBaseTest {
     assertThat(run.failureMessages().get(0))
         .contains("Data provider mismatch: expected 1 argument, got 2");
     assertThat(ParameterRecorder.invocationsOf("test")).isEmpty();
+  }
+
+  @Test(
+      description =
+          "GITHUB-1164: a resolver that breaks on a retry fails that retry, and nothing else")
+  public void resolverFailingOnRetryFailsTheRetry() {
+    SampleRun run =
+        SampleRun.of(RetryWithFailingResolverSample.class, new FailsOnSecondResolutionResolver());
+
+    // The retry re-reads its row and re-resolves the parameter, which is where this resolver
+    // throws. That must surface as the method's failure, with the resolver named, and must not
+    // take the run down: the sibling method still executes.
+    assertThat(run.failureMessages()).hasSize(1);
+    assertThat(run.failureMessages().get(0))
+        .contains(FailsOnSecondResolutionResolver.class.getName() + ".resolveParameter() failed")
+        .contains(RetryWithFailingResolverSample.class.getName() + ".test");
+    assertThat(ParameterRecorder.invocationsOf("test")).hasSize(1);
+    assertThat(ParameterRecorder.invocationsOf("sibling")).hasSize(1);
+  }
+
+  @Test(
+      description =
+          "A retry whose data provider cannot rebuild the row reports that, instead of vanishing")
+  public void dataProviderFailingOnRetryIsReported() {
+    ParameterRecorder.clear();
+    TestNG testng = create(RetryWithFailingDataProviderSample.class);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    testng.addListener(adapter);
+    testng.run();
+
+    // No resolver here. Before, the retry left the loop with nothing recorded, so the method --
+    // which had failed -- ended up reported as one skip and no failure. The provider's exception
+    // is now the retry's own result, with the status a first attempt would have been given.
+    assertThat(adapter.getFailedTests()).isEmpty();
+    assertThat(adapter.getSkippedTests()).hasSize(2);
+    assertThat(adapter.getSkippedTests())
+        .anySatisfy(
+            result ->
+                assertThat(result.getThrowable())
+                    .hasMessageContaining("provider broke on the retry"));
+    assertThat(ParameterRecorder.invocationsOf("test")).hasSize(1);
   }
 
   private static Throwable causeOfOnlyFailure(SampleRun run) {
