@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Check an issue reference from both ends before writing it into a @Test description:
 #
-#   1. provenance -- the commit that introduced the test names THIS issue number, or its merge does
+#   1. provenance -- the commit that introduced the test names THIS issue number, or a pull request
+#                    GitHub lists for that commit does
 #   2. the issue  -- #<n> is a real GitHub issue, not a pull request
 #
 # Package names are not evidence: test.testng173 and test.testng317 look identical, and only one of
@@ -260,14 +261,6 @@ names_num() {
   printf '%s' "$(without_pr_number "$1")" | grep -qE "(TESTNG-|#|issues/)${num}([^0-9]|$)"
 }
 
-# A merge line may instead carry the issue in the branch it merges, such as
-# "Merge pull request #1374 from krmahadevan/krmahadevan-fix-765". Only the branch is read, and
-# only after "from", so an issue number elsewhere in the subject cannot stand in for it.
-branch_names_num() {
-  printf '%s' "$1" | sed -n 's/.*Merge pull request [^ ]* from \([^ |]*\).*/\1/p' \
-    | grep -qE "(^|[^0-9])${num}([^0-9]|$)"
-}
-
 # Last source: the body of the pull request that carried the commit. GitHub closes an issue when a
 # pull request body holds a closing word and the number, and neither the commit nor the merge has
 # to repeat it. Issue #1307 was closed that way by pull request #1308, whose branch is called
@@ -276,10 +269,8 @@ branch_names_num() {
 # Only the closing form counts. "See #765", "unlike #765" and "duplicate of #765" are mentions, and
 # a mention proves nothing. These are GitHub's own closing words.
 #
-# The body is reached only through the pull request number that git already ties to this commit, so
-# it cannot be some other pull request's body. That number comes from a merge subject GitHub wrote.
-# A hand-written merge subject could name a pull request it did not come from; no merge in this
-# repository is hand-written.
+# The body is read only for a pull request GitHub lists as holding this commit, so it cannot be some
+# other pull request's body.
 #
 # GitHub reads its closing words without regard to case, so "FIXES #765" closes the issue as
 # surely as "Fixes #765". The searches below pass -i for that reason.
@@ -296,19 +287,6 @@ body_closes_num() {
 matched_close() {
   printf '%s' "$1" | grep -oiE "$CLOSES_NUM" | head -1 | sed 's/^[^[:alnum:]_]*//'
 }
-# The pull request a commit arrived in. Two forms, and only these two:
-#
-#   "Merge pull request #<n> from <branch>"   -- the subject of a merge GitHub made
-#   "... (#<n>)"                              -- the tail of a subject GitHub squashed
-#
-# Both are SUBJECTS. A commit body may name any pull request at all: "reverts (#1308)", "follows on
-# from (#900)". Reading one of those bodies would prove nothing about this commit, and the rule
-# above promises it cannot happen. So the squashed form is anchored to the end of the line, and
-# callers pass a subject.
-pr_number_of() {
-  printf '%s' "$1" | sed -n -e 's/^Merge pull request #\([0-9][0-9]*\) from .*/\1/p' \
-                            -e 's/.*(#\([0-9][0-9]*\))[[:space:]]*$/\1/p' | head -1
-}
 # Prints the body of pull request $1. Exits non-zero when it could not be read at all, which is not
 # the same as a body that says nothing: the caller reports the two differently.
 pr_body() {
@@ -320,10 +298,10 @@ pr_body() {
 }
 # Prints the pull requests GitHub says hold commit $1, "<number><TAB><branch>" per line.
 #
-# git cannot answer this. It can only find merges that came after the commit, and the oldest of them
-# is the merge that carried it only when a merge commit carried it at all. Pull request #2368 was
-# rebase-merged: GitHub's own merge commit for it has a single parent. So the oldest merge after its
-# commit was #2375, a CVE fix that has nothing to do with it.
+# git cannot answer this, so there is no fallback to git. It can only find merges that came after the
+# commit, and the oldest of them is the merge that carried it only when a merge commit carried it at
+# all. Pull request #2368 was rebase-merged: GitHub's own merge commit for it has a single parent. So
+# the oldest merge after its commit was #2375, a CVE fix that has nothing to do with it.
 commit_prs() {
   if [ -n "$COMMIT_PRS_CMD" ]; then
     $COMMIT_PRS_CMD "$1" 2>/dev/null
@@ -352,63 +330,41 @@ matched_text() {
 }
 # Three sources may prove the reference, strongest first. The first that answers wins.
 proven=""
-asked_github=0
 if names_num "$msg"; then
   proven="the introducing commit names it: $(matched_text "$msg")"
 else
   prs=$(commit_prs "$(git rev-parse "$sha")"); prs_rc=$?
-  if [ "$prs_rc" = 0 ]; then
-    # GitHub answered. Its pull requests are the answer, and git's merge is not consulted at all: for
-    # a rebase-merged commit that merge belongs to some other pull request, and its branch or its
-    # body would prove a reference that other pull request never made.
-    asked_github=1
-    while IFS="$(printf '\t')" read -r prn prref; do
-      [ -n "$prn" ] || continue
-      pr=$prn
-      if ref_names_num "$prref"; then
-        proven="the pull request names it (branch $prref): PR #$prn"
-        break
-      fi
-      prbody=$(pr_body "$prn"); body_rc=$?
-      if [ "$body_rc" = 0 ] && body_closes_num "$prbody"; then
-        proven="pull request #$prn says it closes the issue: $(matched_close "$prbody")"
-        break
-      fi
-    done <<< "$prs"
-  else
-    printf 'note        could not ask GitHub which pull request holds this commit; any merge used below is a guess\n'
-    merge=$(git log --merges --ancestry-path --format=%H "$sha".."$BASE" 2>/dev/null | tail -1)
-    mmsg=$([ -n "$merge" ] && git log -1 --format='%s | %b' "$merge" | tr '\n' ' ' | sed 's/  */ /g')
-    if [ -n "${mmsg:-}" ] && names_num "$mmsg"; then
-      proven="the merge names it ($(matched_text "$mmsg")): $mmsg"
-    elif [ -n "${mmsg:-}" ] && branch_names_num "$mmsg"; then
-      branch=$(printf '%s' "$mmsg" | sed -n 's/.*Merge pull request [^ ]* from \([^ |]*\).*/branch \1/p')
-      proven="the merge names it ($branch): $mmsg"
-    else
-      # Subjects only. $msg and $mmsg hold the body too, and a body may name any pull request.
-      pr=$([ -n "$merge" ] && pr_number_of "$(git log -1 --format=%s "$merge")")
-      [ -n "$pr" ] || pr=$(pr_number_of "$(git log -1 --format=%s "$sha")")
-      if [ -n "$pr" ]; then
-        prbody=$(pr_body "$pr"); body_rc=$?
-        if [ "$body_rc" = 0 ] && body_closes_num "$prbody"; then
-          proven="pull request #$pr says it closes the issue: $(matched_close "$prbody")"
-        fi
-      fi
-    fi
+  if [ "$prs_rc" != 0 ]; then
+    # Only GitHub knows which pull request holds the commit. A guess from git's merges would prove a
+    # reference that some other pull request made, so an offline run, a rate limit or a missing token
+    # must not read as a verdict either way.
+    printf 'provenance  CANNOT CHECK -- GitHub could not say which pull request holds this commit, and\n'
+    printf '            the commit does not name #%s. Not a verdict.\n' "$num"
+    exit 3
   fi
+  while IFS="$(printf '\t')" read -r prn prref; do
+    [ -n "$prn" ] || continue
+    pr=$prn
+    if ref_names_num "$prref"; then
+      proven="the pull request names it (branch $prref): PR #$prn"
+      break
+    fi
+    prbody=$(pr_body "$prn"); body_rc=$?
+    if [ "$body_rc" = 0 ] && body_closes_num "$prbody"; then
+      proven="pull request #$prn says it closes the issue: $(matched_close "$prbody")"
+      break
+    fi
+  done <<< "$prs"
 fi
 
 if [ -n "$proven" ]; then
   printf 'provenance  %s\n' "$proven"
 else
   printf 'provenance  NOT PROVEN -- the commit does not name #%s\n' "$num"
-  [ -n "${mmsg:-}" ] && printf '            merge was: %s\n' "$mmsg"
   # A body that could not be read is not a body that says nothing. Saying so would let an offline
   # run, a rate limit or a missing token read as a verdict, and a true reference would be deleted.
-  if [ "$asked_github" = 1 ] && [ -z "${pr:-}" ]; then
+  if [ -z "${pr:-}" ]; then
     printf '            GitHub lists no pull request for this commit\n'
-  elif [ -z "${pr:-}" ]; then
-    printf '            no pull request number in the subject, so no body was read\n'
   elif [ "${body_rc:-0}" != 0 ]; then
     printf '            pull request #%s could not be read, so its body is NOT a verdict\n' "$pr"
   else

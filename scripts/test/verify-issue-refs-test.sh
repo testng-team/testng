@@ -32,10 +32,10 @@ chmod +x "$WORK/bin/gh"
 PATH="$WORK/bin:$PATH"
 export PATH
 
-# The script asks GitHub which pull request holds a commit. Here that question fails by default, so
-# every older case keeps its offline behaviour and never reaches the network. A case that is about
-# the answer passes its own command, which the environment lets it override.
-export COMMIT_PRS_CMD=false
+# The script asks GitHub which pull request holds a commit. Here GitHub answers "none" by default, so
+# a case reaches the rules without the network. A case about one answer passes its own command. A
+# case about a lookup that fails passes COMMIT_PRS_CMD=false.
+export COMMIT_PRS_CMD=true
 
 pass=0; fail=0
 
@@ -52,9 +52,10 @@ check() {
 # Prints yes when the text holds the refusal word, no when it does not.
 says_ambiguous() { case "$1" in *AMBIGUOUS*) printf yes ;; *) printf no ;; esac; }
 
-# Prints yes when the text holds the word "guess". A helper, not an inline case: macOS /bin/bash 3.2
-# reads the ")" of a case pattern written straight inside $( ) as the end of the substitution.
-says_guess() { case "$1" in *guess*) printf yes ;; *) printf no ;; esac; }
+# Prints yes when the text says the answer is not a verdict. A helper, not an inline case: macOS
+# /bin/bash 3.2 reads the ")" of a case pattern written straight inside $( ) as the end of the
+# substitution.
+says_not_a_verdict() { case "$1" in *"Not a verdict"*) printf yes ;; *) printf no ;; esac; }
 
 # Makes an empty git repository and prints its path.
 new_repo() {
@@ -87,7 +88,7 @@ move() {
 # choosing the wrong pull request fails the test instead of passing it by accident.
 #
 # Leave it out when the test is about the body TEXT. The number is then irrelevant, and pinning it
-# would make an unrelated change to pr_number_of fail a body-matching test.
+# would make an unrelated change to the pull request lookup fail a body-matching test.
 fakes=0
 fake_pr_body() {
   fakes=$((fakes + 1))
@@ -146,6 +147,8 @@ rebased_then_merged() {
   printf '%s' "$sha"
 }
 
+tab=$(printf '\t')
+
 # merged_pr <repo> <path> <merge-subject>  -- adds a file on a branch and merges it.
 # The commit itself names no issue, so only the merge and the pull request body can prove one.
 merged_pr() {
@@ -166,6 +169,7 @@ verdict() {
   case "$out" in
     *AMBIGUOUS*)    printf 'AMBIGUOUS' ;;
     *"OWN COMMIT"*) printf 'OWN COMMIT' ;;
+    *"CANNOT CHECK"*) printf 'CANNOT CHECK' ;;
     *"NOT PROVEN"*) printf 'NOT PROVEN' ;;
     *provenance*)   printf 'PROVEN' ;;
     *)              printf 'NO COMMIT' ;;
@@ -195,8 +199,15 @@ check "a version is not provenance" "NOT PROVEN" "$(verdict "$r" src/foo/AlphaTe
 r=$(new_repo); add "$r" src/foo/AlphaTest.java "Fix #173"
 check "another issue is not provenance" "NOT PROVEN" "$(verdict "$r" src/foo/AlphaTest.java 765)"
 
-# --- the merge names the issue in its branch --------------------------------------------------
-# The commit itself says nothing. The branch it merges carries the number.
+# --- a merge is not asked when GitHub cannot be ------------------------------------------------
+# The script used to fall back to git's oldest merge after a commit whenever GitHub could not be
+# asked. That merge belongs to some other pull request whenever the real one was rebase-merged, which
+# is the fault the GitHub lookup was written to fix. So a failed lookup now refuses. It says CANNOT
+# CHECK, exits 3, and never proves through a merge. The harness makes the lookup fail by default.
+#
+# The rejected cases come first.
+
+# A merge whose branch names the issue. Without GitHub it proves nothing.
 r=$(new_repo)
 add "$r" README.md "First commit"
 git -C "$r" checkout -q -b krmahadevan-fix-765
@@ -204,36 +215,10 @@ add "$r" src/foo/BetaTest.java "Fixing review comments"
 git -C "$r" checkout -q master
 git -C "$r" merge -q --no-ff -m "Merge pull request #1374 from krmahadevan/krmahadevan-fix-765" \
   krmahadevan-fix-765
-check "merge branch names the issue" PROVEN "$(verdict "$r" src/foo/BetaTest.java 765)"
+check "no GitHub: a merge branch is not a verdict" "CANNOT CHECK" \
+  "$(verdict "$r" src/foo/BetaTest.java 765 COMMIT_PRS_CMD=false)"
 
-# Pull requests and issues share one number space. "Merge pull request #765" says the pull request
-# was numbered 765. It says nothing about issue 765, so it is not provenance.
-r=$(new_repo)
-add "$r" README.md "First commit"
-git -C "$r" checkout -q -b some-other-work
-add "$r" src/foo/GammaTest.java "Fixing review comments"
-git -C "$r" checkout -q master
-git -C "$r" merge -q --no-ff -m "Merge pull request #765 from someone/unrelated" some-other-work
-# Both subjects below do name a pull request, so the script looks for its body. An empty body
-# keeps that lookup offline and leaves the rule being tested as the only thing that decides.
-check "a merged PR number is not the issue" "NOT PROVEN" \
-  "$(verdict "$r" src/foo/GammaTest.java 765 "PR_BODY_CMD=$(fake_pr_body '')")"
-
-# The same rule for a squashed pull request, where GitHub puts the number at the end of the subject.
-r=$(new_repo); add "$r" src/foo/AlphaTest.java "Speed up the parser. (#765)"
-check "a squashed PR number is not the issue" "NOT PROVEN" \
-  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body '')")"
-
-# The branch still counts, even when the pull request number happens to match the issue number.
-r=$(new_repo)
-add "$r" README.md "First commit"
-git -C "$r" checkout -q -b fix-765
-add "$r" src/foo/DeltaTest.java "Fixing review comments"
-git -C "$r" checkout -q master
-git -C "$r" merge -q --no-ff -m "Merge pull request #765 from someone/fix-765" fix-765
-check "the branch still counts" PROVEN "$(verdict "$r" src/foo/DeltaTest.java 765)"
-
-# A real issue reference in the merge body still counts, next to a pull request number.
+# A merge whose body closes the issue. Without GitHub it proves nothing either.
 r=$(new_repo)
 add "$r" README.md "First commit"
 git -C "$r" checkout -q -b some-work
@@ -241,7 +226,24 @@ add "$r" src/foo/EpsilonTest.java "Fixing review comments"
 git -C "$r" checkout -q master
 git -C "$r" merge -q --no-ff -m "Merge pull request #765 from someone/some-work" -m "Closes #1632" \
   some-work
-check "the merge body still counts" PROVEN "$(verdict "$r" src/foo/EpsilonTest.java 1632)"
+check "no GitHub: a merge body is not a verdict" "CANNOT CHECK" \
+  "$(verdict "$r" src/foo/EpsilonTest.java 1632 COMMIT_PRS_CMD=false)"
+
+# A caller reads the exit code, not the words. 3 is what the issue check already uses for this.
+(cd "$r" && COMMIT_PRS_CMD=false PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/EpsilonTest.java 1632 >/dev/null 2>&1)
+check "no GitHub: the refusal exits 3" 3 "$?"
+
+# The commit's own message needs no pull request, so it still proves the issue without GitHub.
+r=$(new_repo); add "$r" src/foo/AlphaTest.java "Reject the empty name. Fixes #765"
+check "no GitHub: the commit's own message still proves it" PROVEN \
+  "$(verdict "$r" src/foo/AlphaTest.java 765 COMMIT_PRS_CMD=false)"
+
+# With GitHub, the branch still counts even when the pull request number matches the issue.
+r=$(new_repo)
+sha=$(rebased_then_merged "$r" src/foo/DeltaTest.java "Merge pull request #999 from someone/unrelated")
+check "the branch counts beside a matching pull request number" PROVEN \
+  "$(verdict "$r" src/foo/DeltaTest.java 765 \
+      "COMMIT_PRS_CMD=$(fake_prs "765${tab}fix-765" "$sha")" "PR_BODY_CMD=$(fake_pr_body '')")"
 
 # --- renames ----------------------------------------------------------------------------------
 # A file that moved twice must be walked back to the commit that wrote it. The cases below pass
@@ -380,25 +382,21 @@ check "by description still applies the rules" "NOT PROVEN" \
 # name nothing: issue #1307 was closed that way, by pull request #1308, whose branch was called
 # "feature/ignore-anonymous-tests". Without this the true reference is lost.
 #
-# The body is read ONLY through the pull request the merge names, so it cannot be any other body.
+# The body read is the body of a pull request GitHub lists for the commit, never one parsed from a
+# subject. Each case below gets its own repository whose commit sits in pull request #1308.
 
-r=$(new_repo); merged_pr "$r" src/foo/AlphaTest.java "Merge pull request #1308 from someone/feature-x"
-check "the body closes the issue" PROVEN \
-  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765' 1308)")"
+body_verdict() {
+  local body=$1 num=$2 r sha
+  r=$(new_repo)
+  sha=$(rebased_then_merged "$r" src/foo/AlphaTest.java "Merge pull request #999 from someone/unrelated")
+  verdict "$r" src/foo/AlphaTest.java "$num" \
+    "COMMIT_PRS_CMD=$(fake_prs "1308${tab}feature-x" "$sha")" "PR_BODY_CMD=$(fake_pr_body "$body" 1308)"
+}
 
-r=$(new_repo); merged_pr "$r" src/foo/AlphaTest.java "Merge pull request #1308 from someone/feature-x"
-check "closes counts too" PROVEN \
-  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Closes #765')")"
-
+check "the body closes the issue" PROVEN "$(body_verdict 'Fixes #765' 765)"
+check "closes counts too" PROVEN "$(body_verdict 'Closes #765' 765)"
 # GitHub ignores the case of its closing words.
-r=$(new_repo); merged_pr "$r" src/foo/AlphaTest.java "Merge pull request #1308 from someone/feature-x"
-check "an upper case closing word counts" PROVEN \
-  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'FIXES #765')")"
-
-# A squash merge puts the pull request number in the subject instead of making a merge commit.
-r=$(new_repo); add "$r" src/foo/AlphaTest.java "Adding a fix (#1308)"
-check "a squashed subject names the pull request" PROVEN \
-  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Resolves #765' 1308)")"
+check "an upper case closing word counts" PROVEN "$(body_verdict 'FIXES #765' 765)"
 
 # --- bodies that must be REJECTED --------------------------------------------------------------
 # A mention is not a claim. These five bodies all hold "765" and none of them says this pull
@@ -408,9 +406,7 @@ for body in 'See #765 for details' \
             'Fixes #7650' \
             'Fixes #173' \
             ''; do
-  r=$(new_repo); merged_pr "$r" src/foo/AlphaTest.java "Merge pull request #1308 from someone/feature-x"
-  check "body <$body> is not provenance" "NOT PROVEN" \
-    "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body "$body")")"
+  check "body <$body> is not provenance" "NOT PROVEN" "$(body_verdict "$body" 765)"
 done
 
 # A closing word must be a whole word. Every body below holds a closing word inside a longer one,
@@ -419,47 +415,15 @@ for body in 'Still unresolved: #765' \
             'This prefixes #765 onto the name' \
             'Nothing disclosed #765 here' \
             'Fixed: #100. Unfixed: #765'; do
-  r=$(new_repo); merged_pr "$r" src/foo/AlphaTest.java "Merge pull request #1308 from someone/feature-x"
-  check "body <$body> is not a closing word" "NOT PROVEN" \
-    "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body "$body")")"
+  check "body <$body> is not a closing word" "NOT PROVEN" "$(body_verdict "$body" 765)"
 done
 
-# The pull request number comes from a merge subject GitHub wrote, or from the tail of a squashed
-# subject. A "(#n)" anywhere else names some other pull request, and reading that body would prove
-# nothing about this commit.
-r=$(new_repo)
-add "$r" src/foo/AlphaTest.java "Add a test
-This re-adds coverage lost when we reverted (#1308)."
-check "a (#n) in the body is not this pull request" "NOT PROVEN" \
-  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765')")"
-
-# When a subject holds two, the one GitHub appended is the last, not the first. The reader below
-# answers only for 1308, so reading #900 instead fails rather than passing.
-r=$(new_repo)
-add "$r" src/foo/BetaTest.java "Revert the change from (#900) (#1308)"
-check "the appended number is the last one" PROVEN \
-  "$(verdict "$r" src/foo/BetaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765' 1308)")"
-
-# The merge subject names the pull request, not the squashed tail of the commit it merged.
-r=$(new_repo)
-add "$r" README.md "First commit"
-git -C "$r" checkout -q -b work
-add "$r" src/foo/GammaTest.java "An earlier squash (#900)"
-git -C "$r" checkout -q master
-git -C "$r" merge -q --no-ff -m "Merge pull request #1308 from someone/work" work
-check "the merge wins over the commit subject" PROVEN \
-  "$(verdict "$r" src/foo/GammaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765' 1308)")"
-
-# No pull request number means no body to read. The command must never run.
-r=$(new_repo); add "$r" src/foo/AlphaTest.java "Adding a fix"
-check "no pull request number, no body" "NOT PROVEN" \
-  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765')")"
-
 # A body reader that fails proves nothing. It must not turn into a verdict either way.
-r=$(new_repo); merged_pr "$r" src/foo/AlphaTest.java "Merge pull request #1308 from someone/feature-x"
+r=$(new_repo)
+sha=$(rebased_then_merged "$r" src/foo/AlphaTest.java "Merge pull request #999 from someone/unrelated")
 check "a failing body reader is not provenance" "NOT PROVEN" \
-  "$(verdict "$r" src/foo/AlphaTest.java 765 PR_BODY_CMD=/nonexistent/reader)"
-
+  "$(verdict "$r" src/foo/AlphaTest.java 765 \
+      "COMMIT_PRS_CMD=$(fake_prs "1308${tab}feature-x" "$sha")" PR_BODY_CMD=/nonexistent/reader)"
 
 # --- a longer fragment separates two files that end the same way --------------------------------
 # GitHub1131Test.java exists under test/factory and under test/objectfactory, and the two were
@@ -655,13 +619,13 @@ check "prs: the real pull request's branch proves it" PROVEN \
   "$(verdict "$r" src/foo/AlphaTest.java 765 \
       "COMMIT_PRS_CMD=$(fake_prs "1374${tab}krmahadevan-fix-765" "$sha")" "PR_BODY_CMD=$(fake_pr_body '')")"
 
-# GitHub cannot be asked. The old merge lookup still answers, and says it is only a guess.
+# GitHub cannot be asked. The merge git would pick is not used, and the answer says it is no verdict.
 r=$(new_repo); merged_pr "$r" src/foo/BetaTest.java "Merge pull request #1374 from krmahadevan/krmahadevan-fix-765"
-out=$(cd "$r" && PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/BetaTest.java 765 2>&1)
-check "prs: without GitHub the merge still answers" PROVEN \
-  "$(verdict "$r" src/foo/BetaTest.java 765)"
-check "prs: without GitHub the merge is called a guess" yes \
-  "$(says_guess "$out")"
+out=$(cd "$r" && COMMIT_PRS_CMD=false PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/BetaTest.java 765 2>&1)
+check "prs: without GitHub the merge is not used" "CANNOT CHECK" \
+  "$(verdict "$r" src/foo/BetaTest.java 765 COMMIT_PRS_CMD=false)"
+check "prs: without GitHub the answer is not a verdict" yes \
+  "$(says_not_a_verdict "$out")"
 
 # --- a pull request branch must name the issue, not merely hold its digits --------------------------
 # The branch rule took any digit-bounded number. So "java-17-support" proved issue 17, a dependabot
