@@ -511,26 +511,6 @@ public final class ReflectionRecipes {
         parameters, filters, ResolvedParameters.none(), args, constructor, context, testResult);
   }
 
-  /**
-   * Whether TestNG itself supplies this parameter, by type. This is what makes native injection
-   * outrank an {@link org.testng.IParameterResolver}: a parameter answering {@code true} here is
-   * never offered to the resolvers. A parameter carrying {@link NoInjection} answers {@code false},
-   * which is that annotation's existing meaning -- TestNG stops owning it.
-   *
-   * @param parameter the parameter under question.
-   * @return whether one of {@link InjectableParameter} covers it.
-   */
-  public static boolean isNativelyInjectable(final Parameter parameter) {
-    if (parameter.isAnnotationPresent(NoInjection.class)) {
-      return false;
-    }
-    final Class<?> type = parameter.getType();
-    return isOrExtends(Method.class, type)
-        || isOrImplementsInterface(ITestContext.class, type)
-        || isOrImplementsInterface(ITestResult.class, type)
-        || isOrExtends(XmlTest.class, type);
-  }
-
   private static boolean canInject(
       final Parameter parameter, final InjectableParameter injectableParameter) {
     boolean canInject = false;

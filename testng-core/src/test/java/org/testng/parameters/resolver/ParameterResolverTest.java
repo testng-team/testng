@@ -15,6 +15,7 @@ import org.testng.parameters.samples.resolver.CountingParameterResolver;
 import org.testng.parameters.samples.resolver.CustomObject;
 import org.testng.parameters.samples.resolver.FailsOnSecondResolutionResolver;
 import org.testng.parameters.samples.resolver.ListenersAnnotationSample;
+import org.testng.parameters.samples.resolver.MethodAnsweringResolver;
 import org.testng.parameters.samples.resolver.MultipleResolvedParametersSample;
 import org.testng.parameters.samples.resolver.NativeInjectionSample;
 import org.testng.parameters.samples.resolver.NoDataProviderSample;
@@ -30,6 +31,7 @@ import org.testng.parameters.samples.resolver.RetryWithFailingDataProviderSample
 import org.testng.parameters.samples.resolver.RetryWithFailingResolverSample;
 import org.testng.parameters.samples.resolver.SampleParameterResolver;
 import org.testng.parameters.samples.resolver.SampleRun;
+import org.testng.parameters.samples.resolver.SecondMethodParameterSample;
 import org.testng.parameters.samples.resolver.TooManyDataProviderValuesSample;
 import org.testng.parameters.samples.resolver.UnrenderableValue;
 import org.testng.parameters.samples.resolver.UnsupportedParameterSample;
@@ -440,6 +442,19 @@ public class ParameterResolverTest extends SimpleBaseTest {
           .isNotSameAs(attempts.get(1)[0]);
     }
     assertThat(resolver.answers()).as("one resolution per attempt").hasSize(4);
+  }
+
+  @Test(
+      description =
+          "GITHUB-1164: TestNG injects only the first Method parameter, so a resolver may own the"
+              + " second")
+  public void secondMethodParameterIsResolvable() {
+    SampleRun run = SampleRun.of(SecondMethodParameterSample.class, new MethodAnsweringResolver());
+    assertThat(run.failureMessages()).isEmpty();
+
+    Object[] parameters = ParameterRecorder.onlyInvocationOf("test");
+    assertThat(((Method) parameters[0]).getName()).isEqualTo("test");
+    assertThat(parameters[1]).isSameAs(MethodAnsweringResolver.ANSWER);
   }
 
   private static Throwable causeOfOnlyFailure(SampleRun run) {
