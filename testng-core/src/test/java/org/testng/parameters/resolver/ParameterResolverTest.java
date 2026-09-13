@@ -457,6 +457,28 @@ public class ParameterResolverTest extends SimpleBaseTest {
     assertThat(parameters[1]).isSameAs(MethodAnsweringResolver.ANSWER);
   }
 
+  @Test(
+      description =
+          "GITHUB-1164: a resolver registered by @Listeners in one <test> serves every <test> of"
+              + " the suite, including one listed before it")
+  public void listenersResolverIsSuiteWide() {
+    XmlSuite suite = createXmlSuite("suite");
+    // The class with no @Listeners comes first: it can only be served by the other <test>'s.
+    createXmlClass(createXmlTest(suite, "without"), NoDataProviderSample.class);
+    createXmlClass(createXmlTest(suite, "with"), ListenersAnnotationSample.class);
+
+    ParameterRecorder.clear();
+    TestNG testng = create(suite);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    testng.addListener(adapter);
+    testng.run();
+
+    assertThat(adapter.getFailedTests()).isEmpty();
+    List<Object[]> both = ParameterRecorder.invocationsOf("test");
+    assertThat(both).hasSize(2);
+    assertThat(both).allSatisfy(p -> assertThat(p[0]).isInstanceOf(CustomObject.class));
+  }
+
   private static Throwable causeOfOnlyFailure(SampleRun run) {
     assertThat(run.failed()).hasSize(1);
     Throwable thrown = run.failed().get(0).getThrowable();
