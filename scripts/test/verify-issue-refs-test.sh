@@ -94,6 +94,13 @@ fake_pr_body() {
   printf '%s' "$WORK/prbody.$fakes.sh"
 }
 
+# add_method <repo> <path> <method> <message>  -- appends a method to a file and commits it.
+# The file must exist. Each method sits on its own line, so a later commit adds exactly one.
+add_method() {
+  printf 'void %s() {}\n' "$3" >> "$1/$2"
+  git -C "$1" commit -q -am "$4"
+}
+
 # merged_pr <repo> <path> <merge-subject>  -- adds a file on a branch and merges it.
 # The commit itself names no issue, so only the merge and the pull request body can prove one.
 merged_pr() {
@@ -485,6 +492,71 @@ r=$(new_repo); add "$r" src/foo/AlphaTest.java "Cut release-765 and fix #765"
 out=$(cd "$r" && PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/AlphaTest.java 765 2>&1)
 check "the evidence is the text that proved it" "#765" \
   "$(printf '%s' "$out" | sed -n 's/^provenance  the introducing commit names it: //p' | tr -d ' ')"
+
+# --- METHOD: prove a reference from the commit that added one method --------------------------
+# A file's first commit proves nothing about a method added to it years later. ParallelTestTest
+# holds a method from "Parallel test run is not working in 6.13.1" and two from "Unit tests for
+# #2532", and the file itself came from a 2006 commit that names neither.
+#
+# The rejected cases come first. A refusal must never fall back to the file's own commit, because
+# that answer reads exactly like a real one.
+
+# The method is not in the file at all.
+r=$(new_repo)
+add "$r" src/foo/MixedTest.java "Fix #111"
+check "method: a method the file never had is refused" "NO COMMIT" \
+  "$(verdict "$r" src/foo/MixedTest.java 111 METHOD=target)"
+
+# Only a longer name exists. "target" must not match "targetMore".
+r=$(new_repo)
+add "$r" src/foo/MixedTest.java "Create the class"
+add_method "$r" src/foo/MixedTest.java targetMore "Fix #111"
+check "method: a longer name is a different method" "NO COMMIT" \
+  "$(verdict "$r" src/foo/MixedTest.java 111 METHOD=target)"
+
+# "avoid target()" holds "void target()". It is not a declaration.
+r=$(new_repo)
+add "$r" src/foo/MixedTest.java "Create the class"
+printf '// avoid target() here\n' >> "$r/src/foo/MixedTest.java"
+git -C "$r" commit -q -am "Fix #111"
+check "method: a word ending in void is not a declaration" "NO COMMIT" \
+  "$(verdict "$r" src/foo/MixedTest.java 111 METHOD=target)"
+
+# Asking two modes at once is a mistake, not a choice. The file carries a real GITHUB-111 written by
+# a commit that names #111, so BY_DESCRIPTION alone would prove it. Only the refusal fails this.
+r=$(new_repo)
+add "$r" src/foo/MixedTest.java "Create the class"
+printf '/* GITHUB-111 */ void target() {}\n' >> "$r/src/foo/MixedTest.java"
+git -C "$r" commit -q -am "Fix #111"
+check "method: METHOD with BY_DESCRIPTION is refused" "NO COMMIT" \
+  "$(verdict "$r" src/foo/MixedTest.java 111 METHOD=target BY_DESCRIPTION=1)"
+
+# The file's first commit names one issue and the method's commit names another.
+r=$(new_repo)
+add "$r" src/foo/MixedTest.java "Fix #111"
+add_method "$r" src/foo/MixedTest.java target "Unit tests for #222"
+check "method: the method's own commit proves it" PROVEN \
+  "$(verdict "$r" src/foo/MixedTest.java 222 METHOD=target)"
+check "method: the file's commit does not prove the method" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/MixedTest.java 111 METHOD=target)"
+
+# The same method name in another file belongs to that file. The other file's method comes FIRST, so
+# a lookup that leaves this file's history finds it as the oldest, and proves the wrong issue.
+r=$(new_repo)
+add "$r" src/bar/OtherTest.java "Create the other class"
+add_method "$r" src/bar/OtherTest.java target "Fix #222"
+add "$r" src/foo/MixedTest.java "Create the class"
+add_method "$r" src/foo/MixedTest.java target "Fix #111"
+check "method: another file's method does not answer" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/MixedTest.java 222 METHOD=target)"
+
+# The file moved after the method was added. The method still has its commit.
+r=$(new_repo)
+add "$r" old/place/MixedTest.java "Create the class"
+add_method "$r" old/place/MixedTest.java target "Fix #111"
+move "$r" old/place/MixedTest.java new/place/MixedTest.java
+check "method: a moved file keeps its method's commit" PROVEN \
+  "$(verdict "$r" new/place/MixedTest.java 111 METHOD=target)"
 
 if [ -s "$WORK/gh-calls" ]; then
   fail=$((fail + 1))
