@@ -701,6 +701,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   }
 
   private void collectResults(ITestNGMethod testMethod, ITestResult result) {
+    if (m_testContext instanceof TestRunner) {
+      return;
+    }
     markInvocationFinished(testMethod);
     if (resultsFrozen()) {
       return;

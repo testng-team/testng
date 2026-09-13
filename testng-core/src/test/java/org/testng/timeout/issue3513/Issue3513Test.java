@@ -33,9 +33,12 @@ import org.testng.timeout.samples.issue3513.InterceptorSample;
 import org.testng.timeout.samples.issue3513.InterruptibleSample;
 import org.testng.timeout.samples.issue3513.MixedDataProviderSample;
 import org.testng.timeout.samples.issue3513.MixedInvocationSample;
+import org.testng.timeout.samples.issue3513.ParallelMixedDataProviderSample;
 import org.testng.timeout.samples.issue3513.StubbornSample;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
+import test.listeners.SetStatusListener;
+import test.listeners.SetStatusSample;
 
 /**
  * Under {@code parallel="tests"}, {@code SuiteRunner} bounds each {@code <test>} with the suite
@@ -245,6 +248,62 @@ public class Issue3513Test extends SimpleBaseTest {
     assertThat(blocking.statuses).containsExactly(ITestResult.SUCCESS);
     assertThat(tla.getPassedTests()).extracting(ITestResult::getName).contains("fast");
     assertThat(tla.getFailedTests()).extracting(ITestResult::getName).doesNotContain("fast");
+  }
+
+  /**
+   * A terminal listener may change {@code ITestResult} status. The context must keep the result
+   * only in the category that matches that new status.
+   */
+  @Test(description = "GITHUB-895")
+  public void aListenerStatusChangeKeepsTheResultOnlyInTheNewCategory() {
+    XmlSuite suite = createXmlSuite("github-895");
+    createXmlTest(suite, "set-status", SetStatusSample.class);
+    TestNG testng = create(suite);
+    SetStatusListener listener = new SetStatusListener();
+    testng.addListener((ITestNGListener) listener);
+    testng.run();
+
+    ITestContext context = listener.getContext();
+    assertThat(context.getFailedTests().size()).isEqualTo(0);
+    assertThat(context.getFailedButWithinSuccessPercentageTests().size()).isEqualTo(0);
+    assertThat(context.getSkippedTests().size()).isEqualTo(0);
+    assertThat(context.getPassedTests().size()).isEqualTo(1);
+    assertThat(context.getPassedTests().getAllResults())
+        .extracting(ITestResult::getStatus)
+        .containsExactly(ITestResult.SUCCESS);
+  }
+
+  /**
+   * Parallel data-provider rows share one method. Finishing the fast row must not drop the slow row
+   * from timeout accounting.
+   */
+  @Test(description = "GITHUB-3513")
+  public void concurrentInvocationsLeaveInFlightAccountingOnce() throws IOException {
+    File outputDir = createDirInTempDir("issue3513-parallel-dp");
+    XmlSuite suite = createXmlSuite("issue3513");
+    suite.setParallel(XmlSuite.ParallelMode.TESTS);
+    suite.setThreadCount(2);
+    suite.setTimeOut(Long.toString(SUITE_TIME_OUT_MILLIS));
+    suite.setDataProviderThreadCount(2);
+    createXmlTest(suite, "mixed-test", ParallelMixedDataProviderSample.class);
+    createXmlTest(suite, "fast-test", FastSample.class);
+
+    TestNG testng = create(suite);
+    testng.setUseDefaultListeners(true);
+    testng.setOutputDirectory(outputDir.getAbsolutePath());
+    testng.setDataProviderThreadCount(2);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    testng.addListener((ITestNGListener) tla);
+    testng.run();
+
+    assertThat(testng.getStatus()).isEqualTo(ExitCode.FAILED);
+    assertThat(tla.getPassedTests()).extracting(ITestResult::getName).contains("fast", "mixedRows");
+    List<ITestResult> mixedFailed =
+        tla.getFailedTests().stream()
+            .filter(r -> "mixedRows".equals(r.getName()))
+            .collect(Collectors.toList());
+    assertThat(mixedFailed).hasSize(1);
+    assertThat(mixedFailed.get(0).getThrowable()).isInstanceOf(ThreadTimeoutException.class);
   }
 
   @Test
