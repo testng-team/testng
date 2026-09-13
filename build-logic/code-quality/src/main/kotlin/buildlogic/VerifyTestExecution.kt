@@ -112,7 +112,7 @@ abstract class VerifyTestExecution : DefaultTask() {
             updatingInventory = updating,
         )
 
-        if (updating) {
+        val problems = if (!updating) problemsIn(evidence) else updateOrFail(evidence) {
             // Sorted, so the file has a stable order and its diff is readable. Without this the
             // order follows the filesystem listing and can change between runs on its own.
             baseline.writeText(
@@ -120,8 +120,6 @@ abstract class VerifyTestExecution : DefaultTask() {
             )
             logger.lifecycle("Wrote ${ranNow.size} entries to ${baseline.name}. Read the diff before committing it.")
         }
-
-        val problems = problemsIn(evidence)
         if (problems.isNotEmpty()) throw GradleException(problems.joinToString("\n\n"))
     }
 
@@ -297,8 +295,35 @@ internal fun readInventory(name: String, lines: List<String>): Map<String, Verif
                     "  org.testng.memory.MemoryLeakTestNg#testMemoryLeak\tPASS 1\n" +
                     "  Rebuild the file with -PupdateExecutionInventory if it was damaged."
             )
-        line.substringBefore('\t') to outcome
-    }.toMap()
+        line.substringBefore('\t') to (index + 1 to outcome)
+    }.let { entries ->
+        // A duplicate key is refused, not resolved. toMap() kept the last value, so a second,
+        // lower count for one test quietly became its baseline and hid a later loss to that count.
+        val firstLine = mutableMapOf<String, Int>()
+        entries.associate { (key, numbered) ->
+            val (lineNumber, outcome) = numbered
+            firstLine.putIfAbsent(key, lineNumber)?.let { earlier ->
+                throw GradleException(
+                    "Duplicate entry for $key at $name:$earlier and $name:$lineNumber.\n" +
+                        "  Each test appears once. Rebuild the file with -PupdateExecutionInventory."
+                )
+            }
+            key to outcome
+        }
+    }
+
+/**
+ * Rewrites the inventory only when nothing else is wrong.
+ *
+ * The rules run first and [write] runs only if they find nothing. A run that fails on the suite,
+ * the silent list or the factory list must not replace the baseline, or the next run would compare
+ * against a file that a broken build wrote. Returns the problems, so the caller still fails on them.
+ */
+internal fun updateOrFail(e: Evidence, write: () -> Unit): List<String> {
+    val problems = problemsIn(e)
+    if (problems.isEmpty()) write()
+    return problems
+}
 
 /** Every problem the evidence holds, one message each. Empty means the build passes. */
 internal fun problemsIn(e: Evidence): List<String> {

@@ -289,6 +289,39 @@ class VerifyTestExecutionRulesTest {
         }
     }
 
+    @Test(description = "a duplicate key is refused, and the message names both lines")
+    fun aDuplicateKeyIsRefused() {
+        // toMap() kept the last value. A second, lower count for the same test then became the
+        // baseline, and a later loss down to that count went unreported.
+        val message = refused("test.A#one\tPASS 3", "test.B#two\tPASS 1", "test.A#one\tPASS 1")
+        assert(message.contains(":1") && message.contains(":3")) { "expected both lines, got: $message" }
+        assert(message.contains("test.A#one")) { "expected the key, got: $message" }
+    }
+
+    // --- rewriting the inventory -------------------------------------------------------------------
+    //
+    // The write used to happen before the rules ran. A run that should fail on the suite, the
+    // silent list or the factory list still replaced the baseline, and the next run compared
+    // against a file written by a broken build.
+
+    @Test(description = "a failing update leaves the baseline untouched")
+    fun aFailingUpdateDoesNotWrite() {
+        var written = false
+        val problems = updateOrFail(
+            Evidence(executed = setOf("org.testng.factory.samples.Leaked"), updatingInventory = true)
+        ) { written = true }
+        assert(problems.isNotEmpty()) { "expected the leak to be reported" }
+        assert(!written) { "the baseline was written by a run that failed" }
+    }
+
+    @Test(description = "a clean update writes the baseline")
+    fun aCleanUpdateWrites() {
+        var written = false
+        val problems = updateOrFail(Evidence(updatingInventory = true)) { written = true }
+        assert(problems.isEmpty()) { "expected no problem, got: $problems" }
+        assert(written) { "a clean update did not write the baseline" }
+    }
+
     // --- what counts as a count ---------------------------------------------------------------------
     //
     // A generated count is always one or more. Each key is created with its first status, and the
