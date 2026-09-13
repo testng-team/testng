@@ -16,6 +16,7 @@ import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.factory.samples.lazy.CountingFactorySample;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.methodinterceptors.samples.CycleSample;
 import org.testng.methodinterceptors.samples.DependsOnGroupsSample;
@@ -27,7 +28,6 @@ import org.testng.methodinterceptors.samples.SecondClassSample;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
-import test.factory.lazy.CountingFactorySample;
 
 /**
  * An {@link IMethodInterceptor} is given every test method of its {@code <test>}, the ones taking

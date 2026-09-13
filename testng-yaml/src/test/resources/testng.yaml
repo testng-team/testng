@@ -87,8 +87,8 @@ tests:
 
   - name: Factory tests
     classes:
-      - test.factory.classconf.XClassOrderWithFactoryTest
-      - test.factory.FactoryInterleavingTest
+      - org.testng.factory.classconf.XClassOrderWithFactoryTest
+      - org.testng.factory.FactoryInterleavingTest
 
   - name: Basic
     classes:
@@ -165,17 +165,17 @@ tests:
 
   - name: Factory
     classes:
-      - test.factory.FactoryTest
-      - test.factory.VerifyFactoryTest
-      - test.factory.FactoryInSeparateClassTest
-      - test.factory.Factory2Test
-      - test.factory.FactoryWithInstanceInfoTest
-      - test.factory.VerifyFactoryWithInstanceInfoTest
-      - test.factory.TestClassAnnotationTest
-      - test.factory.FactoryWithDataProviderTest
-      - test.factory.FactoryOrderMainTest
-      - test.factory.FactoryFailureTest
-      - test.factory.FactoryInSuperClassTest
+      - org.testng.factory.FactoryTest
+      - org.testng.factory.VerifyFactoryTest
+      - org.testng.factory.FactoryInSeparateClassTest
+      - org.testng.factory.Factory2Test
+      - org.testng.factory.FactoryWithInstanceInfoTest
+      - org.testng.factory.VerifyFactoryWithInstanceInfoTest
+      - org.testng.factory.TestClassAnnotationTest
+      - org.testng.factory.FactoryWithDataProviderTest
+      - org.testng.factory.FactoryOrderMainTest
+      - org.testng.factory.FactoryFailureTest
+      - org.testng.factory.FactoryInSuperClassTest
 
   - name: TimeOut
     classes:

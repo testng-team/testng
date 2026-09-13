@@ -40,6 +40,18 @@ A reference is now written only when **both** ends check out, via
 Where GitHub's own timeline for the issue links the introducing commit, the issue points back at
 the code, which is as strong as this gets.
 
+Phase 5 adds a third source: **the body of the pull request that carried the commit**.
+GitHub closes an issue when a pull request body holds a closing word and the number, and neither the
+commit nor the merge has to repeat it. Issue #1307 was closed that way by pull request #1308, whose
+branch is called `feature/ignore-anonymous-tests`. Only a closing word counts. A body that says
+"see #1307" is a mention, and a mention proves nothing. Phase 1 had to judge #765 and #1417 by hand
+for the same reason, so this replaces hand judgement rather than adding a looser rule.
+
+The refusal for an ambiguous path also asks the caller for more of the path. Phase 5 makes that
+advice work. Before it, every fragment was cut to its last two segments, so a longer path changed
+nothing. `GitHub1131Test.java` sits under `test/factory` and under `test/objectfactory`. The suffix
+now grows a segment at a time until one file is left.
+
 The script refuses to answer rather than guess. Looking a file up by basename alone finds seven
 different `TestClassSample.java`, and picking the first invents provenance that reads exactly like
 the real thing — so it reports `AMBIGUOUS` and asks for the original path.
@@ -115,7 +127,9 @@ For every file at `test.<feature>[.<sub>].<Class>`:
 
 `samples` goes directly after the feature, per #3446, so the scenario or issue segment stays below
 it. Where a path already ends in `samples` (`test.aftergroups.samples`,
-`test.configuration.issue2254.samples`) the segment is not doubled.
+`test.configuration.issue2254.samples`) the segment is not doubled. The same holds for the singular
+form: `test.factory.sample` holds only samples, so it becomes `org.testng.factory.samples` rather
+than `org.testng.factory.samples.sample`.
 
 This is mechanical and checkable, and it makes the executable set after the move exactly the set
 `testng.xml` runs today — which is what #3446 step 5 needs in order to compare parity.
@@ -130,29 +144,36 @@ packages follow. Phases 3 to 8 each have an issue, linked below and as sub-issue
 objects to. Its existing work — the legacy `githubNNN`/`issueNNN`/`testngNNN` relocations, the
 verified descriptions, the #1362 merge — is redistributed into the phase that owns each feature.
 
-| Phase | Features | Files | Exec | Samples | Suspect |
-| --- | --- | --- | --- | --- | --- |
-| 1 (#3444) — **done** | `aftergroups`, `memory`, `methodselection`, `conffailure`, `groups` | 37 | 9 | 28 | 3 |
-| 2 — **done** | `reflect`, `preserveorder`, `priority`, `methodinterceptors`, `skip` | 98 | 25 | 73 | 6 |
-| 3 ([#3493](https://github.com/testng-team/testng/issues/3493)) | `invocationcount`, `parameters`, `inheritance` | 90 | 25 | 65 | 4 |
-| 4 ([#3494](https://github.com/testng-team/testng/issues/3494)) | `dependent` | 95 | 21 | 74 | 4 |
-| 5 ([#3495](https://github.com/testng-team/testng/issues/3495)) | `factory` | 122 | 36 | 86 | 3 |
-| 6 ([#3496](https://github.com/testng-team/testng/issues/3496)) | `thread` → `org.testng.concurrency` | 126 | 30 | 96 | 7 |
-| 7 ([#3497](https://github.com/testng-team/testng/issues/3497)) | `configuration` | 144 | 27 | 117 | 4 |
-| 8 ([#3498](https://github.com/testng-team/testng/issues/3498)) | `listeners` | 248 | 31 | 217 | 2 |
-| **total** | | **960** | **204** | **756** | **33** |
+| Phase | Features |
+| --- | --- |
+| 1 (#3444) — **done** | `aftergroups`, `memory`, `methodselection`, `conffailure`, `groups` |
+| 2 — **done** | `reflect`, `preserveorder`, `priority`, `methodinterceptors`, `skip` |
+| 3 ([#3493](https://github.com/testng-team/testng/issues/3493)) — **done** | `invocationcount`, `parameters`, `inheritance` |
+| 4 ([#3494](https://github.com/testng-team/testng/issues/3494)) — **done** | `dependent` |
+| 5 ([#3495](https://github.com/testng-team/testng/issues/3495)) | `factory` |
+| 6 ([#3496](https://github.com/testng-team/testng/issues/3496)) | `thread` → `org.testng.concurrency` |
+| 7 ([#3497](https://github.com/testng-team/testng/issues/3497)) | `configuration` |
+| 8 ([#3498](https://github.com/testng-team/testng/issues/3498)) | `listeners` |
 
-Phase 3 counts 90 files, not the 96 first written here. Five legacy packages were counted into it.
-Three stay. The other two belong to later phases, and they hold the six files that make up the
-difference:
+To size a phase, count its tree rather than trusting a table. For a feature already moved:
 
-| Package | Files | Owner | Why |
-| --- | --- | --- | --- |
-| `test.github1417` | 4 | phase 3, `parameters` | parameter injection into `@BeforeClass` |
-| `test.testng37` | 1 | phase 3, `parameters` | `@Parameters` with a null value |
-| `test.testng387` | 2 | phase 3, `invocationcount` | asserts `getFailedInvocationNumbers()` |
-| `test.testng317` | 3 | **phase 4**, `dependent` | `dependsOnMethods` across classes with matching names |
-| `test.issue107` | 3 | **phase 8**, `listeners` | a suite listener changing suite parameters |
+```bash
+feature=factory
+find testng-core/src/test/java/org/testng/$feature -name '*.java' | wc -l          # total
+find testng-core/src/test/java/org/testng/$feature -name '*.java' \
+  -not -path '*/samples/*' | wc -l                                                 # executable
+```
+
+These legacy packages sit outside the `test.<feature>` naming and belong to a phase anyway:
+
+| Package | Owner | Why |
+| --- | --- | --- |
+| `test.github1417` | phase 3, `parameters` | parameter injection into `@BeforeClass` |
+| `test.testng37` | phase 3, `parameters` | `@Parameters` with a null value |
+| `test.testng387` | phase 3, `invocationcount` | asserts `getFailedInvocationNumbers()` |
+| `test.testng317` | **phase 4**, `dependent` | `dependsOnMethods` across classes with matching names |
+| `test.github799` | **phase 5**, `factory` | the order of instances a `@Factory` creates |
+| `test.issue107` | **phase 8**, `listeners` | a suite listener changing suite parameters |
 
 Two classes in phase 3 have never run. Neither is registered in any suite file, and neither appears
 in `execution-inventory.txt`.
@@ -344,6 +365,13 @@ on master, and opens a pull request if it moved.
   to handle them — recorded here so nobody checks again.
 - **Stale build output can mask a mistake.** A class compiled into its old package lingers in
   `build/classes`. Add `clean` when a result looks impossible.
+- **A `@Factory` in a registered class runs its samples.** `testng.xml` names the class that holds
+  the factory method, and the instances it returns carry the `@Test` methods. Those instances show
+  up in the results like any other class, so `verifyTestExecution` reads them as samples that
+  leaked. They are not. Each one throws or fails if TestNG builds it with a no-argument
+  constructor, so it has to stay under `samples`. List it in
+  `testng-core/execution-factory-produced.txt` instead. An entry there that stops running fails the
+  build, and so does one the suite names or one outside `samples`. The list cannot rot.
 
 ## Decisions taken
 
@@ -395,17 +423,18 @@ Neither of these belongs to a phase, and both are easy to forget once the migrat
    | `scripts/test/run-all.sh` | delete after phase 8 |
    | `.github/workflows/scripts.yml` | delete after phase 8 |
    | `testng-core/execution-inventory.txt` | **permanent** |
-   | `testng-core/execution-known-silent.txt` | shrinks to two entries, then see below |
+   | `testng-core/execution-known-silent.txt` | shrinks, then see below |
+   | `testng-core/execution-factory-produced.txt` | **permanent** |
 
    `execution-inventory.txt` is not a migration artefact and does not go away. It matters more once
    the suite XML is deleted, not less: under classpath discovery a test can stop being discovered —
    renamed out of the pattern, moved into a `samples` package by mistake — and nothing else in the
    build would notice.
 
-   `execution-known-silent.txt` cannot reach zero as written. Nine of its eleven entries are
-   defects and should be fixed and deleted. The other two, `test.SerializationTest` and
-   `test.thread.ThreadTest`, are in group `broken` which their `<test>` block excludes on purpose,
-   so "named but never runs" is correct behaviour for them. Either the file keeps those two
+   `execution-known-silent.txt` cannot reach zero as written. Most of its entries are defects and
+   should be fixed and deleted. `test.SerializationTest` and `test.thread.ThreadTest` are in group
+   `broken`, which their `<test>` block excludes on purpose, so "named but never runs" is correct
+   behavior for them. Either the file keeps those two
    forever, or `verifyTestExecution` learns to read group filters and the file goes entirely. The
    second is better and is not hard; it was left out here to keep this PR to one subject.
 2. **Decide what happens to `test.test111`.** It is the same shape as the packages this work

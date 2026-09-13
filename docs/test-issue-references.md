@@ -149,10 +149,58 @@ Phase 4 brings three tests back into the suite instead. None had run for years.
 `test.testng317` is renamed rather than kept. GitHub #317 is a pull request, so the number points at
 nothing a reader can open.
 
+## Verified in phase 5
+
+<!-- vale off -->
+
+| Ref | Issue title on GitHub | Provenance | Timeline |
+| --- | --- | --- | --- |
+| `GITHUB-876` | NullPointerException creating tests with parameters by a factory | "Add test case for #876: NPE when a factory method is not static" | links commit |
+| `GITHUB-1030` | Parameterized test class crashes when data provider returns empty array | "#1030 Add test cases for empty data provider and factory" | links commit |
+| `GITHUB-1083` | Having indices on Factory | "Fix #1083 Factory supports indices" | links commit |
+| `GITHUB-1131` | IObjectFactory not being called for factory test instances with constructor-injected data provider | "#1131 Step1: Fix inconsistency between factory constructor" | links commit |
+| `GITHUB-1307` | TestNGException when using an anonymous class in Factory | pull request #1308: "Fixes #1307" | **no link** |
+| `GITHUB-1631` | [Feature Request] Implicitly inject dataProviderClass into Factory meta-data | "Data provider class injection into Factory meta-data.. There was no way to extract data provider class name from IAnnotationTransformer2 listener's meta-data, used for constructor-level Factory interception with missing dataProviderClass arg. See #1631 for details." | links commit |
+| `GITHUB-1745` | java.lang.IllegalArgumentException: wrong number of arguments | "Support native injection for @Factory methods.. Closes #1745" | links commit |
+| `GITHUB-1924` | Unable to run testcases with testng 7.0.0-beta1 in eclipse / maven test | "Streamline test-class instantiation. Closes #1924" | links commit |
+| `GITHUB-1041` | Factory dataprovider parameters not displayed in testresult | "Support params in Factory in ITestResult. Closes #1041" | links commit |
+| `GITHUB-2428` | Configuration methods have the same test class instance when @Factory is being used | "Fix #2428 Configuration methods have the same test class instance when @Factory is being used" | links commit |
+| `GITHUB-3344` | Feature Request: Lazy (just-in-time) instantiation for `@Factory` powered test classes | "feat(factory): lazy (just-in-time) instantiation for @Factory powered tests (#3345). Closes #3344" | links commit |
+| `GITHUB-799` | @Factory with dataProvider changes order of iterations | "@Factory with dataProvider changes order of iterations. Closes #799" | links commit |
+
+<!-- vale on -->
+
+`GITHUB-1307` is the one to read twice. Neither its commit nor its merge names the issue. The merge
+says "Merge pull request #1308 from michaelcowan/feature/ignore-anonymous-tests". The proof sits in
+the body of pull request #1308, which says "Fixes #1307", and that pull request holds exactly the
+commit that added the test. `scripts/verify-issue-refs.sh` now reads the pull request body as a
+third source of provenance. Only a GitHub closing word counts. A body that says "see #1307" is a
+mention and proves nothing.
+
+Five references were already in the code and are re-proven here: `GITHUB-326`, `GITHUB-553`,
+`GITHUB-1770`, `GITHUB-1953` and `GITHUB-3111`. `GITHUB-3079` is re-proven from its commit.
+`GITHUB-876` was written as a full GitHub URL and now uses the same `GITHUB-<n>` form as the rest.
+
+`test.factory.github328` is renamed and gets no description. GitHub #328 is a pull request, and its
+own author wrote on it that the change was not acceptable. The commit that added the test says "Add
+test case for #328", which is that pull request. The test asserts that a factory does not run when
+its group is excluded, so it is `FactoryWithExcludedGroupTest` now. Phase 4 renamed `test.testng317`
+for the same reason.
+
+Phase 5 also brings two tests into the suite. `GitHub1083Test` and `GitHub1131Test` are ordinary
+tests that were in no suite file, so neither had ever run. Both pass, and both are registered now.
+
+Two samples go the other way. `NestedFactorySample` and `NestedStaticFactorySample` hold a `@Test`
+and nothing in the tree names them, so TestNG never sees them. Commit `d8a8caa09` orphaned them in
+2016. Their comments are identical and say "Should have three instances", yet one asserts three and
+the other asserts two, so at least one is wrong. Moving them under `samples` would make that
+permanent and invisible, so phase 5 deletes them. `leftovers.sh` now reports this shape, because the
+suspect sweep in the plan only looks at classes named `*Test`.
+
 ## Verified, description not yet written
 
-A row above is a claim that the code carries that description. These five are the exception. Phase 1
-proved them by sweeping every class in reach, but their classes still sit in top-level `test.*`
+A row above is a claim that the code carries that description. The rows below are the exception.
+Phase 1 proved them by sweeping every class in reach. Their classes still sit in top-level `test.*`
 packages that no phase has moved. The description goes in when the owning feature moves.
 
 <!-- vale off -->
@@ -160,7 +208,6 @@ packages that no phase has moved. The description goes in when the owning featur
 | Ref | Class still at |
 | --- | --- |
 | `GITHUB-565` | `test.issue565` |
-| `GITHUB-799` | `test.github799` |
 | `GITHUB-1231` | `test.testng1231` |
 | `GITHUB-1232` | `test.testng1232` |
 | `GITHUB-1490` | `test.github1490` |

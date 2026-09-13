@@ -32,24 +32,37 @@ PROVENANCE_ONLY=${PROVENANCE_ONLY:-0}
 # It searches for a regex, not a plain string. "GITHUB-182" is the start of "GITHUB-1827", so a
 # plain string finds whichever came first. Ten such pairs already exist in this tree.
 BY_DESCRIPTION=${BY_DESCRIPTION:-0}
+# The command that prints a pull request body. It is given the pull request number.
+# Overridable so the tests can run offline: they pass a script that prints a fixed body.
+PR_BODY_CMD=${PR_BODY_CMD:-}
 frag=${1:?usage: verify-issue-refs.sh <path-fragment> [issue-number]}
 num=${2:-}
 rc=0
 
 # Enumerate every historical path the fragment matches before picking a commit. Choosing the first
 # match would tie a test to an unrelated commit, and the output reads exactly like the real thing.
+# Every path in history that ends with the segments of $1.
+#
+# Two pathspecs are given. The bare one matches a path written from the repository root. The
+# "*/" one matches the same segments deeper in the tree, and the slash is what keeps the match on a
+# segment boundary: "factory/X.java" must not answer for "objectfactory/X.java", which is a
+# different file with a different commit.
+#
+# -M is passed on purpose. Git turns rename detection on by default, but a repository that sets
+# diff.renames=false would report every rename of a file as a new add. One file that moved three
+# times then looks like four different files, and this rejects it as ambiguous.
+added_paths() {
+  git log --all --diff-filter=A -M --format= --name-status -- "$1" "*/$1" \
+    | awk '$1 == "A" { print $2 }' | sort -u
+}
+
 reject_if_ambiguous() {
-  local pattern=$1
   local paths
-  # -M is passed on purpose. Git turns rename detection on by default, but a repository that sets
-  # diff.renames=false would report every rename of a file as a new add. One file that moved three
-  # times then looks like four different files, and this rejects it as ambiguous.
-  paths=$(git log --all --diff-filter=A -M --format= --name-status -- "$pattern" \
-            | awk '$1 == "A" { print $2 }' | grep -E '\.java$|\.kt$|\.groovy$' | sort -u)
+  paths=$(added_paths "$1")
   if [ "$(printf '%s\n' "$paths" | grep -c .)" -gt 1 ]; then
     # stderr, not stdout: callers redirect this function's stdout away, and a refusal that nobody
     # sees is worse than no check at all.
-    echo "AMBIGUOUS   '$pattern' was added at more than one path; pass the full original path:" >&2
+    echo "AMBIGUOUS   '$1' was added at more than one path; pass more of the original path:" >&2
     printf '%s\n' "$paths" | sed 's/^/              /' >&2
     exit 2
   fi
@@ -105,25 +118,58 @@ fi
 # already: once when the modules were split, and once when they were grouped by feature. So each
 # time the add turns out to be a rename, take the old path and look again.
 last_two() { printf '%s' "$1" | awk -F/ '{ if (NF>1) print $(NF-1)"/"$NF; else print $NF }'; }
+
+# The shortest suffix of a path, two segments or more, that names one file in history.
+#
+# Two segments are usually enough, and they have to be the starting point: a full modern path only
+# matches history after the 2021 module split, so the split itself becomes the answer. But two
+# segments are not always enough. "github1131/GitHub1131Test.java" is one file under test/factory
+# and another under test/objectfactory, added by two different commits. So the suffix grows a
+# segment at a time until one file is left. The refusal above asks the caller for more of the path;
+# this is what makes that advice work.
+narrowest_suffix() {
+  local path=$1 total n cand
+  total=$(printf '%s' "$path" | awk -F/ '{ print NF }')
+  [ "$total" -le 2 ] && { printf '%s' "$path"; return; }
+  n=2
+  while [ "$n" -le "$total" ]; do
+    cand=$(printf '%s' "$path" | awk -F/ -v n="$n" \
+      '{ s = $(NF - n + 1); for (j = NF - n + 2; j <= NF; j++) s = s "/" $j; print s }')
+    [ "$(added_paths "$cand" | grep -c .)" -le 1 ] && { printf '%s' "$cand"; return; }
+    n=$((n + 1))
+  done
+  # Nothing separated them. Report the two-segment ambiguity, which is the honest answer.
+  printf '%s' "$(last_two "$path")"
+}
+
 if [ -z "$sha" ]; then
-  short=$(last_two "$frag")
+  short=$(narrowest_suffix "$frag")
   for _ in 1 2 3 4 5 6 7 8 9 10; do
-    reject_if_ambiguous "*$short" >/dev/null
-    found=$(git log --all --reverse --diff-filter=A -M --format=%H -- "*$short" | head -1)
+    reject_if_ambiguous "$short" >/dev/null
+    found=$(git log --all --reverse --diff-filter=A -M --format=%H -- "$short" "*/$short" | head -1)
     [ -z "$found" ] && break
     sha=$found
     # git log reports a rename as an add unless -M is given, so re-read the commit with it.
+    # The suffix has to start at a segment here too. Matching "graph/IssueTest.java" inside
+    # "dynamicgraph/IssueTest.java" sends the walk down another file's history.
     older=$(git show --name-status -M --format= "$sha" \
-              | awk -v suffix="$short" '$1 ~ /^R/ && index($3, suffix) { print $2 }' | head -1)
+              | awk -v suffix="$short" \
+                  '$1 ~ /^R/ && ($3 == suffix || index($3, "/" suffix) == length($3) - length(suffix)) \
+                   { print $2 }' | head -1)
     [ -z "$older" ] && break
-    short=$(last_two "$older")
+    short=$(narrowest_suffix "$older")
   done
 fi
 
-# Last resort: the file name alone.
-if [ -z "$sha" ]; then
-  reject_if_ambiguous "*/$(basename "$frag")" >/dev/null
-  sha=$(git log --all --reverse --diff-filter=A -M --format=%H -- "*/$(basename "$frag")" | head -1)
+# The file name alone, and only when that is all the caller gave.
+#
+# A basename is the weakest key there is: 45 files here are called IssueTest.java. A caller who
+# passes a path is asking about THAT file, so when no suffix of it matches anything, the answer is
+# that the path has no history. Answering from the basename instead returns another file's commit,
+# with an "introduced" line that reads exactly like the real thing.
+if [ -z "$sha" ] && [ "$frag" = "$(basename "$frag")" ]; then
+  reject_if_ambiguous "$frag" >/dev/null
+  sha=$(git log --all --reverse --diff-filter=A -M --format=%H -- "$frag" "*/$frag" | head -1)
 fi
 if [ -z "$sha" ]; then echo "no introducing commit found for $frag"; exit 1; fi
 
@@ -168,35 +214,114 @@ branch_names_num() {
   printf '%s' "$1" | sed -n 's/.*Merge pull request [^ ]* from \([^ |]*\).*/\1/p' \
     | grep -qE "(^|[^0-9])${num}([^0-9]|$)"
 }
+
+# Last source: the body of the pull request that carried the commit. GitHub closes an issue when a
+# pull request body holds a closing word and the number, and neither the commit nor the merge has
+# to repeat it. Issue #1307 was closed that way by pull request #1308, whose branch is called
+# "feature/ignore-anonymous-tests". Phase 1 had to judge #765 and #1417 by hand for the same reason.
+#
+# Only the closing form counts. "See #765", "unlike #765" and "duplicate of #765" are mentions, and
+# a mention proves nothing. These are GitHub's own closing words.
+#
+# The body is reached only through the pull request number that git already ties to this commit, so
+# it cannot be some other pull request's body. That number comes from a merge subject GitHub wrote.
+# A hand-written merge subject could name a pull request it did not come from; no merge in this
+# repository is hand-written.
+#
+# GitHub reads its closing words without regard to case, so "FIXES #765" closes the issue as
+# surely as "Fixes #765". The searches below pass -i for that reason.
+#
+# The word must stand alone. Without the boundary in front, "prefixes #765" holds "fixes" and
+# "Still unresolved: #765" holds "resolved", and GitHub closes nothing on either. Both would have
+# been written into the code as proof.
+CLOSING='(close[sd]?|fix(e[sd])?|resolve[sd]?)'
+CLOSES_NUM="(^|[^[:alnum:]_])${CLOSING}:? +(https://github\.com/${REPO}/issues/|#)${num}([^0-9]|$)"
+body_closes_num() {
+  printf '%s' "$1" | grep -qiE "$CLOSES_NUM"
+}
+# Reports the closing phrase that matched, so a reader can judge it.
+matched_close() {
+  printf '%s' "$1" | grep -oiE "$CLOSES_NUM" | head -1 | sed 's/^[^[:alnum:]_]*//'
+}
+# The pull request a commit arrived in. Two forms, and only these two:
+#
+#   "Merge pull request #<n> from <branch>"   -- the subject of a merge GitHub made
+#   "... (#<n>)"                              -- the tail of a subject GitHub squashed
+#
+# Both are SUBJECTS. A commit body may name any pull request at all: "reverts (#1308)", "follows on
+# from (#900)". Reading one of those bodies would prove nothing about this commit, and the rule
+# above promises it cannot happen. So the squashed form is anchored to the end of the line, and
+# callers pass a subject.
+pr_number_of() {
+  printf '%s' "$1" | sed -n -e 's/^Merge pull request #\([0-9][0-9]*\) from .*/\1/p' \
+                            -e 's/.*(#\([0-9][0-9]*\))[[:space:]]*$/\1/p' | head -1
+}
+# Prints the body of pull request $1. Exits non-zero when it could not be read at all, which is not
+# the same as a body that says nothing: the caller reports the two differently.
+pr_body() {
+  if [ -n "$PR_BODY_CMD" ]; then
+    $PR_BODY_CMD "$1" 2>/dev/null
+  else
+    gh api "repos/$REPO/pulls/$1" --jq .body 2>/dev/null
+  fi
+}
 # Reports the text that matched, so a reader can judge it. It searches the same cleaned string the
 # rules did, never the raw message, or it would print a pull request number as the evidence.
 matched_text() {
-  printf '%s' "$(without_pr_number "$1")" | grep -oE "[A-Za-z/#-]*${num}([^0-9]|$)" | head -1
+  # The same alternation names_num applies. A looser one printed "release-765" as the evidence for
+  # a commit that was proven by "fix #765", which tells the reader the opposite of the truth.
+  printf '%s' "$(without_pr_number "$1")" \
+    | grep -oE "(TESTNG-|#|issues/)${num}([^0-9]|$)" | head -1
 }
+# Three sources may prove the reference, strongest first. The first that answers wins.
+proven=""
 if names_num "$msg"; then
-  printf 'provenance  the introducing commit names it: %s\n' "$(matched_text "$msg")"
+  proven="the introducing commit names it: $(matched_text "$msg")"
 else
   merge=$(git log --merges --ancestry-path --format=%H "$sha".."$BASE" 2>/dev/null | tail -1)
   mmsg=$([ -n "$merge" ] && git log -1 --format='%s | %b' "$merge" | tr '\n' ' ' | sed 's/  */ /g')
-  if [ -n "${mmsg:-}" ] && { names_num "$mmsg" || branch_names_num "$mmsg"; }; then
-    if names_num "$mmsg"; then evidence=$(matched_text "$mmsg")
-    else evidence=$(printf '%s' "$mmsg" | sed -n 's/.*Merge pull request [^ ]* from \([^ |]*\).*/branch \1/p')
-    fi
-    printf 'provenance  the merge names it (%s): %s\n' "$evidence" "$mmsg"
+  if [ -n "${mmsg:-}" ] && names_num "$mmsg"; then
+    proven="the merge names it ($(matched_text "$mmsg")): $mmsg"
+  elif [ -n "${mmsg:-}" ] && branch_names_num "$mmsg"; then
+    branch=$(printf '%s' "$mmsg" | sed -n 's/.*Merge pull request [^ ]* from \([^ |]*\).*/branch \1/p')
+    proven="the merge names it ($branch): $mmsg"
   else
-    printf 'provenance  NOT PROVEN -- neither the commit nor its merge names #%s\n' "$num"
-    [ -n "${mmsg:-}" ] && printf '            merge was: %s\n' "$mmsg"
-    if [ "$BY_DESCRIPTION" = 1 ]; then
-      # An earlier phase of this migration may have written the description itself. Its commit
-      # names no issue, because the proof came from the file, not from the text. Do not delete a
-      # reference on this answer alone.
-      echo "            This mode judges the commit that wrote the text. If an earlier phase of"
-      echo "            this migration wrote it, that commit names no issue. Check the same"
-      echo "            reference without BY_DESCRIPTION, and check docs/test-issue-references.md,"
-      echo "            before removing it."
+    # Subjects only. $msg and $mmsg hold the body too, and a body may name any pull request.
+    pr=$([ -n "$merge" ] && pr_number_of "$(git log -1 --format=%s "$merge")")
+    [ -n "$pr" ] || pr=$(pr_number_of "$(git log -1 --format=%s "$sha")")
+    if [ -n "$pr" ]; then
+      prbody=$(pr_body "$pr"); body_rc=$?
+      if [ "$body_rc" = 0 ] && body_closes_num "$prbody"; then
+        proven="pull request #$pr says it closes the issue: $(matched_close "$prbody")"
+      fi
     fi
-    rc=1
   fi
+fi
+
+if [ -n "$proven" ]; then
+  printf 'provenance  %s\n' "$proven"
+else
+  printf 'provenance  NOT PROVEN -- the commit does not name #%s\n' "$num"
+  [ -n "${mmsg:-}" ] && printf '            merge was: %s\n' "$mmsg"
+  # A body that could not be read is not a body that says nothing. Saying so would let an offline
+  # run, a rate limit or a missing token read as a verdict, and a true reference would be deleted.
+  if [ -z "${pr:-}" ]; then
+    printf '            no pull request number in the subject, so no body was read\n'
+  elif [ "${body_rc:-0}" != 0 ]; then
+    printf '            pull request #%s could not be read, so its body is NOT a verdict\n' "$pr"
+  else
+    printf '            pull request #%s does not say it closes the issue\n' "$pr"
+  fi
+  if [ "$BY_DESCRIPTION" = 1 ]; then
+    # An earlier phase of this migration may have written the description itself. Its commit
+    # names no issue, because the proof came from the file, not from the text. Do not delete a
+    # reference on this answer alone.
+    echo "            This mode judges the commit that wrote the text. If an earlier phase of"
+    echo "            this migration wrote it, that commit names no issue. Check the same"
+    echo "            reference without BY_DESCRIPTION, and check docs/test-issue-references.md,"
+    echo "            before removing it."
+  fi
+  rc=1
 fi
 
 [ "$PROVENANCE_ONLY" = 1 ] && exit $rc

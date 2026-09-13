@@ -1,0 +1,21 @@
+# Classes under a .samples. package that run on purpose, because a registered @Factory creates them.
+#
+# verifyTestExecution fails when a .samples. class appears in the results. Those classes are TestNG
+# input, several are written to fail, and one running usually means the boundary leaked.
+#
+# A @Factory is the one honest way it happens. testng.xml names the class that holds the factory
+# method, TestNG calls it, and the instances it returns carry the @Test methods. The produced class
+# is still TestNG input: each one below throws or fails if TestNG builds it with its no-argument
+# constructor, which is exactly what classpath discovery would do. So it must stay under .samples.,
+# and it must keep running.
+#
+# An entry here that stops running is an error. The factory that fed it is gone, or the class is.
+
+# --- created by org.testng.factory.FactoryTest, which testng.xml names and which has no @Test.
+org.testng.factory.samples.FactoryTest2
+
+# --- created by org.testng.factory.FactoryWithInstanceInfoTest, same shape.
+org.testng.factory.samples.FactoryWithInstanceInfo2Sample
+
+# --- created by org.testng.factory.FactoryInSeparateClassTest.
+org.testng.factory.samples.MySample
