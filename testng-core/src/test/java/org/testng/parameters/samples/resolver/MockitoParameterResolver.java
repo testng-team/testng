@@ -11,9 +11,9 @@ import org.testng.ITestNGMethod;
  * What a mocking library would ship: it owns the {@code @Mock} annotated parameters and answers a
  * mock for each, created afresh for every invocation.
  *
- * <p>TestNG depends on nothing of Mockito here; this lives in the tests, and is what gives the SPI
- * a real third party object -- a generated subclass or proxy rather than an exact instance of the
- * declared type -- to place back into an invocation.
+ * <p>TestNG depends on nothing of {@code Mockito} here; this lives in the tests, and is what gives
+ * the SPI a real third party object -- a generated subclass or proxy rather than an exact instance
+ * of the declared type -- to place back into an invocation.
  */
 public class MockitoParameterResolver implements IParameterResolver {
 
