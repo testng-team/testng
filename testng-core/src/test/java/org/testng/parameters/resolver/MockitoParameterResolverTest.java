@@ -1,4 +1,4 @@
-package test.inject.parameterresolver;
+package org.testng.parameters.resolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mockingDetails;
@@ -8,6 +8,12 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.Method;
 import java.util.List;
 import org.testng.annotations.Test;
+import org.testng.parameters.samples.resolver.Counter;
+import org.testng.parameters.samples.resolver.Greeter;
+import org.testng.parameters.samples.resolver.MockitoParameterResolver;
+import org.testng.parameters.samples.resolver.MockitoSample;
+import org.testng.parameters.samples.resolver.ParameterRecorder;
+import org.testng.parameters.samples.resolver.SampleRun;
 import test.SimpleBaseTest;
 
 /**
