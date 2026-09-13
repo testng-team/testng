@@ -418,12 +418,47 @@ for body in 'Still unresolved: #765' \
   check "body <$body> is not a closing word" "NOT PROVEN" "$(body_verdict "$body" 765)"
 done
 
-# A body reader that fails proves nothing. It must not turn into a verdict either way.
+# A body that could not be read is not a body that says nothing. When no source proves the reference
+# and some body was not read, the answer is CANNOT CHECK with exit 3, never NOT PROVEN. A NOT PROVEN
+# here would let a rate limit or a missing token delete a true reference.
+two_prs_verdict() {
+  local prs=$1 reader=$2 r sha
+  r=$(new_repo)
+  sha=$(rebased_then_merged "$r" src/foo/AlphaTest.java "Merge pull request #999 from someone/unrelated")
+  verdict "$r" src/foo/AlphaTest.java 765 \
+    "COMMIT_PRS_CMD=$(fake_prs "$prs" "$sha")" "PR_BODY_CMD=$reader"
+}
+one_pr="1308${tab}feature-x"
+two_prs="1308${tab}feature-x
+900${tab}other"
+
+check "a failing body reader is not a verdict" "CANNOT CHECK" \
+  "$(two_prs_verdict "$one_pr" /nonexistent/reader)"
+
+# The fault this guards: each body read overwrote the result of the one before. Only #900 is
+# readable below, so the body of #1308 was never read, in either order.
+check "an unreadable body before a silent one is not a verdict" "CANNOT CHECK" \
+  "$(two_prs_verdict "$two_prs" "$(fake_pr_body 'Some cleanup' 900)")"
+check "an unreadable body after a silent one is not a verdict" "CANNOT CHECK" \
+  "$(two_prs_verdict "900${tab}other
+1308${tab}feature-x" "$(fake_pr_body 'Some cleanup' 900)")"
+
+# The rejected case stays rejected: two bodies, both read, and neither closes the issue.
+check "two silent bodies that were both read are not provenance" "NOT PROVEN" \
+  "$(two_prs_verdict "$two_prs" "$(fake_pr_body 'Some cleanup')")"
+
+# A proof still wins over a body that could not be read.
+check "a closing body proves it beside an unreadable one" PROVEN \
+  "$(two_prs_verdict "$two_prs" "$(fake_pr_body 'Fixes #765' 900)")"
+check "a branch proves it though its body is unreadable" PROVEN \
+  "$(two_prs_verdict "1308${tab}fix-765" /nonexistent/reader)"
+
+# A caller reads the exit code.
 r=$(new_repo)
 sha=$(rebased_then_merged "$r" src/foo/AlphaTest.java "Merge pull request #999 from someone/unrelated")
-check "a failing body reader is not provenance" "NOT PROVEN" \
-  "$(verdict "$r" src/foo/AlphaTest.java 765 \
-      "COMMIT_PRS_CMD=$(fake_prs "1308${tab}feature-x" "$sha")" PR_BODY_CMD=/nonexistent/reader)"
+(cd "$r" && COMMIT_PRS_CMD="$(fake_prs "$two_prs" "$sha")" PR_BODY_CMD="$(fake_pr_body 'Some cleanup' 900)" \
+   PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/AlphaTest.java 765 >/dev/null 2>&1)
+check "an unreadable body exits 3" 3 "$?"
 
 # --- a longer fragment separates two files that end the same way --------------------------------
 # GitHub1131Test.java exists under test/factory and under test/objectfactory, and the two were
