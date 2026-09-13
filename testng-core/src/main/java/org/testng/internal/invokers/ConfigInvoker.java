@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import org.jspecify.annotations.Nullable;
 import org.testng.ConfigurationNotInvokedException;
 import org.testng.IClass;
@@ -50,17 +51,29 @@ import org.testng.xml.XmlSuite;
 
 class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
-  /** Test methods whose configuration methods have failed. */
-  protected final Map<ITestNGMethod, Set<Object>> m_methodInvocationResults =
+  /**
+   * Test methods whose configuration methods have failed, each invocation token mapped to the
+   * sequence number of its failure.
+   */
+  protected final Map<ITestNGMethod, Map<Object, Long>> m_methodInvocationResults =
       new ConcurrentHashMap<>();
+
+  /**
+   * Numbers every recorded failure, so that a caller can ask about the failures recorded after a
+   * given point only. See {@link #currentFailureMark()}.
+   */
+  private final AtomicLong m_failureSequence = new AtomicLong();
 
   private final boolean m_continueOnFailedConfiguration;
   private boolean m_hasTestTagLevelFailures = false;
   private boolean m_hasClassLevelFailures = false;
   private boolean m_hasTestMethodLevelFailures = false;
 
-  /** Group failures must be synced as the Invoker is accessed concurrently */
-  private final Map<String, Boolean> m_beforegroupsFailures = new ConcurrentHashMap<>();
+  /**
+   * Group failures, each mapped to its sequence number. Must be synced as the Invoker is accessed
+   * concurrently.
+   */
+  private final Map<String, Long> m_beforegroupsFailures = new ConcurrentHashMap<>();
 
   /**
    * firstTimeOnly @BeforeMethod gates, keyed on the configuration, the test method and the test
@@ -104,7 +117,13 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       String[] groups,
       IClass testClass,
       @Nullable Object instance) {
-    return hasConfigurationFailureFor(null, testNGMethod, groups, testClass, instance);
+    return hasConfigurationFailureFor(
+        null, testNGMethod, groups, testClass, instance, NO_IGNORED_FAILURES);
+  }
+
+  @Override
+  public long currentFailureMark() {
+    return m_failureSequence.get();
   }
 
   @Override
@@ -113,7 +132,8 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       @Nullable ITestNGMethod testNGMethod,
       String[] groups,
       IClass testClass,
-      @Nullable Object instance) {
+      @Nullable Object instance,
+      long ignoredFailureMark) {
     boolean result = false;
 
     Class<?> cls = testClass.getRealClass();
@@ -124,15 +144,15 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     }
 
     boolean annotationFound = canIgnoreConfigFailure(testClass, configMethod);
-    boolean hasConfigurationFailures = classConfigurationFailed(cls, instance);
+    boolean hasConfigurationFailures = classConfigurationFailed(cls, instance, ignoredFailureMark);
     if (hasConfigurationFailures) {
       if (annotationFound) {
         // We were told to ignore failures via the annotation.
         return false;
       }
       if (m_continueOnFailedConfiguration) {
-        Set<Object> set = getInvocationResults(testClass);
-        result = set.contains(instance);
+        Map<Object, Long> failures = getInvocationResults(testClass);
+        result = isRecordedFor(failures, instance, ignoredFailureMark);
       } else {
         result = true;
       }
@@ -146,10 +166,12 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           TestNgMethodUtils.getMethodInvocationToken(
               Objects.requireNonNull(testNGMethod), Objects.requireNonNull(instance));
       // hasConfigFailure() has just established that the map holds this key.
-      result = Objects.requireNonNull(m_methodInvocationResults.get(testNGMethod)).contains(key);
+      Long failure = Objects.requireNonNull(m_methodInvocationResults.get(testNGMethod)).get(key);
+      result = isRecordedAfter(failure, ignoredFailureMark);
     } else if (!(m_continueOnFailedConfiguration || annotationFound)) {
-      for (Class<?> clazz : m_classInvocationResults.keySet()) {
-        if (clazz.isAssignableFrom(cls) && m_classInvocationResults.get(clazz).contains(instance)) {
+      for (Map.Entry<Class<?>, Map<Object, Long>> entry : m_classInvocationResults.entrySet()) {
+        if (entry.getKey().isAssignableFrom(cls)
+            && isRecordedFor(entry.getValue(), instance, ignoredFailureMark)) {
           result = true;
           break;
         }
@@ -158,12 +180,29 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
     // check if there are failed @BeforeGroups
     for (String group : groups) {
-      if (m_beforegroupsFailures.containsKey(group)) {
+      if (isRecordedAfter(m_beforegroupsFailures.get(group), ignoredFailureMark)) {
         result = true;
         break;
       }
     }
     return result;
+  }
+
+  /**
+   * @return true if {@code failure} is a recorded failure that the caller did not ask to ignore. A
+   *     null is no record at all.
+   */
+  private static boolean isRecordedAfter(@Nullable Long failure, long ignoredFailureMark) {
+    return failure != null && failure > ignoredFailureMark;
+  }
+
+  /**
+   * @return whether {@code failures} holds a record for {@code key} that the caller did not ask to
+   *     ignore. A null key is never recorded; the map cannot be asked about one.
+   */
+  private static boolean isRecordedFor(
+      Map<Object, Long> failures, @Nullable Object key, long ignoredFailureMark) {
+    return key != null && isRecordedAfter(failures.get(key), ignoredFailureMark);
   }
 
   /**
@@ -286,9 +325,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         // - the test is enabled and
         // - the Configuration method belongs to the same class or a parent
         configurationAnnotation = AnnotationHelper.findConfiguration(annotationFinder(), method);
-        boolean alwaysRun = MethodHelper.isAlwaysRun(configurationAnnotation);
         boolean canProcessMethod =
-            MethodHelper.isEnabled(objectClass, annotationFinder()) || alwaysRun;
+            MethodHelper.isEnabled(objectClass, annotationFinder())
+                || MethodHelper.isAlwaysRun(configurationAnnotation);
         if (!canProcessMethod) {
           log(
               3,
@@ -303,9 +342,15 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
           continue;
         }
-        if (hasConfigurationFailureFor(
-                tm, arguments.getTestMethod(), tm.getGroups(), testClass, arguments.getInstance())
-            && !alwaysRun) {
+        // GITHUB-1622. The guard is a field read, so it comes before the map walks.
+        if (!MethodHelper.canBypassConfigurationFailure(tm, configurationAnnotation)
+            && hasConfigurationFailureFor(
+                tm,
+                arguments.getTestMethod(),
+                tm.getGroups(),
+                testClass,
+                arguments.getInstance(),
+                arguments.getIgnoredFailureMark())) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
           InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), testResult);
           // Set test result as 'SKIP' in 'beforeConfiguration' & 'beforeInvocation' if
@@ -316,16 +361,11 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
           testResult.setEndMillis(testResult.getStartMillis());
           runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
-
-          handleConfigurationSkip(
-              tm,
-              testResult,
-              Objects.requireNonNull(
-                  configurationAnnotation,
-                  "a configuration method always carries a @Before/@After annotation"),
-              arguments.getTestMethod(),
-              arguments.getInstance(),
-              arguments.getSuite());
+          // The only reason for this skip is a failure that is already recorded. Recording the
+          // skip as well would reach tests that failure does not cover: it would mark the groups
+          // of a skipped @BeforeGroups, the class of a skipped @BeforeClass, and the level flags
+          // that decide where ignoreFailure is looked up.
+          runConfigurationListeners(testResult, arguments.getTestMethod(), false /* after */);
           continue;
         }
 
@@ -611,16 +651,21 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   }
 
   /** @return true if this class or a parent class failed to initialize. */
-  private boolean classConfigurationFailed(Class<?> cls, @Nullable Object instance) {
+  private boolean classConfigurationFailed(
+      Class<?> cls, @Nullable Object instance, long ignoredFailureMark) {
     return m_classInvocationResults.entrySet().stream()
         .anyMatch(
             classSetEntry -> {
-              Set<Object> obj = classSetEntry.getValue();
+              Map<Object, Long> obj = classSetEntry.getValue();
               Class<?> c = classSetEntry.getKey();
-              boolean containsBeforeTestOrBeforeSuiteFailure = obj.contains(NULL_OBJECT);
-              return c == cls
+              boolean containsBeforeTestOrBeforeSuiteFailure =
+                  isRecordedAfter(obj.get(NULL_OBJECT), ignoredFailureMark);
+              boolean containsInstanceFailure = isRecordedFor(obj, instance, ignoredFailureMark);
+              boolean containsAnyFailure =
+                  obj.values().stream().anyMatch(seq -> isRecordedAfter(seq, ignoredFailureMark));
+              return c == cls && containsAnyFailure
                   || c.isAssignableFrom(cls)
-                      && (obj.contains(instance) || containsBeforeTestOrBeforeSuiteFailure);
+                      && (containsInstanceFailure || containsBeforeTestOrBeforeSuiteFailure);
             });
   }
 
@@ -640,20 +685,23 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     if (method == null) {
       return;
     }
-    Set<Object> instances = m_methodInvocationResults.computeIfAbsent(method, k -> new HashSet<>());
+    Map<Object, Long> instances =
+        m_methodInvocationResults.computeIfAbsent(method, k -> new ConcurrentHashMap<>());
     // Both come from one set of arguments, and a set that carries a test method carries its
     // instance too, so a non-null method means a non-null instance.
-    instances.add(
-        TestNgMethodUtils.getMethodInvocationToken(method, Objects.requireNonNull(instance)));
+    instances.put(
+        TestNgMethodUtils.getMethodInvocationToken(method, Objects.requireNonNull(instance)),
+        m_failureSequence.incrementAndGet());
   }
 
   private final AutoCloseableLock internalLock = new AutoCloseableLock();
 
   private void setClassInvocationFailure(Class<?> clazz, @Nullable Object instance) {
     try (AutoCloseableLock ignore = internalLock.lock()) {
-      Set<Object> instances = m_classInvocationResults.computeIfAbsent(clazz, k -> new HashSet<>());
+      Map<Object, Long> instances =
+          m_classInvocationResults.computeIfAbsent(clazz, k -> new ConcurrentHashMap<>());
       Object objectToAdd = instance == null ? NULL_OBJECT : instance;
-      instances.add(objectToAdd);
+      instances.put(objectToAdd, m_failureSequence.incrementAndGet());
     }
   }
 
@@ -718,7 +766,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     }
     String[] beforeGroups = annotation.getBeforeGroups();
     for (String group : beforeGroups) {
-      m_beforegroupsFailures.put(group, Boolean.FALSE);
+      m_beforegroupsFailures.put(group, m_failureSequence.incrementAndGet());
     }
   }
 
@@ -730,9 +778,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     return instance;
   }
 
-  private Set<Object> getInvocationResults(IClass testClass) {
+  private Map<Object, Long> getInvocationResults(IClass testClass) {
     Class<?> cls = testClass.getRealClass();
-    Set<Object> set = null;
+    Map<Object, Long> set = null;
     // We need to continuously search till either our Set is not null (or) till we reached
     // Object class because it is very much possible that the test method is residing in a child
     // class
