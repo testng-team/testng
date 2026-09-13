@@ -663,6 +663,42 @@ check "prs: without GitHub the merge still answers" PROVEN \
 check "prs: without GitHub the merge is called a guess" yes \
   "$(says_guess "$out")"
 
+# --- a pull request branch must name the issue, not merely hold its digits --------------------------
+# The branch rule took any digit-bounded number. So "java-17-support" proved issue 17, a dependabot
+# branch ending in "assertj-core-3.27.3" proved 27, and "release-765" proved 765 -- a string the
+# commit-message rule has always refused. A branch names an issue only after a word that marks one,
+# such as fix or issue, and never as part of a version.
+#
+# The rejected branches come first. "prefix-765" and "tissue-765" hold a marking word inside a longer
+# one, and only a word that stands alone marks an issue.
+
+for pair in "java-17-support:17" \
+            "dependabot/gradle/org.assertj-assertj-core-3.27.3:27" \
+            "upgrade-guava-2019.1:2019" \
+            "release-765:765" \
+            "v0.765:765" \
+            "fix-765.1:765" \
+            "prefix-765:765" \
+            "tissue-765:765"; do
+  ref=${pair%:*}; n=${pair##*:}
+  r=$(new_repo)
+  sha=$(rebased_then_merged "$r" src/foo/AlphaTest.java "Merge pull request #999 from someone/unrelated")
+  check "branch: <$ref> does not name issue $n" "NOT PROVEN" \
+    "$(verdict "$r" src/foo/AlphaTest.java "$n" \
+        "COMMIT_PRS_CMD=$(fake_prs "1${tab}${ref}" "$sha")" "PR_BODY_CMD=$(fake_pr_body '')")"
+done
+
+# Branches that do name the issue still prove it.
+for pair in "krmahadevan-fix-765:765" "task/fix_3242:3242" "github-2321:2321" "issue-1234:1234" \
+            "bugfix/fix_2587:2587" "GH-1234:1234"; do
+  ref=${pair%:*}; n=${pair##*:}
+  r=$(new_repo)
+  sha=$(rebased_then_merged "$r" src/foo/AlphaTest.java "Merge pull request #999 from someone/unrelated")
+  check "branch: <$ref> names issue $n" PROVEN \
+    "$(verdict "$r" src/foo/AlphaTest.java "$n" \
+        "COMMIT_PRS_CMD=$(fake_prs "1${tab}${ref}" "$sha")" "PR_BODY_CMD=$(fake_pr_body '')")"
+done
+
 if [ -s "$WORK/gh-calls" ]; then
   fail=$((fail + 1))
   printf 'FAIL  the tests reached the network\n      gh was called with:\n'
