@@ -702,6 +702,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
   private void collectResults(ITestNGMethod testMethod, ITestResult result) {
     if (m_testContext instanceof TestRunner) {
+      // Admission already left in-flight. Record leftovers that listeners did not classify.
+      ((TestRunner) m_testContext).classifyIfNeeded(result);
       return;
     }
     markInvocationFinished(testMethod);

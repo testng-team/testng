@@ -1295,26 +1295,61 @@ public class TestRunner
       if (!admittedResults.remove(tr)) {
         return;
       }
-      m_passedTests.removeResult(tr);
-      m_failedTests.removeResult(tr);
-      m_skippedTests.removeResult(tr);
-      m_failedButWithinSuccessPercentageTests.removeResult(tr);
-      switch (tr.getStatus()) {
-        case ITestResult.SUCCESS:
-          m_passedTests.addResult(tr);
-          break;
-        case ITestResult.SKIP:
-          m_skippedTests.addResult(tr);
-          break;
-        case ITestResult.FAILURE:
-          m_failedTests.addResult(tr);
-          break;
-        case ITestResult.SUCCESS_PERCENTAGE_FAILURE:
-          m_failedButWithinSuccessPercentageTests.addResult(tr);
-          break;
-        default:
-          break;
+      placeClassifiedResult(tr);
+    }
+  }
+
+  /**
+   * Records a result that listener admission did not classify. Does not change in-flight counts.
+   */
+  public void classifyIfNeeded(ITestResult tr) {
+    synchronized (resultLock) {
+      if (resultsFrozen) {
+        return;
       }
+      if (recordedContains(tr)) {
+        return;
+      }
+      if (admittedResults.remove(tr)) {
+        placeClassifiedResult(tr);
+        return;
+      }
+      int status = tr.getStatus();
+      if (status == ITestResult.STARTED || status == ITestResult.CREATED) {
+        // IHookable skipped the callback while testng.ignore.callback.skip is set.
+        tr.setStatus(ITestResult.FAILURE);
+      }
+      placeClassifiedResult(tr);
+    }
+  }
+
+  private boolean recordedContains(ITestResult tr) {
+    return m_passedTests.getAllResults().contains(tr)
+        || m_failedTests.getAllResults().contains(tr)
+        || m_skippedTests.getAllResults().contains(tr)
+        || m_failedButWithinSuccessPercentageTests.getAllResults().contains(tr);
+  }
+
+  private void placeClassifiedResult(ITestResult tr) {
+    m_passedTests.removeResult(tr);
+    m_failedTests.removeResult(tr);
+    m_skippedTests.removeResult(tr);
+    m_failedButWithinSuccessPercentageTests.removeResult(tr);
+    switch (tr.getStatus()) {
+      case ITestResult.SUCCESS:
+        m_passedTests.addResult(tr);
+        break;
+      case ITestResult.SKIP:
+        m_skippedTests.addResult(tr);
+        break;
+      case ITestResult.FAILURE:
+        m_failedTests.addResult(tr);
+        break;
+      case ITestResult.SUCCESS_PERCENTAGE_FAILURE:
+        m_failedButWithinSuccessPercentageTests.addResult(tr);
+        break;
+      default:
+        break;
     }
   }
 
