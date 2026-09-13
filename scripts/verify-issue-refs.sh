@@ -342,6 +342,9 @@ else
     printf '            the commit does not name #%s. Not a verdict.\n' "$num"
     exit 3
   fi
+  # Every body that could not be read, not only the last one. A later body that was read must not
+  # hide an earlier one that was not.
+  unread=""
   while IFS="$(printf '\t')" read -r prn prref; do
     [ -n "$prn" ] || continue
     pr=$prn
@@ -349,26 +352,30 @@ else
       proven="the pull request names it (branch $prref): PR #$prn"
       break
     fi
-    prbody=$(pr_body "$prn"); body_rc=$?
-    if [ "$body_rc" = 0 ] && body_closes_num "$prbody"; then
+    if ! prbody=$(pr_body "$prn"); then
+      unread="$unread #$prn"
+    elif body_closes_num "$prbody"; then
       proven="pull request #$prn says it closes the issue: $(matched_close "$prbody")"
       break
     fi
   done <<< "$prs"
+  # A body that could not be read is not a body that says nothing. NOT PROVEN here would let an
+  # offline run, a rate limit or a missing token delete a true reference.
+  if [ -z "$proven" ] && [ -n "$unread" ]; then
+    printf 'provenance  CANNOT CHECK -- the body of pull request%s could not be read, and nothing\n' "$unread"
+    printf '            else names #%s. Not a verdict.\n' "$num"
+    exit 3
+  fi
 fi
 
 if [ -n "$proven" ]; then
   printf 'provenance  %s\n' "$proven"
 else
   printf 'provenance  NOT PROVEN -- the commit does not name #%s\n' "$num"
-  # A body that could not be read is not a body that says nothing. Saying so would let an offline
-  # run, a rate limit or a missing token read as a verdict, and a true reference would be deleted.
   if [ -z "${pr:-}" ]; then
     printf '            GitHub lists no pull request for this commit\n'
-  elif [ "${body_rc:-0}" != 0 ]; then
-    printf '            pull request #%s could not be read, so its body is NOT a verdict\n' "$pr"
   else
-    printf '            pull request #%s does not say it closes the issue\n' "$pr"
+    printf '            no pull request GitHub lists for this commit says it closes the issue\n'
   fi
   if [ "$BY_DESCRIPTION" = 1 ]; then
     # An earlier phase of this migration may have written the description itself. Its commit
