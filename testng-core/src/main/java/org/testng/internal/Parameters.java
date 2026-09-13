@@ -1096,7 +1096,8 @@ public class Parameters {
     if (resolved.isEmpty()) {
       return parameterValues;
     }
-    // Built as a list, like nativelyInject builds its array: a row's elements are typed non-null
+    // Built as a list, the way native injection builds its own array: a row's elements are typed
+    // non-null
     // while a provider, and a resolver, routinely supply null ones.
     List<Object> refreshed = new ArrayList<>(Arrays.asList(parameterValues));
     for (int i = 0; i < parameters.length; i++) {

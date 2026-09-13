@@ -89,7 +89,7 @@ import org.jspecify.annotations.Nullable;
  * <p>A resolver registered on a suite is visible to every {@code <test>} of that suite, which is
  * the scope the other data driven listeners already have.
  *
- * <p>This applies to {@code &#64;Test} methods only. Constructors, {@code &#64;Factory} methods and
+ * <p>This applies to {@code @Test} methods only. Constructors, {@code @Factory} methods and
  * configuration methods are not resolved.
  *
  * @since 7.13.0
