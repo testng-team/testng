@@ -1075,6 +1075,39 @@ public class Parameters {
   }
 
   /**
+   * Resolves the resolver-owned positions of an already built argument array again, for a retry
+   * that reuses its row. {@link IParameterResolver#resolveParameter} is promised once per
+   * invocation, and a retry is an invocation of its own; the values TestNG itself injected, and the
+   * ones the data provider supplied, are kept as they are.
+   *
+   * @param parameterValues the arguments the previous attempt ran with, one per parameter
+   * @return the same array when nothing is resolver-owned, otherwise a copy with those positions
+   *     resolved afresh
+   */
+  public static Object[] resolveAgain(
+      Object[] parameterValues,
+      ITestNGMethod testMethod,
+      ITestContext context,
+      Collection<IParameterResolver> parameterResolvers) {
+    Method method = testMethod.getConstructorOrMethod().requireMethod();
+    Parameter[] parameters = ReflectionRecipes.getMethodParameters(method);
+    ResolvedParameters resolved =
+        ResolvedParameters.of(parameters, testMethod, context, parameterResolvers);
+    if (resolved.isEmpty()) {
+      return parameterValues;
+    }
+    // Built as a list, like nativelyInject builds its array: a row's elements are typed non-null
+    // while a provider, and a resolver, routinely supply null ones.
+    List<Object> refreshed = new ArrayList<>(Arrays.asList(parameterValues));
+    for (int i = 0; i < parameters.length; i++) {
+      if (resolved.owns(parameters[i])) {
+        refreshed.set(i, resolved.resolve(parameters[i]));
+      }
+    }
+    return refreshed.toArray(new Object[0]);
+  }
+
+  /**
    * The parameters a resolver owns on a {@code @Test} method. Configuration methods and
    * constructors are deliberately left out of this first implementation, and a method TestNG could
    * not reflect on has nothing to resolve.

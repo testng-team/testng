@@ -323,7 +323,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 arguments.getTestMethod(), arguments.getParameters(), allParameters, testContext);
         if (bag.hasErrors()) {
           // The row could not be rebuilt -- a provider that answers only once, say. That is this
-          // retry's outcome, and it is reported the way the first attempt would have reported it.
+          // outcome of this retry, and it is reported the way the first attempt would have been.
           // Leaving the loop with nothing recorded turned a failed method into a skipped one.
           result.add(reportParameterFailure(bag, arguments.getTestMethod()));
           return failure;
@@ -354,6 +354,12 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             bag.parameterHolder.close();
           }
         }
+      } else if (parameterValues != null) {
+        // The row is reused, the resolution is not: a retry is an invocation of its own, and a
+        // resolver is promised a call per invocation. Only the positions it owns change.
+        parameterValues =
+            Parameters.resolveAgain(
+                parameterValues, arguments.getTestMethod(), testContext, getParameterResolvers());
       }
       TestMethodArguments tma =
           new TestMethodArguments.Builder()
