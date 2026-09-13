@@ -32,6 +32,11 @@ chmod +x "$WORK/bin/gh"
 PATH="$WORK/bin:$PATH"
 export PATH
 
+# The script asks GitHub which pull request holds a commit. Here that question fails by default, so
+# every older case keeps its offline behaviour and never reaches the network. A case that is about
+# the answer passes its own command, which the environment lets it override.
+export COMMIT_PRS_CMD=false
+
 pass=0; fail=0
 
 # Reports one result. $1 is what was tested, $2 is expected, $3 is what happened.
@@ -46,6 +51,10 @@ check() {
 
 # Prints yes when the text holds the refusal word, no when it does not.
 says_ambiguous() { case "$1" in *AMBIGUOUS*) printf yes ;; *) printf no ;; esac; }
+
+# Prints yes when the text holds the word "guess". A helper, not an inline case: macOS /bin/bash 3.2
+# reads the ")" of a case pattern written straight inside $( ) as the end of the substitution.
+says_guess() { case "$1" in *guess*) printf yes ;; *) printf no ;; esac; }
 
 # Makes an empty git repository and prints its path.
 new_repo() {
@@ -99,6 +108,42 @@ fake_pr_body() {
 add_method() {
   printf 'void %s() {}\n' "$3" >> "$1/$2"
   git -C "$1" commit -q -am "$4"
+}
+
+# fake_prs <lines> [expected-sha]  -- makes a command that lists the pull requests holding a commit.
+#
+# Each line is "<number><TAB><branch>", the shape GitHub's commits/{sha}/pulls gives. The script runs
+# it as "<cmd> <sha>". Give the second argument to answer only for that commit: any other commit gets
+# an empty list, so asking about the wrong commit fails a test that expects a proof.
+prfakes=0
+fake_prs() {
+  prfakes=$((prfakes + 1))
+  printf '%s' "$1" > "$WORK/prs.$prfakes"
+  {
+    printf '#!/bin/sh\n'
+    if [ -n "${2:-}" ]; then
+      printf '[ "$1" = "%s" ] || exit 0\n' "$2"
+    fi
+    printf 'cat "%s"\n' "$WORK/prs.$prfakes"
+  } > "$WORK/prs.$prfakes.sh"
+  chmod +x "$WORK/prs.$prfakes.sh"
+  printf '%s' "$WORK/prs.$prfakes.sh"
+}
+
+# rebased_then_merged <repo> <path> <later-merge-subject>  -- the pull request #2368 shape.
+# The commit lands on master directly, the way a rebase-merge leaves it, so no merge commit carries
+# it. An unrelated pull request is merged afterwards. That later merge is the oldest one on the
+# commit's ancestry path, which is exactly the merge git would wrongly pick. Prints the commit's sha.
+rebased_then_merged() {
+  add "$1" README.md "First commit" >/dev/null
+  add "$1" "$2" "Fixing review comments" >/dev/null
+  local sha
+  sha=$(git -C "$1" rev-parse HEAD)
+  git -C "$1" checkout -q -b other
+  add "$1" docs/notes.txt "Unrelated work" >/dev/null
+  git -C "$1" checkout -q master
+  git -C "$1" merge -q --no-ff -m "$3" other
+  printf '%s' "$sha"
 }
 
 # merged_pr <repo> <path> <merge-subject>  -- adds a file on a branch and merges it.
@@ -557,6 +602,66 @@ add_method "$r" old/place/MixedTest.java target "Fix #111"
 move "$r" old/place/MixedTest.java new/place/MixedTest.java
 check "method: a moved file keeps its method's commit" PROVEN \
   "$(verdict "$r" new/place/MixedTest.java 111 METHOD=target)"
+
+# --- which pull request holds the commit: ask GitHub, do not guess from git --------------------------
+# The script took the oldest merge on the commit's ancestry path as "the merge that brought it in".
+# That holds only when a merge commit carried it. Pull request #2368 was rebase-merged, so git's
+# oldest merge after commit 839a01980 was #2375, a CVE fix. GitHub lists #2368 for that commit.
+#
+# The rejected cases come first.
+
+tab=$(printf '\t')
+
+# An unrelated later merge's branch names 765. GitHub says the commit is in #2368, which does not.
+r=$(new_repo)
+sha=$(rebased_then_merged "$r" src/foo/AlphaTest.java "Merge pull request #999 from someone/fix-765")
+check "prs: an unrelated later merge does not prove it" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/AlphaTest.java 765 \
+      "COMMIT_PRS_CMD=$(fake_prs "2368${tab}github-2321" "$sha")" "PR_BODY_CMD=$(fake_pr_body '')")"
+
+# GitHub lists no pull request for the commit. The later merge still must not answer.
+r=$(new_repo)
+sha=$(rebased_then_merged "$r" src/foo/AlphaTest.java "Merge pull request #999 from someone/fix-765")
+check "prs: no pull request means no merge is used" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/AlphaTest.java 765 "COMMIT_PRS_CMD=$(fake_prs '' "$sha")")"
+
+# A branch holding a longer number is not the issue.
+r=$(new_repo)
+sha=$(rebased_then_merged "$r" src/foo/AlphaTest.java "Merge pull request #999 from someone/unrelated")
+check "prs: a branch with a longer number does not prove it" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/AlphaTest.java 765 \
+      "COMMIT_PRS_CMD=$(fake_prs "1374${tab}fix-7650" "$sha")" "PR_BODY_CMD=$(fake_pr_body '')")"
+
+# The pull request's own number is not the issue, even when the two match.
+r=$(new_repo)
+sha=$(rebased_then_merged "$r" src/foo/AlphaTest.java "Merge pull request #999 from someone/unrelated")
+check "prs: the pull request number is not the issue" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/AlphaTest.java 765 \
+      "COMMIT_PRS_CMD=$(fake_prs "765${tab}cleanup" "$sha")" "PR_BODY_CMD=$(fake_pr_body '' 765)")"
+
+# GitHub's pull request says it closes the issue. This is the #2321 case. The branch holds 23210, so
+# the branch rule cannot answer: 2321 followed by a digit is a longer number. Only the body proves it.
+r=$(new_repo)
+sha=$(rebased_then_merged "$r" src/foo/AlphaTest.java "Merge pull request #999 from someone/unrelated")
+check "prs: the real pull request's body proves it" PROVEN \
+  "$(verdict "$r" src/foo/AlphaTest.java 2321 \
+      "COMMIT_PRS_CMD=$(fake_prs "2368${tab}github-23210" "$sha")" \
+      "PR_BODY_CMD=$(fake_pr_body 'Closes #2321' 2368)")"
+
+# GitHub's pull request branch names the issue.
+r=$(new_repo)
+sha=$(rebased_then_merged "$r" src/foo/AlphaTest.java "Merge pull request #999 from someone/unrelated")
+check "prs: the real pull request's branch proves it" PROVEN \
+  "$(verdict "$r" src/foo/AlphaTest.java 765 \
+      "COMMIT_PRS_CMD=$(fake_prs "1374${tab}krmahadevan-fix-765" "$sha")" "PR_BODY_CMD=$(fake_pr_body '')")"
+
+# GitHub cannot be asked. The old merge lookup still answers, and says it is only a guess.
+r=$(new_repo); merged_pr "$r" src/foo/BetaTest.java "Merge pull request #1374 from krmahadevan/krmahadevan-fix-765"
+out=$(cd "$r" && PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/BetaTest.java 765 2>&1)
+check "prs: without GitHub the merge still answers" PROVEN \
+  "$(verdict "$r" src/foo/BetaTest.java 765)"
+check "prs: without GitHub the merge is called a guess" yes \
+  "$(says_guess "$out")"
 
 if [ -s "$WORK/gh-calls" ]; then
   fail=$((fail + 1))

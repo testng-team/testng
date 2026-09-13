@@ -43,6 +43,10 @@ PR_BODY_CMD=${PR_BODY_CMD:-}
 # never answers. If no commit added the method here, the script refuses. It does not fall back to the
 # file's commit, because that answer reads exactly like the real one.
 METHOD=${METHOD:-}
+# The command that lists the pull requests holding a commit, one "<number><TAB><branch>" per line. It
+# is given the commit's full sha. Exit 0 with no lines means GitHub lists none. A non-zero exit means
+# it could not be asked, which is not a verdict. Overridable so the tests can run offline.
+COMMIT_PRS_CMD=${COMMIT_PRS_CMD:-}
 frag=${1:?usage: verify-issue-refs.sh <path-fragment> [issue-number]}
 num=${2:-}
 rc=0
@@ -314,6 +318,24 @@ pr_body() {
     gh api "repos/$REPO/pulls/$1" --jq .body 2>/dev/null
   fi
 }
+# Prints the pull requests GitHub says hold commit $1, "<number><TAB><branch>" per line.
+#
+# git cannot answer this. It can only find merges that came after the commit, and the oldest of them
+# is the merge that carried it only when a merge commit carried it at all. Pull request #2368 was
+# rebase-merged: GitHub's own merge commit for it has a single parent. So the oldest merge after its
+# commit was #2375, a CVE fix that has nothing to do with it.
+commit_prs() {
+  if [ -n "$COMMIT_PRS_CMD" ]; then
+    $COMMIT_PRS_CMD "$1" 2>/dev/null
+  else
+    gh api "repos/$REPO/commits/$1/pulls" --jq '.[] | "\(.number)\t\(.head.ref)"' 2>/dev/null
+  fi
+}
+# A pull request's branch names the number, the way "fix-765" does. The number must stand alone, so
+# "fix-7650" does not answer for 765.
+ref_names_num() {
+  printf '%s' "$1" | grep -qE "(^|[^0-9])${num}([^0-9]|$)"
+}
 # Reports the text that matched, so a reader can judge it. It searches the same cleaned string the
 # rules did, never the raw message, or it would print a pull request number as the evidence.
 matched_text() {
@@ -324,24 +346,47 @@ matched_text() {
 }
 # Three sources may prove the reference, strongest first. The first that answers wins.
 proven=""
+asked_github=0
 if names_num "$msg"; then
   proven="the introducing commit names it: $(matched_text "$msg")"
 else
-  merge=$(git log --merges --ancestry-path --format=%H "$sha".."$BASE" 2>/dev/null | tail -1)
-  mmsg=$([ -n "$merge" ] && git log -1 --format='%s | %b' "$merge" | tr '\n' ' ' | sed 's/  */ /g')
-  if [ -n "${mmsg:-}" ] && names_num "$mmsg"; then
-    proven="the merge names it ($(matched_text "$mmsg")): $mmsg"
-  elif [ -n "${mmsg:-}" ] && branch_names_num "$mmsg"; then
-    branch=$(printf '%s' "$mmsg" | sed -n 's/.*Merge pull request [^ ]* from \([^ |]*\).*/branch \1/p')
-    proven="the merge names it ($branch): $mmsg"
-  else
-    # Subjects only. $msg and $mmsg hold the body too, and a body may name any pull request.
-    pr=$([ -n "$merge" ] && pr_number_of "$(git log -1 --format=%s "$merge")")
-    [ -n "$pr" ] || pr=$(pr_number_of "$(git log -1 --format=%s "$sha")")
-    if [ -n "$pr" ]; then
-      prbody=$(pr_body "$pr"); body_rc=$?
+  prs=$(commit_prs "$(git rev-parse "$sha")"); prs_rc=$?
+  if [ "$prs_rc" = 0 ]; then
+    # GitHub answered. Its pull requests are the answer, and git's merge is not consulted at all: for
+    # a rebase-merged commit that merge belongs to some other pull request, and its branch or its
+    # body would prove a reference that other pull request never made.
+    asked_github=1
+    while IFS="$(printf '\t')" read -r prn prref; do
+      [ -n "$prn" ] || continue
+      pr=$prn
+      if ref_names_num "$prref"; then
+        proven="the pull request names it (branch $prref): PR #$prn"
+        break
+      fi
+      prbody=$(pr_body "$prn"); body_rc=$?
       if [ "$body_rc" = 0 ] && body_closes_num "$prbody"; then
-        proven="pull request #$pr says it closes the issue: $(matched_close "$prbody")"
+        proven="pull request #$prn says it closes the issue: $(matched_close "$prbody")"
+        break
+      fi
+    done <<< "$prs"
+  else
+    printf 'note        could not ask GitHub which pull request holds this commit; any merge used below is a guess\n'
+    merge=$(git log --merges --ancestry-path --format=%H "$sha".."$BASE" 2>/dev/null | tail -1)
+    mmsg=$([ -n "$merge" ] && git log -1 --format='%s | %b' "$merge" | tr '\n' ' ' | sed 's/  */ /g')
+    if [ -n "${mmsg:-}" ] && names_num "$mmsg"; then
+      proven="the merge names it ($(matched_text "$mmsg")): $mmsg"
+    elif [ -n "${mmsg:-}" ] && branch_names_num "$mmsg"; then
+      branch=$(printf '%s' "$mmsg" | sed -n 's/.*Merge pull request [^ ]* from \([^ |]*\).*/branch \1/p')
+      proven="the merge names it ($branch): $mmsg"
+    else
+      # Subjects only. $msg and $mmsg hold the body too, and a body may name any pull request.
+      pr=$([ -n "$merge" ] && pr_number_of "$(git log -1 --format=%s "$merge")")
+      [ -n "$pr" ] || pr=$(pr_number_of "$(git log -1 --format=%s "$sha")")
+      if [ -n "$pr" ]; then
+        prbody=$(pr_body "$pr"); body_rc=$?
+        if [ "$body_rc" = 0 ] && body_closes_num "$prbody"; then
+          proven="pull request #$pr says it closes the issue: $(matched_close "$prbody")"
+        fi
       fi
     fi
   fi
@@ -354,7 +399,9 @@ else
   [ -n "${mmsg:-}" ] && printf '            merge was: %s\n' "$mmsg"
   # A body that could not be read is not a body that says nothing. Saying so would let an offline
   # run, a rate limit or a missing token read as a verdict, and a true reference would be deleted.
-  if [ -z "${pr:-}" ]; then
+  if [ "$asked_github" = 1 ] && [ -z "${pr:-}" ]; then
+    printf '            GitHub lists no pull request for this commit\n'
+  elif [ -z "${pr:-}" ]; then
     printf '            no pull request number in the subject, so no body was read\n'
   elif [ "${body_rc:-0}" != 0 ]; then
     printf '            pull request #%s could not be read, so its body is NOT a verdict\n' "$pr"
