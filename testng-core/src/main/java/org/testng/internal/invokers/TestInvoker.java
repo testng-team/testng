@@ -322,7 +322,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             handler.createParameters(
                 arguments.getTestMethod(), arguments.getParameters(), allParameters, testContext);
         if (bag.hasErrors()) {
-          continue;
+          // The row could not be rebuilt -- a provider that answers only once, say. That is this
+          // retry's outcome, and it is reported the way the first attempt would have reported it.
+          // Leaving the loop with nothing recorded turned a failed method into a skipped one.
+          result.add(reportParameterFailure(bag, arguments.getTestMethod()));
+          return failure;
         }
         if (bag.parameterHolder != null) {
           try {
@@ -367,6 +371,28 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // The caller keeps this context for the invocations that follow, and those are not retries.
     failure.ignoredFailureMark = IConfigInvoker.NO_IGNORED_FAILURES;
     return failure;
+  }
+
+  /**
+   * Reports an invocation whose parameters could not be built. A data provider failure is a skip
+   * unless the configuration, or the provider, asks for it to fail the test; a TestNG diagnostic is
+   * always a failure.
+   */
+  private ITestResult reportParameterFailure(ParameterBag bag, ITestNGMethod testMethod) {
+    ITestResult tr = Objects.requireNonNull(bag.errorResult, "a bag with errors carries them");
+    Throwable throwable = tr.getThrowable();
+    boolean bubbleUpFailures =
+        m_configuration.isPropagateDataProviderFailureAsTestFailure() || bag.isBubbleUpFailures();
+    if (!(throwable instanceof SkipException)
+        && (throwable instanceof TestNGException || bubbleUpFailures)) {
+      tr.setStatus(ITestResult.FAILURE);
+      m_notifier.addFailedTest(testMethod, tr);
+    } else {
+      tr.setStatus(ITestResult.SKIP);
+      m_notifier.addSkippedTest(testMethod, tr);
+    }
+    runTestResultListener(tr);
+    return tr;
   }
 
   @Override
@@ -1224,22 +1250,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               arguments.getInstance());
 
       if (bag.hasErrors()) {
-        ITestResult tr = bag.errorResult;
-        Throwable throwable = Objects.requireNonNull(tr).getThrowable();
-        boolean bubbleUpFailures =
-            m_configuration.isPropagateDataProviderFailureAsTestFailure()
-                || bag.isBubbleUpFailures();
-
-        if (!(throwable instanceof SkipException)
-            && (throwable instanceof TestNGException || bubbleUpFailures)) {
-          tr.setStatus(ITestResult.FAILURE);
-          m_notifier.addFailedTest(arguments.getTestMethod(), tr);
-        } else {
-          tr.setStatus(ITestResult.SKIP);
-          m_notifier.addSkippedTest(arguments.getTestMethod(), tr);
-        }
-        runTestResultListener(tr);
-        result.add(tr);
+        result.add(reportParameterFailure(bag, arguments.getTestMethod()));
         return invocationCount.get();
       }
 
