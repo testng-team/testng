@@ -533,6 +533,10 @@ org.testng.skip.github1632.IssueTest#runBeforeListenerSkipSample2	PASS 1
 org.testng.skip.github1632.IssueTest#runNoConfigAfterListenerSample	PASS 1
 org.testng.skip.github1632.IssueTest#runNoConfigBeforeListenerSample	PASS 1
 org.testng.skip.github1632.IssueTest#runTest	PASS 1
+org.testng.timeout.issue1333.Issue1333Test#aSuiteTimeOutBoundsTheTestRatherThanEachMethodUnderParallelTests	PASS 1
+org.testng.timeout.issue1333.Issue1333Test#aTestTimeOutIsStillEnforcedUnderParallelTests	PASS 1
+org.testng.timeout.issue1333.Issue1333Test#aTestTimeOutIsStillEnforcedWhenOnlyTheTestSaysParallelTests	PASS 1
+org.testng.timeout.issue1333.Issue1333Test#parallelTestsKeepThreadAffinityWithASuiteTimeOut	PASS 1
 org.testng.util.StringsTest#testEscapeHtml	PASS 1
 org.testng.util.StringsTest#testValueOf	PASS 1
 org.testng.xml.DeprecatedToXmlShimTest#emptyXmlDependenciesSerializesToNothing	PASS 1
