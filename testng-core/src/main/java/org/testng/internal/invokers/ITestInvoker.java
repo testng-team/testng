@@ -1,6 +1,7 @@
 package org.testng.internal.invokers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.jspecify.annotations.Nullable;
 import org.testng.IInvokedMethod;
+import org.testng.IParameterResolver;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -42,6 +44,13 @@ public interface ITestInvoker {
       ITestContext testContext);
 
   void runTestResultListener(ITestResult tr);
+
+  /**
+   * The {@link IParameterResolver}s that apply to the methods this invoker runs, so that a caller
+   * building the arguments of an invocation -- {@link IMethodRunner}, for one -- resolves the
+   * parameters TestNG does not own itself.
+   */
+  Collection<IParameterResolver> getParameterResolvers();
 
   /** For an invocation nothing was ever resolved for, so there are no values to report it with. */
   default ITestResult registerSkippedTestResult(

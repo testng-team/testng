@@ -2,12 +2,14 @@ package org.testng.internal.invokers;
 
 import static org.testng.internal.Parameters.MethodParameters;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderMethod;
+import org.testng.IParameterResolver;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
@@ -23,16 +25,19 @@ class ParameterHandler {
   private final @Nullable ITestObjectFactory objectFactory;
   private final IAnnotationFinder finder;
   private final DataProviderHolder holder;
+  private final Collection<IParameterResolver> parameterResolvers;
   private int verbose;
 
   ParameterHandler(
       @Nullable ITestObjectFactory objectFactory,
       IAnnotationFinder finder,
       DataProviderHolder holder,
+      Collection<IParameterResolver> parameterResolvers,
       int verbose) {
     this.objectFactory = objectFactory;
     this.finder = finder;
     this.holder = holder;
+    this.parameterResolvers = parameterResolvers;
     this.verbose = verbose;
   }
 
@@ -80,7 +85,9 @@ class ParameterHandler {
               suite,
               finder,
               fedInstance,
-              holder);
+              holder,
+              Parameters.TEST_ANNOTATION,
+              parameterResolvers);
       return new ParameterBag(paramHolder);
     } catch (Throwable cause) {
       if (verbose >= 2) {

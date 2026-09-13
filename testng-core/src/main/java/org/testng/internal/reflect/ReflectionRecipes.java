@@ -79,10 +79,11 @@ public final class ReflectionRecipes {
    * Checks if an instance is an instance of the given class.
    *
    * @param reference reference class.
-   * @param object instance to be tested.
+   * @param object instance to be tested. A null one is an instance of any reference type and of no
+   *     primitive one, which is what a data provider supplying a null value already relied on.
    * @return is an instance-of or not
    */
-  public static boolean isInstanceOf(final Class<?> reference, final Object object) {
+  public static boolean isInstanceOf(final Class<?> reference, final @Nullable Object object) {
     if (object == null) {
       return !reference.isPrimitive();
     }
@@ -297,15 +298,39 @@ public final class ReflectionRecipes {
    */
   public static Parameter[] filter(
       final Parameter[] parameters, final Set<InjectableParameter> filters) {
-    boolean proceed = filters != null && !filters.isEmpty();
-    if (!proceed) {
+    return filter(parameters, filters, ResolvedParameters.none());
+  }
+
+  /**
+   * The same, also omitting the parameters an {@link org.testng.IParameterResolver} owns: they are
+   * supplied by the resolver, so they must not be matched against the user supplied arguments
+   * either.
+   *
+   * @param parameters array of parameter instances under question.
+   * @param filters filters to use.
+   * @param resolved the parameters supplied by a resolver rather than by the caller.
+   * @return Injects free array of class instances.
+   */
+  public static Parameter[] filter(
+      final Parameter[] parameters,
+      final Set<InjectableParameter> filters,
+      final ResolvedParameters resolved) {
+    // Both entry points have always tolerated a null filter set. The guard used to be the only
+    // thing standing between that null and the loop; a resolver is now reason enough to walk the
+    // parameters, so normalize once here instead.
+    final Set<InjectableParameter> injects =
+        Objects.requireNonNullElse(filters, InjectableParameter.Assistant.NONE);
+    if (injects.isEmpty() && resolved.isEmpty()) {
       return parameters;
     }
     boolean firstMethodFiltered = false;
     final List<Parameter> filterList = new ArrayList<>(parameters.length);
     for (final Parameter parameter : parameters) {
+      if (resolved.owns(parameter)) {
+        continue;
+      }
       boolean omit = false;
-      for (final InjectableParameter injectableParameter : filters) {
+      for (final InjectableParameter injectableParameter : injects) {
         omit = canInject(parameter, injectableParameter);
         if (injectableParameter == InjectableParameter.CURRENT_TEST_METHOD) {
           if (omit && !firstMethodFiltered) {
@@ -343,17 +368,46 @@ public final class ReflectionRecipes {
       final @Nullable Method injectionMethod,
       final @Nullable ITestContext context,
       final @Nullable ITestResult testResult) {
-    return nativelyInject(parameters, filters, args, injectionMethod, context, testResult);
+    return nativelyInject(
+        parameters, filters, ResolvedParameters.none(), args, injectionMethod, context, testResult);
+  }
+
+  /**
+   * The same, also placing back the values an {@link org.testng.IParameterResolver} supplies. A
+   * parameter TestNG injects natively is injected first, so a resolver never displaces one.
+   *
+   * @param parameters array of parameter instances under question.
+   * @param filters filters to use.
+   * @param resolved the parameters supplied by a resolver rather than by the caller.
+   * @param args user supplied arguments.
+   * @param injectionMethod current test method, or {@code null} when there is no holder.
+   * @param context current test context.
+   * @param testResult on going test results.
+   * @return injected arguments.
+   */
+  public static Object[] inject(
+      final Parameter[] parameters,
+      final Set<InjectableParameter> filters,
+      final ResolvedParameters resolved,
+      final Object[] args,
+      final @Nullable Method injectionMethod,
+      final @Nullable ITestContext context,
+      final @Nullable ITestResult testResult) {
+    return nativelyInject(
+        parameters, filters, resolved, args, injectionMethod, context, testResult);
   }
 
   private static Object[] nativelyInject(
       final Parameter[] parameters,
       final Set<InjectableParameter> filters,
+      final ResolvedParameters resolved,
       final Object[] args,
       final @Nullable Object injectionMethod,
       final @Nullable ITestContext context,
       final @Nullable ITestResult testResult) {
-    if (filters == null || filters.isEmpty()) {
+    final Set<InjectableParameter> injects =
+        Objects.requireNonNullElse(filters, InjectableParameter.Assistant.NONE);
+    if (injects.isEmpty() && resolved.isEmpty()) {
       return args;
     }
     final ArrayList<Object> arguments = new ArrayList<>(args.length);
@@ -362,7 +416,7 @@ public final class ReflectionRecipes {
     for (final Parameter parameter : parameters) {
       boolean inject = false;
       Object injectObject = null;
-      for (final InjectableParameter injectableParameter : filters) {
+      for (final InjectableParameter injectableParameter : injects) {
         inject = canInject(parameter, injectableParameter);
         if (inject) {
           switch (injectableParameter) {
@@ -391,6 +445,12 @@ public final class ReflectionRecipes {
             break;
           }
         }
+      }
+
+      if (!inject && resolved.owns(parameter)) {
+        // Native injection had its say first, so this cannot be overriding one.
+        arguments.add(resolved.resolve(parameter));
+        inject = true;
       }
 
       if (!inject && !queue.backingList.isEmpty()) {
@@ -447,7 +507,8 @@ public final class ReflectionRecipes {
       final Constructor<?> constructor,
       final @Nullable ITestContext context,
       final @Nullable ITestResult testResult) {
-    return nativelyInject(parameters, filters, args, constructor, context, testResult);
+    return nativelyInject(
+        parameters, filters, ResolvedParameters.none(), args, constructor, context, testResult);
   }
 
   private static boolean canInject(

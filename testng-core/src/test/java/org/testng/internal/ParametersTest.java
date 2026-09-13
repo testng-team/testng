@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import org.testng.internal.Parameters.FilterOutInjectedTypesResult;
+import org.testng.internal.Parameters.FilteredParameterTypes;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
@@ -20,7 +20,7 @@ public class ParametersTest {
       XmlTest xmlTest, @Optional("optionaltestdata") String testdata) {
     IAnnotationFinder finder = new Configuration().getAnnotationFinder();
     Method curMethod = new Object() {}.getClass().getEnclosingMethod();
-    FilterOutInjectedTypesResult filterOutResult =
+    FilteredParameterTypes filterOutResult =
         org.testng.internal.Parameters.filterOutInjectedTypesFromOptionalValues(
             curMethod.getParameterTypes(), finder.findOptionalValues(curMethod));
     assertThat(filterOutResult.getOptionalValues()[0]).isEqualTo("optionaltestdata");
