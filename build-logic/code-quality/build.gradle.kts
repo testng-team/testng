@@ -20,7 +20,7 @@ dependencies {
     // A released version, pinned. build-logic builds TestNG, so it cannot depend on the TestNG it
     // is building. Raise this by hand when there is a reason to; nothing here tracks the project
     // version, and nothing should.
-    testImplementation("org.testng:testng:7.11.0")
+    testImplementation("org.testng:testng:7.12.0")
 }
 
 tasks.withType<Test>().configureEach {
