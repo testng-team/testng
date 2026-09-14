@@ -480,6 +480,7 @@
       <class name="test.timeout.TimeOutTest" />
       <class name="test.timeout.TimeOutFromXmlTest"/>
       <class name="org.testng.timeout.issue1333.Issue1333Test"/>
+      <class name="org.testng.timeout.issue3513.Issue3513Test"/>
       <class name="test.timeout.TimeOutIntegrationTest"/>
       <class name="test.timeout.github2672.TimeoutStacktraceTest"/>
 <!--
