@@ -806,6 +806,7 @@
       <class name="org.testng.reporters.XmlCharFilteringWriterTest" />
       <class name="org.testng.reporters.FileStringBufferTest" />
       <class name="org.testng.reporters.JUnitXMLReporterTest" />
+      <class name="org.testng.reporters.JUnitReportTimestampTest" />
       <class name="org.testng.internal.reporters.ParameterValueTest" />
       <class name="org.testng.internal.reporters.ParameterSnapshotsTest" />
       <class name="org.testng.internal.reporters.ParameterSnapshotLifecycleTest" />
