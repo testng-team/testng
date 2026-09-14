@@ -8,7 +8,7 @@
   </method-selectors>
   <test name="selected factory instances under a script selector">
     <classes>
-      <class name="test.factory.issue3111.ParallelFactorySample">
+      <class name="org.testng.factory.samples.issue3111.ParallelFactorySample">
         <methods>
           <include name="test" factory-instances="1 3"/>
         </methods>

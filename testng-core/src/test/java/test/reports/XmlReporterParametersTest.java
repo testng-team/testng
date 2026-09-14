@@ -6,6 +6,7 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +27,7 @@ import org.testng.reporters.snapshot.ParallelParameterSample;
 import org.testng.reporters.snapshot.ParameterShapesSample;
 import org.testng.reporters.snapshot.PassingConfigurationParameterSample;
 import org.testng.reporters.snapshot.RenderingCountSample;
+import org.testng.reporters.snapshot.SomeValueParameterSample;
 import org.testng.reporters.snapshot.UnrenderableParameterSample;
 import org.testng.reporters.snapshot.UnrenderableParameterSample.Unrenderable;
 import org.testng.reporters.snapshot.WrongArgumentCountSample;
@@ -109,6 +111,27 @@ public class XmlReporterParametersTest extends SimpleBaseTest {
     // lists a passing configuration until this file does, so reading it back here would answer
     // what the method left behind rather than what it was given.
     assertThat(reported).containsExactly(singletonList("[before-configuration]"));
+  }
+
+  @Test(
+      description =
+          "GITHUB-2187: a parameter <value> is the CDATA content, not the pretty-print whitespace"
+              + " around it")
+  public void aParameterValueIsTheCdataContentRatherThanThePrettyPrintWhitespaceAroundIt()
+      throws Exception {
+    File reportFile = writeXmlReport(SomeValueParameterSample.class);
+    String xml = Files.readString(reportFile.toPath());
+    Document report = parse(reportFile);
+
+    // The helper that reads values trims, which is how this issue survived the rest of this
+    // class: the extra newlines and indent around the CDATA are discarded before the
+    // assertion. A consumer that reads the element text, as Jackson and JAXB do, keeps them.
+    // getTextContent() alone would also pass if the CDATA wrapper were dropped. The file must
+    // still contain the one-line serialized form. The padded row fails a trim of the value.
+    assertThat(xml).contains("<value><![CDATA[Some Value]]></value>");
+    assertThat(xml).contains("<value><![CDATA[  padded  ]]></value>");
+    assertThat(textContents(report, "report"))
+        .containsExactlyInAnyOrder("Some Value", "  padded  ");
   }
 
   @Test(
@@ -213,11 +236,15 @@ public class XmlReporterParametersTest extends SimpleBaseTest {
    * report would render cannot be mistaken for what this one does.
    */
   private static Document runUnderXmlReporter(Class<?> testClass) {
+    return parse(writeXmlReport(testClass));
+  }
+
+  private static File writeXmlReport(Class<?> testClass) {
     File outputDirectory = createDirInTempDir(UUID.randomUUID().toString());
     TestNG testng = create(outputDirectory.toPath(), testClass);
     testng.addListener(new XMLReporter());
     testng.run();
-    return parse(new File(outputDirectory, RuntimeBehavior.FILE_NAME));
+    return new File(outputDirectory, RuntimeBehavior.FILE_NAME);
   }
 
   private static Document parse(File report) {
@@ -258,6 +285,28 @@ public class XmlReporterParametersTest extends SimpleBaseTest {
       return invocations;
     } catch (Exception reading) {
       throw new AssertionError("Could not read the reported parameters of " + methodName, reading);
+    }
+  }
+
+  /**
+   * The element text of each {@code <value>} for {@code methodName}, without trimming. That is what
+   * an XML consumer that reads element text sees.
+   */
+  private static List<String> textContents(Document report, String methodName) {
+    try {
+      NodeList values =
+          (NodeList)
+              XPathFactory.newInstance()
+                  .newXPath()
+                  .compile("//test-method[@name='" + methodName + "']/params/param/value")
+                  .evaluate(report, XPathConstants.NODESET);
+      List<String> texts = new ArrayList<>();
+      for (int i = 0; i < values.getLength(); i++) {
+        texts.add(values.item(i).getTextContent());
+      }
+      return texts;
+    } catch (Exception reading) {
+      throw new AssertionError("Could not read the reported value of " + methodName, reading);
     }
   }
 }

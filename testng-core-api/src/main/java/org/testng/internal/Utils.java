@@ -75,12 +75,12 @@ public final class Utils {
 
   public static void writeUtf8File(
       @Nullable String outputDir, String fileName, XMLStringBuffer xsb, @Nullable String prefix) {
+    final File outDir = outputDir != null ? new File(outputDir) : new File("").getAbsoluteFile();
+    if (!outDir.exists()) {
+      boolean ignored = outDir.mkdirs();
+    }
+    final File file = new File(outDir, fileName);
     try {
-      final File outDir = outputDir != null ? new File(outputDir) : new File("").getAbsoluteFile();
-      if (!outDir.exists()) {
-        boolean ignored = outDir.mkdirs();
-      }
-      final File file = new File(outDir, fileName);
       if (!file.exists()) {
         boolean ignored = file.createNewFile();
       }
@@ -90,9 +90,23 @@ public final class Utils {
           w.append(prefix);
         }
         xsb.toWriter(w);
+      } catch (Throwable writingOut) {
+        // What reached the file is the prefix and whatever the buffer managed before it gave up,
+        // which for index.html is a page header and no body. Removing it leaves no report rather
+        // than one that opens and says nothing about why it is empty.
+        //
+        // Throwable rather than RuntimeException, because Error is its sibling and not its
+        // subtype: GITHUB-1259 and GITHUB-2334 both end in an OutOfMemoryError inside the
+        // reporter, which is the case this branch exists for and the one where the stub matters
+        // most -- nothing downstream is going to write a better file over it. It also covers the
+        // IOException the final flush raises when the disk fills, which the catch below reports.
+        boolean ignored = file.delete();
+        throw writingOut;
       }
     } catch (IOException ex) {
-      LOG.error(ex.getMessage(), ex);
+      // Names the file: it was just removed, so this is the only record a report was expected
+      // there.
+      LOG.error("Could not write " + file, ex);
     }
   }
 

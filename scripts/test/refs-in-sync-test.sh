@@ -120,6 +120,41 @@ printf 'class T {\n  @Test(dataProvider = "dp", description = "GITHUB-765")\n  p
   > "$d/src/org/testng/feature/PTest.java"
 check "a description beside other members" ok "$(verdict "$d")"
 
+# A bracket inside the description text is text, not syntax. Counting brackets without reading
+# string literals leaves the parser at the wrong depth, and a real description looks missing.
+d=$(new_case)
+printf 'class T {\n  @Test(description = "GITHUB-765: expected (")\n  public void a() {}\n}\n' \
+  > "$d/src/org/testng/feature/QTest.java"
+check "an open bracket inside the text" ok "$(verdict "$d")"
+
+d=$(new_case)
+printf 'class T {\n  @Test(\n      description =\n          "GITHUB-765: expected ( but saw nothing")\n  public void a() {}\n}\n' \
+  > "$d/src/org/testng/feature/RTest.java"
+check "an open bracket, over three lines" ok "$(verdict "$d")"
+
+d=$(new_case)
+printf 'class T {\n  @Test(description = "GITHUB-765: a closing ) alone")\n  public void a() {}\n}\n' \
+  > "$d/src/org/testng/feature/STest.java"
+check "a closing bracket inside the text" ok "$(verdict "$d")"
+
+# A comment is not code. An annotation shown in a comment or a javadoc line is an example, not a
+# description the code carries.
+d=$(new_case)
+printf 'class T {\n  // @Test(description = "GITHUB-765") was removed\n  @Test\n  public void a() {}\n}\n' \
+  > "$d/src/org/testng/feature/TTest.java"
+check "a commented-out annotation" missing "$(verdict "$d")"
+
+d=$(new_case)
+printf 'class T {\n  /**\n   * Like @Test(description = "GITHUB-765") but not.\n   */\n  @Test\n  public void a() {}\n}\n' \
+  > "$d/src/org/testng/feature/UTest.java"
+check "an annotation shown in javadoc" missing "$(verdict "$d")"
+
+# A bracket in a comment inside the annotation is text too.
+d=$(new_case)
+printf 'class T {\n  @Test(\n      // the case is (unbalanced\n      description = "GITHUB-765")\n  public void a() {}\n}\n' \
+  > "$d/src/org/testng/feature/VTest.java"
+check "a bracket in a comment inside it" ok "$(verdict "$d")"
+
 # Prose is not a claim. The document explains why GITHUB-3408 was dropped, and reading that
 # sentence as a claim made the check demand the reference it says to remove.
 d=$(new_case)

@@ -80,7 +80,7 @@ public class NavigatorPanel extends BasePanel {
 
       header.pop(D); // navigator-suite-content
 
-      main.addString(header.toXML());
+      main.addBuffer(header);
     }
     main.pop(D);
   }
@@ -283,7 +283,7 @@ public class NavigatorPanel extends BasePanel {
     xsb.pop("li");
 
     if (count > 0) {
-      main.addString(xsb.toXML());
+      main.addBuffer(xsb);
     }
   }
 }

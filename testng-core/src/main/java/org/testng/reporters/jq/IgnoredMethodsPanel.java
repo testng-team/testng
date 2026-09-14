@@ -24,8 +24,7 @@ public class IgnoredMethodsPanel extends BaseMultiSuitePanel {
   }
 
   @Override
-  public String getContent(ISuite suite, XMLStringBuffer main) {
-    XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
+  void writeContent(ISuite suite, XMLStringBuffer xsb) {
     SetMultiMap<Class<?>, ITestNGMethod> map = Maps.newSetMultiMap();
 
     for (ITestNGMethod method : suite.getExcludedMethods()) {
@@ -43,7 +42,6 @@ public class IgnoredMethodsPanel extends BaseMultiSuitePanel {
       xsb.pop(D);
       xsb.pop(D);
     }
-    return xsb.toXML();
   }
 
   @Override

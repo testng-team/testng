@@ -34,4 +34,99 @@ public class XMLStringBufferTest {
             + "</family>";
     assertThat(result.toString().trim()).isEqualTo(expected);
   }
+
+  @Test(description = "GITHUB-1259, GITHUB-2334")
+  public void addBufferAppendsWhatAddingItsXmlWouldHave() {
+    // Past the size at which the buffer spills to a temporary file, which is the case addBuffer
+    // exists for: toXML() would read the whole of it back as a String, and copy it once more.
+    XMLStringBuffer content = new XMLStringBuffer("  ");
+    for (int i = 0; i < 4000; i++) {
+      content.addRequired("item", "value-" + i + " \u0007 \uFFFE " + SUPPLEMENTARY);
+    }
+
+    XMLStringBuffer streamed = new XMLStringBuffer("");
+    streamed.push("root");
+    streamed.addBuffer(content);
+    streamed.pop("root");
+
+    // Read back once: each call re-reads the whole temporary file and copies it, which is the very
+    // thing under test.
+    String materializedContent = content.toXML();
+
+    XMLStringBuffer materialized = new XMLStringBuffer("");
+    materialized.push("root");
+    materialized.addString(materializedContent);
+    materialized.pop("root");
+
+    // Read raw, not through toXML(): that is the filter under test, and running it over both
+    // sides let a writer that passed an illegal character through still match -- while the report
+    // itself is written by toWriter, which does not filter.
+    assertThat(streamed.getStringBuffer().toString()).isEqualTo(materialized.toXML());
+    // And the content really did cross the threshold, so this was the streaming path.
+    assertThat(materializedContent.length()).isGreaterThan(100_000);
+  }
+
+  @Test
+  public void addCDATAElementWritesTheTagAndCdataOnOneLine() {
+    IBuffer result = Buffer.create();
+    XMLStringBuffer sb = new XMLStringBuffer(result, "");
+
+    sb.addCDATAElement("value", "Some Value");
+
+    assertThat(result.toString()).isEqualTo("<value><![CDATA[Some Value]]></value>" + EOL);
+  }
+
+  @Test
+  public void addCDATAElementKeepsLeadingAndTrailingWhitespace() {
+    IBuffer result = Buffer.create();
+    XMLStringBuffer sb = new XMLStringBuffer(result, "");
+
+    sb.addCDATAElement("value", "  padded  ");
+
+    assertThat(result.toString()).isEqualTo("<value><![CDATA[  padded  ]]></value>" + EOL);
+  }
+
+  @Test
+  public void addCDATASplitsTheTerminatorSequence() {
+    IBuffer result = Buffer.create();
+    XMLStringBuffer sb = new XMLStringBuffer(result, "");
+
+    sb.addCDATA("]]>");
+
+    assertThat(result.toString()).isEqualTo("<![CDATA[]]]]><![CDATA[>]]>" + EOL);
+  }
+
+  @Test
+  public void addCDATAElementSplitsTheTerminatorSequenceInsideTheTag() {
+    IBuffer result = Buffer.create();
+    XMLStringBuffer sb = new XMLStringBuffer(result, "");
+
+    sb.addCDATAElement("value", "foo]]>bar");
+
+    assertThat(result.toString())
+        .isEqualTo("<value><![CDATA[foo]]]]><![CDATA[>bar]]></value>" + EOL);
+  }
+
+  @Test
+  public void addCDATAWritesTheWordNullForANull() {
+    IBuffer result = Buffer.create();
+    XMLStringBuffer sb = new XMLStringBuffer(result, "");
+
+    sb.addCDATA(null);
+
+    assertThat(result.toString()).isEqualTo("<![CDATA[null]]>" + EOL);
+  }
+
+  @Test
+  public void addCDATAStripsControlCharactersExceptLineBreaks() {
+    IBuffer result = Buffer.create();
+    XMLStringBuffer sb = new XMLStringBuffer(result, "");
+
+    sb.addCDATA("a\u0001b\nc");
+
+    assertThat(result.toString()).isEqualTo("<![CDATA[ab\nc]]>" + EOL);
+  }
+
+  /** U+1F600, so a surrogate pair, which is the one thing the two paths could read differently. */
+  private static final String SUPPLEMENTARY = new String(Character.toChars(0x1F600));
 }

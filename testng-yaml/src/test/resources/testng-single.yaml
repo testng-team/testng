@@ -5,7 +5,7 @@ tests:
   - name: Test1
     excludedGroups: [ excludeThisGroup ]
     classes:
-      - name: test.dependent.xml.GroupDependencyTest
+      - name: org.testng.dependent.xml.GroupDependencyTest
 #        includedMethods: [ a ]
 #      - test.Test2
 #      - name: test.CommandLineTest

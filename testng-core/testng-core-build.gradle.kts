@@ -1,3 +1,4 @@
+import buildlogic.VerifyTestExecution
 import buildlogic.registerOptionalFeatureVariants
 
 plugins {
@@ -31,6 +32,10 @@ dependencies {
     implementation(projects.testngRunnerApi)
     testImplementation("org.testng:testng-asserts:1.0.0")
     testImplementation(projects.testngTestKit)
+    // The binding src/test/resources/simplelogger.properties configures; without it slf4j is NOP
+    // here and a report a listener logs as lost is lost in silence. The same one testng-core-api
+    // and testng-yaml already use, and what the forked children of the memory suite read.
+    testImplementation("org.slf4j:slf4j-simple:2.0.18")
     testImplementation("org.apache.groovy:groovy-all:5.0.7") {
         exclude("org.testng", "testng")
     }
@@ -60,6 +65,45 @@ tasks.test {
         suites("src/test/resources/testng.xml")
         maxHeapSize = "1500m"
     }
+}
+
+// A test that forks a child JVM with a heap of its own cannot live in testng.xml: that suite is
+// handed to every Gradle fork, so the class would run once per fork and start as many children at
+// once. This task runs the forking suite on its own, one fork at a time.
+val memoryTest by
+    tasks.registering(Test::class) {
+        description = "Runs the tests that fork a child JVM, one at a time."
+        group = LifecycleBasePlugin.VERIFICATION_GROUP
+        testClassesDirs = sourceSets.test.get().output.classesDirs
+        classpath = sourceSets.test.get().runtimeClasspath
+        maxParallelForks = 1
+        useTestNG {
+            suites("src/test/resources/testng-memory.xml")
+            maxHeapSize = "1500m"
+        }
+    }
+
+// The project-wide verifyTestExecution is wired to tasks.test: it reads testng.xml and
+// build/test-results/test, so it cannot see a suite that names neither. Without this second one a
+// class that fell out of testng-memory.xml would leave the build green and silent -- which is the
+// failure that check exists to catch, arriving by a different route. It shares
+// execution-known-silent.txt because the memory suite has no silent classes and one list is one
+// place to look; an entry there would have to name a class of this suite to affect it.
+val verifyMemoryTestExecution by
+    tasks.registering(VerifyTestExecution::class) {
+        description = "Verifies the memory suite ran every class it names, and did not change"
+        group = LifecycleBasePlugin.VERIFICATION_GROUP
+
+        dependsOn(memoryTest)
+        suite.set(layout.projectDirectory.file("src/test/resources/testng-memory.xml"))
+        inventory.set(layout.projectDirectory.file("execution-inventory-memory.txt"))
+        knownSilent.set(layout.projectDirectory.file("execution-known-silent.txt"))
+        results.set(layout.buildDirectory.dir("test-results/memoryTest"))
+        update.set(providers.gradleProperty("updateExecutionInventory").map { true }.orElse(false))
+    }
+
+tasks.check {
+    dependsOn(verifyMemoryTestExecution)
 }
 
 // <editor-fold defaultstate="collapsed" desc="Bundle jQuery from the webjar">

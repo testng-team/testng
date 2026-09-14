@@ -37,6 +37,7 @@ import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
+import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 /** Superclass to represent both &#64;Test and &#64;Configuration methods. */
@@ -404,7 +405,41 @@ public abstract class BaseTestMethod
   /** {@inheritDoc} */
   @Override
   public long getTimeOut() {
-    return m_timeOut != 0 ? m_timeOut : (m_xmlTest != null ? m_xmlTest.getTimeOut(0) : 0);
+    if (m_timeOut != 0) {
+      return m_timeOut;
+    }
+    if (m_xmlTest == null) {
+      return 0;
+    }
+    if (isBoundedAtTestScope(m_xmlTest)) {
+      return 0;
+    }
+    return m_xmlTest.getTimeOut(0);
+  }
+
+  /**
+   * Whether the time-out this method would inherit from the XML is already enforced on the whole
+   * {@code <test>}, so that inheriting it here as well would bound the method a second time.
+   *
+   * <p>The DTD gives the time-out of {@code <suite>} and {@code <test>} one meaning per parallel
+   * mode: it aborts "the method (if parallel=methods) or the test (if parallel=tests)". Only one
+   * place implements the second reading: {@code SuiteRunner.runInParallelTestMode()}, which bounds
+   * each {@code <test>} worker with the <em>suite's</em> time-out. It is selected from the suite's
+   * parallel mode, and {@code TestTaskExecutor}, which would bound a {@code <test>} by its own
+   * value, is not used in that mode since {@code ParallelMode.TESTS} is not parallel at test level.
+   *
+   * <p>So the inheritance is skipped exactly when that worker bound applies and carries the same
+   * value: the suite runs {@code parallel="tests"}, and the {@code <test>} declares no time-out of
+   * its own -- or the same one. A time-out declared on the {@code <test>} alone, or a {@code
+   * parallel="tests"} declared on the {@code <test>} alone, is enforced nowhere else and keeps
+   * reaching the method as it always has; otherwise it would be dropped without a word. Inheriting
+   * the suite value per method is what used to put every method of a {@code <test>} on a timed
+   * path, and so on a thread of its own.
+   */
+  private static boolean isBoundedAtTestScope(XmlTest xmlTest) {
+    XmlSuite suite = xmlTest.getSuite();
+    return suite.getParallel() == XmlSuite.ParallelMode.TESTS
+        && Objects.equals(xmlTest.getTimeOut(), suite.getTimeOut());
   }
 
   @Override

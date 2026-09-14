@@ -1,0 +1,53 @@
+package org.testng.factory.samples.issue1041;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Factory;
+import org.testng.annotations.Test;
+
+public final class FactoryAnnotatedConstructorExample {
+  public static List<FactoryAnnotatedConstructorExample> objects = new ArrayList<>();
+
+  private final int data;
+
+  @Factory(dataProvider = "dp")
+  public FactoryAnnotatedConstructorExample(int data) {
+    this.data = data;
+    addInstance(this);
+  }
+
+  private static void addInstance(FactoryAnnotatedConstructorExample instance) {
+    objects.add(instance);
+  }
+
+  @DataProvider(name = "dp")
+  public static Object[][] getData() {
+    return new Object[][] {{1}, {2}};
+  }
+
+  @Test
+  public void testMethod() {
+    assertThat(data > 0).isTrue();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    FactoryAnnotatedConstructorExample that = (FactoryAnnotatedConstructorExample) o;
+    return data == that.data;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(data);
+  }
+}

@@ -22,12 +22,10 @@ public class TestNgXmlPanel extends BaseMultiSuitePanel {
   }
 
   @Override
-  public String getContent(ISuite suite, XMLStringBuffer main) {
-    XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
+  void writeContent(ISuite suite, XMLStringBuffer xsb) {
     xsb.push("pre");
     xsb.addString(Utils.escapeHtml(suite.getXmlSuite().toXml()));
     xsb.pop("pre");
-    return xsb.toXML();
   }
 
   @Override

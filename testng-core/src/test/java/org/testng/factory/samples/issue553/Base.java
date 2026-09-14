@@ -1,0 +1,17 @@
+package org.testng.factory.samples.issue553;
+
+import org.testng.annotations.Factory;
+
+public abstract class Base {
+  @Factory
+  public Object[] createTests() {
+    return new Object[] {new Inner()};
+  }
+
+  public static class Inner {
+    @Factory
+    public Object[] createTests() {
+      return new Object[0];
+    }
+  }
+}

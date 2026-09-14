@@ -1,0 +1,127 @@
+package org.testng.reporters;
+
+import java.io.IOException;
+import java.io.Writer;
+
+/**
+ * A writer that appends into an {@link IBuffer}, dropping the characters XML 1.0 does not allow,
+ * without ever holding more than one slice of its input in memory.
+ *
+ * <p>This is the streaming form of the substitution {@link XMLStringBuffer#toXML()} performs. That
+ * one reads the whole buffer back as a {@code String} and runs a regular expression over it, which
+ * is exactly what a buffer backed by a temporary file exists to avoid; this one is what {@link
+ * XMLStringBuffer#addBuffer(XMLStringBuffer)} uses to fold one buffer into another.
+ *
+ * <p>The two must agree character for character. A {@code Matcher} walks its input by code point,
+ * so a surrogate pair stands for the single character it encodes -- always a legal one, since the
+ * whole of U+10000..U+10FFFF is allowed -- while a surrogate that is not part of a pair is a
+ * character of its own and an illegal one. A pair can therefore straddle two {@code write} calls,
+ * and a high surrogate is held back until the next call says whether it opened a pair or stood
+ * alone. {@link #flush()} does not resolve it, for the same reason; {@link #close()} drops it and
+ * refuses any further write, so a surrogate held at the end of one stream can never pair with a low
+ * surrogate from the next.
+ */
+class XmlCharFilteringWriter extends Writer {
+
+  /**
+   * How much is accumulated before being handed to the buffer.
+   *
+   * <p>What constrains it is the other end: {@code FileStringBuffer.append} sends a string of
+   * {@code MAX} characters or more straight to the temporary file instead of its in-memory builder,
+   * so a slice at or above that size would open the file once per drain. The value itself is not
+   * otherwise load-bearing -- this writer is handed 100 000 character calls when the source has
+   * spilled and 8192 character ones when it has not, so a slice is carved out of a write as often
+   * as it matches one. Package-private so the tests can hold it to that constraint, and put a
+   * surrogate pair on this boundary rather than on a copy of the number.
+   */
+  static final int SLICE = 8192;
+
+  private final IBuffer buffer;
+  private final StringBuilder slice = new StringBuilder(SLICE);
+
+  /**
+   * A high surrogate whose pair, if any, is in the characters not written yet. Zero when none is
+   * held back, which no high surrogate can be. It is never written on its own, so what is held here
+   * when the last character has been written is dropped.
+   */
+  private char pendingHighSurrogate;
+
+  private boolean closed;
+
+  XmlCharFilteringWriter(IBuffer buffer) {
+    this.buffer = buffer;
+  }
+
+  @Override
+  public void write(char[] characters, int offset, int length) throws IOException {
+    if (closed) {
+      throw new IOException("This writer is closed");
+    }
+    for (int i = offset; i < offset + length; i++) {
+      char c = characters[i];
+      if (pendingHighSurrogate != 0) {
+        if (Character.isLowSurrogate(c)) {
+          // A whole character of the supplementary planes, which is always allowed. Both halves
+          // go in before the slice can be handed over: a slice ending between them would reach
+          // the buffer as a lone surrogate, and a buffer spilling to its file encodes each append
+          // on its own, so the two halves would be written as two '?'.
+          slice.append(pendingHighSurrogate).append(c);
+          pendingHighSurrogate = 0;
+          drainIfFull();
+          continue;
+        }
+        // The high surrogate stood alone, so it is dropped, and c is read on its own terms.
+        pendingHighSurrogate = 0;
+      }
+      if (Character.isHighSurrogate(c)) {
+        pendingHighSurrogate = c;
+      } else if (isAllowed(c)) {
+        slice.append(c);
+        drainIfFull();
+      }
+    }
+  }
+
+  /**
+   * @return whether XML 1.0 allows this character, for anything but a high surrogate -- a low
+   *     surrogate reaching here is one that opened nothing, and is not allowed.
+   */
+  private static boolean isAllowed(char c) {
+    return c == '\t'
+        || c == '\n'
+        || c == '\r'
+        || (c >= 0x0020 && c <= 0xD7FF)
+        || (c >= 0xE000 && c <= 0xFFFD);
+  }
+
+  private void drainIfFull() {
+    if (slice.length() >= SLICE) {
+      drain();
+    }
+  }
+
+  private void drain() {
+    if (slice.length() > 0) {
+      buffer.append(slice.toString());
+      slice.setLength(0);
+    }
+  }
+
+  @Override
+  public void flush() throws IOException {
+    if (closed) {
+      throw new IOException("This writer is closed");
+    }
+    drain();
+  }
+
+  @Override
+  public void close() {
+    // What is still held back never became a pair, so it never was a character. Dropped here
+    // rather than left in place: the writer would otherwise carry it into whatever is written
+    // next and pair it with a low surrogate from a different stream.
+    pendingHighSurrogate = 0;
+    closed = true;
+    drain();
+  }
+}

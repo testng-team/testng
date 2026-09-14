@@ -219,19 +219,19 @@
       <!-- TODO fix the random issue <class name="test.issue565.Issue565Test"/>-->
       <class name="test.failedreporter.issue3111.FactoryInstanceFailedReporterTest"/>
       <class name="test.failedreporter.skippedposition.SkippedPositionRerunTest"/>
-      <class name="test.factory.issue3111.FactoryInstanceTest"/>
-      <class name="test.factory.issue326.IssueTest"/>
-      <class name="test.factory.issue553.IssueTest"/>
-      <class name="test.factory.issue1041.IssueTest"/>
-      <class name="test.factory.issue1924.IssueTest"/>
-      <class name="test.factory.github328.GitHub328Test" />
-      <class name="test.factory.issue1745.Github1745Test"/>
-      <class name="test.factory.lazy.LazyFactoryConstructionTest"/>
-      <class name="test.factory.lazy.LazyFactoryResolutionMatrixTest"/>
-      <class name="test.factory.lazy.LazyFactoryConfigMethodTest"/>
-      <class name="test.factory.lazy.LazyFactoryConstructorFailureTest"/>
-      <class name="test.factory.lazy.LazyFactoryMethodInterceptorTest"/>
-      <class name="test.factory.lazy.LazyFactoryParallelTest"/>
+      <class name="org.testng.factory.issue3111.FactoryInstanceTest"/>
+      <class name="org.testng.factory.issue326.IssueTest"/>
+      <class name="org.testng.factory.issue553.IssueTest"/>
+      <class name="org.testng.factory.issue1041.IssueTest"/>
+      <class name="org.testng.factory.issue1924.IssueTest"/>
+      <class name="org.testng.factory.FactoryWithExcludedGroupTest" />
+      <class name="org.testng.factory.issue1745.Github1745Test"/>
+      <class name="org.testng.factory.lazy.LazyFactoryConstructionTest"/>
+      <class name="org.testng.factory.lazy.LazyFactoryResolutionMatrixTest"/>
+      <class name="org.testng.factory.lazy.LazyFactoryConfigMethodTest"/>
+      <class name="org.testng.factory.lazy.LazyFactoryConstructorFailureTest"/>
+      <class name="org.testng.factory.lazy.LazyFactoryMethodInterceptorTest"/>
+      <class name="org.testng.factory.lazy.LazyFactoryParallelTest"/>
       <class name="test.objectfactory.ObjectFactoryTest"/>
       <class name="test.github1490.VerifyDataProviderListener"/>
       <class name="test.listeners.issue2456.IssueTest"/>
@@ -329,30 +329,30 @@
   <test name="Dependents">
     <parameter name="foo" value="Cedric" />
     <classes>
-<!--
-      <class name="test.dependent.MissingGroupTest" />
-      <class name="test.dependent.MissingMethodTest" />
--->
-      <class name="test.dependent.OrderMethodTest" />
-      <class name="test.dependent.DependentTest" />
-      <class name="test.dependent.SampleDependentTest" />
-      <class name="test.dependent.SampleDependentMethods" />
-      <class name="test.dependent.SampleDependentMethods3" />
-      <class name="test.dependent.SampleDependentConfigurationMethods" />
-      <class name="test.dependent.ClassDependsOnGroups"/>
-      <class name="test.dependent.DependentAlwaysRunTest" />
-      <class name="test.dependent.MultiGroupTest" />
-      <class name="test.dependent.ImplicitGroupInclusionTest" />
-      <class name="test.dependent.ClassWide1Test" />
-      <class name="test.dependent.ClassWide2Test" />
-      <class name="test.dependent.DepBugSampleTest" />
-      <class name="test.dependent.DepBugVerifyTest" />
-      <class name="test.dependent.DependsOnProtectedMethodTest" />
+      <class name="org.testng.dependent.MissingGroupTest" />
+      <class name="org.testng.dependent.MissingMethodTest" />
+      <class name="org.testng.dependent.DependsOnMethodsWithSharedNamesTest" />
+      <class name="org.testng.dependent.GitHub261Test" />
+      <class name="org.testng.dependent.OrderMethodTest" />
+      <class name="org.testng.dependent.DependentTest" />
+      <class name="org.testng.dependent.SampleDependentTest" />
+      <class name="org.testng.dependent.SampleDependentMethods" />
+      <class name="org.testng.dependent.SampleDependentMethods3" />
+      <class name="org.testng.dependent.SampleDependentConfigurationMethods" />
+      <class name="org.testng.dependent.ClassDependsOnGroups"/>
+      <class name="org.testng.dependent.DependentAlwaysRunTest" />
+      <class name="org.testng.dependent.MultiGroupTest" />
+      <class name="org.testng.dependent.ImplicitGroupInclusionTest" />
+      <class name="org.testng.dependent.ClassWide1Test" />
+      <class name="org.testng.dependent.ClassWide2Test" />
+      <class name="org.testng.dependent.DepBugSampleTest" />
+      <class name="org.testng.dependent.DepBugVerifyTest" />
+      <class name="org.testng.dependent.DependsOnProtectedMethodTest" />
       <class name="test.dependsongroup.DependsOnGroupsTest" />
-      <class name="test.dependent.GroupByInstancesTest" />
-      <class name="test.dependent.xml.GroupDependencyTest" />
-      <class name="test.dependent.DependencyFixTest"/>
-      <class name="test.dependent.issue1648.TestRunner"/>
+      <class name="org.testng.dependent.GroupByInstancesTest" />
+      <class name="org.testng.dependent.xml.GroupDependencyTest" />
+      <class name="org.testng.dependent.DependencyFixTest"/>
+      <class name="org.testng.dependent.issue1648.TestRunner"/>
     </classes>
   </test>
 
@@ -436,40 +436,42 @@
   <parameter name="factory-param" value="FactoryParam" />
   <test name="Factory">
     <classes>
-      <class name="test.factory.FactoryTest" />
-      <class name="test.factory.VerifyFactoryTest" />
-      <class name="test.factory.FactoryInSeparateClassTest" />
-      <class name="test.factory.Factory2Test" />
-      <class name="test.factory.ObjectIdTest"/>
+      <class name="org.testng.factory.FactoryTest" />
+      <class name="org.testng.factory.VerifyFactoryTest" />
+      <class name="org.testng.factory.FactoryInSeparateClassTest" />
+      <class name="org.testng.factory.Factory2Test" />
+      <class name="org.testng.factory.ObjectIdTest"/>
 
-      <class name="test.factory.FactoryWithInstanceInfoTest" />
-      <class name="test.factory.VerifyFactoryWithInstanceInfoTest" />
-      <class name="test.factory.TestClassAnnotationTest" />
+      <class name="org.testng.factory.FactoryWithInstanceInfoTest" />
+      <class name="org.testng.factory.VerifyFactoryWithInstanceInfoTest" />
+      <class name="org.testng.factory.TestClassAnnotationTest" />
 
-      <class name="test.factory.FactoryWithDataProviderTest" />
-      <class name="test.factory.FactoryOrderMainTest" />
-      <class name="test.factory.FactoryFailureTest" />
+      <class name="org.testng.factory.FactoryWithDataProviderTest" />
+      <class name="org.testng.factory.FactoryOrderMainTest" />
+      <class name="org.testng.factory.FactoryFailureTest" />
 
-      <class name="test.factory.FactoryInSuperClassTest" />
+      <class name="org.testng.factory.FactoryInSuperClassTest" />
 
-      <class name="test.factory.classconf.XClassOrderWithFactoryTest" />
-      <class name="test.factory.FactoryInterleavingTest"/>
-      <class name="test.factory.FactoryDataProviderTest"/>
-      <class name="test.factory.github1631.GitHub1631Tests"/>
+      <class name="org.testng.factory.classconf.XClassOrderWithFactoryTest" />
+      <class name="org.testng.factory.FactoryInterleavingTest"/>
+      <class name="org.testng.factory.FactoryDataProviderTest"/>
+      <class name="org.testng.factory.github1631.GitHub1631Tests"/>
 
-      <class name="test.factory.DisabledFactoryTest"/>
-      <class name="test.factory.FactoryAndTestMethodTest" />
+      <class name="org.testng.factory.DisabledFactoryTest"/>
+      <class name="org.testng.factory.FactoryAndTestMethodTest" />
 
-      <class name="test.factory.FactoryIntegrationTest" />
-      <class name="test.factory.EmptyFactoryDataProviderTest" />
+      <class name="org.testng.factory.FactoryIntegrationTest" />
+      <class name="org.testng.factory.EmptyFactoryDataProviderTest" />
 
-      <class name="test.factory.nested.GitHub1307Test"/>
+      <class name="org.testng.factory.nested.GitHub1307Test"/>
+      <class name="org.testng.factory.github1083.GitHub1083Test"/>
+      <class name="org.testng.factory.github1131.GitHub1131Test"/>
 
     </classes>
   </test>
   <test name="factory test" parallel = "instances" thread-count="3" group-by-instances="true">
     <classes>
-      <class name="test.factory.github2428.IssueTest" />
+      <class name="org.testng.factory.github2428.IssueTest" />
     </classes>
   </test>
 
@@ -477,6 +479,7 @@
     <classes>
       <class name="test.timeout.TimeOutTest" />
       <class name="test.timeout.TimeOutFromXmlTest"/>
+      <class name="org.testng.timeout.issue1333.Issue1333Test"/>
       <class name="test.timeout.TimeOutIntegrationTest"/>
       <class name="test.timeout.github2672.TimeoutStacktraceTest"/>
 <!--
@@ -798,6 +801,10 @@
       <class name="org.testng.reporters.jq.ChronologicalPanelTest" />
       <class name="org.testng.reporters.jq.TimesPanelTest" />
       <class name="org.testng.reporters.jq.ModelParametersTest" />
+      <class name="org.testng.reporters.jq.BaseMultiSuitePanelTest" />
+      <class name="org.testng.reporters.XmlCharFilteringWriterTest" />
+      <class name="org.testng.reporters.FileStringBufferTest" />
+      <class name="org.testng.reporters.JUnitXMLReporterTest" />
       <class name="org.testng.internal.reporters.ParameterValueTest" />
       <class name="org.testng.internal.reporters.ParameterSnapshotsTest" />
       <class name="org.testng.internal.reporters.ParameterSnapshotLifecycleTest" />
@@ -991,7 +998,7 @@
 
   <test name="RunOrderingTest">
     <classes>
-      <class name="test.github799.EnsureInstancesAreOrderedViaFactories"/>
+      <class name="org.testng.factory.EnsureInstancesAreOrderedViaFactories"/>
     </classes>
   </test>
 

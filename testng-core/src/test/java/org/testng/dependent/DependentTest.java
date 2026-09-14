@@ -1,0 +1,593 @@
+package org.testng.dependent;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+import org.testng.ITestListener;
+import org.testng.ITestResult;
+import org.testng.TestNG;
+import org.testng.TestNGException;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+import org.testng.dependent.samples.DependentWithDataProviderSampleTest;
+import org.testng.dependent.samples.InstanceSkipSampleTest;
+import org.testng.dependent.samples.MultipleDependentSampleTest;
+import org.testng.dependent.samples.SampleDependent1;
+import org.testng.dependent.samples.SampleDependentMethods4;
+import org.testng.dependent.samples.SampleDependentMethods5;
+import org.testng.dependent.samples.SampleDependentMethods6;
+import org.testng.dependent.samples.github1156.ASample;
+import org.testng.dependent.samples.github1156.BSample;
+import org.testng.dependent.samples.github1380.GitHub1380Sample;
+import org.testng.dependent.samples.github1380.GitHub1380Sample2;
+import org.testng.dependent.samples.github1380.GitHub1380Sample3;
+import org.testng.dependent.samples.github1380.GitHub1380Sample4;
+import org.testng.dependent.samples.issue141.ErrorScenarioNestedSample;
+import org.testng.dependent.samples.issue141.MultipleMatchesTestClassSample;
+import org.testng.dependent.samples.issue141.NestedTestClassSample;
+import org.testng.dependent.samples.issue141.NestedTestClassSample2;
+import org.testng.dependent.samples.issue141.SimpleSample;
+import org.testng.dependent.samples.issue141.SkipReasoner;
+import org.testng.dependent.samples.issue141.TestClassSample;
+import org.testng.dependent.samples.issue2658.FailingClassSample;
+import org.testng.dependent.samples.issue2658.PassingClassSample;
+import org.testng.dependent.samples.issue3222.AbstractParentTest;
+import org.testng.dependent.samples.issue3222.InheritedNestedSample;
+import org.testng.dependent.samples.issue3222.SiblingNestedSample;
+import org.testng.dependent.samples.issue550.ConfigDependencySample;
+import org.testng.dependent.samples.issue550.ConfigDependencyWithMismatchedLevelSample;
+import org.testng.dependent.samples.issue550.ConfigDependsOnTestAndConfigMethodSample;
+import org.testng.dependent.samples.issue550.ConfigDependsOnTestMethodSample;
+import org.testng.dependent.samples.issue550.OrderedResultsGatherer;
+import org.testng.dependent.samples.issue893.DependencyTrackingListener;
+import org.testng.dependent.samples.issue893.MultiLevelDependenciesTestClassSample;
+import org.testng.internal.Utils;
+import org.testng.xml.XmlSuite.ParallelMode;
+import test.InvokedMethodNameListener;
+import test.SimpleBaseTest;
+
+public class DependentTest extends SimpleBaseTest {
+
+  @Test(description = "GITHUB-141")
+  public void ensureDependsOnMethodsHonoursRegexPatternsAcrossClasses() {
+    TestNG testng =
+        create(
+            org.testng.dependent.samples.issue141.ASample.class,
+            org.testng.dependent.samples.issue141.BSample.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getPassedNames()).containsExactly("b", "bb", "a");
+  }
+
+  @Test(
+      description = "GITHUB-141",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\norg.testng.dependent.samples.issue141.SimpleSample.testMethod\\(\\) "
+              + "depends on nonexistent method org.testng.dependent.samples.issue141.BSample.*")
+  public void ensureDependsOnMethodsHonoursRegexPatternsAcrossClassesErrorCondition() {
+    TestNG testng = create(SimpleSample.class, org.testng.dependent.samples.issue141.BSample.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+  }
+
+  @Test(
+      description = "GITHUB-141",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\norg.testng.dependent.samples.issue141.ErrorScenarioNestedSample.a\\(\\) "
+              + "depends on nonexistent method .*")
+  public void ensureDependsOnMethodsHonoursRegexPatternsNestedClassesErrorCondition() {
+    TestNG testng = create(ErrorScenarioNestedSample.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+  }
+
+  @Test(description = "GITHUB-141")
+  public void ensureDependsOnMethodsHonoursRegexPatternsUniqueMatch() {
+    TestNG testng = create(TestClassSample.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getPassedNames()).containsExactly("test_C6390323", "randomTest");
+  }
+
+  @Test(description = "GITHUB-141")
+  public void ensureDependsOnMethodsHonoursRegexPatternsDuplicateMatches() {
+    TestNG testng = create(MultipleMatchesTestClassSample.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    SkipReasoner reasoner = new SkipReasoner();
+    testng.addListener(listener);
+    testng.addListener(reasoner);
+    testng.run();
+    assertThat(listener.getPassedNames()).containsExactly("test_C6390324");
+    assertThat(listener.getFailedNames()).containsExactly("test_C6390323");
+    assertThat(listener.getSkippedNames()).containsExactly("randomTest");
+    assertThat(reasoner.getUpstreamFailures()).containsExactly("test_C6390323");
+  }
+
+  @Test(description = "GITHUB-141")
+  public void ensureDependsOnMethodsHonoursRegexPatternsDuplicateMatchesNestedClasses() {
+    TestNG testng = create(NestedTestClassSample.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    SkipReasoner reasoner = new SkipReasoner();
+    testng.addListener(listener);
+    testng.addListener(reasoner);
+    testng.run();
+    // Each nested class resolves the regex against its own siblings only (GITHUB-3222).
+    assertThat(listener.getPassedNames()).containsExactlyInAnyOrder("test_C6390323", "randomTest");
+    assertThat(listener.getFailedNames()).containsExactly("test_C6390323");
+    assertThat(listener.getSkippedNames()).containsExactly("randomTest");
+    assertThat(reasoner.getUpstreamFailures()).containsExactly("test_C6390323");
+    assertThat(listener.getPassedQualifiers())
+        .containsExactlyInAnyOrder(
+            NestedTestClassSample.FirstSample.class.getName() + ".test_C6390323",
+            NestedTestClassSample.FirstSample.class.getName() + ".randomTest");
+    assertThat(listener.getFailedQualifiers())
+        .containsExactly(NestedTestClassSample.SecondSample.class.getName() + ".test_C6390323");
+    assertThat(listener.getSkippedQualifiers())
+        .containsExactly(NestedTestClassSample.SecondSample.class.getName() + ".randomTest");
+  }
+
+  @Test(
+      description = "GITHUB-141",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\norg.testng.dependent.samples.issue141.NestedTestClassSample2.randomTest\\(\\) depends on "
+              + "nonexistent method .*")
+  public void ensureDependsOnMethodsHonourRegexPatternsNestedClasses() {
+    TestNG testng = create(NestedTestClassSample2.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    SkipReasoner reasoner = new SkipReasoner();
+    testng.addListener(listener);
+    testng.addListener(reasoner);
+    testng.run();
+  }
+
+  @Test(description = "GITHUB-3222")
+  public void ensureDependsOnMethodsIsResolvedInAStaticNestedClass() {
+    TestNG testng = create(AbstractParentTest.ChildTest.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getPassedNames()).isEmpty();
+    assertThat(listener.getFailedNames()).containsExactly("test1");
+    assertThat(listener.getSkippedNames()).containsExactly("test2");
+  }
+
+  @Test(description = "GITHUB-3222")
+  public void ensureDependsOnMethodsResolvesInheritedMethodsInANestedClass() {
+    TestNG testng = create(InheritedNestedSample.NestedChild.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getPassedNames()).containsExactly("test1", "test2");
+    assertThat(listener.getFailedNames()).isEmpty();
+    assertThat(listener.getSkippedNames()).isEmpty();
+  }
+
+  @Test(
+      description = "GITHUB-3222",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          ".*SiblingNestedSample.Second.test2\\(\\) depends on nonexistent method test1")
+  public void ensureDependsOnMethodsDoesNotResolveSiblingNestedClassMethods() {
+    TestNG testng = create(SiblingNestedSample.First.class, SiblingNestedSample.Second.class);
+    testng.run();
+  }
+
+  @Test
+  public void simpleSkip() {
+    TestNG testng = create(SampleDependent1.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getPassedNames()).isEmpty();
+    assertThat(listener.getFailedNames()).containsExactly("fail");
+    assertThat(listener.getSkippedNames()).containsExactly("shouldBeSkipped");
+  }
+
+  @Test
+  public void dependentMethods() {
+    TestNG testng = create(SampleDependentMethods.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getPassedNames())
+        .contains("oneA", "oneB", "secondA", "thirdA", "canBeRunAnytime");
+    assertThat(listener.getFailedNames()).isEmpty();
+    assertThat(listener.getSkippedNames()).isEmpty();
+  }
+
+  @Test
+  public void dependentMethodsWithSkip() {
+    TestNG testng = create(SampleDependentMethods4.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getPassedNames()).contains("step1");
+    assertThat(listener.getFailedNames()).contains("step2");
+    assertThat(listener.getSkippedNames()).contains("step3");
+  }
+
+  @Test(expectedExceptions = {org.testng.TestNGException.class})
+  public void dependentMethodsWithNonExistentMethod() {
+    TestNG testng = create(SampleDependentMethods5.class);
+    testng.run();
+  }
+
+  @Test(expectedExceptions = org.testng.TestNGException.class)
+  public void dependentMethodsWithCycle() {
+    TestNG testng = create(SampleDependentMethods6.class);
+    testng.run();
+  }
+
+  @Test
+  public void multipleSkips() {
+    TestNG testng = create(MultipleDependentSampleTest.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getPassedNames()).contains("init");
+    assertThat(listener.getFailedNames()).contains("fail");
+    assertThat(listener.getSkippedNames()).contains("skip1", "skip2");
+  }
+
+  @Test
+  public void instanceDependencies() {
+    TestNG testng = create(InstanceSkipSampleTest.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getPassedInstances()).contains("f#1", "f#3", "g#1", "g#3");
+    assertThat(listener.getFailedInstances()).contains("f#2");
+    assertThat(listener.getSkippedInstances()).contains("g#2");
+  }
+
+  @Test
+  public void dependentWithDataProvider() {
+    TestNG testng = create(DependentWithDataProviderSampleTest.class);
+    testng.setGroupByInstances(true);
+    List<String> log = DependentWithDataProviderSampleTest.m_log;
+    log.clear();
+    testng.run();
+    for (int i = 0; i < 12; i += 4) {
+      String[] s = Utils.splitOnLiteral(log.get(i), "#");
+      String instance = s[1];
+      assertThat(log.subList(i, i + 4))
+          .containsExactly(
+              "prepare#" + instance, "test1#" + instance, "test2#" + instance, "clean#" + instance);
+    }
+  }
+
+  @DataProvider
+  public static Object[][] dp() {
+    return new Object[][] {
+      {new Class[] {ASample.class, BSample.class}, true},
+      {new Class[] {ASample.class, BSample.class}, false},
+      {new Class[] {BSample.class, ASample.class}, true},
+      {new Class[] {BSample.class, ASample.class}, false}
+    };
+  }
+
+  @Test(dataProvider = "dp", description = "GITHUB-1156")
+  public void methodDependencyBetweenClassesShouldWork(Class<?>[] classes, boolean preserveOrder) {
+    TestNG testng = create(classes);
+    testng.setPreserveOrder(preserveOrder);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getSucceedMethodNames()).containsExactly("testB", "testA");
+  }
+
+  @DataProvider
+  public static Object[][] dp1380() {
+    return new Object[][] {
+      {GitHub1380Sample.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}},
+      {GitHub1380Sample2.class, new String[] {"testMethodC", "testMethodB", "testMethodA"}},
+      {GitHub1380Sample3.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}},
+      {GitHub1380Sample4.class, new String[] {"testMethodB", "testMethodA", "testMethodC"}},
+    };
+  }
+
+  @Test(dataProvider = "dp1380", description = "GITHUB-1380")
+  public void simpleCyclingDependencyShouldWorkWithoutParallelism(
+      Class<?> testClass, String[] runMethods) {
+    TestNG tng = create(testClass);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener(listener);
+    tng.run();
+
+    // When not running parallel, invoke order and succeed order are the same.
+    assertThat(listener.getInvokedMethodNames()).containsExactly(runMethods);
+    assertThat(listener.getSucceedMethodNames()).containsExactly(runMethods);
+  }
+
+  @DataProvider
+  public static Object[][] dp1380Parallel() {
+    return new Object[][] {
+      {GitHub1380Sample.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}},
+      {
+        GitHub1380Sample2.class,
+        // A dependsOn B; C can be anywhere even though B has "sleep 5 sec"
+        // C is the first
+        new String[] {"testMethodC", "testMethodB", "testMethodA"},
+        // C is the second
+        new String[] {"testMethodB", "testMethodC", "testMethodA"},
+        // C is the third
+        new String[] {"testMethodB", "testMethodA", "testMethodC"},
+      },
+      {GitHub1380Sample3.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}},
+      {
+        GitHub1380Sample4.class,
+        // A dependsOn B; C can be anywhere
+        // C is the first
+        new String[] {"testMethodC", "testMethodB", "testMethodA"},
+        // C is the second
+        new String[] {"testMethodB", "testMethodC", "testMethodA"},
+        // C is the third
+        new String[] {"testMethodB", "testMethodA", "testMethodC"},
+      },
+    };
+  }
+
+  @Test(dataProvider = "dp1380Parallel", description = "GITHUB-1380")
+  public void simpleCyclingDependencyShouldWorkWitParallelism(
+      Class<?> testClass, String[]... runMethods) {
+    TestNG tng = create(testClass);
+    tng.setParallel(ParallelMode.METHODS);
+
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener(listener);
+
+    tng.run();
+
+    assertThat(listener.getInvokedMethodNames())
+        .matches(
+            strings -> {
+              boolean result = false;
+              for (String[] runMethod : runMethods) {
+                result = result || Arrays.asList(runMethod).equals(strings);
+              }
+              return result;
+            },
+            "When running parallel, invoke order is consistent, but succeed order isn't "
+                + Arrays.deepToString(runMethods));
+    assertThat(listener.getSucceedMethodNames()).containsExactlyInAnyOrder(runMethods[0]);
+  }
+
+  @Test(description = "GITHUB-2658")
+  public void testMethodDependencyAmidstInheritance() {
+    TestNG testng = create(PassingClassSample.class, FailingClassSample.class);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getFailedMethodNames()).containsExactly("test");
+    assertThat(listener.getSucceedMethodNames()).containsExactly("test", "passingMethod");
+    assertThat(listener.getSkippedMethodNames()).containsExactly("failingMethod");
+  }
+
+  @Test(description = "GITHUB-893", dataProvider = "getTestData")
+  public void testDownstreamDependencyRetrieval(
+      Class<?> clazz, String independentMethod, String[] dependentMethods) {
+    TestNG testng = create(clazz);
+    DependencyTrackingListener listener = new DependencyTrackingListener();
+    testng.addListener(listener);
+    testng.run();
+    String cls = clazz.getCanonicalName();
+    String key = cls + "." + independentMethod;
+    Set<String> downstream = listener.getDownstreamDependencies().get(key);
+    dependentMethods =
+        Arrays.stream(dependentMethods).map(each -> cls + "." + each).toArray(String[]::new);
+    // The order is not asserted. TestNG collects the dependencies through a hash-based
+    // set, so it follows the hash of the class name and changes when the class is
+    // renamed. GITHUB-893 is about which methods are dependencies, not their order.
+    assertThat(downstream).containsExactlyInAnyOrder(dependentMethods);
+  }
+
+  @DataProvider(name = "getTestData")
+  public Object[][] getTestData() {
+    return new Object[][] {
+      {
+        org.testng.dependent.samples.issue893.TestClassSample.class,
+        "independentTest",
+        new String[] {"anotherDependentTest", "dependentTest"}
+      },
+      {MultiLevelDependenciesTestClassSample.class, "father", new String[] {"child"}},
+      {
+        MultiLevelDependenciesTestClassSample.class,
+        "grandFather",
+        new String[] {"father", "mother"}
+      },
+      {MultiLevelDependenciesTestClassSample.class, "child", new String[] {}}
+    };
+  }
+
+  @Test(description = "GITHUB-893", dataProvider = "getUpstreamTestData")
+  public void testUpstreamDependencyRetrieval(
+      Class<?> clazz, String independentMethod, String[] dependentMethods) {
+    TestNG testng = create(clazz);
+    DependencyTrackingListener listener = new DependencyTrackingListener();
+    testng.addListener(listener);
+    testng.run();
+    String cls = clazz.getCanonicalName();
+    String key = cls + "." + independentMethod;
+    Set<String> upstream = listener.getUpstreamDependencies().get(key);
+    dependentMethods =
+        Arrays.stream(dependentMethods).map(each -> cls + "." + each).toArray(String[]::new);
+    // The order is not asserted. TestNG collects the dependencies through a hash-based
+    // set, so it follows the hash of the class name and changes when the class is
+    // renamed. GITHUB-893 is about which methods are dependencies, not their order.
+    assertThat(upstream).containsExactlyInAnyOrder(dependentMethods);
+  }
+
+  @DataProvider(name = "getUpstreamTestData")
+  public Object[][] getUpstreamTestData() {
+    return new Object[][] {
+      {
+        org.testng.dependent.samples.issue893.TestClassSample.class,
+        "dependentTest",
+        new String[] {"independentTest"}
+      },
+      {MultiLevelDependenciesTestClassSample.class, "father", new String[] {"grandFather"}},
+      {MultiLevelDependenciesTestClassSample.class, "child", new String[] {"father", "mother"}},
+      {MultiLevelDependenciesTestClassSample.class, "grandFather", new String[] {}}
+    };
+  }
+
+  @Test(description = "GITHUB-550", dataProvider = "configDependencyTestData")
+  public void testConfigDependencies(String expectedErrorMsg, Class<?> testClassToUse) {
+    TestNG testng = create(testClassToUse);
+    String actualErrorMsg = null;
+    try {
+      testng.run();
+    } catch (TestNGException e) {
+      actualErrorMsg = e.getMessage().replace("\n", "");
+    }
+    assertThat(actualErrorMsg).isEqualTo(expectedErrorMsg);
+  }
+
+  @Test(description = "GITHUB-550")
+  public void testConfigDependenciesHappyCase() {
+    TestNG testng = create(ConfigDependencySample.class);
+    OrderedResultsGatherer gatherer = new OrderedResultsGatherer();
+    testng.addListener(gatherer);
+    testng.run();
+    assertThat(gatherer.getStartTimes()).isSorted();
+  }
+
+  @DataProvider(name = "configDependencyTestData")
+  public Object[][] configDependencyTestData() {
+    String template1 = "None of the dependencies of the method %s.%s are annotated with [@%s].";
+    String template2 =
+        "%s.%s() is depending on method public void %s.%s(), " + "which is not annotated with @%s.";
+    return new Object[][] {
+      {
+        String.format(
+            template1,
+            ConfigDependencyWithMismatchedLevelSample.class.getCanonicalName(),
+            "beforeMethod",
+            "BeforeMethod"),
+        ConfigDependencyWithMismatchedLevelSample.class
+      },
+      {
+        String.format(
+            template2,
+            ConfigDependsOnTestAndConfigMethodSample.class.getCanonicalName(),
+            "beforeMethod",
+            ConfigDependsOnTestAndConfigMethodSample.class.getCanonicalName(),
+            "testMethod",
+            "BeforeMethod"),
+        ConfigDependsOnTestAndConfigMethodSample.class
+      },
+      {
+        String.format(
+            template1,
+            ConfigDependsOnTestMethodSample.class.getCanonicalName(),
+            "beforeMethod",
+            "BeforeMethod"),
+        ConfigDependsOnTestMethodSample.class
+      }
+    };
+  }
+
+  public static class MethodNameCollector implements ITestListener {
+
+    private static final Function<ITestResult, String> asString =
+        itr -> itr.getMethod().getMethodName() + "#" + itr.getInstance().toString();
+    private final List<String> passedNames = new ArrayList<>();
+    private final List<String> failedNames = new ArrayList<>();
+    private final List<String> skippedNames = new ArrayList<>();
+    private final List<String> passedQualifiers = new ArrayList<>();
+    private final List<String> failedQualifiers = new ArrayList<>();
+    private final List<String> skippedQualifiers = new ArrayList<>();
+
+    private final List<String> passedInstances = new ArrayList<>();
+    private final List<String> failedInstances = new ArrayList<>();
+    private final List<String> skippedInstances = new ArrayList<>();
+
+    public List<String> getPassedInstances() {
+      return passedInstances;
+    }
+
+    public List<String> getFailedInstances() {
+      return failedInstances;
+    }
+
+    public List<String> getSkippedInstances() {
+      return skippedInstances;
+    }
+
+    public List<String> getFailedNames() {
+      return failedNames;
+    }
+
+    public List<String> getPassedNames() {
+      return passedNames;
+    }
+
+    public List<String> getSkippedNames() {
+      return skippedNames;
+    }
+
+    public List<String> getPassedQualifiers() {
+      return passedQualifiers;
+    }
+
+    public List<String> getFailedQualifiers() {
+      return failedQualifiers;
+    }
+
+    public List<String> getSkippedQualifiers() {
+      return skippedQualifiers;
+    }
+
+    private static String asQualified(ITestResult result) {
+      return result.getTestClass().getRealClass().getName()
+          + "."
+          + result.getMethod().getMethodName();
+    }
+
+    @Override
+    public void onTestFailure(ITestResult result) {
+      failedNames.add(result.getMethod().getMethodName());
+      failedQualifiers.add(asQualified(result));
+      failedInstances.add(asString.apply(result));
+    }
+
+    @Override
+    public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
+      failedNames.add(result.getMethod().getMethodName());
+      failedQualifiers.add(asQualified(result));
+      failedInstances.add(asString.apply(result));
+    }
+
+    @Override
+    public void onTestFailedWithTimeout(ITestResult result) {
+      failedNames.add(result.getMethod().getMethodName());
+      failedQualifiers.add(asQualified(result));
+      failedInstances.add(asString.apply(result));
+    }
+
+    @Override
+    public void onTestSuccess(ITestResult result) {
+      passedNames.add(result.getMethod().getMethodName());
+      passedQualifiers.add(asQualified(result));
+      passedInstances.add(asString.apply(result));
+    }
+
+    @Override
+    public void onTestSkipped(ITestResult result) {
+      skippedNames.add(result.getMethod().getMethodName());
+      skippedQualifiers.add(asQualified(result));
+      skippedInstances.add(asString.apply(result));
+    }
+  }
+}

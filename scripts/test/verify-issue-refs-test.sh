@@ -18,6 +18,20 @@ SCRIPT=$(cd "$(dirname "$0")/../.." && pwd)/scripts/verify-issue-refs.sh
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
 
+# The header above promises these tests reach no network. Promising it is not enough: the script
+# calls "gh api" on its own whenever a pull request number turns up and no reader was given, and
+# two cases here do produce one. So a "gh" that refuses and records the call goes first on PATH.
+# A recorded call fails the run at the end, which turns the promise into a check.
+mkdir -p "$WORK/bin"
+cat > "$WORK/bin/gh" <<SHIM
+#!/bin/sh
+echo "\$*" >> "$WORK/gh-calls"
+exit 1
+SHIM
+chmod +x "$WORK/bin/gh"
+PATH="$WORK/bin:$PATH"
+export PATH
+
 pass=0; fail=0
 
 # Reports one result. $1 is what was tested, $2 is expected, $3 is what happened.
@@ -55,6 +69,39 @@ add() {
 move() {
   mkdir -p "$1/$(dirname "$3")"
   git -C "$1" mv "$2" "$3" && git -C "$1" commit -q -m "Move the file"
+}
+
+# fake_pr_body <text> [expected-pr-number]  -- makes a command that prints <text> as a body.
+#
+# The script under test runs it as "<cmd> <pr-number>". Give the second argument when the test is
+# about WHICH pull request gets read: the reader then prints nothing for any other number, so
+# choosing the wrong pull request fails the test instead of passing it by accident.
+#
+# Leave it out when the test is about the body TEXT. The number is then irrelevant, and pinning it
+# would make an unrelated change to pr_number_of fail a body-matching test.
+fakes=0
+fake_pr_body() {
+  fakes=$((fakes + 1))
+  printf '%s' "$1" > "$WORK/body.$fakes"
+  {
+    printf '#!/bin/sh\n'
+    if [ -n "${2:-}" ]; then
+      printf 'case "$1" in %s) ;; *) exit 1 ;; esac\n' "$2"
+    fi
+    printf 'cat "%s"\n' "$WORK/body.$fakes"
+  } > "$WORK/prbody.$fakes.sh"
+  chmod +x "$WORK/prbody.$fakes.sh"
+  printf '%s' "$WORK/prbody.$fakes.sh"
+}
+
+# merged_pr <repo> <path> <merge-subject>  -- adds a file on a branch and merges it.
+# The commit itself names no issue, so only the merge and the pull request body can prove one.
+merged_pr() {
+  add "$1" README.md "First commit"
+  git -C "$1" checkout -q -b work
+  add "$1" "$2" "Adding a fix"
+  git -C "$1" checkout -q master
+  git -C "$1" merge -q --no-ff -m "$3" work
 }
 
 # Runs the script inside a repository and reduces its output to one word.
@@ -115,11 +162,15 @@ git -C "$r" checkout -q -b some-other-work
 add "$r" src/foo/GammaTest.java "Fixing review comments"
 git -C "$r" checkout -q master
 git -C "$r" merge -q --no-ff -m "Merge pull request #765 from someone/unrelated" some-other-work
-check "a merged PR number is not the issue" "NOT PROVEN" "$(verdict "$r" src/foo/GammaTest.java 765)"
+# Both subjects below do name a pull request, so the script looks for its body. An empty body
+# keeps that lookup offline and leaves the rule being tested as the only thing that decides.
+check "a merged PR number is not the issue" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/GammaTest.java 765 "PR_BODY_CMD=$(fake_pr_body '')")"
 
 # The same rule for a squashed pull request, where GitHub puts the number at the end of the subject.
 r=$(new_repo); add "$r" src/foo/AlphaTest.java "Speed up the parser. (#765)"
-check "a squashed PR number is not the issue" "NOT PROVEN" "$(verdict "$r" src/foo/AlphaTest.java 765)"
+check "a squashed PR number is not the issue" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body '')")"
 
 # The branch still counts, even when the pull request number happens to match the issue number.
 r=$(new_repo)
@@ -270,6 +321,176 @@ printf 'class X { /* GITHUB-765 */ }\n' > "$r/src/foo/OneTest.java"
 git -C "$r" commit -q -am "Cut release-765"
 check "by description still applies the rules" "NOT PROVEN" \
   "$(verdict "$r" src/foo/OneTest.java 765 BY_DESCRIPTION=1)"
+
+
+# --- the pull request body closes the issue ---------------------------------------------------
+# GitHub closes an issue when a pull request body says "Fixes #<n>". The commit and the merge may
+# name nothing: issue #1307 was closed that way, by pull request #1308, whose branch was called
+# "feature/ignore-anonymous-tests". Without this the true reference is lost.
+#
+# The body is read ONLY through the pull request the merge names, so it cannot be any other body.
+
+r=$(new_repo); merged_pr "$r" src/foo/AlphaTest.java "Merge pull request #1308 from someone/feature-x"
+check "the body closes the issue" PROVEN \
+  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765' 1308)")"
+
+r=$(new_repo); merged_pr "$r" src/foo/AlphaTest.java "Merge pull request #1308 from someone/feature-x"
+check "closes counts too" PROVEN \
+  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Closes #765')")"
+
+# GitHub ignores the case of its closing words.
+r=$(new_repo); merged_pr "$r" src/foo/AlphaTest.java "Merge pull request #1308 from someone/feature-x"
+check "an upper case closing word counts" PROVEN \
+  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'FIXES #765')")"
+
+# A squash merge puts the pull request number in the subject instead of making a merge commit.
+r=$(new_repo); add "$r" src/foo/AlphaTest.java "Adding a fix (#1308)"
+check "a squashed subject names the pull request" PROVEN \
+  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Resolves #765' 1308)")"
+
+# --- bodies that must be REJECTED --------------------------------------------------------------
+# A mention is not a claim. These five bodies all hold "765" and none of them says this pull
+# request fixes issue 765.
+for body in 'See #765 for details' \
+            'This is not a fix for #765' \
+            'Fixes #7650' \
+            'Fixes #173' \
+            ''; do
+  r=$(new_repo); merged_pr "$r" src/foo/AlphaTest.java "Merge pull request #1308 from someone/feature-x"
+  check "body <$body> is not provenance" "NOT PROVEN" \
+    "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body "$body")")"
+done
+
+# A closing word must be a whole word. Every body below holds a closing word inside a longer one,
+# and GitHub closes nothing on any of them. "Still unresolved" is ordinary pull request English.
+for body in 'Still unresolved: #765' \
+            'This prefixes #765 onto the name' \
+            'Nothing disclosed #765 here' \
+            'Fixed: #100. Unfixed: #765'; do
+  r=$(new_repo); merged_pr "$r" src/foo/AlphaTest.java "Merge pull request #1308 from someone/feature-x"
+  check "body <$body> is not a closing word" "NOT PROVEN" \
+    "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body "$body")")"
+done
+
+# The pull request number comes from a merge subject GitHub wrote, or from the tail of a squashed
+# subject. A "(#n)" anywhere else names some other pull request, and reading that body would prove
+# nothing about this commit.
+r=$(new_repo)
+add "$r" src/foo/AlphaTest.java "Add a test
+This re-adds coverage lost when we reverted (#1308)."
+check "a (#n) in the body is not this pull request" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765')")"
+
+# When a subject holds two, the one GitHub appended is the last, not the first. The reader below
+# answers only for 1308, so reading #900 instead fails rather than passing.
+r=$(new_repo)
+add "$r" src/foo/BetaTest.java "Revert the change from (#900) (#1308)"
+check "the appended number is the last one" PROVEN \
+  "$(verdict "$r" src/foo/BetaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765' 1308)")"
+
+# The merge subject names the pull request, not the squashed tail of the commit it merged.
+r=$(new_repo)
+add "$r" README.md "First commit"
+git -C "$r" checkout -q -b work
+add "$r" src/foo/GammaTest.java "An earlier squash (#900)"
+git -C "$r" checkout -q master
+git -C "$r" merge -q --no-ff -m "Merge pull request #1308 from someone/work" work
+check "the merge wins over the commit subject" PROVEN \
+  "$(verdict "$r" src/foo/GammaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765' 1308)")"
+
+# No pull request number means no body to read. The command must never run.
+r=$(new_repo); add "$r" src/foo/AlphaTest.java "Adding a fix"
+check "no pull request number, no body" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/AlphaTest.java 765 "PR_BODY_CMD=$(fake_pr_body 'Fixes #765')")"
+
+# A body reader that fails proves nothing. It must not turn into a verdict either way.
+r=$(new_repo); merged_pr "$r" src/foo/AlphaTest.java "Merge pull request #1308 from someone/feature-x"
+check "a failing body reader is not provenance" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/AlphaTest.java 765 PR_BODY_CMD=/nonexistent/reader)"
+
+
+# --- a longer fragment separates two files that end the same way --------------------------------
+# GitHub1131Test.java exists under test/factory and under test/objectfactory, and the two were
+# added by different commits. The refusal tells the caller to pass more of the path, so more of the
+# path has to change the answer.
+
+# Both files are moved away afterwards, so no fragment below still exists in the worktree. That
+# is the real shape: the caller passes a path the file used to have, which is the only case where
+# the suffix rules run at all.
+r=$(new_repo)
+add "$r" alpha/dir/IssueTest.java "Fix #111"
+add "$r" beta/dir/IssueTest.java "Fix #222"
+move "$r" alpha/dir/IssueTest.java kept/alpha/dir/IssueTest.java
+move "$r" beta/dir/IssueTest.java kept/beta/dir/IssueTest.java
+
+# Two segments are still not enough when two files share them.
+check "two shared segments are ambiguous" AMBIGUOUS "$(verdict "$r" dir/IssueTest.java 111)"
+
+# Three segments name one file, and it must be the right one.
+check "three segments pick one file" PROVEN "$(verdict "$r" alpha/dir/IssueTest.java 111)"
+check "three segments pick the right file" "NOT PROVEN" \
+  "$(verdict "$r" alpha/dir/IssueTest.java 222)"
+check "the other file keeps its own commit" PROVEN "$(verdict "$r" beta/dir/IssueTest.java 222)"
+
+# A suffix matches whole path segments. "factory/X.java" is not part of "objectfactory/X.java".
+r=$(new_repo)
+add "$r" src/factory/IssueTest.java "Fix #111"
+add "$r" src/objectfactory/IssueTest.java "Fix #222"
+move "$r" src/factory/IssueTest.java kept/factory/IssueTest.java
+move "$r" src/objectfactory/IssueTest.java kept/objectfactory/IssueTest.java
+check "a suffix starts at a segment" PROVEN "$(verdict "$r" factory/IssueTest.java 111)"
+check "objectfactory is a different file" "NOT PROVEN" "$(verdict "$r" factory/IssueTest.java 222)"
+check "objectfactory keeps its own commit" PROVEN "$(verdict "$r" objectfactory/IssueTest.java 222)"
+
+
+# --- a path with no history must not be answered from its name alone ---------------------------
+# The basename is the weakest possible key: 45 files here are called IssueTest.java. A caller who
+# gives a path is asking about THAT file. If no suffix of it matches, the honest answer is that the
+# file has no history -- not the history of some other file with the same name.
+r=$(new_repo)
+add "$r" src/test/java/test/other/MySample.java "Unrelated work. Fix #999"
+check "a path with no history is not answered by name" "NO COMMIT" \
+  "$(verdict "$r" src/test/java/org/testng/factory/samples/MySample.java 999)"
+
+# A bare name is still answered by name. That is what a bare name asks for.
+r=$(new_repo)
+add "$r" src/foo/LonelyTest.java "Fix #999"
+check "a bare name is answered by name" PROVEN "$(verdict "$r" LonelyTest.java 999)"
+
+# --- the ambiguity refusal must not depend on the file extension -------------------------------
+# The count and the lookup have to see the same paths. A filter on one side made every non-Java
+# file unambiguous, so the first of two matches was returned with no refusal.
+r=$(new_repo)
+add "$r" one/suites/case.xml "Fix #111"
+add "$r" two/suites/case.xml "Fix #222"
+check "two xml files are ambiguous too" AMBIGUOUS "$(verdict "$r" suites/case.xml 111)"
+
+# --- the rename walk-back must match whole segments --------------------------------------------
+# One commit renames two files. The suffix asked for is "graph/IssueTest.java". Matching it inside
+# "dynamicgraph/IssueTest.java" sends the walk down the wrong file's history.
+r=$(new_repo)
+add "$r" a/dyn.java "Fix #222"
+add "$r" b/gra.java "Fix #111"
+mkdir -p "$r/new/dynamicgraph" "$r/new/graph"
+git -C "$r" mv a/dyn.java new/dynamicgraph/IssueTest.java
+git -C "$r" mv b/gra.java new/graph/IssueTest.java
+git -C "$r" commit -q -m "Move both"
+check "the walk-back follows the right file" PROVEN "$(verdict "$r" graph/IssueTest.java 111)"
+check "the walk-back does not follow the other" "NOT PROVEN" \
+  "$(verdict "$r" graph/IssueTest.java 222)"
+
+# --- the evidence printed must be the text that proved it ---------------------------------------
+# "release-765" is not provenance. Printing it as the evidence tells the reader the opposite.
+r=$(new_repo); add "$r" src/foo/AlphaTest.java "Cut release-765 and fix #765"
+out=$(cd "$r" && PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/AlphaTest.java 765 2>&1)
+check "the evidence is the text that proved it" "#765" \
+  "$(printf '%s' "$out" | sed -n 's/^provenance  the introducing commit names it: //p' | tr -d ' ')"
+
+if [ -s "$WORK/gh-calls" ]; then
+  fail=$((fail + 1))
+  printf 'FAIL  the tests reached the network\n      gh was called with:\n'
+  sed 's/^/        /' "$WORK/gh-calls"
+fi
 
 printf '\n%s passed, %s failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

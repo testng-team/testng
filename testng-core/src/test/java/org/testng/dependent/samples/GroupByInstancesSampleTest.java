@@ -1,0 +1,43 @@
+package org.testng.dependent.samples;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Factory;
+import org.testng.annotations.Test;
+
+public class GroupByInstancesSampleTest {
+  private final String m_country;
+  public static List<String> m_log = new ArrayList<>();
+
+  private static void log(String method, String country) {
+    m_log.add(method + "#" + country);
+  }
+
+  @DataProvider
+  public static Object[][] dp() {
+    return new Object[][] {
+      new Object[] {"usa"}, new Object[] {"uk"},
+    };
+  }
+
+  @Factory(dataProvider = "dp")
+  public GroupByInstancesSampleTest(String country) {
+    m_country = country;
+  }
+
+  @Test
+  public void signIn() {
+    log("signIn", m_country);
+  }
+
+  @Test(dependsOnMethods = "signIn")
+  public void signOut() {
+    log("signOut", m_country);
+  }
+
+  @Override
+  public String toString() {
+    return "[GroupByInstancesSampleTest: " + m_country + "]";
+  }
+}

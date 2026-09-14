@@ -288,11 +288,26 @@ public class XMLStringBuffer {
   }
 
   public void addCDATA(@Nullable String content) {
+    m_buffer.append(m_currentIndent);
+    appendCDATA(content);
+    m_buffer.append(EOL);
+  }
+
+  /**
+   * Writes {@code <tag><![CDATA[content]]></tag>} on one line so the element's text is the CDATA
+   * value rather than the pretty-print whitespace around it.
+   */
+  public void addCDATAElement(String tagName, @Nullable String content) {
+    m_buffer.append(m_currentIndent).append("<").append(tagName).append(">");
+    appendCDATA(content);
+    m_buffer.append("</").append(tagName).append(">").append(EOL);
+  }
+
+  private void appendCDATA(@Nullable String content) {
     if (content != null) {
       // Solution from https://coderanch.com/t/455930/java/Remove-control-characters
       content = content.replaceAll("[\\p{Cc}&&[^\\r\\n]]", "");
     }
-    m_buffer.append(m_currentIndent);
     if (content == null) {
       m_buffer.append("<![CDATA[null]]>");
     } else if (!content.contains("]]>")) {
@@ -311,7 +326,6 @@ public class XMLStringBuffer {
         m_buffer.append("<![CDATA[]]]]>").append("<![CDATA[>]]>");
       }
     }
-    m_buffer.append(EOL);
   }
 
   /** @return The StringBuffer used to create the document. */
@@ -319,9 +333,36 @@ public class XMLStringBuffer {
     return m_buffer;
   }
 
+  // XmlCharFilteringWriter.isAllowed spells this same set out character by character, for the
+  // streaming path; the two have to be edited together.
   private static final Pattern INVALID_XML_CHARS =
       Pattern.compile(
           "[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
+
+  /**
+   * Appends the XML of another buffer to this one, a slice at a time once it has spilled to disk.
+   *
+   * <p>A buffer that never reached that size is still held whole, since that is where it already
+   * is; what this avoids is reading a spilled one back into a single {@code String}, which is what
+   * a buffer backed by a temporary file exists not to do.
+   *
+   * <p>This is {@code addString(other.toXML())} with the {@code String} taken out of the middle:
+   * {@link XmlCharFilteringWriter} drops the same characters a slice at a time, where {@link
+   * #toXML()} reads the whole buffer back and copies it again for its regular expression. What is
+   * appended is otherwise identical, the tag stack of {@code other} included -- neither this nor
+   * {@code toXML()} closes what is still open on it.
+   *
+   * <p>Note this drops those characters from what is appended, not from the buffer appended to:
+   * whatever was written to this buffer directly is left as it was, and so is anything written
+   * after.
+   *
+   * @param other The buffer to append. Its content is left as it is.
+   */
+  public void addBuffer(XMLStringBuffer other) {
+    XmlCharFilteringWriter writer = new XmlCharFilteringWriter(m_buffer);
+    other.m_buffer.toWriter(writer);
+    writer.close();
+  }
 
   /** @return The String representation of the XML for this XMLStringBuffer. */
   public String toXML() {
