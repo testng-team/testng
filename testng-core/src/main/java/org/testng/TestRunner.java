@@ -52,6 +52,7 @@ import org.testng.internal.TestMethodComparator;
 import org.testng.internal.TestMethodContainer;
 import org.testng.internal.TestNGClassFinder;
 import org.testng.internal.TestNGMethodFinder;
+import org.testng.internal.TestResult;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -60,6 +61,7 @@ import org.testng.internal.invokers.ConfigMethodArguments;
 import org.testng.internal.invokers.IInvoker;
 import org.testng.internal.invokers.Invoker;
 import org.testng.internal.objects.IObjectDispenser;
+import org.testng.internal.thread.ThreadTimeoutException;
 import org.testng.thread.IThreadWorkerFactory;
 import org.testng.thread.IWorker;
 import org.testng.util.Strings;
@@ -147,6 +149,15 @@ public class TestRunner
   private final IResultMap m_failedTests = new ResultMap();
   private final IResultMap m_failedButWithinSuccessPercentageTests = new ResultMap();
   private final IResultMap m_skippedTests = new ResultMap();
+
+  private final Object resultLock = new Object();
+  private final IdentityHashMap<ITestNGMethod, Integer> inFlightInvocations =
+      new IdentityHashMap<>();
+  private final Set<ITestResult> admittedResults =
+      Collections.newSetFromMap(new IdentityHashMap<>());
+  private volatile boolean resultsFrozen;
+  private volatile boolean hasInterceptedMethods;
+  private volatile ITestNGMethod[] interceptedTestMethods = new ITestNGMethod[0];
 
   private final RunInfo m_runInfo = new RunInfo(this::getCurrentXmlTest);
 
@@ -923,6 +934,8 @@ public class TestRunner
     this.m_classMethodMap = new ClassMethodMap(result, null);
 
     ITestNGMethod[] resultArray = result.toArray(new ITestNGMethod[0]);
+    interceptedTestMethods = resultArray;
+    hasInterceptedMethods = true;
 
     // Check if an interceptor had altered the effective test method count. If yes, then we need to
     // update our configurationGroupMethod object with that information.
@@ -1167,9 +1180,252 @@ public class TestRunner
     return m_skippedConfigurations;
   }
 
+  /**
+   * Fail each invocation that has no result yet. Then reject later results from a cancelled worker.
+   * Admitted results go into the maps here so reports can see them while a listener is still
+   * running.
+   *
+   * @param timeOut the suite time-out in milliseconds
+   * @return the timeout failures that were added
+   */
+  List<ITestResult> addTimeoutFailuresForUnfinishedInvocations(long timeOut) {
+    List<ITestResult> created = new ArrayList<>();
+    synchronized (resultLock) {
+      ITestNGMethod[] methods = methodsEligibleForTimeoutReporting();
+      for (ITestNGMethod method : methods) {
+        int missing = unfinishedInvocationCount(method);
+        for (int i = 0; i < missing; i++) {
+          ITestResult failure = createTimeoutFailure(method, timeOut);
+          m_failedTests.addResult(failure);
+          created.add(failure);
+        }
+      }
+      if (m_endInstant == null) {
+        m_endInstant = Instant.now();
+      }
+      resultsFrozen = true;
+      publishAdmittedResults();
+    }
+    return created;
+  }
+
+  public boolean resultsFrozen() {
+    return resultsFrozen;
+  }
+
+  /**
+   * Records that a test invocation has started and has no result yet. {@link
+   * #addTimeoutFailuresForUnfinishedInvocations} reads this count.
+   */
+  public void markInvocationStarted(ITestNGMethod method) {
+    synchronized (resultLock) {
+      if (resultsFrozen) {
+        return;
+      }
+      Integer n = inFlightInvocations.get(method);
+      inFlightInvocations.put(method, n == null ? 1 : n + 1);
+    }
+  }
+
+  /**
+   * Records that a test invocation has a result, including after a freeze. An {@code @AfterMethod}
+   * that still runs is not an unfinished invocation.
+   */
+  public void markInvocationFinished(ITestNGMethod method) {
+    synchronized (resultLock) {
+      Integer n = inFlightInvocations.get(method);
+      if (n == null) {
+        return;
+      }
+      if (n <= 1) {
+        inFlightInvocations.remove(method);
+      } else {
+        inFlightInvocations.put(method, n - 1);
+      }
+    }
+  }
+
+  /**
+   * Decides under {@code resultLock} whether test listeners may run. A finished invocation leaves
+   * in-flight accounting in that same step so a freeze cannot invent a second outcome. Callbacks
+   * run after the lock is released so a slow listener cannot delay a freeze. Classification waits
+   * until those callbacks finish, so a listener can still change the status.
+   *
+   * @return {@code false} if results are frozen
+   */
+  public boolean notifyTestListenersIfNotFrozen(
+      ITestResult tr, List<ITestListener> listeners, List<ITestListener> extraListeners) {
+    boolean finished = tr.getStatus() != ITestResult.STARTED;
+    synchronized (resultLock) {
+      if (resultsFrozen) {
+        return false;
+      }
+      if (finished) {
+        admitFinishedResult(tr);
+      }
+    }
+    TestListenerHelper.runTestListeners(tr, listeners);
+    TestListenerHelper.runTestListeners(tr, extraListeners);
+    if (finished) {
+      classifyAdmittedResult(tr);
+    }
+    return true;
+  }
+
+  /**
+   * Marks a finished invocation as admitted under {@code resultLock}. Timeout finalization then
+   * sees the invocation and does not add a synthetic failure for it.
+   */
+  private void admitFinishedResult(ITestResult tr) {
+    ITestNGMethod method = tr.getMethod();
+    Integer n = inFlightInvocations.get(method);
+    if (n != null) {
+      if (n <= 1) {
+        inFlightInvocations.remove(method);
+      } else {
+        inFlightInvocations.put(method, n - 1);
+      }
+    }
+    admittedResults.add(tr);
+  }
+
+  /**
+   * Puts each admitted result into the map for its current status. Reports can then see it while a
+   * listener is still running. {@link #classifyAdmittedResult} still runs after that listener and
+   * can move the result if the status changed.
+   */
+  private void publishAdmittedResults() {
+    for (ITestResult result : admittedResults) {
+      placeClassifiedResult(result);
+    }
+  }
+
+  /**
+   * Places an admitted result into the map that matches its status after listeners run. This still
+   * runs after a freeze, because admission already happened.
+   */
+  private void classifyAdmittedResult(ITestResult tr) {
+    synchronized (resultLock) {
+      if (!admittedResults.remove(tr)) {
+        return;
+      }
+      placeClassifiedResult(tr);
+    }
+  }
+
+  /**
+   * Records a result that listener admission did not classify. Does not change in-flight counts.
+   */
+  public void classifyIfNeeded(ITestResult tr) {
+    synchronized (resultLock) {
+      if (resultsFrozen) {
+        return;
+      }
+      if (recordedContains(tr)) {
+        return;
+      }
+      if (admittedResults.remove(tr)) {
+        placeClassifiedResult(tr);
+        return;
+      }
+      int status = tr.getStatus();
+      if (status == ITestResult.STARTED || status == ITestResult.CREATED) {
+        // IHookable skipped the callback while testng.ignore.callback.skip is set.
+        tr.setStatus(ITestResult.FAILURE);
+      }
+      placeClassifiedResult(tr);
+    }
+  }
+
+  private boolean recordedContains(ITestResult tr) {
+    return m_passedTests.getAllResults().contains(tr)
+        || m_failedTests.getAllResults().contains(tr)
+        || m_skippedTests.getAllResults().contains(tr)
+        || m_failedButWithinSuccessPercentageTests.getAllResults().contains(tr);
+  }
+
+  private void placeClassifiedResult(ITestResult tr) {
+    m_passedTests.removeResult(tr);
+    m_failedTests.removeResult(tr);
+    m_skippedTests.removeResult(tr);
+    m_failedButWithinSuccessPercentageTests.removeResult(tr);
+    switch (tr.getStatus()) {
+      case ITestResult.SUCCESS:
+        m_passedTests.addResult(tr);
+        break;
+      case ITestResult.SKIP:
+        m_skippedTests.addResult(tr);
+        break;
+      case ITestResult.FAILURE:
+        m_failedTests.addResult(tr);
+        break;
+      case ITestResult.SUCCESS_PERCENTAGE_FAILURE:
+        m_failedButWithinSuccessPercentageTests.addResult(tr);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private ITestNGMethod[] methodsEligibleForTimeoutReporting() {
+    if (hasInterceptedMethods) {
+      return interceptedTestMethods;
+    }
+    return getAllTestMethods();
+  }
+
+  private static int expectedInvocationCount(ITestNGMethod method) {
+    int perRow = Math.max(1, method.getParameterInvocationCount());
+    return Math.max(1, method.getInvocationCount() * perRow);
+  }
+
+  private int unfinishedInvocationCount(ITestNGMethod method) {
+    int recorded = recordedResultCount(method) + pendingAdmittedCount(method);
+    int missing = expectedInvocationCount(method) - recorded;
+    if (missing <= 0 && method.hasMoreInvocation()) {
+      missing = 1;
+    }
+    missing = Math.max(0, missing);
+    Integer inFlight = inFlightInvocations.get(method);
+    int running = inFlight == null ? 0 : inFlight;
+    return Math.max(missing, running);
+  }
+
+  /** Builds a timeout failure result. The caller registers it on {@code m_failedTests}. */
+  private ITestResult createTimeoutFailure(ITestNGMethod method, long timeOut) {
+    ThreadTimeoutException exception = new ThreadTimeoutException(method, timeOut);
+    ITestResult result = TestResult.newTestResultWithCauseAs(method, this, exception);
+    result.setStatus(ITestResult.FAILURE);
+    return result;
+  }
+
+  private int recordedResultCount(ITestNGMethod method) {
+    return getPassedTests(method).size()
+        + getFailedTests(method).size()
+        + getSkippedTests(method).size()
+        + m_failedButWithinSuccessPercentageTests.getResults(method).size();
+  }
+
+  // Identity on purpose: in-flight accounting keys methods by instance, not equals.
+  @SuppressWarnings("ReferenceEquality")
+  private int pendingAdmittedCount(ITestNGMethod method) {
+    int pending = 0;
+    for (ITestResult result : admittedResults) {
+      if (result.getMethod() == method) {
+        pending++;
+      }
+    }
+    return pending;
+  }
+
   @Override
   public void addPassedTest(ITestNGMethod tm, ITestResult tr) {
-    m_passedTests.addResult(tr);
+    synchronized (resultLock) {
+      if (resultsFrozen) {
+        return;
+      }
+      m_passedTests.addResult(tr);
+    }
   }
 
   @Override
@@ -1189,7 +1445,12 @@ public class TestRunner
 
   @Override
   public void addSkippedTest(ITestNGMethod tm, ITestResult tr) {
-    m_skippedTests.addResult(tr);
+    synchronized (resultLock) {
+      if (resultsFrozen) {
+        return;
+      }
+      m_skippedTests.addResult(tr);
+    }
   }
 
   @Override
@@ -1223,10 +1484,15 @@ public class TestRunner
   }
 
   private void logFailedTest(ITestResult tr, boolean withinSuccessPercentage) {
-    if (withinSuccessPercentage) {
-      m_failedButWithinSuccessPercentageTests.addResult(tr);
-    } else {
-      m_failedTests.addResult(tr);
+    synchronized (resultLock) {
+      if (resultsFrozen) {
+        return;
+      }
+      if (withinSuccessPercentage) {
+        m_failedButWithinSuccessPercentageTests.addResult(tr);
+      } else {
+        m_failedTests.addResult(tr);
+      }
     }
   }
 

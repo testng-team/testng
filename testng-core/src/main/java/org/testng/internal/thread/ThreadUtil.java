@@ -35,6 +35,23 @@ public class ThreadUtil {
       List<? extends Runnable> tasks,
       int threadPoolSize,
       long timeout) {
+    executeAndWait(configuration, name, tasks, threadPoolSize, timeout);
+  }
+
+  /**
+   * Runs the tasks in parallel and waits for them.
+   *
+   * @param tasks the list of tasks to be run
+   * @param threadPoolSize the size of the parallel threads to be used to execute the tasks
+   * @param timeout a maximum timeout to wait for tasks finalization
+   * @return {@code false} if the waiting thread was interrupted, otherwise {@code true}
+   */
+  public static boolean executeAndWait(
+      IConfiguration configuration,
+      String name,
+      List<? extends Runnable> tasks,
+      int threadPoolSize,
+      long timeout) {
 
     Utils.log(
         "ThreadUtil",
@@ -71,9 +88,11 @@ public class ThreadUtil {
       } else {
         pooledExecutor.invokeAll(callables);
       }
+      return true;
     } catch (InterruptedException handled) {
       Logger.getLogger(ThreadUtil.class).error(handled.getMessage(), handled);
       Thread.currentThread().interrupt();
+      return false;
     } finally {
       pooledExecutor.shutdown();
     }

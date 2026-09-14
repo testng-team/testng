@@ -46,6 +46,7 @@ import org.testng.SuiteRunner;
 import org.testng.TestException;
 import org.testng.TestNGException;
 import org.testng.TestNotInvokedException;
+import org.testng.TestRunner;
 import org.testng.collections.CollectionUtils;
 import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.BaseTestMethod;
@@ -354,9 +355,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 m_notifier.getTestListeners(), m_configuration.getListenerComparator())
             : ListenerOrderDeterminer.order(
                 m_notifier.getTestListeners(), m_configuration.getListenerComparator());
+    List<ITestListener> exitCode = Collections.singletonList(m_notifier.getExitCodeListener());
+    if (m_testContext instanceof TestRunner) {
+      ((TestRunner) m_testContext).notifyTestListenersIfNotFrozen(tr, listeners, exitCode);
+      return;
+    }
     TestListenerHelper.runTestListeners(tr, listeners);
-    TestListenerHelper.runTestListeners(
-        tr, Collections.singletonList(m_notifier.getExitCodeListener()));
+    TestListenerHelper.runTestListeners(tr, exitCode);
   }
 
   private Collection<IDataProviderListener> dataProviderListeners() {
@@ -679,7 +684,32 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return result;
   }
 
+  private boolean resultsFrozen() {
+    return m_testContext instanceof TestRunner && ((TestRunner) m_testContext).resultsFrozen();
+  }
+
+  private void markInvocationStarted(ITestNGMethod method) {
+    if (m_testContext instanceof TestRunner) {
+      ((TestRunner) m_testContext).markInvocationStarted(method);
+    }
+  }
+
+  private void markInvocationFinished(ITestNGMethod method) {
+    if (m_testContext instanceof TestRunner) {
+      ((TestRunner) m_testContext).markInvocationFinished(method);
+    }
+  }
+
   private void collectResults(ITestNGMethod testMethod, ITestResult result) {
+    if (m_testContext instanceof TestRunner) {
+      // Admission already left in-flight. Record leftovers that listeners did not classify.
+      ((TestRunner) m_testContext).classifyIfNeeded(result);
+      return;
+    }
+    markInvocationFinished(testMethod);
+    if (resultsFrozen()) {
+      return;
+    }
     // Collect the results
     int status = result.getStatus();
     if (ITestResult.SUCCESS == status) {
@@ -858,6 +888,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               : m_configuration.getHookable();
 
       boolean willfullyIgnored = false;
+      markInvocationStarted(arguments.getTestMethod());
       if (MethodHelper.calculateTimeOut(arguments.getTestMethod()) <= 0) {
         if (hookableInstance != null) {
           willfullyIgnored =
