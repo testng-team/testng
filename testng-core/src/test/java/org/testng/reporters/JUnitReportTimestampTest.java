@@ -23,20 +23,25 @@ public class JUnitReportTimestampTest extends SimpleBaseTest {
 
   private static final String TIMEZONE_PROPERTY = "testng.timezone";
   private static final String HONOLULU = "Pacific/Honolulu";
+  private static final String GMT = "GMT";
   private static final long FIXED_MILLIS = 1_700_000_000_000L;
 
   @Test
   public void formattedTimeUsesTheConfiguredTimezoneRatherThanGmt() {
     String previous = System.getProperty(TIMEZONE_PROPERTY);
+    TimeZone previousDefault = TimeZone.getDefault();
     try {
+      // Force GMT so a fallback to TimeZone.getDefault cannot pass as Honolulu.
+      TimeZone.setDefault(TimeZone.getTimeZone(GMT));
       System.setProperty(TIMEZONE_PROPERTY, HONOLULU);
       String formatted =
           TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(
               FIXED_MILLIS, XMLReporterConfig.FMT_DEFAULT);
 
       assertThat(formatted).isEqualTo(formatInZone(FIXED_MILLIS, HONOLULU));
-      assertThat(formatted).isNotEqualTo(formatInZone(FIXED_MILLIS, "GMT"));
+      assertThat(formatted).isNotEqualTo(formatInZone(FIXED_MILLIS, GMT));
     } finally {
+      TimeZone.setDefault(previousDefault);
       restoreTimezone(previous);
     }
   }
@@ -44,7 +49,9 @@ public class JUnitReportTimestampTest extends SimpleBaseTest {
   @Test
   public void junitReportReporterWritesATimezoneAwareTimestamp() throws Exception {
     String previous = System.getProperty(TIMEZONE_PROPERTY);
+    TimeZone previousDefault = TimeZone.getDefault();
     try {
+      TimeZone.setDefault(TimeZone.getTimeZone(GMT));
       System.setProperty(TIMEZONE_PROPERTY, HONOLULU);
       long before = System.currentTimeMillis();
       Path outputDir = TestHelper.createRandomDirectory();
@@ -61,10 +68,12 @@ public class JUnitReportTimestampTest extends SimpleBaseTest {
       assertThat(report).exists();
 
       String timestamp = timestampAttribute(report);
-      long parsedMillis = parseMillisInZone(timestamp, HONOLULU);
+      long parsedMillis = parseMillis(timestamp);
       assertThat(parsedMillis).isBetween(before - 1_000L, after + 1_000L);
-      assertThat(timestamp).isNotEqualTo(formatInZone(parsedMillis, "GMT"));
+      assertThat(timestamp).isEqualTo(formatInZone(parsedMillis, HONOLULU));
+      assertThat(timestamp).isNotEqualTo(formatInZone(parsedMillis, GMT));
     } finally {
+      TimeZone.setDefault(previousDefault);
       restoreTimezone(previous);
     }
   }
@@ -81,10 +90,8 @@ public class JUnitReportTimestampTest extends SimpleBaseTest {
   }
 
   @SuppressWarnings("JavaUtilDate")
-  private static long parseMillisInZone(String timestamp, String zoneId) throws ParseException {
-    SimpleDateFormat format = new SimpleDateFormat(XMLReporterConfig.FMT_DEFAULT);
-    format.setTimeZone(TimeZone.getTimeZone(zoneId));
-    return format.parse(timestamp).getTime();
+  private static long parseMillis(String timestamp) throws ParseException {
+    return new SimpleDateFormat(XMLReporterConfig.FMT_DEFAULT).parse(timestamp).getTime();
   }
 
   private static String timestampAttribute(File report) throws Exception {
