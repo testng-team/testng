@@ -1182,6 +1182,8 @@ public class TestRunner
 
   /**
    * Fail each invocation that has no result yet. Then reject later results from a cancelled worker.
+   * Admitted results go into the maps here so reports can see them while a listener is still
+   * running.
    *
    * @param timeOut the suite time-out in milliseconds
    * @return the timeout failures that were added
@@ -1202,6 +1204,7 @@ public class TestRunner
         m_endInstant = Instant.now();
       }
       resultsFrozen = true;
+      publishAdmittedResults();
     }
     return created;
   }
@@ -1284,6 +1287,17 @@ public class TestRunner
       }
     }
     admittedResults.add(tr);
+  }
+
+  /**
+   * Puts each admitted result into the map for its current status. Reports can then see it while a
+   * listener is still running. {@link #classifyAdmittedResult} still runs after that listener and
+   * can move the result if the status changed.
+   */
+  private void publishAdmittedResults() {
+    for (ITestResult result : admittedResults) {
+      placeClassifiedResult(result);
+    }
   }
 
   /**

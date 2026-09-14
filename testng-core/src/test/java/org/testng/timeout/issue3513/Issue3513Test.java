@@ -12,8 +12,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
+import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
+import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGListener;
@@ -251,6 +253,53 @@ public class Issue3513Test extends SimpleBaseTest {
   }
 
   /**
+   * A terminal result admitted before freeze must still appear in the reports if its listener is
+   * still blocked. Timeout finalization and report generation must not drop it or invent a second
+   * outcome.
+   */
+  @Test(description = "GITHUB-3513")
+  public void aBlockingOnTestSuccessStillAppearsInReports() throws Exception {
+    File outputDir = createDirInTempDir("issue3513-blocking-success-reports");
+    XmlSuite suite = createXmlSuite("issue3513");
+    suite.setParallel(XmlSuite.ParallelMode.TESTS);
+    suite.setThreadCount(2);
+    suite.setTimeOut(Long.toString(SUITE_TIME_OUT_MILLIS));
+    createXmlTest(suite, "fast-test", FastSample.class);
+    createXmlTest(suite, "stubborn-test", StubbornSample.class);
+
+    TestNG testng = create(suite);
+    testng.setUseDefaultListeners(true);
+    testng.setOutputDirectory(outputDir.getAbsolutePath());
+    BlockingSuccessListener blocking = new BlockingSuccessListener();
+    TimeoutFailureGate gate = new TimeoutFailureGate();
+    ReportSnapshot snapshot = new ReportSnapshot();
+    testng.addListener((ITestNGListener) blocking);
+    testng.addListener((ITestNGListener) gate);
+    testng.addListener((ITestNGListener) snapshot);
+
+    Thread runner = new Thread(testng::run, "issue3513-blocking-success-reports");
+    runner.start();
+    try {
+      assertThat(blocking.entered.await(5, TimeUnit.SECONDS)).isTrue();
+      assertThat(gate.stubbornFailed.await(2, TimeUnit.SECONDS)).isTrue();
+      assertThat(snapshot.generated.await(10, TimeUnit.SECONDS)).isTrue();
+      runner.join(10_000);
+      assertThat(runner.isAlive()).isFalse();
+      assertThat(blocking.release.getCount()).isEqualTo(1L);
+      assertThat(snapshot.passedNames).containsExactly("fast");
+      assertThat(snapshot.failedNames).contains("stubborn").doesNotContain("fast");
+      assertReportsContainPassedMethod(outputDir, "fast");
+      assertReportsContainFailedMethod(outputDir, "stubborn", true);
+    } finally {
+      blocking.release.countDown();
+      runner.join(10_000);
+    }
+
+    assertThat(snapshot.passedNames).containsExactly("fast");
+    assertThat(snapshot.failedNames).contains("stubborn").doesNotContain("fast");
+  }
+
+  /**
    * A terminal listener may change {@code ITestResult} status. The context must keep the result
    * only in the category that matches that new status.
    */
@@ -358,6 +407,15 @@ public class Issue3513Test extends SimpleBaseTest {
     }
   }
 
+  private static void assertReportsContainPassedMethod(File outputDir, String methodName)
+      throws IOException {
+    File results = new File(outputDir, RuntimeBehavior.FILE_NAME);
+    assertThat(results).exists();
+    assertThat(Files.readString(results.toPath()))
+        .contains("name=\"" + methodName + "\"")
+        .contains("status=\"PASS\"");
+  }
+
   private static final class Run {
     private final TestNG testng;
     private final TestListenerAdapter tla;
@@ -444,6 +502,33 @@ public class Issue3513Test extends SimpleBaseTest {
       }
       stubborn = result;
       stubbornFailed.countDown();
+    }
+  }
+
+  /**
+   * Captures suite result maps when reporters run. That is the window after freeze and before a
+   * blocked terminal listener returns.
+   */
+  private static final class ReportSnapshot implements IReporter {
+    private final CountDownLatch generated = new CountDownLatch(1);
+    private final List<String> passedNames = new CopyOnWriteArrayList<>();
+    private final List<String> failedNames = new CopyOnWriteArrayList<>();
+
+    @Override
+    public void generateReport(
+        List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+      for (ISuite suite : suites) {
+        for (ISuiteResult result : suite.getResults().values()) {
+          ITestContext context = result.getTestContext();
+          for (ITestResult passed : context.getPassedTests().getAllResults()) {
+            passedNames.add(passed.getName());
+          }
+          for (ITestResult failed : context.getFailedTests().getAllResults()) {
+            failedNames.add(failed.getName());
+          }
+        }
+      }
+      generated.countDown();
     }
   }
 }
