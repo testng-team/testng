@@ -11,12 +11,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * shape of the GITHUB-1333 reproducer.
  *
  * <p>The nearest existing recorder is {@code
- * test.thread.parallelization.issue1773.LogGatheringListener}, which is keyed by {@code <test>}
- * name as well. It is not reused here because it carries a second dimension per class that this
- * test has no use for, and because its innermost set is a plain {@link java.util.HashSet} written
- * outside the enclosing map's atomic region: under the bug being reproduced the invocations of one
- * {@code <test>} run on different threads, which is precisely when that set stops being safe to
- * write.
+ * org.testng.concurrency.samples.parallelization.issue1773.LogGatheringListener}, which is keyed by
+ * {@code <test>} name as well. It is not reused here because it carries a second dimension per
+ * class that this test has no use for, and because its innermost set is a plain {@link
+ * java.util.HashSet} written outside the enclosing map's atomic region: under the bug being
+ * reproduced the invocations of one {@code <test>} run on different threads, which is precisely
+ * when that set stops being safe to write.
  */
 public class ThreadIdRecorder {
 

@@ -24,9 +24,9 @@ import test.thread.issue3066.Issue3066ThreadPoolExecutor;
 import test.thread.issue3066.TestClassSample;
 
 /**
- * The command line half of {@code test.thread.CustomExecutorServiceFactoryTest}, which stays in
- * {@code testng-core} for the cases that drive the Java API. These are the only tests covering the
- * {@code -threadpoolfactoryclass} and {@code -suitethreadpoolsize} options end to end.
+ * The command line half of {@code org.testng.concurrency.CustomExecutorServiceFactoryTest}, which
+ * stays in {@code testng-core} for the cases that drive the Java API. These are the only tests
+ * covering the {@code -threadpoolfactoryclass} and {@code -suitethreadpoolsize} options end to end.
  */
 public class CustomExecutorServiceFactoryCommandLineTest extends SimpleBaseTest {
 

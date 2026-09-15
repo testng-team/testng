@@ -1,19 +1,19 @@
 package org.testng.priority;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static test.thread.parallelization.TestNgRunStateTracker.EventLog;
-import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteLevelEventLogs;
-import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteListenerStartEventLogs;
-import static test.thread.parallelization.TestNgRunStateTracker.getAllTestLevelEventLogs;
-import static test.thread.parallelization.TestNgRunStateTracker.getAllTestMethodLevelEventLogs;
-import static test.thread.parallelization.TestNgRunStateTracker.getSuiteLevelEventLogsForSuite;
-import static test.thread.parallelization.TestNgRunStateTracker.getTestLevelEventLogsForSuite;
-import static test.thread.parallelization.TestNgRunStateTracker.getTestLevelEventLogsForTest;
-import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerFinishEventLog;
-import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartEventLog;
-import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForSuite;
-import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForTest;
-import static test.thread.parallelization.TestNgRunStateTracker.reset;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.EventLog;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.getAllSuiteLevelEventLogs;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.getAllSuiteListenerStartEventLogs;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.getAllTestLevelEventLogs;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.getAllTestMethodLevelEventLogs;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.getSuiteLevelEventLogsForSuite;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.getTestLevelEventLogsForSuite;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.getTestLevelEventLogsForTest;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.getTestListenerFinishEventLog;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.getTestListenerStartEventLog;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForSuite;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForTest;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.reset;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,13 +22,13 @@ import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.concurrency.samples.parallelization.BaseParallelizationTest;
+import org.testng.concurrency.samples.parallelization.TestNgRunStateListener;
 import org.testng.log4testng.Logger;
 import org.testng.priority.samples.parallel.HighPriorityTestSample;
 import org.testng.priority.samples.parallel.LowPriorityTestSample;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-import test.thread.parallelization.BaseParallelizationTest;
-import test.thread.parallelization.TestNgRunStateListener;
 
 public class EfficientPriorityParallelizationTest extends BaseParallelizationTest {
   private static final Logger log = Logger.getLogger(EfficientPriorityParallelizationTest2.class);

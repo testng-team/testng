@@ -8,7 +8,7 @@
 
   <test name="Test2-2">
     <classes>
-      <class name="test.thread.Sample2"/>
+      <class name="org.testng.concurrency.samples.Sample2"/>
     </classes>
   </test>
 </suite>

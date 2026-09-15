@@ -108,19 +108,21 @@
       <class name="test.mannotation.MAnnotationSampleTest" />
       <class name="test.mannotation.MAnnotation2SampleTest" />
       <class name="test.mannotation.issue1976.IssueTest" />
-      <class name="test.thread.FactoryTest" />
-      <class name="test.thread.CustomExecutorServiceFactoryTest"/>
-      <class name="test.thread.SharedThreadPoolTest"/>
-      <class name="test.thread.issue2361.IssueTest"/>
-      <class name="test.thread.SequentialTest" />
-      <class name="test.thread.ParallelTestTest" />
-      <class name="test.thread.DataProviderThreadPoolSizeTest" />
-      <class name="test.thread.MultiThreadedDependentTest" />
-      <class name="test.thread.TrueParallelTest" />
+      <class name="org.testng.concurrency.FactoryTest" />
+      <class name="org.testng.concurrency.CustomExecutorServiceFactoryTest"/>
+      <class name="org.testng.concurrency.SharedThreadPoolTest"/>
+      <class name="org.testng.concurrency.issue2361.IssueTest"/>
+      <class name="org.testng.concurrency.SequentialTest" />
+      <class name="org.testng.concurrency.SingleThreadForParallelMethodsTest"/>
+      <class name="org.testng.concurrency.ThreadCountSuiteTest"/>
+      <class name="org.testng.concurrency.ParallelTestTest" />
+      <class name="org.testng.concurrency.DataProviderThreadPoolSizeTest" />
+      <class name="org.testng.concurrency.MultiThreadedDependentTest" />
+      <class name="org.testng.concurrency.TrueParallelTest" />
       <class name="org.testng.reflect.ExcludeSyntheticMethodsFromTemplateCallsTest"/>
       <class name="test.cli.CliTest"/>
       <class name="test.cli.github2974.OverrideGroupsCliTest"/>
-      <class name="test.thread.ParallelSuiteTest"/>
+      <class name="org.testng.concurrency.ParallelSuiteTest"/>
       <class name="test.simple.IncludedExcludedTest" />
       <class name="test.reports.ReportTest" />
       <class name="test.reports.XmlReporterTest"/>
@@ -249,9 +251,9 @@
       </run>
     </groups>
     <classes>
-      <class name="test.thread.ThreadPoolSizeTest" />
-      <class name="test.thread.ThreadPoolSizeWithTimeOutTest" />
-      <class name="test.thread.ThreadTest" />
+      <class name="org.testng.concurrency.ThreadPoolSizeTest" />
+      <class name="org.testng.concurrency.ThreadPoolSizeWithTimeOutTest" />
+      <class name="org.testng.concurrency.ThreadTest" />
     </classes>
   </test>
 
@@ -931,19 +933,19 @@
 
   <test name = "Parallelization">
     <classes>
-      <class name="test.thread.parallelization.ParallelByMethodsTestCase1Scenario1"/>
-      <class name="test.thread.parallelization.ParallelByMethodsTestCase1Scenario2"/>
-      <class name="test.thread.parallelization.ParallelByMethodsTestCase2Scenario1"/>
-      <class name="test.thread.parallelization.ParallelByMethodsTestCase2Scenario2"/>
-      <class name="test.thread.parallelization.ParallelByMethodsTestCase3Scenario1"/>
-      <class name="test.thread.parallelization.ParallelByMethodsTestCase3Scenario2"/>
-      <class name="test.thread.parallelization.ParallelByMethodsTestCase4Scenario1"/>
-      <class name="test.thread.parallelization.ParallelByMethodsTestCase5Scenario1"/>
-      <class name="test.thread.parallelization.ParallelByMethodsTestCase5Scenario2"/>
-      <class name="test.thread.parallelization.ParallelByMethodsTestCase6Scenario1"/>
-      <class name="test.thread.parallelization.ParallelByMethodsTestCase7Scenario1"/>
-      <class name="test.thread.parallelization.ParallelByMethodsTestCase7Scenario2"/>
-      <class name="test.thread.parallelization.ParallelByMethodsTestCase8Scenario1"/>
+      <class name="org.testng.concurrency.parallelization.ParallelByMethodsTestCase1Scenario1"/>
+      <class name="org.testng.concurrency.parallelization.ParallelByMethodsTestCase1Scenario2"/>
+      <class name="org.testng.concurrency.parallelization.ParallelByMethodsTestCase2Scenario1"/>
+      <class name="org.testng.concurrency.parallelization.ParallelByMethodsTestCase2Scenario2"/>
+      <class name="org.testng.concurrency.parallelization.ParallelByMethodsTestCase3Scenario1"/>
+      <class name="org.testng.concurrency.parallelization.ParallelByMethodsTestCase3Scenario2"/>
+      <class name="org.testng.concurrency.parallelization.ParallelByMethodsTestCase4Scenario1"/>
+      <class name="org.testng.concurrency.parallelization.ParallelByMethodsTestCase5Scenario1"/>
+      <class name="org.testng.concurrency.parallelization.ParallelByMethodsTestCase5Scenario2"/>
+      <class name="org.testng.concurrency.parallelization.ParallelByMethodsTestCase6Scenario1"/>
+      <class name="org.testng.concurrency.parallelization.ParallelByMethodsTestCase7Scenario1"/>
+      <class name="org.testng.concurrency.parallelization.ParallelByMethodsTestCase7Scenario2"/>
+      <class name="org.testng.concurrency.parallelization.ParallelByMethodsTestCase8Scenario1"/>
     </classes>
   </test>
 
@@ -1006,7 +1008,7 @@
 
   <test name="threadAffinity">
     <classes>
-      <class name="test.thread.parallelization.ThreadAffinityTest"/>
+      <class name="org.testng.concurrency.parallelization.ThreadAffinityTest"/>
     </classes>
   </test>
 
