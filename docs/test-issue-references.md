@@ -197,6 +197,60 @@ the other asserts two, so at least one is wrong. Moving them under `samples` wou
 permanent and invisible, so phase 5 deletes them. `leftovers.sh` now reports this shape, because the
 suspect sweep in the plan only looks at classes named `*Test`.
 
+## Verified in phase 6
+
+<!-- vale off -->
+
+| Ref | Issue title on GitHub | Provenance | Timeline |
+| --- | --- | --- | --- |
+| `GITHUB-1066` | Regression is in priority. It broke parallel mode | "Add test for #1066: Priority does not honor single threaded class" | **no link** |
+| `GITHUB-188` | suite parallel="methods" does not work when there are multiple <test> tags in the testng.xml | "Support parallelism at suite level. Closes #188" | links commit |
+| `GITHUB-2361` | No way to enforce @Test(singleThreaded = true) when test defined in base class | "Streamline honoring of “singleThreaded” attribute. Closes #2361" | links commit |
+| `GITHUB-1636` | Parallel test run is not working in 6.13.1 | "Parallel test run is not working in 6.13.1. Closes #1636" | links commit |
+| `GITHUB-2532` | -parallel -threadcount CLI switches has no effect on test jar | "Unit tests for #2532" | **no link** |
+| `GITHUB-2321` | -Dtestng.thread.affinity=true do not work when running multiple instance of test in parallel | branch `github-2321`, in PR #2368 | **no link** |
+
+<!-- vale on -->
+
+Two of these needed the tool to change first, and both are worth reading twice.
+
+`GITHUB-2532` and `GITHUB-1636` sit on methods of `ParallelTestTest`, a file from a 2006 commit that
+names neither issue. The script used to judge only the commit that added a file, so it refused both.
+`METHOD=<name>` now judges the commit that added that one method. One method came from the #1636 fix,
+and two from "Unit tests for #2532".
+
+`GITHUB-2321` was refused because the script picked the wrong pull request. Its method's commit,
+`839a01980`, reached master through pull request #2368, which was rebase-merged. With no merge commit
+for #2368, the oldest merge after the commit was #2375, a CVE fix. The script now asks GitHub which
+pull request holds a commit, and GitHub names #2368, whose branch is `github-2321`.
+
+No earlier row was wrong. The three rows proven through a merge or a branch -- `GITHUB-765`,
+`GITHUB-1417` and `GITHUB-1307` -- came from pull requests merged with a merge commit, and GitHub
+names the same pull request for each.
+
+Four references already in the code are re-proven: `GITHUB-3066`, `GITHUB-2019`, `GITHUB-3242` and
+`GITHUB-3179`.
+
+`GITHUB-2110` on `ThreadAffinityTest#ensureNoNPEIsThrown` stays, and it is not proven by the rule. The
+method came in with pull request #2368, which closes only #2321. A maintainer wrote the description
+before this migration, and the method name matches the title of #2110, "NPE is thrown when running
+with Thread affinity". So it is kept, not rewritten and not removed.
+
+Phase 6 also brings three tests into the suite. None of them had ever run.
+
+`SingleThreadForParallelMethodsTest` was written in 2016 for #1066 and sat in no suite file. It is
+registered now and it passes.
+
+`TestThreadCountTest` and `SuiteThreadCountTest` assert a thread count, which holds only under the
+settings of their own suite file. That file sat inside the Java source tree, where nothing loaded it.
+It moves to `src/test/resources/concurrency/thread-count.xml`, and `ThreadCountSuiteTest` runs it. The
+assertions sit in `@AfterClass`, so a failure there counts as a configuration failure, not a failed
+test. The driver checks configuration failures as well, or a wrong count would pass unseen.
+
+No description is written for `GITHUB-3028`. Its samples came from a commit that names it, but the one
+test that runs them came from pull request #3289, which closes only #3242. `GITHUB-1773` is refused:
+its package name is the only thing that names it.
+
 ## Verified, description not yet written
 
 A row above is a claim that the code carries that description. The rows below are the exception.

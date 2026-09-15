@@ -47,13 +47,13 @@ tests:
       - test.failures.FailuresTest
       - test.mannotation.MAnnotationSampleTest
       - test.mannotation.MAnnotation2SampleTest
-      - test.thread.ThreadPoolSizeTest
-      - test.thread.SequentialTest
-      - test.thread.ParallelTestTest
-      - test.thread.ParallelSuiteTest
-      - test.thread.FactoryTest
-      - test.thread.DataProviderThreadPoolSizeTest
-      - test.thread.MultiThreadedDependentTest
+      - org.testng.concurrency.ThreadPoolSizeTest
+      - org.testng.concurrency.SequentialTest
+      - org.testng.concurrency.ParallelTestTest
+      - org.testng.concurrency.ParallelSuiteTest
+      - org.testng.concurrency.FactoryTest
+      - org.testng.concurrency.DataProviderThreadPoolSizeTest
+      - org.testng.concurrency.MultiThreadedDependentTest
       - test.simple.IncludedExcludedTest
       - test.reports.ReportTest
       - test.annotationtransformer.AnnotationTransformerTest

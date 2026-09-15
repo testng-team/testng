@@ -1,0 +1,24 @@
+package org.testng.concurrency.samples;
+
+import java.util.Map;
+import org.testng.log4testng.Logger;
+
+public class BaseSequentialSample {
+
+  protected void addId(String method, long id) {
+    debug(method + " ID:" + id);
+    getMap().put(id, id);
+  }
+
+  Map<Long, Long> getMap() {
+    Map<Long, Long> result = Helper.getMap(getClass().getName());
+    debug("RETURNING MAP " + result + " THIS:" + this);
+
+    return result;
+  }
+
+  protected void debug(String s) {
+    Logger.getLogger(getClass())
+        .debug("[" + getClass().getName() + " " + Thread.currentThread().getId() + " " + "] " + s);
+  }
+}

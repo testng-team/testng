@@ -3,7 +3,7 @@
 <suite name="2019_suite">
   <test name="2019_test" parallel="methods" verbose="2">
     <classes>
-      <class name="test.thread.issue2019.TestClassSample"/>
+      <class name="org.testng.concurrency.samples.issue2019.TestClassSample"/>
     </classes>
   </test>
 </suite>

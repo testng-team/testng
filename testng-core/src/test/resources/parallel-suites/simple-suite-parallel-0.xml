@@ -9,7 +9,7 @@
 
   <test name="Test0">
     <classes>
-      <class name="test.thread.Sample2"/>
+      <class name="org.testng.concurrency.samples.Sample2"/>
     </classes>
   </test>
 </suite>

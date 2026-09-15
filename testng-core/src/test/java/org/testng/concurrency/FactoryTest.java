@@ -1,0 +1,49 @@
+package org.testng.concurrency;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.testng.ITestNGListener;
+import org.testng.TestListenerAdapter;
+import org.testng.TestNG;
+import org.testng.annotations.Test;
+import org.testng.concurrency.samples.B;
+import org.testng.concurrency.samples.FactorySampleTest;
+import org.testng.xml.XmlSuite;
+
+public class FactoryTest {
+
+  @Test(
+      description =
+          "In non-parallel mode, we should only have one thread id  for the two methods invoked on B")
+  public void verifyFactoryNotParallel() {
+    runTest(null, 1);
+  }
+
+  @Test(
+      description =
+          "In parallel mode 'methods', we should have as many thread id's as there are test methods on B (2).")
+  public void verifyFactoryParallelMethods() {
+    runTest(XmlSuite.ParallelMode.METHODS, 2);
+  }
+
+  @Test
+  public void verifyFactoryParallelTests() {
+    runTest(XmlSuite.ParallelMode.TESTS, 1);
+  }
+
+  private void runTest(XmlSuite.ParallelMode parallelMode, int expectedThreadIdCount) {
+    TestNG tng = new TestNG();
+    tng.setTestClasses(new Class[] {FactorySampleTest.class});
+    if (parallelMode != null) {
+      tng.setParallel(parallelMode);
+    }
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener((ITestNGListener) tla);
+
+    B.setUp();
+    tng.run();
+
+    assertThat(tla.getPassedTests().size()).isEqualTo(2);
+    assertThat(B.m_threadIds.size()).isEqualTo(expectedThreadIdCount);
+  }
+}

@@ -3,7 +3,7 @@
 <suite name="188_suite">
   <test name="188_test">
     <classes>
-      <class name="test.thread.issue188.IssueTest"/>
+      <class name="org.testng.concurrency.issue188.IssueTest"/>
     </classes>
   </test>
 </suite>

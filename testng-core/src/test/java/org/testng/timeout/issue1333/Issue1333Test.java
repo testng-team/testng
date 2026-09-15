@@ -33,10 +33,10 @@ import test.SimpleBaseTest;
  * method of a {@code <test>}, configuration methods included, on a timed path and so on a thread of
  * its own.
  *
- * <p>Deliberately not a case of {@code test.thread.parallelization.ThreadAffinityTest}: that one
- * turns {@code RuntimeBehavior.TESTNG_THREAD_AFFINITY} on, which measures a different mechanism,
- * and it never runs a configuration method -- whereas the {@code @BeforeClass} landing on a thread
- * of its own is what the reporter of GITHUB-1333 saw first.
+ * <p>Deliberately not a case of {@code org.testng.concurrency.parallelization.ThreadAffinityTest}:
+ * that one turns {@code RuntimeBehavior.TESTNG_THREAD_AFFINITY} on, which measures a different
+ * mechanism, and it never runs a configuration method -- whereas the {@code @BeforeClass} landing
+ * on a thread of its own is what the reporter of GITHUB-1333 saw first.
  */
 public class Issue1333Test extends SimpleBaseTest {
 
