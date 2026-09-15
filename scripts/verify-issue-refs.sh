@@ -17,8 +17,9 @@ set -u
 REPO=${REPO:-testng-team/testng}
 # The branch that provenance is judged against. Overridable for a fork or a release branch.
 BASE=${BASE:-master}
-# Set to 1 to stop after step 1 and skip step 2. Step 2 needs the network and a GitHub token.
-# The tests use this: they check the provenance rules, which is the part with logic in it.
+# Set to 1 to stop after step 1 and skip step 2. Step 1 still asks GitHub which pull request holds
+# the commit, whenever the commit's own message does not name the issue. The tests set this, and give
+# each GitHub lookup of step 1 a local command.
 PROVENANCE_ONLY=${PROVENANCE_ONLY:-0}
 # Set to 1 when the description is already in the code, and the file holds more than one of them.
 # The commit that wrote the file then proves nothing about one method in it. This finds the commit
@@ -40,12 +41,12 @@ PR_BODY_CMD=${PR_BODY_CMD:-}
 # file. A file's first commit proves nothing about a method added to it years later: ParallelTestTest
 # came from a 2006 commit, and holds one method from a #1636 fix and two from "Unit tests for #2532".
 #
-# Bound to the file's own history, like BY_DESCRIPTION, so a method of the same name in another file
-# never answers. If no commit added the method here, the script refuses. It does not fall back to the
-# file's commit, because that answer reads exactly like the real one.
+# Bound to the file's own history, so a method of the same name in another file never answers. If no
+# commit added the method here, the script refuses. It does not fall back to the file's commit,
+# because that answer reads exactly like the real one.
 METHOD=${METHOD:-}
-# The command that lists the pull requests holding a commit, one "<number><TAB><branch>" per line. It
-# is given the commit's full sha. Exit 0 with no lines means GitHub lists none. A non-zero exit means
+# The command that lists the pull requests holding a commit, one "<number><TAB><branch><TAB><title>"
+# per line. It is given the commit's full sha. Exit 0 with no lines means GitHub lists none. A non-zero exit means
 # it could not be asked, which is not a verdict. Overridable so the tests can run offline.
 COMMIT_PRS_CMD=${COMMIT_PRS_CMD:-}
 frag=${1:?usage: verify-issue-refs.sh <path-fragment> [issue-number]}
@@ -63,6 +64,17 @@ if [ -n "$METHOD" ]; then
     exit 1
   fi
 fi
+
+# git reads a pathspec from the current directory, but prints the paths it reports from the top of the
+# repository. The lookups below pass one into the other. Run from a module directory, they miss the
+# 2021 module split and take the split as the commit that wrote the test. So a path on disk is made
+# relative to the top first, and every lookup runs from the top.
+if [ -e "$frag" ]; then
+  full=$(git ls-files --full-name -- "$frag" 2>/dev/null | head -1)
+  [ -n "$full" ] && frag=$full
+fi
+top=$(git rev-parse --show-toplevel 2>/dev/null) || { echo "not inside a git repository"; exit 1; }
+cd "$top" || exit 1
 
 # Enumerate every historical path the fragment matches before picking a commit. Choosing the first
 # match would tie a test to an unrelated commit, and the output reads exactly like the real thing.
@@ -132,26 +144,106 @@ fi
 
 # The commit that added one method to this file.
 #
-# git narrows the candidates with a loose pattern. The exact test then runs on the lines each commit
-# added to this file, so a method only shown as context or removed does not count. The boundary
-# before "void" is what keeps "// avoid target()" out, and the "(" after the name keeps
-# "targetMore" out.
+# The walk reads the versions of this one file, newest first, through its renames. A commit added
+# the method when its version declares the method and no parent's version does. The newest such
+# commit wins, so a method that was removed and written again answers with the commit that wrote it
+# again.
+#
+# Whole versions are read, not changed lines. That keeps these right:
+#   - a declaration the formatter wrapped onto two lines
+#   - "void target()" in a comment, a string or a nested class, which is not this method
+#   - an edit to the declaration line, which does not add the method
+#
+# The walk starts at HEAD and follows parents. A commit on a branch that never merged is not on that
+# history, so it cannot answer. A copy starts a new file: the commit that copied it added every
+# method in it. The file it was copied from answers only for itself.
+#
+# Reads one Java source on stdin. Exits 0 when the body of a top-level type declares a method named
+# argv[1], and 10 when it does not. Python exits 1 when it fails, so 1 cannot mean "no".
+#
+# Comments, strings and character literals are blanked first, so their text declares nothing and
+# their braces do not change the depth. A declaration is a type, the name, the parameters and a
+# body, so a call such as "target();" does not count. A nested class sits deeper than depth 1.
+#
+# The bytes are read as Latin-1, which accepts any byte. Older files here are not all UTF-8, and a
+# decoding error would stop the walk on them.
+read -r -d '' DECLARES_METHOD <<'PYTHON'
+import re
+import sys
+
+TEXT_BLOCK = r'"""(?:\\.|[^\\])*?"""'
+STRING = r'"(?:\\.|[^"\\\n])*"'
+CHAR = r"'(?:\\.|[^'\\\n])*'"
+COMMENT = r'/\*.*?\*/|//[^\n]*'
+
+src = sys.stdin.buffer.read().decode('latin-1')
+src = re.sub('|'.join([TEXT_BLOCK, STRING, CHAR, COMMENT]), ' ', src, flags=re.S)
+decl = re.compile(r'[\w>\]]\s+' + re.escape(sys.argv[1])
+                  + r'\s*\((?:[^()]|\([^()]*\))*\)\s*(?:throws\s[^{;]*)?\{')
+for match in decl.finditer(src):
+    before = src[:match.start()]
+    if before.count('{') - before.count('}') == 1:
+        sys.exit(0)
+sys.exit(10)
+PYTHON
+
 if [ -n "$METHOD" ]; then
-  lineage=$(git log --follow --format= --name-only -- "$frag" 2>/dev/null | grep -v '^$' | sort -u)
-  if [ -z "$lineage" ]; then
-    echo "no history for $frag; METHOD needs a path git can follow"
+  if ! git cat-file -e "HEAD:$frag" 2>/dev/null; then
+    echo "no file $frag at HEAD; METHOD needs the path the file has now"
     exit 1
   fi
-  decl="(^|[^[:alnum:]_])void[[:space:]]+${METHOD}[[:space:]]*\\("
-  for candidate in $(git log -G "void[[:space:]][[:space:]]*${METHOD}" --all --reverse --format=%H -- '*.java')
-  do
-    while IFS= read -r path; do
-      if git show "$candidate" -M --format= -- "$path" | sed -n 's/^+//p' | grep -qE "$decl"; then
-        sha=$candidate
-        break 2
-      fi
-    done <<< "$lineage"
-  done
+  # Answers already worked out, one " <blob>=yes" or " <blob>=no" each. A commit and its parent
+  # usually hold the same version, so most versions are read once.
+  declared=""
+  # Succeeds when the version "<commit>:<path>" in $1 declares the method.
+  declares() {
+    local blob
+    blob=$(git rev-parse -q --verify "$1" 2>/dev/null) || return 1
+    case "$declared" in
+      *" $blob=yes"*) return 0 ;;
+      *" $blob=no"*) return 1 ;;
+    esac
+    git cat-file blob "$blob" | python3 -c "$DECLARES_METHOD" "$METHOD"
+    case $? in
+      0) declared="$declared $blob=yes"; return 0 ;;
+      10) declared="$declared $blob=no"; return 1 ;;
+    esac
+    # Any other exit is the matcher failing, not an answer. Read as "no", it would refuse every
+    # method, or pick the wrong commit.
+    echo "the method matcher failed on $1" >&2
+    exit 1
+  }
+  if ! declares "HEAD:$frag"; then
+    echo "no method $METHOD is declared in the class in $frag"
+    exit 1
+  fi
+  # One line per version: the commit, the path in it, and the path in its parents. The parents' path
+  # is empty when the commit created this file, by adding it or by copying another file.
+  versions=$(git log --follow -M --format='@%H' --name-status HEAD -- "$frag" 2>/dev/null \
+    | awk -F'\t' '/^@/ { c = substr($0, 2); next }
+                  NF >= 2 && c != "" {
+                    s = substr($1, 1, 1)
+                    if (s == "R") print c "\t" $3 "\t" $2
+                    else if (s == "A" || s == "C") print c "\t" (s == "C" ? $3 : $2) "\t"
+                    else print c "\t" $2 "\t" $2
+                  }')
+  while IFS="$(printf '\t')" read -r commit path before; do
+    [ -n "$commit" ] || continue
+    declares "$commit:$path" || continue
+    added=1
+    if [ -n "$before" ]; then
+      for parent in $(git log -1 --format=%P "$commit"); do
+        if declares "$parent:$before"; then
+          added=0
+          break
+        fi
+      done
+    fi
+    if [ "$added" = 1 ]; then
+      sha=$commit
+      break
+    fi
+  done <<< "$versions"
   if [ -z "$sha" ]; then
     echo "no commit added the method $METHOD to $frag or any path it came from"
     exit 1
@@ -296,7 +388,8 @@ pr_body() {
     gh api "repos/$REPO/pulls/$1" --jq .body 2>/dev/null
   fi
 }
-# Prints the pull requests GitHub says hold commit $1, "<number><TAB><branch>" per line.
+# Prints the pull requests GitHub says hold commit $1, "<number><TAB><branch><TAB><title>" per line.
+# A tab or a line break in a title becomes a space, so each pull request stays on one line.
 #
 # git cannot answer this, so there is no fallback to git. It can only find merges that came after the
 # commit, and the oldest of them is the merge that carried it only when a merge commit carried it at
@@ -306,19 +399,20 @@ commit_prs() {
   if [ -n "$COMMIT_PRS_CMD" ]; then
     $COMMIT_PRS_CMD "$1" 2>/dev/null
   else
-    gh api "repos/$REPO/commits/$1/pulls" --jq '.[] | "\(.number)\t\(.head.ref)"' 2>/dev/null
+    gh api "repos/$REPO/commits/$1/pulls" \
+      --jq '.[] | "\(.number)\t\(.head.ref)\t\(.title | gsub("[\t\n\r]"; " "))"' 2>/dev/null
   fi
 }
-# A pull request's branch names the issue, the way "fix-765" and "github-2321" do.
+# A pull request's branch names the issue, the way "fix-765", "github-2321" and "issue-#1009-dp" do.
 #
-# The number must follow a word that marks an issue: fix, issue, gh, github or bug. Digits alone are
-# not enough. They put "java-17-support" behind issue 17, a dependabot branch ending in
+# The number must follow a word that marks an issue: fix, issue, gh, github or bug. A "#" may stand
+# before the number. Digits alone are not enough. They put "java-17-support" behind issue 17, a dependabot branch ending in
 # "assertj-core-3.27.3" behind 27, and "release-765" behind 765, which the commit-message rule has
 # always refused. The number must also end the name or be followed by something other than a digit or
 # a dot, so "fix-7650" does not answer for 765 and neither does the version "fix-765.1".
 ref_names_num() {
   printf '%s' "$1" \
-    | grep -qiE "(^|[^[:alnum:]])(fix(es|ed)?|issues?|gh|github|bug(fix)?)[-_/]?${num}([^0-9.]|$)"
+    | grep -qiE "(^|[^[:alnum:]])(fix(es|ed)?|issues?|gh|github|bug(fix)?)[-_/]?#?${num}([^0-9.]|$)"
 }
 # Reports the text that matched, so a reader can judge it. It searches the same cleaned string the
 # rules did, never the raw message, or it would print a pull request number as the evidence.
@@ -328,7 +422,8 @@ matched_text() {
   printf '%s' "$(without_pr_number "$1")" \
     | grep -oE "(TESTNG-|#|issues/)${num}([^0-9]|$)" | head -1
 }
-# Three sources may prove the reference, strongest first. The first that answers wins.
+# The sources that may prove the reference, strongest first: the commit's own message, then for each
+# pull request GitHub lists, its branch, its title and its body. The first that answers wins.
 proven=""
 if names_num "$msg"; then
   proven="the introducing commit names it: $(matched_text "$msg")"
@@ -345,11 +440,19 @@ else
   # Every body that could not be read, not only the last one. A later body that was read must not
   # hide an earlier one that was not.
   unread=""
-  while IFS="$(printf '\t')" read -r prn prref; do
+  # Every pull request GitHub listed, for the refusal to name.
+  listed=""
+  while IFS="$(printf '\t')" read -r prn prref prtitle; do
     [ -n "$prn" ] || continue
-    pr=$prn
+    listed="$listed #$prn"
     if ref_names_num "$prref"; then
       proven="the pull request names it (branch $prref): PR #$prn"
+      break
+    fi
+    # GitHub writes the title into the body of the merge commit, so a title is held to the rule for a
+    # commit message. Pull request #1065 names #1009 only in its title.
+    if names_num "$prtitle"; then
+      proven="pull request #$prn names it in its title: $prtitle"
       break
     fi
     if ! prbody=$(pr_body "$prn"); then
@@ -372,10 +475,10 @@ if [ -n "$proven" ]; then
   printf 'provenance  %s\n' "$proven"
 else
   printf 'provenance  NOT PROVEN -- the commit does not name #%s\n' "$num"
-  if [ -z "${pr:-}" ]; then
+  if [ -z "${listed:-}" ]; then
     printf '            GitHub lists no pull request for this commit\n'
   else
-    printf '            no pull request GitHub lists for this commit says it closes the issue\n'
+    printf '            GitHub lists pull request%s: no branch or title names it, and no body closes it\n' "$listed"
   fi
   if [ "$BY_DESCRIPTION" = 1 ]; then
     # An earlier phase of this migration may have written the description itself. Its commit
@@ -393,8 +496,12 @@ fi
 
 # Distinguish "no such issue" from an API that is unreachable, rate limited or unauthenticated.
 # Treating those alike would delete valid references.
-body=$(gh api "repos/$REPO/issues/$num" 2>/dev/null)
-if [ -z "$body" ]; then
+#
+# The exit code decides, not an empty answer. On a failed call gh still prints GitHub's error
+# message, as JSON, on stdout. Read as an issue, "Bad credentials" passes a pull request number as an
+# issue, with exit 0.
+body=$(gh api "repos/$REPO/issues/$num" 2>/dev/null); issue_rc=$?
+if [ "$issue_rc" != 0 ] || [ -z "$body" ]; then
   status=$(gh api "repos/$REPO/issues/$num" 2>&1 | grep -oE 'HTTP [0-9]+' | head -1)
   case "$status" in
     "HTTP 404") echo "issue       #$num does not exist"; exit 1 ;;
