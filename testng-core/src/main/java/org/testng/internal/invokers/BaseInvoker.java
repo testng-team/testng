@@ -1,9 +1,6 @@
 package org.testng.internal.invokers;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuiteRunnerListener;
@@ -25,9 +22,6 @@ class BaseInvoker {
   protected final ITestContext m_testContext;
   protected final SuiteRunState m_suiteState;
   protected IConfiguration m_configuration;
-
-  /** Class failures must be synced as the Invoker is accessed concurrently */
-  protected final Map<Class<?>, Set<Object>> m_classInvocationResults = new ConcurrentHashMap<>();
 
   // This object essentially represents the instance to which a BeforeTest|AfterTest
   // method belongs to. Currently TestNG handles this with a null value.

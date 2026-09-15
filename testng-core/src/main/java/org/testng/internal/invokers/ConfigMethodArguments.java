@@ -15,6 +15,7 @@ public class ConfigMethodArguments extends MethodArguments {
   private final ITestNGMethod[] allMethods;
   private final XmlSuite suite;
   private final @Nullable ITestResult testMethodResult;
+  private final long ignoredFailureMark;
 
   private ConfigMethodArguments(
       @Nullable IClass testClass,
@@ -24,12 +25,14 @@ public class ConfigMethodArguments extends MethodArguments {
       Map<String, String> params,
       Object @Nullable [] parameterValues,
       @Nullable Object instance,
-      @Nullable ITestResult testMethodResult) {
+      @Nullable ITestResult testMethodResult,
+      long ignoredFailureMark) {
     super(instance, currentTestMethod, params, parameterValues);
     this.testClass = testClass;
     this.allMethods = allMethods;
     this.suite = suite;
     this.testMethodResult = testMethodResult;
+    this.ignoredFailureMark = ignoredFailureMark;
   }
 
   public @Nullable IClass getTestClass() {
@@ -48,6 +51,19 @@ public class ConfigMethodArguments extends MethodArguments {
     return testMethodResult;
   }
 
+  /**
+   * The configuration failures these methods do not have to honor. An attempt that retries a failed
+   * test method takes {@link IConfigInvoker#currentFailureMark()} before it starts, so what the
+   * failed attempt recorded does not hold back the setup, test method and teardown of the retry,
+   * while a failure during the retry still does.
+   *
+   * @return the mark to pass to {@link IConfigInvoker#hasConfigurationFailureFor}; {@link
+   *     IConfigInvoker#NO_IGNORED_FAILURES} unless the invocation is a retry
+   */
+  public long getIgnoredFailureMark() {
+    return ignoredFailureMark;
+  }
+
   public void setTestClass(IClass testClass) {
     this.testClass = testClass;
   }
@@ -62,6 +78,7 @@ public class ConfigMethodArguments extends MethodArguments {
     private Object @Nullable [] parameterValues;
     private @Nullable Object instance;
     private @Nullable ITestResult testMethodResult;
+    private long ignoredFailureMark = IConfigInvoker.NO_IGNORED_FAILURES;
 
     public Builder forTestClass(IClass testClass) {
       this.testClass = testClass;
@@ -110,6 +127,11 @@ public class ConfigMethodArguments extends MethodArguments {
       return this;
     }
 
+    public Builder ignoringFailuresUpTo(long ignoredFailureMark) {
+      this.ignoredFailureMark = ignoredFailureMark;
+      return this;
+    }
+
     public ConfigMethodArguments build() {
       return new ConfigMethodArguments(
           testClass,
@@ -119,7 +141,8 @@ public class ConfigMethodArguments extends MethodArguments {
           Objects.requireNonNull(params),
           parameterValues,
           instance,
-          testMethodResult);
+          testMethodResult,
+          ignoredFailureMark);
     }
   }
 }
