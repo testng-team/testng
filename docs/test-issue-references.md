@@ -12,9 +12,10 @@ rebuilt from master; the same sweep caught that too.
 
 A reference is written only when **both** ends check out:
 
-1. **Provenance** — the commit that introduced the test names the issue, or the merge that brought
-   it in does. A pull request number does not count. Pull requests and issues share one number
-   space, so "Merge pull request #765" and "Some fix (#765)" say nothing about issue #765.
+1. **Provenance** — the commit that introduced the test names the issue, or a pull request that
+   GitHub lists for that commit does. A pull request number does not count. Pull requests and issues
+   share one number space, so "Merge pull request #765" and "Some fix (#765)" say nothing about issue
+   #765.
 2. **The issue exists and fits** — `#<n>` on GitHub is a real *issue* and not a pull request, and
    its subject is what the test asserts. The state is reported, never enforced; a regression test
    may reference an issue that is still open.
