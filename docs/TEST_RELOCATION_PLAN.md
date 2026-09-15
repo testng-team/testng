@@ -29,10 +29,10 @@ got written when GitHub #317 is a pull request about repeated parameters.
 A reference is now written only when **both** ends check out, via
 `scripts/verify-issue-refs.sh <path-fragment> <issue-number>`:
 
-1. **Provenance** — the commit that introduced the test names the issue, or the merge that brought
-   it in does. A pull request number does not count. Pull requests and issues share one number
-   space, so "Merge pull request #765" and "Some fix (#765)" say nothing about issue #765. Both
-   forms are removed before the text is searched.
+1. **Provenance** — the commit that introduced the test names the issue, or a pull request that
+   GitHub lists for that commit does. A pull request number does not count. Pull requests and issues
+   share one number space, so "Merge pull request #765" and "Some fix (#765)" say nothing about issue
+   #765. Both forms are removed before the text is searched.
 2. **The issue** — `#<n>` is a real GitHub *issue* and not a pull request, and its subject is what
    the test asserts. The issue's state is reported but never enforced: a regression test may
    legitimately reference an issue that is still open.
@@ -52,18 +52,34 @@ advice work. Before it, every fragment was cut to its last two segments, so a lo
 nothing. `GitHub1131Test.java` sits under `test/factory` and under `test/objectfactory`. The suffix
 now grows a segment at a time until one file is left.
 
-Phase 6 adds two more changes to the script, and both remove a wrong refusal.
+Phase 6 changes the script in the ways below.
 
 **A method's own commit.** `METHOD=<name>` judges the commit that added one method, not the commit
 that added its file. A file's first commit proves nothing about a method added years later.
 `ParallelTestTest` came from a 2006 commit and holds methods from a #1636 fix and from "Unit tests for
-#2532". The lookup reads only that file's history, and it refuses rather than falling back to the
-file's commit.
+#2532". The lookup walks the versions of that one file from HEAD, through its renames, and reads each
+whole version. A commit added the method when its version declares it and no parent's version does.
+So a declaration wrapped onto two lines counts, and a comment, a string or a nested class does not.
+A branch that never merged cannot answer, and a copied file starts a history of its own. The lookup
+refuses rather than falling back to the file's commit.
 
-**Which pull request holds a commit.** The script used to take the oldest merge after a commit. That
-holds only when a merge commit carried it. A rebase-merged pull request leaves none, so the oldest
-merge belongs to some other pull request. The script now asks GitHub. When GitHub cannot be asked,
-the old lookup still runs, and the output says it is a guess.
+**Which pull request holds a commit.** The oldest merge after a commit is the merge that carried it
+only when a merge commit carried it at all. A rebase-merged pull request leaves none, so that merge
+can belong to some other pull request. The script asks GitHub which pull requests hold the commit,
+and never git. A pull request proves the reference when one of these holds:
+
+- Its branch names the issue after a word that marks one, as `fix-765` and `issue-#1009` do.
+- Its title names the issue the way a commit message must. GitHub writes the title into the merge
+  commit, and pull request #1065 names #1009 nowhere else.
+- Its body closes the issue.
+
+**A failed call is not an answer.** When GitHub cannot be asked, or a pull request body cannot be
+read, and nothing else proves the reference, the script reports `CANNOT CHECK` and exits 3. The issue
+check does the same when GitHub rejects the call. On a failed call `gh` still prints GitHub's error
+message on stdout, so the exit code decides.
+
+**Any directory.** The script runs its lookups from the top of the repository. A path given from a
+module directory reads the same history as a path given from the top.
 
 The script refuses to answer rather than guess. Looking a file up by basename alone finds seven
 different `TestClassSample.java`, and picking the first invents provenance that reads exactly like
@@ -110,7 +126,7 @@ Every other feature name is free.
 ### 33 classes look like tests that never run
 
 Classifying by "listed in `testng.xml`" leaves 33 unregistered classes named `*Test` that hold
-`@Test` methods. Most are ordinary fixtures with unfortunate names — `test.thread.Test1Test`,
+`@Test` methods. Most are ordinary fixtures with unfortunate names — `org.testng.concurrency.samples.Test1Test`,
 `test.inheritance.testng234.ChildTest` — fed to TestNG by a driver. Some may be a second
 `github1362`: a real regression test that has quietly never executed.
 
@@ -228,7 +244,7 @@ Follow the order.
 
    A description is written only when the script returns 0. Exit 1 means the provenance does not
    name that issue, or the number is a pull request; exit 2 means the path is ambiguous; exit 3
-   means the API could not be reached, which is not a verdict. Record the outcome for the phase in
+   means GitHub could not be asked, which is not a verdict. Record the outcome for the phase in
    `docs/test-issue-references.md`.
 2. **Recompute the executable set.** It drifts as master moves, so do not trust the table above.
 
@@ -445,7 +461,7 @@ Neither of these belongs to a phase, and both are easy to forget once the migrat
    build would notice.
 
    `execution-known-silent.txt` cannot reach zero as written. Most of its entries are defects and
-   should be fixed and deleted. `test.SerializationTest` and `test.thread.ThreadTest` are in group
+   should be fixed and deleted. `test.SerializationTest` and `org.testng.concurrency.ThreadTest` are in group
    `broken`, which their `<test>` block excludes on purpose, so "named but never runs" is correct
    behavior for them. Either the file keeps those two
    forever, or `verifyTestExecution` learns to read group filters and the file goes entirely. The

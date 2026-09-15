@@ -9,5 +9,7 @@
  *
  * <p>This file has no {@code @NullMarked} on purpose. Adding it would opt these tests back into the
  * check that this name exists to avoid.
+ *
+ * <p>Classes handed to TestNG to produce that behavior live in {@code samples}, not here.
  */
 package org.testng.concurrency;
