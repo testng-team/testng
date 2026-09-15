@@ -325,9 +325,11 @@ without checking.
 - **Terminology replacements.** See step 2 of
   [Adding or changing a rule](#adding-or-changing-a-rule). The measurement kills it.
 
-- **Checking `CHANGES.txt`.** It holds twenty years of contributor names and issue numbers. On its
-  own it produced more than nine tenths of every finding in the repository. So `.vale.ini` covers
-  `*.md` and `*.java` only.
+- **Checking `CHANGELOG.md`.** It holds twenty years of contributor names and issue numbers. On its
+  own it produced more than nine tenths of every finding in the repository. `.vale.ini` covers
+  `*.md` and `*.java`, so the changelog gets a `[**/CHANGELOG.md]` section of its own with an
+  empty `BasedOnStyles`, which switches every style off for that one file and no other. The
+  `**/` matters: the Gradle task passes absolute paths, which a bare `CHANGELOG.md` misses.
 
 - **Keeping the rules on this page.** Tools do not reliably follow links, so the rules have to sit
   in the file the tool already reads. That is why they are in `AGENTS.md`.
