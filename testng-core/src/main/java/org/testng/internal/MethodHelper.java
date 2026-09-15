@@ -274,26 +274,53 @@ public class MethodHelper {
   }
 
   public static boolean isAlwaysRun(@Nullable IConfigurationAnnotation configurationAnnotation) {
-    if (null == configurationAnnotation) {
-      return false;
-    }
+    return null != configurationAnnotation
+        && configurationAnnotation.getAlwaysRun()
+        && (isBeforeConfiguration(configurationAnnotation)
+            || isAfterConfiguration(configurationAnnotation));
+  }
 
-    boolean alwaysRun = false;
-    if ((configurationAnnotation.getAfterSuite()
-            || configurationAnnotation.getAfterTest()
-            || configurationAnnotation.getAfterTestClass()
-            || configurationAnnotation.getAfterTestMethod()
-            || configurationAnnotation.getBeforeTestMethod()
-            || configurationAnnotation.getBeforeTestClass()
-            || configurationAnnotation.getBeforeTest()
-            || configurationAnnotation.getBeforeSuite()
-            || configurationAnnotation.getBeforeGroups().length != 0
-            || configurationAnnotation.getAfterGroups().length != 0)
-        && configurationAnnotation.getAlwaysRun()) {
-      alwaysRun = true;
-    }
+  /**
+   * Answers whether {@code alwaysRun} lets a configuration method run after a method invoked before
+   * it failed or was skipped. That is what {@code alwaysRun} means on an &#64;After method. On a
+   * &#64;Before method it only lifts the group filtering (GITHUB-1622).
+   *
+   * <p>The role comes from {@code method}, not from the annotation. TestNG merges every
+   * configuration annotation on one Java method into one annotation object, so a {@code
+   * &#64;BeforeMethod &#64;AfterMethod(alwaysRun = true)} method bypasses a failure in its teardown
+   * role and not in its setup role.
+   *
+   * @param method the configuration method, in the role TestNG is about to run it in
+   * @param annotation the annotation carried by the configuration method
+   * @return true if the method may run past a recorded failure
+   */
+  public static boolean canBypassConfigurationFailure(
+      ITestNGMethod method, @Nullable IConfigurationAnnotation annotation) {
+    return isAlwaysRun(annotation) && isInAnAfterRole(method);
+  }
 
-    return alwaysRun;
+  private static boolean isInAnAfterRole(ITestNGMethod method) {
+    return method.isAfterSuiteConfiguration()
+        || method.isAfterTestConfiguration()
+        || method.isAfterClassConfiguration()
+        || method.isAfterMethodConfiguration()
+        || method.isAfterGroupsConfiguration();
+  }
+
+  private static boolean isBeforeConfiguration(IConfigurationAnnotation annotation) {
+    return annotation.getBeforeSuite()
+        || annotation.getBeforeTest()
+        || annotation.getBeforeTestClass()
+        || annotation.getBeforeTestMethod()
+        || annotation.getBeforeGroups().length != 0;
+  }
+
+  private static boolean isAfterConfiguration(IConfigurationAnnotation annotation) {
+    return annotation.getAfterSuite()
+        || annotation.getAfterTest()
+        || annotation.getAfterTestClass()
+        || annotation.getAfterTestMethod()
+        || annotation.getAfterGroups().length != 0;
   }
 
   /** Extracts the unique list of <code>ITestNGMethod</code>s. */

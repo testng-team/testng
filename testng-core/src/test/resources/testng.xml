@@ -102,7 +102,9 @@
       <class name="test.ClassConfigurations"/>
       <class name="test.alwaysrun.AlwaysRunTest"/>
       <class name="org.testng.conffailure.ConfigurationFailure" />
+      <class name="org.testng.conffailure.SkippedSetupTest" />
       <class name="org.testng.conffailure.RetriedInvocationTest" />
+      <class name="org.testng.conffailure.issue1622.IssueTest" />
       <class name="test.superclass.MainTest" />
       <class name="test.superclass.Test3" />
       <class name="test.failures.FailuresTest" />

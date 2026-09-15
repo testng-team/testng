@@ -348,9 +348,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         // - the test is enabled and
         // - the Configuration method belongs to the same class or a parent
         configurationAnnotation = AnnotationHelper.findConfiguration(annotationFinder(), method);
-        boolean alwaysRun = MethodHelper.isAlwaysRun(configurationAnnotation);
         boolean canProcessMethod =
-            MethodHelper.isEnabled(objectClass, annotationFinder()) || alwaysRun;
+            MethodHelper.isEnabled(objectClass, annotationFinder())
+                || MethodHelper.isAlwaysRun(configurationAnnotation);
         if (!canProcessMethod) {
           log(
               3,
@@ -365,14 +365,15 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
           continue;
         }
-        if (hasConfigurationFailureFor(
+        // GITHUB-1622. The guard is a field read, so it comes before the map walks.
+        if (!MethodHelper.canBypassConfigurationFailure(tm, configurationAnnotation)
+            && hasConfigurationFailureFor(
                 tm,
                 arguments.getTestMethod(),
                 tm.getGroups(),
                 testClass,
                 arguments.getInstance(),
-                arguments.getIgnoredFailureMark())
-            && !alwaysRun) {
+                arguments.getIgnoredFailureMark())) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
           InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), testResult);
           // Set test result as 'SKIP' in 'beforeConfiguration' & 'beforeInvocation' if
@@ -383,16 +384,20 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
           testResult.setEndMillis(testResult.getStartMillis());
           runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
-
-          handleConfigurationSkip(
+          // A skipped setup marks what it would have set up, so the tests that need it are
+          // skipped too. It is not a failure, though: the level flags that decide where a later
+          // class looks for ignoreFailure move for a failure only.
+          recordConfigurationInvocationFailed(
               tm,
-              testResult,
+              testClass,
               Objects.requireNonNull(
                   configurationAnnotation,
                   "a configuration method always carries a @Before/@After annotation"),
               arguments.getTestMethod(),
               arguments.getInstance(),
-              arguments.getSuite());
+              arguments.getSuite(),
+              /* failed= */ false);
+          runConfigurationListeners(testResult, arguments.getTestMethod(), false /* after */);
           continue;
         }
 
@@ -558,7 +563,13 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       @Nullable Object instance,
       XmlSuite suite) {
     recordConfigurationInvocationFailed(
-        tm, testResult.getTestClass(), annotation, currentTestMethod, instance, suite);
+        tm,
+        testResult.getTestClass(),
+        annotation,
+        currentTestMethod,
+        instance,
+        suite,
+        /* failed= */ true);
     testResult.setStatus(ITestResult.SKIP);
     runConfigurationListeners(testResult, currentTestMethod, false /* after */);
   }
@@ -600,7 +611,13 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     //
     if (null != annotation) {
       recordConfigurationInvocationFailed(
-          tm, testResult.getTestClass(), annotation, currentTestMethod, instance, suite);
+          tm,
+          testResult.getTestClass(),
+          annotation,
+          currentTestMethod,
+          instance,
+          suite,
+          /* failed= */ true);
     }
   }
 
@@ -733,8 +750,13 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   }
 
   /**
-   * Record internally the failure of a Configuration, so that we can determine later if @Test
-   * should be skipped.
+   * Records what a configuration method that did not run leaves behind: the class, test method or
+   * groups it would have set up, so that what needs it is skipped.
+   *
+   * @param failed true if the method failed, or skipped itself with a {@link
+   *     org.testng.SkipException}; false if it was skipped for an earlier failure. Only a failure
+   *     moves the level flags {@link #canIgnoreConfigFailure(IClass, ITestNGMethod)} reads: a skip
+   *     in one class must not change where a later class looks for {@code ignoreFailure}.
    */
   private void recordConfigurationInvocationFailed(
       ITestNGMethod tm,
@@ -742,7 +764,8 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       IConfigurationAnnotation annotation,
       @Nullable ITestNGMethod currentTestMethod,
       @Nullable Object instance,
-      XmlSuite suite) {
+      XmlSuite suite,
+      boolean failed) {
     // If beforeTestClass or afterTestClass failed, mark either the config method's
     // entire class as failed, or the class under tests as failed, depending on
     // the configuration failure policy
@@ -754,7 +777,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         clazzToUse = testClass.getRealClass();
       }
       setClassInvocationFailure(clazzToUse, instance);
-      if (annotation.getBeforeTestClass()) {
+      if (failed && annotation.getBeforeTestClass()) {
         m_hasClassLevelFailures = true;
       }
     }
@@ -768,7 +791,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       } else {
         setClassInvocationFailure(tm.getRealClass(), instance);
       }
-      if (annotation.getBeforeTestMethod()) {
+      if (failed && annotation.getBeforeTestMethod()) {
         m_hasTestMethodLevelFailures = true;
       }
     }
@@ -787,7 +810,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       for (XmlClass xmlClass : classes) {
         setClassInvocationFailure(xmlClass.getSupportClass(), instance);
       }
-      if (annotation.getBeforeTest()) {
+      if (failed && annotation.getBeforeTest()) {
         m_hasTestTagLevelFailures = true;
       }
     }
