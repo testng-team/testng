@@ -38,10 +38,10 @@
       <class name="test.methodselectors.CommandLineTest">
        <class name="test.inject.NoInjectionTest" />
       <class name="test.tmp.TestFactory" />
-      <class name="test.thread.MultiThreadedDependentTest" />
+      <class name="org.testng.concurrency.MultiThreadedDependentTest" />
       <class name="test.tmp.B" />
-      <class name="test.thread.MultiThreadedDependentTest" />
-      <class name="test.thread.FactoryTest" />
+      <class name="org.testng.concurrency.MultiThreadedDependentTest" />
+      <class name="org.testng.concurrency.FactoryTest" />
       <class name="test.tmp.B" />
       <class name="test.failedreporter.FailedReporterTest" />
         <methods>

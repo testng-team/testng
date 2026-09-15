@@ -3,7 +3,7 @@
 <suite name="suite">
     <test name="test">
         <classes>
-            <class name="test.thread.Github1636Sample"/>
+            <class name="org.testng.concurrency.samples.Github1636Sample"/>
         </classes>
     </test> <!-- test -->
 </suite> <!-- suite -->

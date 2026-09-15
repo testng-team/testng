@@ -52,6 +52,19 @@ advice work. Before it, every fragment was cut to its last two segments, so a lo
 nothing. `GitHub1131Test.java` sits under `test/factory` and under `test/objectfactory`. The suffix
 now grows a segment at a time until one file is left.
 
+Phase 6 adds two more changes to the script, and both remove a wrong refusal.
+
+**A method's own commit.** `METHOD=<name>` judges the commit that added one method, not the commit
+that added its file. A file's first commit proves nothing about a method added years later.
+`ParallelTestTest` came from a 2006 commit and holds methods from a #1636 fix and from "Unit tests for
+#2532". The lookup reads only that file's history, and it refuses rather than falling back to the
+file's commit.
+
+**Which pull request holds a commit.** The script used to take the oldest merge after a commit. That
+holds only when a merge commit carried it. A rebase-merged pull request leaves none, so the oldest
+merge belongs to some other pull request. The script now asks GitHub. When GitHub cannot be asked,
+the old lookup still runs, and the output says it is a guess.
+
 The script refuses to answer rather than guess. Looking a file up by basename alone finds seven
 different `TestClassSample.java`, and picking the first invents provenance that reads exactly like
 the real thing — so it reports `AMBIGUOUS` and asks for the original path.
@@ -150,7 +163,7 @@ verified descriptions, the #1362 merge — is redistributed into the phase that 
 | 2 — **done** | `reflect`, `preserveorder`, `priority`, `methodinterceptors`, `skip` |
 | 3 ([#3493](https://github.com/testng-team/testng/issues/3493)) — **done** | `invocationcount`, `parameters`, `inheritance` |
 | 4 ([#3494](https://github.com/testng-team/testng/issues/3494)) — **done** | `dependent` |
-| 5 ([#3495](https://github.com/testng-team/testng/issues/3495)) | `factory` |
+| 5 ([#3495](https://github.com/testng-team/testng/issues/3495)) — **done** | `factory` |
 | 6 ([#3496](https://github.com/testng-team/testng/issues/3496)) | `thread` → `org.testng.concurrency` |
 | 7 ([#3497](https://github.com/testng-team/testng/issues/3497)) | `configuration` |
 | 8 ([#3498](https://github.com/testng-team/testng/issues/3498)) | `listeners` |
