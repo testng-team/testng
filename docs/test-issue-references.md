@@ -205,7 +205,7 @@ suspect sweep in the plan only looks at classes named `*Test`.
 | Ref | Issue title on GitHub | Provenance | Timeline |
 | --- | --- | --- | --- |
 | `GITHUB-1066` | Regression is in priority. It broke parallel mode | "Add test for #1066: Priority does not honor single threaded class" | **no link** |
-| `GITHUB-188` | suite parallel="methods" does not work when there are multiple <test> tags in the testng.xml | "Support parallelism at suite level. Closes #188" | links commit |
+| `GITHUB-188` | suite parallel="methods" does not work when there are multiple &lt;test&gt; tags in the testng.xml | "Support parallelism at suite level. Closes #188" | links commit |
 | `GITHUB-2361` | No way to enforce @Test(singleThreaded = true) when test defined in base class | "Streamline honoring of “singleThreaded” attribute. Closes #2361" | links commit |
 | `GITHUB-1636` | Parallel test run is not working in 6.13.1 | "Parallel test run is not working in 6.13.1. Closes #1636" | links commit |
 | `GITHUB-2532` | -parallel -threadcount CLI switches has no effect on test jar | "Unit tests for #2532" | **no link** |

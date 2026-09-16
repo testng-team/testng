@@ -815,12 +815,13 @@ add_method "$r" src/foo/MixedTest.java targetMore "Fix #111"
 check "method: a longer name is a different method" "NO COMMIT" \
   "$(verdict "$r" src/foo/MixedTest.java 111 METHOD=target)"
 
-# "avoid target()" holds "void target()". It is not a declaration.
+# A name that ends with this one is a different method. The name must start where the type ends,
+# not part of the way through a word.
 r=$(new_repo)
-add "$r" src/foo/MixedTest.java "Create the class"
-printf '// avoid target() here\n' >> "$r/src/foo/MixedTest.java"
-git -C "$r" commit -q -am "Fix #111"
-check "method: a word ending in void is not a declaration" "NO COMMIT" \
+write "$r" src/foo/MixedTest.java "Fix #111" 'class X {
+  void nottarget() {}
+}'
+check "method: a name that ends with this one is a different method" "NO COMMIT" \
   "$(verdict "$r" src/foo/MixedTest.java 111 METHOD=target)"
 
 # Asking two modes at once is a mistake, not a choice. The file carries a real GITHUB-111 written by
