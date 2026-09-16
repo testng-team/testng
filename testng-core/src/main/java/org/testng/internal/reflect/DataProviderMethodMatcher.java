@@ -1,6 +1,7 @@
 package org.testng.internal.reflect;
 
 import static org.testng.internal.reflect.InjectableParameter.Assistant.ALL_INJECTS;
+import static org.testng.internal.reflect.InjectableParameter.Assistant.NONE;
 
 import java.lang.reflect.Parameter;
 import org.jspecify.annotations.Nullable;
@@ -56,16 +57,31 @@ public class DataProviderMethodMatcher extends AbstractMethodMatcher {
               + "inherited from class level annotation).\nData provider mismatch",
           context.getMethod());
     }
-    final Parameter[] fromProvider = ReflectionRecipes.filter(methodParameters, ALL_INJECTS);
+    // A parameter a resolver owns is no more the provider's to supply than a native injection
+    // is; leave it out or the arity named here is wrong for exactly the methods that use one.
+    final ResolvedParameters resolved = context.getResolvedParameters();
+    final Parameter[] fromProvider =
+        ReflectionRecipes.filter(methodParameters, ALL_INJECTS, resolved);
     final int expected = fromProvider.length;
-    final boolean arrayEnding = expected > 0 && fromProvider[expected - 1].getType().isArray();
+    // The other count a provider may legitimately supply: DirectMethodMatcher also tries with the
+    // native injections left in (the NONE pass). Without a resolver that is every parameter.
+    final int expectedWithNatives =
+        ReflectionRecipes.filter(methodParameters, NONE, resolved).length;
+    // A tail only when the array is the last parameter the caller supplies as declared -- the
+    // same rule ArrayEndingMethodMatcher applies -- not merely last once the owned ones are out.
+    final Parameter[] declaredFromCaller = ReflectionRecipes.filter(methodParameters, ALL_INJECTS);
+    final boolean arrayEnding =
+        expected > 0
+            && fromProvider[expected - 1].getType().isArray()
+            && declaredFromCaller.length > 0
+            && declaredFromCaller[declaredFromCaller.length - 1].equals(fromProvider[expected - 1]);
     if (arrayEnding) {
       if (supplied < expected) {
         return countMismatch(expected, supplied);
       }
       return typeMismatch();
     }
-    if (supplied != expected && supplied != methodParameters.length) {
+    if (supplied != expected && supplied != expectedWithNatives) {
       return countMismatch(expected, supplied);
     }
     return typeMismatch();

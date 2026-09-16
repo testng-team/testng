@@ -31,6 +31,7 @@ import org.testng.IDataProviderMethod;
 import org.testng.IHookable;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
+import org.testng.IParameterResolver;
 import org.testng.IRetryAnalyzer;
 import org.testng.ISuite;
 import org.testng.ISuiteRunnerListener;
@@ -58,6 +59,7 @@ import org.testng.internal.ListenerOrderDeterminer;
 import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.MethodInstance;
+import org.testng.internal.ParameterResolverHolder;
 import org.testng.internal.Parameters;
 import org.testng.internal.RegexpExpectedExceptionsHolder;
 import org.testng.internal.RuntimeBehavior;
@@ -74,6 +76,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
   private final ConfigInvoker invoker;
   private final DataProviderHolder holder;
+  private final ParameterResolverHolder parameterResolverHolder;
   private final List<IClassListener> m_classListeners;
   private final boolean m_skipFailedInvocationCounts;
 
@@ -84,6 +87,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       IConfiguration m_configuration,
       Collection<IInvokedMethodListener> m_invokedMethodListeners,
       DataProviderHolder holder,
+      ParameterResolverHolder parameterResolverHolder,
       List<IClassListener> m_classListeners,
       boolean m_skipFailedInvocationCounts,
       ConfigInvoker invoker,
@@ -96,6 +100,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         m_configuration,
         suiteRunner);
     this.holder = holder;
+    this.parameterResolverHolder = parameterResolverHolder;
     this.m_classListeners = m_classListeners;
     this.m_skipFailedInvocationCounts = m_skipFailedInvocationCounts;
     this.invoker = invoker;
@@ -149,6 +154,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 m_configuration.getObjectFactory(),
                 annotationFinder(),
                 buildDataProviderHolder(),
+                getParameterResolvers(),
                 1);
 
         ParameterBag bag =
@@ -156,6 +162,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 testMethod, new HashMap<>(), new HashMap<>(), context, instance);
         if (bag.parameterHolder != null) {
           ParameterHolder parameterHolder = bag.parameterHolder;
+          // Read once: the accessor sorts the resolvers, and every row would otherwise re-sort
+          // them.
+          Collection<IParameterResolver> resolvers = getParameterResolvers();
           try {
             // Ask before consuming: a row the loop below drops is a row an indices restriction
             // excluded, which is not the same thing as a data provider that has no row to give.
@@ -166,8 +175,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               if (next == null) {
                 continue;
               }
-              Method m = testMethod.getConstructorOrMethod().requireMethod();
-              Object[] parameterValues = Parameters.injectParameters(next, m, context);
+              // Reported, never invoked: the owned positions are shaped, not resolved. A
+              // resolver that opens something would otherwise open one per row that nothing
+              // closes, and one that throws would take the whole report down.
+              Object[] parameterValues =
+                  Parameters.parametersForReporting(next, testMethod, context, resolvers);
               ITestResult result =
                   registerSkippedTestResult(
                       testMethod,
@@ -291,6 +303,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       ITestContext testContext) {
     FailureContext failure = new FailureContext();
     failure.count.set(failureCount);
+    // Read once: the accessor sorts the resolvers, and every attempt would otherwise re-sort them.
+    Collection<IParameterResolver> resolvers = getParameterResolvers();
     do {
       failure.instances = new ArrayList<>();
       boolean cacheData =
@@ -298,20 +312,37 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               .map(IDataProviderMethod::cacheDataForTestRetries)
               .orElse(true);
       Object[] parameterValues = arguments.getParameterValues();
+      // Whether this attempt's arguments already went through the matcher -- and so through the
+      // resolvers -- on the way here. Every other route reuses a built array, and has to resolve
+      // the owned positions again: a retry is an invocation of its own.
+      boolean rebuilt = false;
+      // Set when this attempt already has its result -- a row that could not be rebuilt -- and
+      // there is nothing left to invoke.
+      boolean reported = false;
       if (!cacheData) {
         Map<String, String> allParameters = new HashMap<>();
         int verbose = testContext.getCurrentXmlTest().getVerbose();
         ParameterHandler handler =
             new ParameterHandler(
-                m_configuration.getObjectFactory(), annotationFinder(), this.holder, verbose);
+                m_configuration.getObjectFactory(),
+                annotationFinder(),
+                this.holder,
+                resolvers,
+                verbose);
 
         ParameterBag bag =
             handler.createParameters(
                 arguments.getTestMethod(), arguments.getParameters(), allParameters, testContext);
         if (bag.hasErrors()) {
-          continue;
+          // The row could not be rebuilt -- a provider that answers only once, say. That is the
+          // outcome of this retry, and it is reported the way the first attempt would have been.
+          // Leaving the loop with nothing recorded turned a failed method into a skipped one.
+          ITestResult tr = classifyParameterFailure(bag);
+          reportUninvoked(arguments.getTestMethod(), tr);
+          result.add(tr);
+          reported = true;
         }
-        if (bag.parameterHolder != null) {
+        if (!reported && bag.parameterHolder != null) {
           try {
             Iterator<Object @Nullable []> it = bag.parameterHolder.parameters;
             int targetIndex = arguments.getParametersIndex();
@@ -321,13 +352,53 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 // An interceptor that drops or reorders rows can move the target onto an
                 // excluded position; fall back to the values the retry came in with rather
                 // than fail it.
-                parameterValues = Objects.requireNonNullElse(current, parameterValues);
+                if (current != null) {
+                  // A row straight from the data provider accounts only for the parameters the
+                  // provider supplies. It has to go back through the matcher, or everything
+                  // TestNG supplies itself -- a native injection, a resolved parameter -- is
+                  // dropped and the retry invokes the method with the wrong arity.
+                  try {
+                    parameterValues =
+                        Parameters.injectParameters(
+                            current, arguments.getTestMethod(), testContext, resolvers);
+                  } catch (TestNGException rowDoesNotFit) {
+                    // The re-read row no longer fits the method. That fails this retry, carrying
+                    // the row it was given, and leaves the other rows to run.
+                    ITestResult tr =
+                        resultForRowThatDoesNotFit(
+                            arguments.getTestMethod(), current, rowDoesNotFit);
+                    reportUninvoked(arguments.getTestMethod(), tr);
+                    result.add(tr);
+                    reported = true;
+                  }
+                  rebuilt = true;
+                }
                 break;
               }
             }
           } finally {
             bag.parameterHolder.close();
           }
+        }
+      }
+      if (reported) {
+        break;
+      }
+      if (!rebuilt && parameterValues != null) {
+        // The row is reused, the resolution is not. Only the positions a resolver owns change.
+        try {
+          parameterValues =
+              Parameters.resolveAgain(
+                  parameterValues, arguments.getTestMethod(), testContext, resolvers);
+        } catch (TestNGException resolverFailed) {
+          // A resolver that breaks on the retry fails this retry, carrying the arguments the
+          // attempt came in with, and leaves the other rows to run.
+          ITestResult tr =
+              resultForRowThatDoesNotFit(
+                  arguments.getTestMethod(), parameterValues, resolverFailed);
+          reportUninvoked(arguments.getTestMethod(), tr);
+          result.add(tr);
+          break;
         }
       }
       TestMethodArguments tma =
@@ -346,6 +417,53 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // The caller keeps this context for the invocations that follow, and those are not retries.
     failure.ignoredFailureMark = IConfigInvoker.NO_IGNORED_FAILURES;
     return failure;
+  }
+
+  /**
+   * A result for a retry whose re-read row no longer fits the method: a failure carrying the row it
+   * was given, so the failure is attributed to that row and the rows after it still run.
+   */
+  private ITestResult resultForRowThatDoesNotFit(
+      ITestNGMethod testMethod, Object[] row, TestNGException cause) {
+    ITestResult tr = TestResult.newTestResultWithCauseAs(testMethod, m_testContext, cause);
+    tr.setParameters(row);
+    tr.setStatus(ITestResult.FAILURE);
+    return tr;
+  }
+
+  /**
+   * Gives the error result a parameter bag carries its status. A data provider failure is a skip
+   * unless the configuration, or the provider, asks for it to fail the test; a TestNG diagnostic is
+   * always a failure.
+   */
+  private ITestResult classifyParameterFailure(ParameterBag bag) {
+    ITestResult tr = Objects.requireNonNull(bag.errorResult, "a bag with errors carries them");
+    Throwable throwable = tr.getThrowable();
+    boolean bubbleUpFailures =
+        m_configuration.isPropagateDataProviderFailureAsTestFailure() || bag.isBubbleUpFailures();
+    boolean failure =
+        !(throwable instanceof SkipException)
+            && (throwable instanceof TestNGException || bubbleUpFailures);
+    tr.setStatus(failure ? ITestResult.FAILURE : ITestResult.SKIP);
+    return tr;
+  }
+
+  @Override
+  public ITestResult failRowThatDoesNotFit(
+      ITestNGMethod testMethod, Object[] row, TestNGException cause) {
+    ITestResult tr = resultForRowThatDoesNotFit(testMethod, row, cause);
+    reportUninvoked(testMethod, tr);
+    return tr;
+  }
+
+  /** Reports a result standing for an invocation that did not run, by the status it was given. */
+  private void reportUninvoked(ITestNGMethod testMethod, ITestResult tr) {
+    if (tr.getStatus() == ITestResult.FAILURE) {
+      m_notifier.addFailedTest(testMethod, tr);
+    } else {
+      m_notifier.addSkippedTest(testMethod, tr);
+    }
+    runTestResultListener(tr);
   }
 
   @Override
@@ -378,6 +496,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       dpListeners.addAll(listeners);
     }
     return dpListeners;
+  }
+
+  @Override
+  public Collection<IParameterResolver> getParameterResolvers() {
+    return this.parameterResolverHolder.getResolvers();
   }
 
   private DataProviderHolder buildDataProviderHolder() {
@@ -1186,6 +1309,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               m_configuration.getObjectFactory(),
               annotationFinder(),
               buildDataProviderHolder(),
+              getParameterResolvers(),
               verbose);
 
       ParameterBag bag =
@@ -1197,21 +1321,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               arguments.getInstance());
 
       if (bag.hasErrors()) {
-        ITestResult tr = bag.errorResult;
-        Throwable throwable = Objects.requireNonNull(tr).getThrowable();
-        boolean bubbleUpFailures =
-            m_configuration.isPropagateDataProviderFailureAsTestFailure()
-                || bag.isBubbleUpFailures();
-
-        if (!(throwable instanceof SkipException)
-            && (throwable instanceof TestNGException || bubbleUpFailures)) {
-          tr.setStatus(ITestResult.FAILURE);
-          m_notifier.addFailedTest(arguments.getTestMethod(), tr);
-        } else {
-          tr.setStatus(ITestResult.SKIP);
-          m_notifier.addSkippedTest(arguments.getTestMethod(), tr);
-        }
-        runTestResultListener(tr);
+        ITestResult tr = classifyParameterFailure(bag);
+        reportUninvoked(arguments.getTestMethod(), tr);
         result.add(tr);
         return invocationCount.get();
       }

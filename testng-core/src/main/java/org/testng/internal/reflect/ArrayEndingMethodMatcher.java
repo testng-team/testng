@@ -35,7 +35,25 @@ public class ArrayEndingMethodMatcher extends AbstractNodeMethodMatcher {
    */
   @Override
   protected boolean match(final Parameter[] parameters, final Object[] arguments) {
-    return ReflectionRecipes.matchArrayEnding(parameters, getContext().getArguments());
+    return isTail(parameters)
+        && ReflectionRecipes.matchArrayEnding(parameters, getContext().getArguments());
+  }
+
+  /**
+   * An array absorbs the trailing arguments only when it is the last parameter the caller supplies
+   * in the signature as declared. Dropping the parameters a resolver owns can leave an array last
+   * in the filtered set although another parameter follows it in the method -- that array is an
+   * ordinary one, and a row with more values than parameters is a mismatch, as it is with no
+   * resolver at all.
+   */
+  private boolean isTail(final Parameter[] parameters) {
+    if (parameters.length == 0) {
+      return false;
+    }
+    final Parameter[] fromCaller =
+        ReflectionRecipes.filter(getContext().getMethodParameter(), ALL_INJECTS);
+    return fromCaller.length > 0
+        && fromCaller[fromCaller.length - 1].equals(parameters[parameters.length - 1]);
   }
 
   /** {@inheritDoc} */

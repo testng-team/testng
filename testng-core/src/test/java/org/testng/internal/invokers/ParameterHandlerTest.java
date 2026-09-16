@@ -30,6 +30,7 @@ public class ParameterHandlerTest extends SimpleBaseTest {
           new ITestObjectFactory() {},
           configuration.getAnnotationFinder(),
           new DataProviderHolder(configuration),
+          Collections.emptyList(),
           0);
 
   @Test
