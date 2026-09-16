@@ -7,7 +7,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 
 /**
- * Answers the first invocation and throws on every later one -- a resolver that breaks on retry.
+ * Throws on exactly its second resolution -- the retry of a first attempt -- and answers otherwise.
  */
 public class FailsOnSecondResolutionResolver implements IParameterResolver {
 
@@ -21,7 +21,7 @@ public class FailsOnSecondResolutionResolver implements IParameterResolver {
 
   @Override
   public Object resolveParameter(Parameter parameter, ITestNGMethod method, ITestContext context) {
-    if (resolutions.incrementAndGet() > 1) {
+    if (resolutions.incrementAndGet() == 2) {
       throw new IllegalStateException("resolver broke on the retry");
     }
     return new CustomObject("first");

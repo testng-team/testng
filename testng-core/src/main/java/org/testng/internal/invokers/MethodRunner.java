@@ -130,6 +130,7 @@ public class MethodRunner implements IMethodRunner {
               testInvoker,
               arguments.getTestMethod(),
               parametersIndex,
+              row,
               () -> Parameters.injectParameters(row, arguments.getTestMethod(), context, resolvers),
               arguments.getInstance(),
               arguments.getParameters(),

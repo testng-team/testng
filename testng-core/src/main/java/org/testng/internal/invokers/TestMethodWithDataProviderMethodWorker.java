@@ -10,6 +10,7 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.TestNGException;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.xml.XmlSuite;
 
@@ -24,6 +25,9 @@ public class TestMethodWithDataProviderMethodWorker
    * the one that gets it.
    */
   private final Supplier<Object[]> m_parameterValues;
+
+  /** The row as the provider gave it, for the failure that names it when it does not fit. */
+  private final Object[] m_row;
 
   private final Object m_instance;
   private final Map<String, String> m_parameters;
@@ -44,6 +48,7 @@ public class TestMethodWithDataProviderMethodWorker
       ITestInvoker testInvoker,
       ITestNGMethod testMethod,
       int parameterIndex,
+      Object[] row,
       Supplier<Object[]> parameterValues,
       Object instance,
       Map<String, String> parameters,
@@ -58,6 +63,7 @@ public class TestMethodWithDataProviderMethodWorker
     this.m_testInvoker = testInvoker;
     m_testMethod = testMethod;
     m_parameterIndex = parameterIndex;
+    m_row = row;
     m_parameterValues = parameterValues;
     m_instance = instance;
     m_parameters = parameters;
@@ -75,7 +81,16 @@ public class TestMethodWithDataProviderMethodWorker
   public List<ITestResult> call() {
     List<ITestResult> tmpResults = new ArrayList<>();
     long start = System.currentTimeMillis();
-    Object[] parameterValues = m_parameterValues.get();
+    Object[] parameterValues;
+    try {
+      parameterValues = m_parameterValues.get();
+    } catch (TestNGException rowDoesNotFit) {
+      // Thrown here, on the worker, it would come back through join() wrapped in a
+      // CompletionException. Reported here instead, it is this row's own failure, and the
+      // rows on the other workers still run.
+      m_testResults.add(m_testInvoker.failRowThatDoesNotFit(m_testMethod, m_row, rowDoesNotFit));
+      return m_testResults;
+    }
     XmlSuite suite = m_testContext.getSuite().getXmlSuite();
 
     final ITestInvoker.FailureContext failure = new ITestInvoker.FailureContext();

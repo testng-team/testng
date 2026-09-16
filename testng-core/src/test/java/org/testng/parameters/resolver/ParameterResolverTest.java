@@ -5,8 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.lang.reflect.Method;
 import java.util.List;
 import org.testng.ITestContext;
+import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
+import org.testng.TestNGException;
 import org.testng.annotations.Test;
 import org.testng.internal.reflect.MethodMatcherException;
 import org.testng.parameters.samples.resolver.ArrayBeforeResolvedSample;
@@ -30,6 +32,7 @@ import org.testng.parameters.samples.resolver.ObjectArrayAfterResolvedSample;
 import org.testng.parameters.samples.resolver.ObjectArrayClaimedSample;
 import org.testng.parameters.samples.resolver.ObjectArrayControlSample;
 import org.testng.parameters.samples.resolver.OptionalOnResolvedParameterSample;
+import org.testng.parameters.samples.resolver.ParallelBadRowSample;
 import org.testng.parameters.samples.resolver.ParallelDataProviderSample;
 import org.testng.parameters.samples.resolver.ParameterRecorder;
 import org.testng.parameters.samples.resolver.ResolvedAfterDataProviderSample;
@@ -40,6 +43,7 @@ import org.testng.parameters.samples.resolver.RetryRereadingItsRowSample;
 import org.testng.parameters.samples.resolver.RetryRowShrinksSample;
 import org.testng.parameters.samples.resolver.RetryThenConfigFailureSample;
 import org.testng.parameters.samples.resolver.RetryWithBlankedRowSample;
+import org.testng.parameters.samples.resolver.RetryWithCachedRowAndFailingResolverSample;
 import org.testng.parameters.samples.resolver.RetryWithFailingDataProviderSample;
 import org.testng.parameters.samples.resolver.RetryWithFailingResolverSample;
 import org.testng.parameters.samples.resolver.RowDroppingInterceptor;
@@ -660,6 +664,47 @@ public class ParameterResolverTest extends SimpleBaseTest {
     assertThat(((GreetingService) p[1]).greet("Linus")).isEqualTo("hello Linus");
     assertThat(p[2]).isEqualTo("Linus");
     assertThat(p[3]).isEqualTo(List.of("Ada", "Grace"));
+  }
+
+  @Test(
+      description =
+          "GITHUB-1164: a resolver that throws on a cached-row retry fails that retry and nothing"
+              + " else")
+  public void resolverFailingOnCachedRowRetryKeepsTheRemainingRows() {
+    ParameterRecorder.clear();
+    TestNG testng = create(RetryWithCachedRowAndFailingResolverSample.class);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    testng.addListener(adapter);
+    testng.addListener(new FailsOnSecondResolutionResolver());
+    testng.run();
+
+    List<Object[]> rows = ParameterRecorder.invocationsOf("test");
+    assertThat(rows).extracting(r -> r[1]).contains("b", "c");
+    assertThat(adapter.getFailedTests()).hasSize(1);
+    ITestResult failed = adapter.getFailedTests().get(0);
+    assertThat(failed.getThrowable())
+        .isInstanceOf(TestNGException.class)
+        .hasMessageContaining(FailsOnSecondResolutionResolver.class.getName());
+    assertThat(failed.getParameters()).hasSize(2).contains("a");
+  }
+
+  @Test(description = "A parallel data provider row that does not fit fails as itself, unwrapped")
+  public void parallelBadRowFailsAsItself() {
+    ParameterRecorder.clear();
+    TestNG testng = create(ParallelBadRowSample.class);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    testng.addListener(adapter);
+    testng.run();
+
+    assertThat(ParameterRecorder.invocationsOf("test"))
+        .extracting(r -> r[0])
+        .containsExactlyInAnyOrder("a", "c");
+    assertThat(adapter.getFailedTests()).hasSize(1);
+    ITestResult failed = adapter.getFailedTests().get(0);
+    // The exception a listener reads is the matcher's own, not a CompletionException around it,
+    // and it carries the row that did not fit.
+    assertThat(failed.getThrowable()).isInstanceOf(MethodMatcherException.class);
+    assertThat(failed.getParameters()).containsExactly("b");
   }
 
   private static Throwable causeOfOnlyFailure(SampleRun run) {

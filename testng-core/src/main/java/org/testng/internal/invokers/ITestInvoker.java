@@ -12,6 +12,7 @@ import org.testng.IParameterResolver;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.TestNGException;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ITestResultNotifier;
@@ -56,6 +57,13 @@ public interface ITestInvoker {
    * parameters TestNG does not own itself.
    */
   Collection<IParameterResolver> getParameterResolvers();
+
+  /**
+   * Reports a data provider row that does not fit the method as a failure of its own, carrying the
+   * row and the matcher's exception as it was thrown, so a listener reads the same throwable it
+   * would read from a sequential run. Returned for the caller to keep with its other results.
+   */
+  ITestResult failRowThatDoesNotFit(ITestNGMethod testMethod, Object[] row, TestNGException cause);
 
   /** For an invocation nothing was ever resolved for, so there are no values to report it with. */
   default ITestResult registerSkippedTestResult(

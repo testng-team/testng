@@ -386,9 +386,20 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       }
       if (!rebuilt && parameterValues != null) {
         // The row is reused, the resolution is not. Only the positions a resolver owns change.
-        parameterValues =
-            Parameters.resolveAgain(
-                parameterValues, arguments.getTestMethod(), testContext, resolvers);
+        try {
+          parameterValues =
+              Parameters.resolveAgain(
+                  parameterValues, arguments.getTestMethod(), testContext, resolvers);
+        } catch (TestNGException resolverFailed) {
+          // A resolver that breaks on the retry fails this retry, carrying the arguments the
+          // attempt came in with, and leaves the other rows to run.
+          ITestResult tr =
+              resultForRowThatDoesNotFit(
+                  arguments.getTestMethod(), parameterValues, resolverFailed);
+          reportUninvoked(arguments.getTestMethod(), tr);
+          result.add(tr);
+          break;
+        }
       }
       TestMethodArguments tma =
           new TestMethodArguments.Builder()
@@ -434,6 +445,14 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         !(throwable instanceof SkipException)
             && (throwable instanceof TestNGException || bubbleUpFailures);
     tr.setStatus(failure ? ITestResult.FAILURE : ITestResult.SKIP);
+    return tr;
+  }
+
+  @Override
+  public ITestResult failRowThatDoesNotFit(
+      ITestNGMethod testMethod, Object[] row, TestNGException cause) {
+    ITestResult tr = resultForRowThatDoesNotFit(testMethod, row, cause);
+    reportUninvoked(testMethod, tr);
     return tr;
   }
 
