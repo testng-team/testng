@@ -210,6 +210,7 @@ suspect sweep in the plan only looks at classes named `*Test`.
 | `GITHUB-1636` | Parallel test run is not working in 6.13.1 | "Parallel test run is not working in 6.13.1. Closes #1636" | links commit |
 | `GITHUB-2532` | -parallel -threadcount CLI switches has no effect on test jar | "Unit tests for #2532" | **no link** |
 | `GITHUB-2321` | -Dtestng.thread.affinity=true do not work when running multiple instance of test in parallel | branch `github-2321`, in PR #2368 | **no link** |
+| `GITHUB-2110` | NPE is thrown when running with Thread affinity | "Fix NPE in Thread affinity mode. Closes #2110" | links commit |
 
 <!-- vale on -->
 
@@ -232,10 +233,22 @@ names the same pull request for each.
 Four references already in the code are re-proven: `GITHUB-3066`, `GITHUB-2019`, `GITHUB-3242` and
 `GITHUB-3179`.
 
-`GITHUB-2110` on `ThreadAffinityTest#ensureNoNPEIsThrown` stays, and it is not proven by the rule. The
-method came in with pull request #2368, which closes only #2321. A maintainer wrote the description
-before this migration, and the method name matches the title of #2110, "NPE is thrown when running
-with Thread affinity". So it is kept, not rewritten and not removed.
+`GITHUB-2110` on `ThreadAffinityTest#ensureNoNPEIsThrown` is proven through the file the test came
+from. `METHOD` mode answers with `839a01980`, in pull request #2368, which closes only #2321. That
+commit did not write the test. It deleted `test/thread/parallelization/issue2110/IssueTest.java` and
+moved the only test of that file into `ThreadAffinityTest`, under a new name. The script follows the
+history of one file, so it cannot see a method move from one file to another.
+
+The file the test came from is proven by the script:
+
+    PROVENANCE_ONLY=1 scripts/verify-issue-refs.sh parallelization/issue2110/IssueTest.java 2110
+
+It prints `introduced  da1fa3317` and `provenance  the introducing commit names it: #2110`, and it
+exits 0. The row above is the output of `evidence-row.sh` for that same file. The moved test runs the
+same suite with the same settings, and it asserts the same thing. Compare the two versions:
+
+    git show da1fa3317:src/test/java/test/thread/parallelization/issue2110/IssueTest.java
+    git show 839a01980:src/test/java/test/thread/parallelization/ThreadAffinityTest.java
 
 Phase 6 also brings three tests into the suite. None of them had ever run.
 

@@ -824,14 +824,26 @@ write "$r" src/foo/MixedTest.java "Fix #111" 'class X {
 check "method: a name that ends with this one is a different method" "NO COMMIT" \
   "$(verdict "$r" src/foo/MixedTest.java 111 METHOD=target)"
 
-# Asking two modes at once is a mistake, not a choice. The file carries a real GITHUB-111 written by
-# a commit that names #111, so BY_DESCRIPTION alone would prove it. Only the refusal fails this.
+# Asking two modes at once is a mistake, not a choice. The fixture is valid for both: the class
+# declares target() with a GITHUB-111 description, and a commit that names #111 wrote both. So each
+# mode alone proves it, which the first two checks confirm. Only the refusal can stop the combined
+# run, and the checks after them read the refusal itself, not a missing method.
 r=$(new_repo)
-add "$r" src/foo/MixedTest.java "Create the class"
-printf '/* GITHUB-111 */ void target() {}\n' >> "$r/src/foo/MixedTest.java"
-git -C "$r" commit -q -am "Fix #111"
-check "method: METHOD with BY_DESCRIPTION is refused" "NO COMMIT" \
-  "$(verdict "$r" src/foo/MixedTest.java 111 METHOD=target BY_DESCRIPTION=1)"
+write "$r" src/foo/MixedTest.java "Create the class" 'class X {
+}'
+write "$r" src/foo/MixedTest.java "Fix #111" 'class X {
+  @Test(description = "GITHUB-111")
+  void target() {}
+}'
+check "method: METHOD alone proves the combined fixture" PROVEN \
+  "$(verdict "$r" src/foo/MixedTest.java 111 METHOD=target)"
+check "method: BY_DESCRIPTION alone proves the combined fixture" PROVEN \
+  "$(verdict "$r" src/foo/MixedTest.java 111 BY_DESCRIPTION=1)"
+out=$(cd "$r" && METHOD=target BY_DESCRIPTION=1 PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/MixedTest.java 111 2>&1)
+rc=$?
+check "method: METHOD with BY_DESCRIPTION exits 1" 1 "$rc"
+check "method: METHOD with BY_DESCRIPTION says why" yes "$(says 'set only one' "$out")"
+check "method: METHOD with BY_DESCRIPTION gives no verdict" no "$(says provenance "$out")"
 
 # The file's first commit names one issue and the method's commit names another.
 r=$(new_repo)

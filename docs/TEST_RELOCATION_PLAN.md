@@ -407,15 +407,14 @@ on master, and opens a pull request if it moved.
 1. **#3444 is rebuilt as phase 1.** Merging it as-is would move every class it touches twice, which
    is the objection the review raised.
 2. **`test.thread` becomes `org.testng.concurrency`**, with a `package-info.java` recording the
-   NullAway reason.
+   NullAway reason. The review of
+   [#3520](https://github.com/testng-team/testng/pull/3520) settles the name.
 3. **The 33 suspect classes are confirmed or promoted per phase**, not deferred to an audit issue.
 
 Raised with the reviewer in
 [this comment](https://github.com/testng-team/testng/pull/3444#issuecomment-5550403468) and waiting
 on an answer:
 
-- **the `org.testng.concurrency` name**, since it is the one departure from the mechanical mapping.
-  It only blocks phase 6, so phases 2 to 5 can run without it;
 - **dropping the five JIRA references** rather than writing them as `TESTNG-<n>`. They are verified
   and the commits quote their titles, but `jira.opensymphony.com` no longer resolves, so the
   identifier would point at nothing. Reinstating them as prose is the alternative.
