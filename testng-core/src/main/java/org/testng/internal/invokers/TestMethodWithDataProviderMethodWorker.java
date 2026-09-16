@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -16,7 +17,14 @@ public class TestMethodWithDataProviderMethodWorker
     implements Callable<List<ITestResult>>, Comparable<TestMethodWithDataProviderMethodWorker> {
 
   private final ITestNGMethod m_testMethod;
-  private final Object[] m_parameterValues;
+
+  /**
+   * Built on the worker's own thread, in {@link #call()}, not on the thread that schedules the
+   * rows: a resolver may bind what it creates to the thread it runs on, and the invocation must be
+   * the one that gets it.
+   */
+  private final Supplier<Object[]> m_parameterValues;
+
   private final Object m_instance;
   private final Map<String, String> m_parameters;
   private final ITestClass m_testClass;
@@ -36,7 +44,7 @@ public class TestMethodWithDataProviderMethodWorker
       ITestInvoker testInvoker,
       ITestNGMethod testMethod,
       int parameterIndex,
-      Object[] parameterValues,
+      Supplier<Object[]> parameterValues,
       Object instance,
       Map<String, String> parameters,
       ITestClass testClass,
@@ -67,6 +75,7 @@ public class TestMethodWithDataProviderMethodWorker
   public List<ITestResult> call() {
     List<ITestResult> tmpResults = new ArrayList<>();
     long start = System.currentTimeMillis();
+    Object[] parameterValues = m_parameterValues.get();
     XmlSuite suite = m_testContext.getSuite().getXmlSuite();
 
     final ITestInvoker.FailureContext failure = new ITestInvoker.FailureContext();
@@ -77,7 +86,7 @@ public class TestMethodWithDataProviderMethodWorker
               new TestMethodArguments.Builder()
                   .usingInstance(m_instance)
                   .forTestMethod(m_testMethod)
-                  .withParameterValues(m_parameterValues)
+                  .withParameterValues(parameterValues)
                   .withParametersIndex(m_parameterIndex)
                   .withParameters(m_parameters)
                   .forTestClass(m_testClass)
@@ -101,7 +110,7 @@ public class TestMethodWithDataProviderMethodWorker
                       new TestMethodArguments.Builder()
                           .usingInstance(instance)
                           .forTestMethod(m_testMethod)
-                          .withParameterValues(m_parameterValues)
+                          .withParameterValues(parameterValues)
                           .withParametersIndex(m_parameterIndex)
                           .withParameters(m_parameters)
                           .forTestClass(m_testClass)
@@ -128,7 +137,7 @@ public class TestMethodWithDataProviderMethodWorker
               m_invocationCount,
               m_failureCount,
               m_skipFailedInvocationCounts,
-              m_parameterValues,
+              parameterValues,
               start));
     }
     m_parameterIndex++;

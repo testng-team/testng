@@ -58,12 +58,12 @@ import org.jspecify.annotations.Nullable;
  * <h2>Contract</h2>
  *
  * <ul>
- *   <li><b>Native injection wins.</b> A resolver is never asked about a parameter TestNG injects
- *       natively -- the first {@link java.lang.reflect.Method} parameter, and every {@link
- *       ITestContext}, {@link ITestResult} and {@link org.testng.xml.XmlTest} one -- so it cannot
- *       displace one. What TestNG does not inject is offered: a second {@code Method} parameter, or
- *       one carrying {@link org.testng.annotations.NoInjection}, before falling through to the data
- *       provider.
+ *   <li><b>Native injection wins.</b> A resolver is never asked about a parameter TestNG supplies
+ *       itself -- the first {@link java.lang.reflect.Method} parameter, every {@link ITestContext},
+ *       {@link ITestResult} and {@link org.testng.xml.XmlTest} one, and an {@code Object[]} -- so
+ *       it cannot displace one. What TestNG does not inject is offered: a second {@code Method}
+ *       parameter, or one carrying {@link org.testng.annotations.NoInjection}, before falling
+ *       through to the data provider.
  *   <li><b>Ownership is exclusive.</b> If more than one enabled resolver claims the same parameter,
  *       TestNG fails the method with a {@link TestNGException} naming the test method, the
  *       parameter and every competing resolver, rather than picking one by registration order.
@@ -80,11 +80,12 @@ import org.jspecify.annotations.Nullable;
  *
  * <h2>Lifecycle</h2>
  *
- * <p>{@link #supportsParameter} is consulted while the arguments of an invocation are being built,
- * and must be a stable, side effect free decision for a given parameter. {@link #resolveParameter}
- * is called once per parameter per invocation -- so once per data provider row, and once more for
- * every retry attempt, whether or not the row itself is cached -- immediately before the test
- * method runs, which is where a resolver creates whatever per invocation state it owns.
+ * <p>{@link #supportsParameter} is consulted while the arguments of an invocation are being built
+ * -- possibly more than once for the same invocation -- and must be a stable, side effect free
+ * decision for a given parameter. {@link #resolveParameter} is called once per parameter per
+ * invocation -- so once per data provider row, and once more for every retry attempt, whether or
+ * not the row itself is cached -- immediately before the test method runs, which is where a
+ * resolver creates whatever per invocation state it owns.
  *
  * <p>A resolver registered on a suite is visible to every {@code <test>} of that suite, which is
  * the scope the other data driven listeners already have.

@@ -122,15 +122,15 @@ public class MethodRunner implements IMethodRunner {
         parametersIndex++;
         continue;
       }
-      Object[] parameterValues =
-          Parameters.injectParameters(next, arguments.getTestMethod(), context, resolvers);
-
+      // Deferred to the worker: the row is matched, and its owned parameters resolved, on the
+      // thread that will invoke the method, not here where every row would be built at once.
+      Object[] row = next;
       workers.add(
           new TestMethodWithDataProviderMethodWorker(
               testInvoker,
               arguments.getTestMethod(),
               parametersIndex,
-              parameterValues,
+              () -> Parameters.injectParameters(row, arguments.getTestMethod(), context, resolvers),
               arguments.getInstance(),
               arguments.getParameters(),
               arguments.getTestClass(),

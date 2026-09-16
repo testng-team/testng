@@ -67,7 +67,14 @@ public class DataProviderMethodMatcher extends AbstractMethodMatcher {
     // native injections left in (the NONE pass). Without a resolver that is every parameter.
     final int expectedWithNatives =
         ReflectionRecipes.filter(methodParameters, NONE, resolved).length;
-    final boolean arrayEnding = expected > 0 && fromProvider[expected - 1].getType().isArray();
+    // A tail only when the array is the last parameter the caller supplies as declared -- the
+    // same rule ArrayEndingMethodMatcher applies -- not merely last once the owned ones are out.
+    final Parameter[] declaredFromCaller = ReflectionRecipes.filter(methodParameters, ALL_INJECTS);
+    final boolean arrayEnding =
+        expected > 0
+            && fromProvider[expected - 1].getType().isArray()
+            && declaredFromCaller.length > 0
+            && declaredFromCaller[declaredFromCaller.length - 1].equals(fromProvider[expected - 1]);
     if (arrayEnding) {
       if (supplied < expected) {
         return countMismatch(expected, supplied);

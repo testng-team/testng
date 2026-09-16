@@ -175,8 +175,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               if (next == null) {
                 continue;
               }
+              // Reported, never invoked: the owned positions are shaped, not resolved. A
+              // resolver that opens something would otherwise open one per row that nothing
+              // closes, and one that throws would take the whole report down.
               Object[] parameterValues =
-                  Parameters.injectParameters(next, testMethod, context, resolvers);
+                  Parameters.parametersForReporting(next, testMethod, context, resolvers);
               ITestResult result =
                   registerSkippedTestResult(
                       testMethod,
@@ -300,6 +303,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       ITestContext testContext) {
     FailureContext failure = new FailureContext();
     failure.count.set(failureCount);
+    // Read once: the accessor sorts the resolvers, and every attempt would otherwise re-sort them.
+    Collection<IParameterResolver> resolvers = getParameterResolvers();
     do {
       failure.instances = new ArrayList<>();
       boolean cacheData =
@@ -307,6 +312,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               .map(IDataProviderMethod::cacheDataForTestRetries)
               .orElse(true);
       Object[] parameterValues = arguments.getParameterValues();
+      // Whether this attempt's arguments already went through the matcher -- and so through the
+      // resolvers -- on the way here. Every other route reuses a built array, and has to resolve
+      // the owned positions again: a retry is an invocation of its own.
+      boolean rebuilt = false;
+      // Set when this attempt already has its result -- a row that could not be rebuilt -- and
+      // there is nothing left to invoke.
+      boolean reported = false;
       if (!cacheData) {
         Map<String, String> allParameters = new HashMap<>();
         int verbose = testContext.getCurrentXmlTest().getVerbose();
@@ -315,20 +327,20 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 m_configuration.getObjectFactory(),
                 annotationFinder(),
                 this.holder,
-                getParameterResolvers(),
+                resolvers,
                 verbose);
 
         ParameterBag bag =
             handler.createParameters(
                 arguments.getTestMethod(), arguments.getParameters(), allParameters, testContext);
         if (bag.hasErrors()) {
-          // The row could not be rebuilt -- a provider that answers only once, say. That is this
+          // The row could not be rebuilt -- a provider that answers only once, say. That is the
           // outcome of this retry, and it is reported the way the first attempt would have been.
           // Leaving the loop with nothing recorded turned a failed method into a skipped one.
           result.add(reportParameterFailure(bag, arguments.getTestMethod()));
-          return failure;
+          reported = true;
         }
-        if (bag.parameterHolder != null) {
+        if (!reported && bag.parameterHolder != null) {
           try {
             Iterator<Object @Nullable []> it = bag.parameterHolder.parameters;
             int targetIndex = arguments.getParametersIndex();
@@ -343,9 +355,18 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                   // provider supplies. It has to go back through the matcher, or everything
                   // TestNG supplies itself -- a native injection, a resolved parameter -- is
                   // dropped and the retry invokes the method with the wrong arity.
-                  parameterValues =
-                      Parameters.injectParameters(
-                          current, arguments.getTestMethod(), testContext, getParameterResolvers());
+                  try {
+                    parameterValues =
+                        Parameters.injectParameters(
+                            current, arguments.getTestMethod(), testContext, resolvers);
+                  } catch (TestNGException rowDoesNotFit) {
+                    // The re-read row no longer fits the method. That fails this retry, carrying
+                    // the row it was given, and leaves the other rows to run.
+                    result.add(
+                        reportRowThatDoesNotFit(arguments.getTestMethod(), current, rowDoesNotFit));
+                    reported = true;
+                  }
+                  rebuilt = true;
                 }
                 break;
               }
@@ -354,12 +375,15 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             bag.parameterHolder.close();
           }
         }
-      } else if (parameterValues != null) {
-        // The row is reused, the resolution is not: a retry is an invocation of its own, and a
-        // resolver is promised a call per invocation. Only the positions it owns change.
+      }
+      if (reported) {
+        break;
+      }
+      if (!rebuilt && parameterValues != null) {
+        // The row is reused, the resolution is not. Only the positions a resolver owns change.
         parameterValues =
             Parameters.resolveAgain(
-                parameterValues, arguments.getTestMethod(), testContext, getParameterResolvers());
+                parameterValues, arguments.getTestMethod(), testContext, resolvers);
       }
       TestMethodArguments tma =
           new TestMethodArguments.Builder()
@@ -377,6 +401,20 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // The caller keeps this context for the invocations that follow, and those are not retries.
     failure.ignoredFailureMark = IConfigInvoker.NO_IGNORED_FAILURES;
     return failure;
+  }
+
+  /**
+   * Reports a retry whose re-read row no longer fits the method, with that row as its parameters,
+   * so the failure is attributed to the row that caused it and the rows after it still run.
+   */
+  private ITestResult reportRowThatDoesNotFit(
+      ITestNGMethod testMethod, Object[] row, TestNGException cause) {
+    ITestResult tr = TestResult.newTestResultWithCauseAs(testMethod, m_testContext, cause);
+    tr.setParameters(row);
+    tr.setStatus(ITestResult.FAILURE);
+    m_notifier.addFailedTest(testMethod, tr);
+    runTestResultListener(tr);
+    return tr;
   }
 
   /**

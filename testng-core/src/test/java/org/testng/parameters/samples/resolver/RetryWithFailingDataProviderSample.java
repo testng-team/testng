@@ -11,11 +11,12 @@ import org.testng.annotations.Test;
  */
 public class RetryWithFailingDataProviderSample {
 
-  private static final AtomicInteger CALLS = new AtomicInteger();
+  // Per instance, so a second run of this class in the same JVM starts over.
+  private final AtomicInteger calls = new AtomicInteger();
 
   @DataProvider(name = "dp", cacheDataForTestRetries = false)
   public Object[][] dp() {
-    if (CALLS.incrementAndGet() > 1) {
+    if (calls.incrementAndGet() > 1) {
       throw new IllegalStateException("provider broke on the retry");
     }
     return new Object[][] {{"value"}};

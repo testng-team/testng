@@ -778,11 +778,19 @@ public class Parameters {
     //
     Collections.addAll(result, extraParameters);
 
-    // If the method declared an Object[] parameter and we have parameter values, inject them
+    // If the method declared an Object[] parameter and we have parameter values, inject them. The
+    // slot is counted among the parameters that reached this point: a parameter a resolver owns
+    // is not in the list, so its position must not be either.
+    Parameter[] declared = resolved.isEmpty() ? null : extractParameters(m);
+    int slot = 0;
     for (int i = 0; i < types.length; i++) {
-      if (Object[].class.equals(types[i])) {
-        result.add(i, params.parameterValues);
+      if (declared != null && resolved.owns(declared[i])) {
+        continue;
       }
+      if (Object[].class.equals(types[i])) {
+        result.add(slot, params.parameterValues);
+      }
+      slot++;
     }
 
     return result.toArray(new Object[0]);
@@ -814,7 +822,7 @@ public class Parameters {
         annotationFinder,
         fedInstance,
         holder,
-        "@Test");
+        TEST_ANNOTATION);
   }
 
   /**
@@ -1040,13 +1048,42 @@ public class Parameters {
    * @param parameterValues parameter values from a data provider
    * @param method method to be invoked
    * @param context test context
+   * @deprecated since 7.13.0. This form knows nothing of the {@link IParameterResolver}s a run
+   *     registers, so a parameter one of them owns is counted against the data provider row and the
+   *     method fails on arity. Use {@link #injectParameters(Object[], ITestNGMethod, ITestContext,
+   *     Collection)}, which TestNG itself calls.
    */
+  @Deprecated
   public static Object[] injectParameters(
       Object[] parameterValues, Method method, ITestContext context) throws TestNGException {
     MethodMatcherContext matcherContext =
         new MethodMatcherContext(method, parameterValues, context, null);
     final MethodMatcher matcher = new DataProviderMethodMatcher(matcherContext);
     return matcher.getConformingArguments();
+  }
+
+  /**
+   * The arguments an invocation that will only be reported would have had: a resolver-owned
+   * position holds {@code null} and no resolver runs, since nothing consumes what it would create.
+   *
+   * @param parameterValues parameter values from a data provider, empty when there is none
+   * @param testMethod the test method that is reported
+   * @param context test context
+   * @param parameterResolvers the resolvers registered for the suite the method belongs to
+   */
+  public static Object[] parametersForReporting(
+      Object[] parameterValues,
+      ITestNGMethod testMethod,
+      ITestContext context,
+      Collection<IParameterResolver> parameterResolvers)
+      throws TestNGException {
+    Method method = testMethod.getConstructorOrMethod().requireMethod();
+    ResolvedParameters placeholders =
+        ResolvedParameters.placeholders(
+            ReflectionRecipes.getMethodParameters(method), testMethod, context, parameterResolvers);
+    MethodMatcherContext matcherContext =
+        new MethodMatcherContext(method, parameterValues, context, null, placeholders);
+    return new DataProviderMethodMatcher(matcherContext).getConformingArguments();
   }
 
   /**

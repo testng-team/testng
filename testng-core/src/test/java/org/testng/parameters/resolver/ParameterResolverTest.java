@@ -9,29 +9,45 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.internal.reflect.MethodMatcherException;
+import org.testng.parameters.samples.resolver.ArrayBeforeResolvedSample;
 import org.testng.parameters.samples.resolver.CompetingParameterResolver;
 import org.testng.parameters.samples.resolver.ConfigurableParameterResolver;
 import org.testng.parameters.samples.resolver.CountingParameterResolver;
 import org.testng.parameters.samples.resolver.CustomObject;
 import org.testng.parameters.samples.resolver.FailsOnSecondResolutionResolver;
+import org.testng.parameters.samples.resolver.GreetingService;
+import org.testng.parameters.samples.resolver.GuiceParameterResolver;
+import org.testng.parameters.samples.resolver.GuiceResolverModule;
+import org.testng.parameters.samples.resolver.GuiceSample;
 import org.testng.parameters.samples.resolver.ListenersAnnotationSample;
 import org.testng.parameters.samples.resolver.MethodAnsweringResolver;
 import org.testng.parameters.samples.resolver.MultipleResolvedParametersSample;
 import org.testng.parameters.samples.resolver.NativeInjectionSample;
 import org.testng.parameters.samples.resolver.NoDataProviderSample;
+import org.testng.parameters.samples.resolver.NoInjectionClaimedSample;
 import org.testng.parameters.samples.resolver.NoInjectionSample;
+import org.testng.parameters.samples.resolver.ObjectArrayAfterResolvedSample;
+import org.testng.parameters.samples.resolver.ObjectArrayClaimedSample;
+import org.testng.parameters.samples.resolver.ObjectArrayControlSample;
 import org.testng.parameters.samples.resolver.OptionalOnResolvedParameterSample;
+import org.testng.parameters.samples.resolver.ParallelDataProviderSample;
 import org.testng.parameters.samples.resolver.ParameterRecorder;
 import org.testng.parameters.samples.resolver.ResolvedAfterDataProviderSample;
 import org.testng.parameters.samples.resolver.ResolvedBeforeDataProviderSample;
 import org.testng.parameters.samples.resolver.ResolvedBetweenDataProviderValuesSample;
 import org.testng.parameters.samples.resolver.RetriedWithCachedRowSample;
 import org.testng.parameters.samples.resolver.RetryRereadingItsRowSample;
+import org.testng.parameters.samples.resolver.RetryRowShrinksSample;
+import org.testng.parameters.samples.resolver.RetryThenConfigFailureSample;
+import org.testng.parameters.samples.resolver.RetryWithBlankedRowSample;
 import org.testng.parameters.samples.resolver.RetryWithFailingDataProviderSample;
 import org.testng.parameters.samples.resolver.RetryWithFailingResolverSample;
+import org.testng.parameters.samples.resolver.RowDroppingInterceptor;
 import org.testng.parameters.samples.resolver.SampleParameterResolver;
 import org.testng.parameters.samples.resolver.SampleRun;
 import org.testng.parameters.samples.resolver.SecondMethodParameterSample;
+import org.testng.parameters.samples.resolver.SkippedDataDrivenSample;
+import org.testng.parameters.samples.resolver.ThreadRecordingResolver;
 import org.testng.parameters.samples.resolver.TooManyDataProviderValuesSample;
 import org.testng.parameters.samples.resolver.UnrenderableValue;
 import org.testng.parameters.samples.resolver.UnsupportedParameterSample;
@@ -477,6 +493,173 @@ public class ParameterResolverTest extends SimpleBaseTest {
     List<Object[]> both = ParameterRecorder.invocationsOf("test");
     assertThat(both).hasSize(2);
     assertThat(both).allSatisfy(p -> assertThat(p[0]).isInstanceOf(CustomObject.class));
+  }
+
+  // ---- review round 3 ----
+
+  @Test(description = "A retry that cannot rebuild its row still honors a recorded config failure")
+  public void retryThatCannotRebuildItsRowKeepsHonoringConfigFailures() {
+    ParameterRecorder.clear();
+    TestNG testng = create(RetryThenConfigFailureSample.class);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    testng.addListener(adapter);
+    testng.run();
+
+    // The @AfterMethod failed after the first row's first attempt. Once that is on record, the
+    // second row must be skipped, as it is when no retry ran out of rows to read.
+    assertThat(adapter.getPassedTests()).isEmpty();
+    assertThat(ParameterRecorder.invocationsOf("test"))
+        .noneSatisfy(p -> assertThat(p[0]).isEqualTo("second"));
+  }
+
+  @Test(description = "A retry whose re-read row no longer fits fails that retry, not the method")
+  public void retryWithARowThatNoLongerFitsKeepsTheRemainingRows() {
+    ParameterRecorder.clear();
+    TestNG testng = create(RetryRowShrinksSample.class);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    testng.addListener(adapter);
+    testng.run();
+
+    List<Object[]> rows = ParameterRecorder.invocationsOf("test");
+    assertThat(rows).anySatisfy(p -> assertThat(p[0]).isEqualTo("c"));
+    assertThat(adapter.getFailedTests())
+        .anySatisfy(
+            r -> {
+              assertThat(r.getThrowable()).isInstanceOf(MethodMatcherException.class);
+              assertThat(r.getParameters()).containsExactly("b");
+            });
+  }
+
+  @Test(description = "GITHUB-1164: an array that is not the last declared parameter is no tail")
+  public void arrayBeforeAResolvedParameterIsNotVarargs() {
+    SampleRun run = SampleRun.of(ArrayBeforeResolvedSample.class, new SampleParameterResolver());
+
+    assertThat(ParameterRecorder.invocationsOf("test")).isEmpty();
+    assertThat(run.failureMessages()).hasSize(1);
+    assertThat(run.failureMessages().get(0)).contains("Data provider mismatch");
+  }
+
+  @Test(description = "GITHUB-1164: an Object[] slot TestNG fills lands in its own position")
+  public void objectArrayAfterAResolvedParameter() {
+    SampleRun run =
+        SampleRun.of(ObjectArrayAfterResolvedSample.class, new SampleParameterResolver());
+    assertThat(run.failureMessages()).isEmpty();
+
+    Object[] parameters = ParameterRecorder.onlyInvocationOf("test");
+    assertThat(parameters[0]).isInstanceOf(CustomObject.class);
+    assertThat(parameters[1]).isEqualTo("x");
+    assertThat(parameters[2]).isNull();
+  }
+
+  @Test(description = "GITHUB-1164: an Object[] parameter is TestNG's, whatever a resolver says")
+  public void objectArrayIsNeverOfferedToAResolver() {
+    CountingParameterResolver resolver = new CountingParameterResolver();
+    SampleRun claimed = SampleRun.of(ObjectArrayClaimedSample.class, resolver);
+    SampleRun control = SampleRun.of(ObjectArrayControlSample.class);
+
+    assertThat(resolver.answers()).as("never resolved").isEmpty();
+    assertThat(claimed.failureMessages()).hasSameSizeAs(control.failureMessages());
+    for (int i = 0; i < control.failureMessages().size(); i++) {
+      assertThat(claimed.failureMessages().get(i))
+          .isEqualTo(
+              control
+                  .failureMessages()
+                  .get(i)
+                  .replace(
+                      ObjectArrayControlSample.class.getName(),
+                      ObjectArrayClaimedSample.class.getName()));
+    }
+  }
+
+  @Test(description = "GITHUB-1164: a parallel data provider resolves each row on the row's thread")
+  public void parallelRowsResolveOnTheirOwnThread() {
+    ThreadRecordingResolver resolver = new ThreadRecordingResolver();
+    ParallelDataProviderSample.INVOKED_ON.clear();
+    SampleRun run = SampleRun.of(ParallelDataProviderSample.class, resolver);
+    assertThat(run.failureMessages()).isEmpty();
+
+    assertThat(ParallelDataProviderSample.INVOKED_ON).hasSize(3);
+    ParallelDataProviderSample.INVOKED_ON.forEach(
+        (value, invokedOn) ->
+            assertThat(resolver.resolvedOn().get(value))
+                .as(value + " resolved on the thread that invoked it")
+                .isSameAs(invokedOn));
+  }
+
+  @Test(description = "GITHUB-1164: a method reported as skipped per row resolves nothing")
+  public void skippedRowsAreNotResolved() {
+    CountingParameterResolver resolver = new CountingParameterResolver();
+    ParameterRecorder.clear();
+    TestNG testng = create(SkippedDataDrivenSample.class);
+    testng.setReportAllDataDrivenTestsAsSkipped(true);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    testng.addListener(adapter);
+    testng.addListener(resolver);
+    testng.run();
+
+    assertThat(adapter.getSkippedTests()).hasSize(2);
+    assertThat(ParameterRecorder.invocationsOf("test")).isEmpty();
+    assertThat(resolver.answers()).as("nothing to resolve for").isEmpty();
+  }
+
+  @Test(description = "GITHUB-1164: a retry whose re-read row was blanked is still resolved afresh")
+  public void retryWithABlankedRowResolvesAfresh() {
+    CountingParameterResolver resolver = new CountingParameterResolver();
+    SampleRun.of(RetryWithBlankedRowSample.class, resolver, new RowDroppingInterceptor());
+
+    List<Object[]> attempts = ParameterRecorder.invocationsOf("test");
+    assertThat(attempts).hasSize(2);
+    assertThat(attempts.get(0)[0]).isNotSameAs(attempts.get(1)[0]);
+    assertThat(resolver.answers()).hasSize(2);
+  }
+
+  @Test(description = "GITHUB-1164: the exclusivity diagnostic names the resolvers in one order")
+  public void competingResolversAreNamedInAStableOrder() {
+    SampleRun run =
+        SampleRun.of(
+            NoDataProviderSample.class,
+            new SampleParameterResolver(),
+            new CompetingParameterResolver());
+
+    assertThat(run.failureMessages().get(0))
+        .contains(
+            CompetingParameterResolver.class.getName()
+                + ", "
+                + SampleParameterResolver.class.getName());
+  }
+
+  @Test(description = "GITHUB-1164: a @NoInjection Method is offered to, and taken by, a resolver")
+  public void noInjectionMethodCanBeClaimed() {
+    SampleRun run = SampleRun.of(NoInjectionClaimedSample.class, new MethodAnsweringResolver());
+    assertThat(run.failureMessages()).isEmpty();
+    assertThat(ParameterRecorder.onlyInvocationOf("test")[0])
+        .isSameAs(MethodAnsweringResolver.ANSWER);
+  }
+
+  @Test(description = "GITHUB-1164: a Guice-backed resolver, keyed by binding and by @Named")
+  public void guiceBackedResolver() {
+    XmlSuite suite = createXmlSuite("suite");
+    suite.setParentModule(GuiceResolverModule.class.getName());
+    createXmlClass(createXmlTest(suite, "test"), GuiceSample.class);
+
+    ParameterRecorder.clear();
+    TestNG testng = create(suite);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    testng.addListener(adapter);
+    testng.addListener(new GuiceParameterResolver());
+    testng.run();
+
+    assertThat(adapter.getFailedTests())
+        .as(
+            adapter.getFailedTests().isEmpty()
+                ? ""
+                : String.valueOf(adapter.getFailedTests().get(0).getThrowable()))
+        .isEmpty();
+    Object[] p = ParameterRecorder.onlyInvocationOf("test");
+    assertThat(((Method) p[0]).getName()).isEqualTo("test");
+    assertThat(((GreetingService) p[1]).greet("Linus")).isEqualTo("hello Linus");
+    assertThat(p[2]).isEqualTo("Linus");
+    assertThat(p[3]).isEqualTo(List.of("Ada", "Grace"));
   }
 
   private static Throwable causeOfOnlyFailure(SampleRun run) {

@@ -25,18 +25,22 @@ import org.testng.internal.Utils;
  *
  * <p>Ownership is decided once for every matcher that builds one invocation, so a resolver is asked
  * {@link IParameterResolver#supportsParameter} the same number of times whichever matcher ends up
- * conforming -- but once per invocation, not once per method, since nothing here outlives the
- * arguments it was built for. {@link #resolve} runs the owning resolver, once per parameter per
- * invocation.
+ * conforming. It is decided again wherever the arguments are built again: a method with no data
+ * provider has its shape checked once before the row exists and matched once after, so its
+ * resolvers are asked twice per invocation. That is why the contract asks for a stable answer.
+ * {@link #resolve} runs the owning resolver once per parameter per invocation.
  */
 public final class ResolvedParameters {
 
-  private static final ResolvedParameters NONE = new ResolvedParameters(Collections.emptyMap());
+  private static final ResolvedParameters NONE =
+      new ResolvedParameters(Collections.emptyMap(), false);
 
   private final Map<Parameter, Ownership> owners;
+  private final boolean placeholders;
 
-  private ResolvedParameters(Map<Parameter, Ownership> owners) {
+  private ResolvedParameters(Map<Parameter, Ownership> owners, boolean placeholders) {
     this.owners = owners;
+    this.placeholders = placeholders;
   }
 
   /** No parameter is externally resolved, which is every run that registers no resolver. */
@@ -60,17 +64,42 @@ public final class ResolvedParameters {
       ITestNGMethod method,
       ITestContext context,
       Collection<IParameterResolver> resolvers) {
+    return of(parameters, method, context, resolvers, false);
+  }
+
+  /**
+   * The same ownership, answering {@code null} for every owned parameter without running any
+   * resolver. For an invocation that is only reported -- skipped before it could run -- so that the
+   * arguments have the method's shape while nothing is created that nothing will consume.
+   */
+  public static ResolvedParameters placeholders(
+      Parameter[] parameters,
+      ITestNGMethod method,
+      ITestContext context,
+      Collection<IParameterResolver> resolvers) {
+    return of(parameters, method, context, resolvers, true);
+  }
+
+  private static ResolvedParameters of(
+      Parameter[] parameters,
+      ITestNGMethod method,
+      ITestContext context,
+      Collection<IParameterResolver> resolvers,
+      boolean placeholders) {
     if (parameters.length == 0 || resolvers.isEmpty()) {
       return NONE;
     }
     // What native injection leaves over is what a resolver may claim -- decided by the same filter
-    // the matching runs, so the first-Method-only rule and @NoInjection are honoured exactly as
+    // the matching runs, so the first-Method-only rule and @NoInjection are honored exactly as
     // they
     // are there, rather than restated here.
     Set<Parameter> offered =
         new HashSet<>(
             Arrays.asList(
                 ReflectionRecipes.filter(parameters, InjectableParameter.Assistant.ALL_INJECTS)));
+    // Object[] is not an InjectableParameter, but Parameters fills every Object[] slot of a method
+    // itself (see Parameters.INJECTED_TYPES), so it is TestNG's as much as an ITestContext is.
+    offered.removeIf(parameter -> Object[].class.equals(parameter.getType()));
     // Both collections stay null until something is actually claimed, which is the common case even
     // once a resolver is registered: most parameters still come from the data provider.
     Map<Parameter, Ownership> owners = null;
@@ -104,8 +133,10 @@ public final class ResolvedParameters {
                 + " of "
                 + method.getQualifiedName()
                 + ": "
+                // Sorted, so the message reads the same whatever order the holder hands them in.
                 + competing.stream()
                     .map(resolver -> resolver.getClass().getName())
+                    .sorted()
                     .collect(Collectors.joining(", "))
                 + ". A parameter can be owned by only one resolver.");
       }
@@ -116,7 +147,7 @@ public final class ResolvedParameters {
         owners.put(parameter, new Ownership(owner, index, method, context));
       }
     }
-    return owners == null ? NONE : new ResolvedParameters(owners);
+    return owners == null ? NONE : new ResolvedParameters(owners, placeholders);
   }
 
   private static boolean supports(
@@ -156,6 +187,9 @@ public final class ResolvedParameters {
     Ownership ownership = owners.get(parameter);
     if (ownership == null) {
       throw new TestNGException("No resolver owns " + parameter + "; it should not be resolved");
+    }
+    if (placeholders) {
+      return null;
     }
     Object value;
     try {
@@ -197,14 +231,9 @@ public final class ResolvedParameters {
     return value.getClass().getName() + " (" + Utils.toString(value) + ")";
   }
 
+  /** Index and type: the name is {@code argN} unless the user compiled with {@code -parameters}. */
   private static String describe(Parameter parameter, int index) {
-    return "parameter "
-        + index
-        + " ["
-        + parameter.getType().getName()
-        + " "
-        + parameter.getName()
-        + "]";
+    return "parameter " + index + " [" + parameter.getType().getName() + "]";
   }
 
   /** Who supplies one parameter, and everything answering that needs. */
