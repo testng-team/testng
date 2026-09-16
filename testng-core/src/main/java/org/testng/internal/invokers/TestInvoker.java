@@ -337,7 +337,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
           // The row could not be rebuilt -- a provider that answers only once, say. That is the
           // outcome of this retry, and it is reported the way the first attempt would have been.
           // Leaving the loop with nothing recorded turned a failed method into a skipped one.
-          result.add(reportParameterFailure(bag, arguments.getTestMethod()));
+          ITestResult tr = classifyParameterFailure(bag);
+          reportUninvoked(arguments.getTestMethod(), tr);
+          result.add(tr);
           reported = true;
         }
         if (!reported && bag.parameterHolder != null) {
@@ -362,8 +364,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                   } catch (TestNGException rowDoesNotFit) {
                     // The re-read row no longer fits the method. That fails this retry, carrying
                     // the row it was given, and leaves the other rows to run.
-                    result.add(
-                        reportRowThatDoesNotFit(arguments.getTestMethod(), current, rowDoesNotFit));
+                    ITestResult tr =
+                        resultForRowThatDoesNotFit(
+                            arguments.getTestMethod(), current, rowDoesNotFit);
+                    reportUninvoked(arguments.getTestMethod(), tr);
+                    result.add(tr);
                     reported = true;
                   }
                   rebuilt = true;
@@ -404,39 +409,42 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   }
 
   /**
-   * Reports a retry whose re-read row no longer fits the method, with that row as its parameters,
-   * so the failure is attributed to the row that caused it and the rows after it still run.
+   * A result for a retry whose re-read row no longer fits the method: a failure carrying the row it
+   * was given, so the failure is attributed to that row and the rows after it still run.
    */
-  private ITestResult reportRowThatDoesNotFit(
+  private ITestResult resultForRowThatDoesNotFit(
       ITestNGMethod testMethod, Object[] row, TestNGException cause) {
     ITestResult tr = TestResult.newTestResultWithCauseAs(testMethod, m_testContext, cause);
     tr.setParameters(row);
     tr.setStatus(ITestResult.FAILURE);
-    m_notifier.addFailedTest(testMethod, tr);
-    runTestResultListener(tr);
     return tr;
   }
 
   /**
-   * Reports an invocation whose parameters could not be built. A data provider failure is a skip
+   * Gives the error result a parameter bag carries its status. A data provider failure is a skip
    * unless the configuration, or the provider, asks for it to fail the test; a TestNG diagnostic is
    * always a failure.
    */
-  private ITestResult reportParameterFailure(ParameterBag bag, ITestNGMethod testMethod) {
+  private ITestResult classifyParameterFailure(ParameterBag bag) {
     ITestResult tr = Objects.requireNonNull(bag.errorResult, "a bag with errors carries them");
     Throwable throwable = tr.getThrowable();
     boolean bubbleUpFailures =
         m_configuration.isPropagateDataProviderFailureAsTestFailure() || bag.isBubbleUpFailures();
-    if (!(throwable instanceof SkipException)
-        && (throwable instanceof TestNGException || bubbleUpFailures)) {
-      tr.setStatus(ITestResult.FAILURE);
+    boolean failure =
+        !(throwable instanceof SkipException)
+            && (throwable instanceof TestNGException || bubbleUpFailures);
+    tr.setStatus(failure ? ITestResult.FAILURE : ITestResult.SKIP);
+    return tr;
+  }
+
+  /** Reports a result standing for an invocation that did not run, by the status it was given. */
+  private void reportUninvoked(ITestNGMethod testMethod, ITestResult tr) {
+    if (tr.getStatus() == ITestResult.FAILURE) {
       m_notifier.addFailedTest(testMethod, tr);
     } else {
-      tr.setStatus(ITestResult.SKIP);
       m_notifier.addSkippedTest(testMethod, tr);
     }
     runTestResultListener(tr);
-    return tr;
   }
 
   @Override
@@ -1294,7 +1302,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               arguments.getInstance());
 
       if (bag.hasErrors()) {
-        result.add(reportParameterFailure(bag, arguments.getTestMethod()));
+        ITestResult tr = classifyParameterFailure(bag);
+        reportUninvoked(arguments.getTestMethod(), tr);
+        result.add(tr);
         return invocationCount.get();
       }
 
