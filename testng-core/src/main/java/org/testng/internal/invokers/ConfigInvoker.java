@@ -8,10 +8,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -67,8 +69,12 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     }
   }
 
-  /** Class failures. Must be synced as the Invoker is accessed concurrently. */
-  private final Map<Class<?>, Map<Object, RecordedFailure>> m_classInvocationResults =
+  /**
+   * Class failures, keyed by class then instance. Each key keeps every record, not only the last: a
+   * later {@link #setClassInvocationFailure(Class, Object)} must not erase a failure another thread
+   * still needs a retry to see.
+   */
+  private final Map<Class<?>, Map<Object, List<RecordedFailure>>> m_classInvocationResults =
       new ConcurrentHashMap<>();
 
   /** Test methods whose configuration methods have failed, by invocation token. */
@@ -175,7 +181,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         return false;
       }
       if (m_continueOnFailedConfiguration) {
-        Map<Object, RecordedFailure> failures = getInvocationResults(testClass);
+        Map<Object, List<RecordedFailure>> failures = getInvocationResults(testClass);
         result = isRecordedFor(failures, instance, ignoredFailureMark);
       } else {
         result = true;
@@ -194,7 +200,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           Objects.requireNonNull(m_methodInvocationResults.get(testNGMethod)).get(key);
       result = isRecordedAfter(failure, ignoredFailureMark);
     } else if (!(m_continueOnFailedConfiguration || annotationFound)) {
-      for (Map.Entry<Class<?>, Map<Object, RecordedFailure>> entry :
+      for (Map.Entry<Class<?>, Map<Object, List<RecordedFailure>>> entry :
           m_classInvocationResults.entrySet()) {
         if (entry.getKey().isAssignableFrom(cls)
             && isRecordedFor(entry.getValue(), instance, ignoredFailureMark)) {
@@ -230,12 +236,29 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   }
 
   /**
+   * @return whether any of {@code failures} is a recorded failure that the caller did not ask to
+   *     ignore. A null or empty collection is no record at all.
+   */
+  private static boolean isRecordedAfterAny(
+      @Nullable Collection<RecordedFailure> failures, long ignoredFailureMark) {
+    if (failures == null) {
+      return false;
+    }
+    for (RecordedFailure failure : failures) {
+      if (isRecordedAfter(failure, ignoredFailureMark)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * @return whether {@code failures} holds a record for {@code key} that the caller did not ask to
    *     ignore. A null key is never recorded; the map cannot be asked about one.
    */
   private static boolean isRecordedFor(
-      Map<Object, RecordedFailure> failures, @Nullable Object key, long ignoredFailureMark) {
-    return key != null && isRecordedAfter(failures.get(key), ignoredFailureMark);
+      Map<Object, List<RecordedFailure>> failures, @Nullable Object key, long ignoredFailureMark) {
+    return key != null && isRecordedAfterAny(failures.get(key), ignoredFailureMark);
   }
 
   /**
@@ -711,13 +734,14 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     return m_classInvocationResults.entrySet().stream()
         .anyMatch(
             classSetEntry -> {
-              Map<Object, RecordedFailure> obj = classSetEntry.getValue();
+              Map<Object, List<RecordedFailure>> obj = classSetEntry.getValue();
               Class<?> c = classSetEntry.getKey();
               boolean containsBeforeTestOrBeforeSuiteFailure =
-                  isRecordedAfter(obj.get(NULL_OBJECT), ignoredFailureMark);
+                  isRecordedAfterAny(obj.get(NULL_OBJECT), ignoredFailureMark);
               boolean containsInstanceFailure = isRecordedFor(obj, instance, ignoredFailureMark);
               boolean containsAnyFailure =
-                  obj.values().stream().anyMatch(seq -> isRecordedAfter(seq, ignoredFailureMark));
+                  obj.values().stream()
+                      .anyMatch(recs -> isRecordedAfterAny(recs, ignoredFailureMark));
               return c == cls && containsAnyFailure
                   || c.isAssignableFrom(cls)
                       && (containsInstanceFailure || containsBeforeTestOrBeforeSuiteFailure);
@@ -753,10 +777,12 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
   private void setClassInvocationFailure(Class<?> clazz, @Nullable Object instance) {
     try (AutoCloseableLock ignore = internalLock.lock()) {
-      Map<Object, RecordedFailure> instances =
+      Map<Object, List<RecordedFailure>> instances =
           m_classInvocationResults.computeIfAbsent(clazz, k -> new ConcurrentHashMap<>());
       Object objectToAdd = instance == null ? NULL_OBJECT : instance;
-      instances.put(objectToAdd, newRecordedFailure());
+      instances
+          .computeIfAbsent(objectToAdd, k -> new CopyOnWriteArrayList<>())
+          .add(newRecordedFailure());
     }
   }
 
@@ -843,9 +869,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     return new RecordedFailure(m_failureSequence.incrementAndGet());
   }
 
-  private Map<Object, RecordedFailure> getInvocationResults(IClass testClass) {
+  private Map<Object, List<RecordedFailure>> getInvocationResults(IClass testClass) {
     Class<?> cls = testClass.getRealClass();
-    Map<Object, RecordedFailure> set = null;
+    Map<Object, List<RecordedFailure>> set = null;
     // We need to continuously search till either our Set is not null (or) till we reached
     // Object class because it is very much possible that the test method is residing in a child
     // class

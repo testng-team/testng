@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 import org.testng.conffailure.samples.OutcomeRecorder;
 import org.testng.conffailure.samples.retry.ChildSetupSample;
 import org.testng.conffailure.samples.retry.DataProviderRowsSample;
+import org.testng.conffailure.samples.retry.OverwrittenFailureSample;
 import org.testng.conffailure.samples.retry.ParallelRowsSample;
 import org.testng.conffailure.samples.retry.TeardownFailsOnceSample;
 import test.SimpleBaseTest;
@@ -78,6 +79,20 @@ public class RetriedInvocationTest extends SimpleBaseTest {
             "TEST SKIP t(2)",
             "CONFIG SKIP setup",
             "TEST SKIP t(1)");
+  }
+
+  @Test(description = "GITHUB-3530")
+  public void aRetryStillSeesAFailureAnotherWorkerRecordedForTheSameInstance() {
+    // Row 2's setup fails first and records a class failure. Row 1 then fails its test and its
+    // teardown, and that second record used to replace the first. The retry of row 1 belongs to
+    // the thread that wrote the replacement, so it ignored that record; it must still be skipped
+    // by row 2's failure. The rows report in whatever order the threads give.
+    List<String> outcomes = outcomesOf(OverwrittenFailureSample.class);
+    assertThat(outcomes)
+        .contains("CONFIG FAIL setup", "CONFIG FAIL teardown", "CONFIG SKIP setup")
+        .doesNotContain("TEST PASS t(1)");
+    assertThat(outcomes).filteredOn(line -> line.equals("TEST SKIP t(1)")).hasSize(2);
+    assertThat(outcomes).filteredOn(line -> line.equals("CONFIG PASS setup")).hasSize(1);
   }
 
   private static List<String> outcomesOf(Class<?>... classes) {
