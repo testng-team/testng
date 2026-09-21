@@ -144,19 +144,24 @@ fi
 
 # The commit that added one method to this file.
 #
-# The walk reads the versions of this one file, newest first, through its renames. A commit added
-# the method when its version declares the method and no parent's version does. The newest such
-# commit wins, so a method that was removed and written again answers with the commit that wrote it
-# again.
+# The walk starts at HEAD and goes back one commit at a time, through merges and renames, along the
+# versions of this file that declare the method. It stops at the first commit whose parents all lack
+# the method in their version of the file: that commit added it. So a method that was removed and
+# written again answers with the commit that wrote it again.
 #
 # Whole versions are read, not changed lines. That keeps these right:
 #   - a declaration the formatter wrapped onto two lines
 #   - "void target()" in a comment, a string or a nested class, which is not this method
 #   - an edit to the declaration line, which does not add the method
 #
-# The walk starts at HEAD and follows parents. A commit on a branch that never merged is not on that
-# history, so it cannot answer. A copy starts a new file: the commit that copied it added every
-# method in it. The file it was copied from answers only for itself.
+# The history comes from every path the file has had, not from "git log --follow" alone. --follow
+# walks one line of history. When one parent of a merge renamed the file and the other parent added
+# the method, it follows the rename and never meets the method. The paths it reports are still
+# right. So they limit the history, and the walk decides at each merge which parent to take.
+#
+# The walk follows parents from HEAD. A commit on a branch that never merged is not on that history,
+# so it cannot answer. A copy is not a rename, so a copied file has no path in its parent. The
+# commit that copied it added every method in it.
 #
 # Reads one Java source on stdin. Exits 0 when the body of a top-level type declares a method named
 # argv[1], and 10 when it does not. Python exits 1 when it fails, so 1 cannot mean "no".
@@ -217,33 +222,52 @@ if [ -n "$METHOD" ]; then
     echo "no method $METHOD is declared in the class in $frag"
     exit 1
   fi
-  # One line per version: the commit, the path in it, and the path in its parents. The parents' path
-  # is empty when the commit created this file, by adding it or by copying another file.
-  versions=$(git log --follow -M --format='@%H' --name-status HEAD -- "$frag" 2>/dev/null \
-    | awk -F'\t' '/^@/ { c = substr($0, 2); next }
-                  NF >= 2 && c != "" {
-                    s = substr($1, 1, 1)
-                    if (s == "R") print c "\t" $3 "\t" $2
-                    else if (s == "A" || s == "C") print c "\t" (s == "C" ? $3 : $2) "\t"
-                    else print c "\t" $2 "\t" $2
-                  }')
-  while IFS="$(printf '\t')" read -r commit path before; do
-    [ -n "$commit" ] || continue
-    declares "$commit:$path" || continue
-    added=1
-    if [ -n "$before" ]; then
-      for parent in $(git log -1 --format=%P "$commit"); do
-        if declares "$parent:$before"; then
-          added=0
-          break
-        fi
-      done
+  # Every path the file has had. A rename line names two paths, and both count.
+  pathargs=()
+  while IFS= read -r p; do
+    [ -n "$p" ] && pathargs+=("$p")
+  done <<< "$(git log --follow -M --format= --name-status HEAD -- "$frag" 2>/dev/null \
+                | awk -F'\t' 'NF >= 2 { for (i = 2; i <= NF; i++) print $i }' | sort -u)"
+  if [ "${#pathargs[@]}" = 0 ]; then
+    echo "no history for $frag; METHOD needs a path git can follow"
+    exit 1
+  fi
+  # The commits that changed any of those paths, one "<commit> <parents>" line each, newest first.
+  # The parents are rewritten to the nearest such commits, and a merge that changed nothing drops out.
+  graph=$(git log --simplify-merges --parents -M --format='%H %P' HEAD -- "${pathargs[@]}")
+  # Prints the path of this file in parent $3 of commit $1, where the path is $2. That is the same
+  # path, or the old path when the commit renamed the file. It fails when the file has no path in the
+  # parent, as after a copy, or before the file existed.
+  path_in_parent() {
+    if git cat-file -e "$3:$2" 2>/dev/null; then
+      printf '%s' "$2"
+      return 0
     fi
-    if [ "$added" = 1 ]; then
+    git diff -M --name-status "$3" "$1" -- "${pathargs[@]}" 2>/dev/null \
+      | awk -F'\t' -v p="$2" '$1 ~ /^R/ && $3 == p { print $2; found = 1; exit } END { exit !found }'
+  }
+  # The newest commit in the graph holds the version that HEAD holds.
+  commit=$(printf '%s\n' "$graph" | head -1 | cut -d' ' -f1)
+  path=$frag
+  if [ -n "$commit" ] && ! declares "$commit:$path"; then
+    commit=""
+  fi
+  while [ -n "$commit" ]; do
+    next=""
+    for parent in $(printf '%s\n' "$graph" | awk -v c="$commit" '$1 == c { $1 = ""; print; exit }'); do
+      ppath=$(path_in_parent "$commit" "$path" "$parent") || continue
+      if declares "$parent:$ppath"; then
+        next=$parent
+        break
+      fi
+    done
+    if [ -z "$next" ]; then
       sha=$commit
       break
     fi
-  done <<< "$versions"
+    commit=$next
+    path=$ppath
+  done
   if [ -z "$sha" ]; then
     echo "no commit added the method $METHOD to $frag or any path it came from"
     exit 1
@@ -509,14 +533,41 @@ if [ "$issue_rc" != 0 ] || [ -z "$body" ]; then
   esac
 fi
 
-if printf '%s' "$body" | grep -q '"pull_request"'; then
+# Reads GitHub's answer for one issue on stdin, and prints three lines: "pr" or "issue", the state,
+# and the title on one line. Exits 3 when the answer is not a JSON object for issue argv[1] with a
+# state and a title. A call can succeed and still answer with something else, and reading that as an
+# issue would print an empty state or title, and exit 0.
+read -r -d '' ISSUE_FIELDS <<'PYTHON'
+import json
+import sys
+
+try:
+    issue = json.loads(sys.stdin.buffer.read())
+except ValueError:
+    sys.exit(3)
+if not isinstance(issue, dict) or str(issue.get('number')) != sys.argv[1]:
+    sys.exit(3)
+state, title = issue.get('state'), issue.get('title')
+if not isinstance(state, str) or not state or not isinstance(title, str):
+    sys.exit(3)
+print('pr' if issue.get('pull_request') is not None else 'issue')
+print(state)
+print(' '.join(title.split()))
+PYTHON
+
+# Python exits 1 when it fails. Any exit but 0 is no answer, so it cannot read as one.
+if ! fields=$(printf '%s' "$body" | python3 -c "$ISSUE_FIELDS" "$num"); then
+  echo "issue       CANNOT CHECK -- GitHub's answer for #$num is not an issue with a state and a title. Not a verdict."
+  exit 3
+fi
+if [ "$(printf '%s\n' "$fields" | sed -n 1p)" = pr ]; then
   printf 'issue       #%s is a PULL REQUEST, not an issue\n' "$num"
   rc=1
 else
   printf 'issue       #%s is an issue, %s (state is reported, never enforced)\n' \
-    "$num" "$(printf '%s' "$body" | python3 -c 'import sys,json;print(json.load(sys.stdin)["state"])')"
+    "$num" "$(printf '%s\n' "$fields" | sed -n 2p)"
 fi
-printf 'title       %s\n' "$(printf '%s' "$body" | python3 -c 'import sys,json;print(json.load(sys.stdin)["title"])')"
+printf 'title       %s\n' "$(printf '%s\n' "$fields" | sed -n 3p)"
 
 if gh api "repos/$REPO/issues/$num/timeline" --paginate \
      -q '.[] | select(.event=="referenced" or .event=="closed") | .commit_id // empty' 2>/dev/null | grep -qx "$sha"; then

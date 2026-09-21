@@ -766,6 +766,59 @@ git -C "$r" merge -q --no-ff -m "Merge the side branch" side
 check "method: a side branch merged later does not hide the commit" PROVEN \
   "$(verdict "$r" src/foo/MixedTest.java 111 METHOD=target)"
 
+# A merge joins a rename on one parent and the method on the other. The history of the file then
+# splits: one parent holds the new path without the method, and the other holds the old path with
+# it. The dates are fixed, so the method comes after the rename. A walk that follows one line of
+# history then never meets the commit that added the method. The walk must go through the merge to
+# the parent that holds the method, whichever parent that is.
+merge_rename_repo() {  # merge_rename_repo <the parent that renames: first|second>
+  local r
+  r=$(new_repo)
+  GIT_AUTHOR_DATE=2020-01-01T00:00:00 GIT_COMMITTER_DATE=2020-01-01T00:00:00 \
+    write "$r" src/a/MixedTest.java "Create the class" 'class X {
+  void one() {}
+  void two() {}
+  void three() {}
+}'
+  git -C "$r" checkout -q -b side
+  if [ "$1" = second ]; then
+    mkdir -p "$r/src/b"
+    git -C "$r" mv src/a/MixedTest.java src/b/MixedTest.java
+    GIT_AUTHOR_DATE=2020-02-01T00:00:00 GIT_COMMITTER_DATE=2020-02-01T00:00:00 \
+      git -C "$r" commit -q -m "Move the class"
+    git -C "$r" checkout -q master
+    GIT_AUTHOR_DATE=2020-03-01T00:00:00 GIT_COMMITTER_DATE=2020-03-01T00:00:00 \
+      write "$r" src/a/MixedTest.java "Fix #111" 'class X {
+  void one() {}
+  void two() {}
+  void three() {}
+  void target() {}
+}'
+  else
+    GIT_AUTHOR_DATE=2020-03-01T00:00:00 GIT_COMMITTER_DATE=2020-03-01T00:00:00 \
+      write "$r" src/a/MixedTest.java "Fix #111" 'class X {
+  void one() {}
+  void two() {}
+  void three() {}
+  void target() {}
+}'
+    git -C "$r" checkout -q master
+    mkdir -p "$r/src/b"
+    git -C "$r" mv src/a/MixedTest.java src/b/MixedTest.java
+    GIT_AUTHOR_DATE=2020-02-01T00:00:00 GIT_COMMITTER_DATE=2020-02-01T00:00:00 \
+      git -C "$r" commit -q -m "Move the class"
+  fi
+  GIT_AUTHOR_DATE=2020-04-01T00:00:00 GIT_COMMITTER_DATE=2020-04-01T00:00:00 \
+    git -C "$r" merge -q --no-ff -m "Merge the other branch" side
+  printf '%s' "$r"
+}
+r=$(merge_rename_repo second)
+check "method: a rename on the second parent does not hide the method" PROVEN \
+  "$(verdict "$r" src/b/MixedTest.java 111 METHOD=target)"
+r=$(merge_rename_repo first)
+check "method: a rename on the first parent does not hide the method" PROVEN \
+  "$(verdict "$r" src/b/MixedTest.java 111 METHOD=target)"
+
 # The formatter wraps a long declaration onto two lines. It is still the method.
 r=$(new_repo)
 write "$r" src/foo/MixedTest.java "Create the class" 'class X {
@@ -1062,6 +1115,27 @@ check "issue: a pull request says so" yes "$(says "PULL REQUEST" "$out")"
 out=$(issue_check '{"number":765,"state":"open","title":"Some bug"}' '' 0)
 check "issue: a real issue exits 0" 0 "${out%% *}"
 check "issue: a real issue says so" yes "$(says "is an issue, open" "$out")"
+
+# A call that succeeds can still answer with something that is not an issue. Each answer below exits 0
+# from gh. Read as an issue, it would print an empty state or title and exit 0. So each one must be
+# CANNOT CHECK, with exit 3.
+for answer in '{not json' \
+              '[]' \
+              '{"number":765,"title":"Some bug"}' \
+              '{"number":765,"state":"open"}' \
+              '{"number":765,"state":"","title":"Some bug"}' \
+              '{"number":766,"state":"open","title":"Some bug"}'; do
+  out=$(issue_check "$answer" '' 0)
+  check "issue: answer <$answer> exits 3" 3 "${out%% *}"
+  check "issue: answer <$answer> is not a verdict" yes "$(says "CANNOT CHECK" "$out")"
+done
+
+# The kind of answer comes from its fields, not from its text. A title that quotes "pull_request" is
+# still an issue.
+out=$(issue_check '{"number":765,"state":"open","title":"Crash when \"pull_request\" is null"}' '' 0)
+check "issue: a title that quotes pull_request is still an issue" 0 "${out%% *}"
+check "issue: that title is printed on its title line" yes \
+  "$(says 'title       Crash when "pull_request" is null' "$out")"
 
 if [ -s "$WORK/gh-calls" ]; then
   fail=$((fail + 1))

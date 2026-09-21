@@ -57,9 +57,11 @@ Phase 6 changes the script in the ways below.
 **A method's own commit.** `METHOD=<name>` judges the commit that added one method, not the commit
 that added its file. A file's first commit proves nothing about a method added years later.
 `ParallelTestTest` came from a 2006 commit and holds methods from a #1636 fix and from "Unit tests for
-#2532". The lookup walks the versions of that one file from HEAD, through its renames, and reads each
-whole version. A commit added the method when its version declares it and no parent's version does.
-So a declaration wrapped onto two lines counts, and a comment, a string or a nested class does not.
+#2532". The lookup walks back from HEAD one commit at a time, through merges and renames, and reads
+each whole version of the file. A commit added the method when its version declares it and no
+parent's version does. So a declaration wrapped onto two lines counts, and a comment, a string or a
+nested class does not. At a merge the walk takes the parent that holds the method, even when the
+other parent renamed the file. `git log --follow` alone would follow the rename and miss the method.
 A branch that never merged cannot answer, and a copied file starts a history of its own. The lookup
 refuses rather than falling back to the file's commit.
 
@@ -76,7 +78,8 @@ and never git. A pull request proves the reference when one of these holds:
 **A failed call is not an answer.** When GitHub cannot be asked, or a pull request body cannot be
 read, and nothing else proves the reference, the script reports `CANNOT CHECK` and exits 3. The issue
 check does the same when GitHub rejects the call. On a failed call `gh` still prints GitHub's error
-message on stdout, so the exit code decides.
+message on stdout, so the exit code decides. A call that succeeds must still answer with a JSON object
+for that issue, with a state and a title. Any other answer is `CANNOT CHECK` too.
 
 **Any directory.** The script runs its lookups from the top of the repository. A path given from a
 module directory reads the same history as a path given from the top.
