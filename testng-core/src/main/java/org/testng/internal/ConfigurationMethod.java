@@ -475,9 +475,9 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   /**
-   * Binds a fully initialized prototype to another instance. When the instance's effective class for
-   * group lookup matches the prototype's, the expensive {@link #init()} work is reused; otherwise
-   * {@link #init()} is run again for the differing class.
+   * Binds a fully initialized prototype to another instance. When the instance's effective class
+   * for group lookup matches the prototype's, the expensive {@link #init()} work is reused;
+   * otherwise {@link #init()} is run again for the differing class.
    */
   public ConfigurationMethod bind(IObject.IdentifiableObject instance) {
     ConfigurationMethod bound =

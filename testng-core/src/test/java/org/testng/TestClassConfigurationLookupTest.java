@@ -245,8 +245,7 @@ public class TestClassConfigurationLookupTest {
     selector.setXmlClasses(multiXmlTest.getXmlClasses());
     RunInfo runInfo = new RunInfo(() -> multiXmlTest);
     runInfo.addMethodSelector(selector, 10);
-    ITestMethodFinder finder =
-        new TestNGMethodFinder(objectFactory, runInfo, annotationFinder);
+    ITestMethodFinder finder = new TestNGMethodFinder(objectFactory, runInfo, annotationFinder);
 
     TestClass testClass =
         new TestClass(

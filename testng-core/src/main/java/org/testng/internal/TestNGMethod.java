@@ -178,8 +178,7 @@ public class TestNGMethod extends BaseTestMethod {
             instance);
     copyInitializedState(bound);
     XmlTest xmlTest = getXmlTest();
-    if (xmlTest != null
-        && !effectiveClassForGroups().equals(bound.effectiveClassForGroups())) {
+    if (xmlTest != null && !effectiveClassForGroups().equals(bound.effectiveClassForGroups())) {
       bound.init(xmlTest);
     }
     return bound;

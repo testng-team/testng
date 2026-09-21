@@ -267,10 +267,20 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
             prototypeInstance);
     List<ITestNGMethod> beforeClassPrototypes =
         ConfigurationMethod.createClassConfigurationMethods(
-            objectFactory, beforeClassTemplates, annotationFinder, true, xmlTest, prototypeInstance);
+            objectFactory,
+            beforeClassTemplates,
+            annotationFinder,
+            true,
+            xmlTest,
+            prototypeInstance);
     List<ITestNGMethod> afterClassPrototypes =
         ConfigurationMethod.createClassConfigurationMethods(
-            objectFactory, afterClassTemplates, annotationFinder, false, xmlTest, prototypeInstance);
+            objectFactory,
+            afterClassTemplates,
+            annotationFinder,
+            false,
+            xmlTest,
+            prototypeInstance);
     ITestNGMethod[] beforeGroupsPrototypes =
         ConfigurationMethod.createBeforeConfigurationMethods(
             objectFactory, beforeGroupsTemplates, annotationFinder, true, prototypeInstance);
@@ -279,25 +289,29 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
             objectFactory, afterGroupsTemplates, annotationFinder, false, prototypeInstance);
     List<ITestNGMethod> beforeMethodPrototypes =
         ConfigurationMethod.createTestMethodConfigurationMethods(
-            objectFactory, beforeMethodTemplates, annotationFinder, true, xmlTest, prototypeInstance);
+            objectFactory,
+            beforeMethodTemplates,
+            annotationFinder,
+            true,
+            xmlTest,
+            prototypeInstance);
     List<ITestNGMethod> afterMethodPrototypes =
         ConfigurationMethod.createTestMethodConfigurationMethods(
-            objectFactory, afterMethodTemplates, annotationFinder, false, xmlTest, prototypeInstance);
+            objectFactory,
+            afterMethodTemplates,
+            annotationFinder,
+            false,
+            xmlTest,
+            prototypeInstance);
 
     for (IdentifiableObject eachInstance : instances) {
-      m_beforeSuiteMethods =
-          ConfigurationMethod.bind(beforeSuitePrototypes, eachInstance);
-      m_afterSuiteMethods =
-          ConfigurationMethod.bind(afterSuitePrototypes, eachInstance);
-      m_beforeTestConfMethods =
-          ConfigurationMethod.bind(beforeTestPrototypes, eachInstance);
-      m_afterTestConfMethods =
-          ConfigurationMethod.bind(afterTestPrototypes, eachInstance);
-      m_beforeClassMethods =
-          ConfigurationMethod.bind(beforeClassPrototypes, eachInstance);
+      m_beforeSuiteMethods = ConfigurationMethod.bind(beforeSuitePrototypes, eachInstance);
+      m_afterSuiteMethods = ConfigurationMethod.bind(afterSuitePrototypes, eachInstance);
+      m_beforeTestConfMethods = ConfigurationMethod.bind(beforeTestPrototypes, eachInstance);
+      m_afterTestConfMethods = ConfigurationMethod.bind(afterTestPrototypes, eachInstance);
+      m_beforeClassMethods = ConfigurationMethod.bind(beforeClassPrototypes, eachInstance);
       beforeClassConfig.put(eachInstance.getInstanceId(), m_beforeClassMethods);
-      m_afterClassMethods =
-          ConfigurationMethod.bind(afterClassPrototypes, eachInstance);
+      m_afterClassMethods = ConfigurationMethod.bind(afterClassPrototypes, eachInstance);
       afterClassConfig.put(eachInstance.getInstanceId(), m_afterClassMethods);
       m_beforeGroupsMethods =
           ConfigurationMethod.bind(beforeGroupsPrototypes, eachInstance);
@@ -339,8 +353,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
             TestNGMethod method;
             if (prototype == null) {
               prototype =
-                  new TestNGMethod(
-                      objectFactory, m.requireMethod(), annotationFinder, xmlTest, o);
+                  new TestNGMethod(objectFactory, m.requireMethod(), annotationFinder, xmlTest, o);
               method = prototype;
             } else {
               method = prototype.bind(o);
