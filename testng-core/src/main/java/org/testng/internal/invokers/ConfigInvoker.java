@@ -8,12 +8,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -33,7 +31,6 @@ import org.testng.Reporter;
 import org.testng.SuiteRunState;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
-import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ConfigurationMethod;
 import org.testng.internal.ConstructorOrMethod;
@@ -70,11 +67,12 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   }
 
   /**
-   * Class failures, keyed by class then instance. Each key keeps every record, not only the last: a
-   * later {@link #setClassInvocationFailure(Class, Object)} must not erase a failure another thread
-   * still needs a retry to see.
+   * Class failures, keyed by class then instance. Each key keeps the latest record per thread: a
+   * later {@link #setClassInvocationFailure(Class, Object)} on this thread must not erase a failure
+   * another thread still needs a retry to see. The retry filter only asks whether any other thread
+   * recorded, or this thread recorded after the mark, so one record per thread is enough.
    */
-  private final Map<Class<?>, Map<Object, List<RecordedFailure>>> m_classInvocationResults =
+  private final Map<Class<?>, Map<Object, Map<Long, RecordedFailure>>> m_classInvocationResults =
       new ConcurrentHashMap<>();
 
   /** Test methods whose configuration methods have failed, by invocation token. */
@@ -181,7 +179,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         return false;
       }
       if (m_continueOnFailedConfiguration) {
-        Map<Object, List<RecordedFailure>> failures = getInvocationResults(testClass);
+        Map<Object, Map<Long, RecordedFailure>> failures = getInvocationResults(testClass);
         result = isRecordedFor(failures, instance, ignoredFailureMark);
       } else {
         result = true;
@@ -200,7 +198,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           Objects.requireNonNull(m_methodInvocationResults.get(testNGMethod)).get(key);
       result = isRecordedAfter(failure, ignoredFailureMark);
     } else if (!(m_continueOnFailedConfiguration || annotationFound)) {
-      for (Map.Entry<Class<?>, Map<Object, List<RecordedFailure>>> entry :
+      for (Map.Entry<Class<?>, Map<Object, Map<Long, RecordedFailure>>> entry :
           m_classInvocationResults.entrySet()) {
         if (entry.getKey().isAssignableFrom(cls)
             && isRecordedFor(entry.getValue(), instance, ignoredFailureMark)) {
@@ -257,8 +255,15 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
    *     ignore. A null key is never recorded; the map cannot be asked about one.
    */
   private static boolean isRecordedFor(
-      Map<Object, List<RecordedFailure>> failures, @Nullable Object key, long ignoredFailureMark) {
-    return key != null && isRecordedAfterAny(failures.get(key), ignoredFailureMark);
+      Map<Object, Map<Long, RecordedFailure>> failures,
+      @Nullable Object key,
+      long ignoredFailureMark) {
+    return key != null && isRecordedAfterAny(recordsOf(failures.get(key)), ignoredFailureMark);
+  }
+
+  private static @Nullable Collection<RecordedFailure> recordsOf(
+      @Nullable Map<Long, RecordedFailure> byThread) {
+    return byThread == null ? null : byThread.values();
   }
 
   /**
@@ -734,14 +739,14 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     return m_classInvocationResults.entrySet().stream()
         .anyMatch(
             classSetEntry -> {
-              Map<Object, List<RecordedFailure>> obj = classSetEntry.getValue();
+              Map<Object, Map<Long, RecordedFailure>> obj = classSetEntry.getValue();
               Class<?> c = classSetEntry.getKey();
               boolean containsBeforeTestOrBeforeSuiteFailure =
-                  isRecordedAfterAny(obj.get(NULL_OBJECT), ignoredFailureMark);
+                  isRecordedAfterAny(recordsOf(obj.get(NULL_OBJECT)), ignoredFailureMark);
               boolean containsInstanceFailure = isRecordedFor(obj, instance, ignoredFailureMark);
               boolean containsAnyFailure =
                   obj.values().stream()
-                      .anyMatch(recs -> isRecordedAfterAny(recs, ignoredFailureMark));
+                      .anyMatch(recs -> isRecordedAfterAny(recs.values(), ignoredFailureMark));
               return c == cls && containsAnyFailure
                   || c.isAssignableFrom(cls)
                       && (containsInstanceFailure || containsBeforeTestOrBeforeSuiteFailure);
@@ -773,17 +778,13 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         newRecordedFailure());
   }
 
-  private final AutoCloseableLock internalLock = new AutoCloseableLock();
-
   private void setClassInvocationFailure(Class<?> clazz, @Nullable Object instance) {
-    try (AutoCloseableLock ignore = internalLock.lock()) {
-      Map<Object, List<RecordedFailure>> instances =
-          m_classInvocationResults.computeIfAbsent(clazz, k -> new ConcurrentHashMap<>());
-      Object objectToAdd = instance == null ? NULL_OBJECT : instance;
-      instances
-          .computeIfAbsent(objectToAdd, k -> new CopyOnWriteArrayList<>())
-          .add(newRecordedFailure());
-    }
+    Map<Object, Map<Long, RecordedFailure>> instances =
+        m_classInvocationResults.computeIfAbsent(clazz, k -> new ConcurrentHashMap<>());
+    Object objectToAdd = instance == null ? NULL_OBJECT : instance;
+    instances
+        .computeIfAbsent(objectToAdd, k -> new ConcurrentHashMap<>())
+        .put(Thread.currentThread().getId(), newRecordedFailure());
   }
 
   /**
@@ -869,9 +870,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     return new RecordedFailure(m_failureSequence.incrementAndGet());
   }
 
-  private Map<Object, List<RecordedFailure>> getInvocationResults(IClass testClass) {
+  private Map<Object, Map<Long, RecordedFailure>> getInvocationResults(IClass testClass) {
     Class<?> cls = testClass.getRealClass();
-    Map<Object, List<RecordedFailure>> set = null;
+    Map<Object, Map<Long, RecordedFailure>> set = null;
     // We need to continuously search till either our Set is not null (or) till we reached
     // Object class because it is very much possible that the test method is residing in a child
     // class
