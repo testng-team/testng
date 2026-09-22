@@ -34,8 +34,8 @@ import test.beforegroups.issue346.SampleTestClass;
 
 /**
  * Where the group configuration sits relative to the <em>class</em> configuration is pinned
- * separately, by {@code test.configuration.issue1346.IssueTest} -- next to the GITHUB-1338 samples
- * it follows from.
+ * separately, by {@code org.testng.configuration.issue1346.IssueTest}, which follows from the
+ * GITHUB-1338 samples.
  */
 public class BeforeGroupsTest extends SimpleBaseTest {
   @Test

@@ -1,0 +1,21 @@
+package org.testng.configuration.samples.github1700;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import org.testng.annotations.BeforeMethod;
+
+public class BaseClassSample {
+
+  public static List<String> messages = new ArrayList<>();
+
+  @BeforeMethod(alwaysRun = true)
+  public void setUp(Method method) {
+    if (method.getName().endsWith("test1")) {
+      assertThat(2).isEqualTo(1);
+    }
+    messages.add(getClass().getCanonicalName() + ".setup()");
+  }
+}
