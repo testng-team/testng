@@ -4,8 +4,8 @@
 
   <test name="Tests">
     <classes>
-      <class name="test.thread.Sample2"/>
-      <class name="test.thread.Sample1"/>
+      <class name="org.testng.concurrency.samples.Sample2"/>
+      <class name="org.testng.concurrency.samples.Sample1"/>
     </classes>
   </test>
 </suite>

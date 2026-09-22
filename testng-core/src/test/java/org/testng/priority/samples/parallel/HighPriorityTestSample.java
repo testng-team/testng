@@ -1,19 +1,19 @@
 package org.testng.priority.samples.parallel;
 
-import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_INSTANCE;
-import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_NAME;
-import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.GROUPS_BELONGING_TO;
-import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.GROUPS_DEPENDED_ON;
-import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHODS_DEPENDED_ON;
-import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHOD_NAME;
-import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_NAME;
-import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.TEST_NAME;
-import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.EventInfo.CLASS_INSTANCE;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.EventInfo.CLASS_NAME;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.EventInfo.GROUPS_BELONGING_TO;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.EventInfo.GROUPS_DEPENDED_ON;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.EventInfo.METHODS_DEPENDED_ON;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.EventInfo.METHOD_NAME;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.EventInfo.SUITE_NAME;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.EventInfo.TEST_NAME;
+import static org.testng.concurrency.samples.parallelization.TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION;
 
 import java.util.concurrent.TimeUnit;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import test.thread.parallelization.TestNgRunStateTracker;
+import org.testng.concurrency.samples.parallelization.TestNgRunStateTracker;
 
 public class HighPriorityTestSample {
 
