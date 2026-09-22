@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
@@ -27,6 +28,26 @@ public interface ITestClassConfigInfo {
   List<ITestNGMethod> getInstanceBeforeClassMethods(@Nullable UUID instanceId);
 
   List<ITestNGMethod> getInstanceAfterClassMethods(@Nullable UUID instanceId);
+
+  /**
+   * Returns the {@code @BeforeMethod} configurations bound to one instance.
+   *
+   * @param instanceId the per-instance id of the test class instance
+   * @return the before-method configurations of that instance, or an empty list
+   */
+  default List<ITestNGMethod> getInstanceBeforeTestMethods(@Nullable UUID instanceId) {
+    return Collections.emptyList();
+  }
+
+  /**
+   * Returns the {@code @AfterMethod} configurations bound to one instance.
+   *
+   * @param instanceId the per-instance id of the test class instance
+   * @return the after-method configurations of that instance, or an empty list
+   */
+  default List<ITestNGMethod> getInstanceAfterTestMethods(@Nullable UUID instanceId) {
+    return Collections.emptyList();
+  }
 
   static List<ITestNGMethod> allBeforeClassMethods(ITestClass tc) {
     if (tc instanceof ITestClassConfigInfo) {

@@ -112,6 +112,24 @@ public class TestClassConfigurationLookupTest {
   }
 
   @Test
+  public void methodLevelConfigurationsAreIndexedByInstanceId() {
+    FakeClass fakeClass = new FakeClass(INSTANCES);
+
+    TestClass testClass = newTestClass(fakeClass);
+
+    for (IObject.IdentifiableObject each : fakeClass.objects) {
+      assertThat(testClass.getInstanceBeforeTestMethods(each.getInstanceId()))
+          .extracting(ITestNGMethod::getInstance)
+          .containsExactly(each.getInstance());
+      assertThat(testClass.getInstanceAfterTestMethods(each.getInstanceId()))
+          .extracting(ITestNGMethod::getInstance)
+          .containsExactly(each.getInstance());
+    }
+    assertThat(testClass.getBeforeTestMethods()).hasSize(INSTANCES);
+    assertThat(testClass.getAfterTestMethods()).hasSize(INSTANCES);
+  }
+
+  @Test
   public void classLevelConfigurationsAreIndexedByInstanceId() {
     FakeClass fakeClass = new FakeClass(INSTANCES);
 

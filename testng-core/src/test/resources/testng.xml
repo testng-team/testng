@@ -978,6 +978,7 @@
   <test name="TestClass_unit_tests">
     <classes>
       <class name="org.testng.TestClassConfigurationLookupTest"/>
+      <class name="org.testng.FactoryBeforeMethodScalingTest"/>
     </classes>
   </test>
 

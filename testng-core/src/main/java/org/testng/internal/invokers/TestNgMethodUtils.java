@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import org.jspecify.annotations.Nullable;
@@ -13,6 +14,8 @@ import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ConfigurationMethod;
+import org.testng.internal.IInstanceIdentity;
+import org.testng.internal.ITestClassConfigInfo;
 import org.testng.internal.Utils;
 
 /** Collections of helper methods to help deal with TestNG configuration methods */
@@ -76,14 +79,54 @@ class TestNgMethodUtils {
       @Nullable Object instance,
       ITestClass testClass,
       BiPredicate<ITestNGMethod, IClass> predicate) {
-    return filterMethods(instance, testClass, testClass.getBeforeTestMethods(), predicate);
+    return filterBeforeTestMethods(instance, testClass, predicate, null);
+  }
+
+  static ITestNGMethod[] filterBeforeTestMethods(
+      @Nullable Object instance,
+      ITestClass testClass,
+      BiPredicate<ITestNGMethod, IClass> predicate,
+      @Nullable UUID instanceId) {
+    return filterMethods(instance, testClass, methodsFor(testClass, instanceId, true), predicate);
   }
 
   static ITestNGMethod[] filterAfterTestMethods(
       @Nullable Object instance,
       ITestClass testClass,
       BiPredicate<ITestNGMethod, IClass> predicate) {
-    return filterMethods(instance, testClass, testClass.getAfterTestMethods(), predicate);
+    return filterAfterTestMethods(instance, testClass, predicate, null);
+  }
+
+  static ITestNGMethod[] filterAfterTestMethods(
+      @Nullable Object instance,
+      ITestClass testClass,
+      BiPredicate<ITestNGMethod, IClass> predicate,
+      @Nullable UUID instanceId) {
+    return filterMethods(instance, testClass, methodsFor(testClass, instanceId, false), predicate);
+  }
+
+  /**
+   * The flat accessors copy every {@code @Factory} instance. The index answers one instance. A
+   * class that does not implement the index keeps the flat scan.
+   */
+  private static ITestNGMethod[] methodsFor(
+      ITestClass testClass, @Nullable UUID instanceId, boolean before) {
+    if (instanceId != null && testClass instanceof ITestClassConfigInfo) {
+      ITestClassConfigInfo info = (ITestClassConfigInfo) testClass;
+      List<ITestNGMethod> indexed =
+          before
+              ? info.getInstanceBeforeTestMethods(instanceId)
+              : info.getInstanceAfterTestMethods(instanceId);
+      return indexed.toArray(ITestNGMethod[]::new);
+    }
+    return before ? testClass.getBeforeTestMethods() : testClass.getAfterTestMethods();
+  }
+
+  static @Nullable UUID instanceIdOf(ITestNGMethod method) {
+    if (method instanceof IInstanceIdentity) {
+      return ((IInstanceIdentity) method).getInstanceId();
+    }
+    return null;
   }
 
   /** @return Only the ITestNGMethods applicable for this testClass */
