@@ -6,6 +6,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class DryRunSample {
+  static int expectedExceptionInvocations;
 
   @BeforeSuite
   public void beforeSuite() {
@@ -19,6 +20,12 @@ public class DryRunSample {
 
   @Test(dataProvider = "dp")
   public void test1(int i) {}
+
+  @Test(expectedExceptions = IllegalStateException.class)
+  public void expectedException() {
+    expectedExceptionInvocations++;
+    throw new IllegalStateException("Expected only in a normal run");
+  }
 
   @DataProvider(name = "dp")
   public Object[][] getData() {

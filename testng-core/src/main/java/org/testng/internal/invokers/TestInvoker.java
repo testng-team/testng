@@ -976,6 +976,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     //
     // Create the ExtraOutput for this method
     //
+    boolean skippedForDryRun = false;
     try {
       testResult =
           TestResult.newTestResultFrom(testResult, m_testContext, System.currentTimeMillis());
@@ -1007,6 +1008,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       Method thisMethod = arguments.getTestMethod().getConstructorOrMethod().requireMethod();
 
       if (RuntimeBehavior.isDryRun()) {
+        skippedForDryRun = true;
         setTestStatus(testResult, ITestResult.SUCCESS);
         return testResult;
       }
@@ -1086,7 +1088,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               new RegexpExpectedExceptionsHolder(annotationFinder(), arguments.getTestMethod()));
       StatusHolder holder =
           considerExceptions(
-              arguments.getTestMethod(), testResult, expectedExceptionClasses, failureContext);
+              arguments.getTestMethod(),
+              testResult,
+              expectedExceptionClasses,
+              failureContext,
+              skippedForDryRun);
       // After considering exceptions, the test status may have gotten updated.
       // So lets update our test status with the latest status obtained from StatusHolder
       testResult.setStatus(holder.status);
@@ -1224,9 +1230,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       ITestNGMethod tm,
       ITestResult testResult,
       ExpectedExceptionsHolder exceptionsHolder,
-      FailureContext failure) {
+      FailureContext failure,
+      boolean skippedForDryRun) {
     try (AutoCloseableLock ignore = internalLock.lock()) {
-      return considerExceptionsInternal(tm, testResult, exceptionsHolder, failure);
+      return considerExceptionsInternal(
+          tm, testResult, exceptionsHolder, failure, skippedForDryRun);
     }
   }
 
@@ -1234,7 +1242,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       ITestNGMethod tm,
       ITestResult testResult,
       ExpectedExceptionsHolder exceptionsHolder,
-      FailureContext failure) {
+      FailureContext failure,
+      boolean skippedForDryRun) {
     StatusHolder holder = new StatusHolder();
     int status = testResult.getStatus();
     holder.handled = false;
@@ -1260,7 +1269,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         holder.handled = true;
         status = testResult.getStatus();
       }
-    } else if (status != ITestResult.SKIP && exceptionsHolder != null) {
+    } else if (status != ITestResult.SKIP && exceptionsHolder != null && !skippedForDryRun) {
       TestException exception = exceptionsHolder.noException(tm);
       if (exception != null) {
         testResult.setThrowable(exception);
