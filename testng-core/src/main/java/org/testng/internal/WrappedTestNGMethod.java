@@ -35,6 +35,14 @@ public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
             : UUID.randomUUID();
   }
 
+  /**
+   * True when {@link #getInstanceId()} is the delegate's id. A wrapper around anything else invents
+   * a UUID so the graph can hold a duplicate, and that UUID is not a configuration index key.
+   */
+  public boolean hasDelegatedInstanceId() {
+    return testNGMethod instanceof BaseTestMethod;
+  }
+
   @Override
   public Class<?> getRealClass() {
     return testNGMethod.getRealClass();

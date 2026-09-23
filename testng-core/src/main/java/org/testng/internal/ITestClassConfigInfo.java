@@ -32,6 +32,9 @@ public interface ITestClassConfigInfo {
   /**
    * Returns the {@code @BeforeMethod} configurations bound to one instance.
    *
+   * <p>The default is an empty list and is not an index. Callers that need configurations must keep
+   * using {@link ITestClass#getBeforeTestMethods()} unless the implementation overrides this.
+   *
    * @param instanceId the per-instance id of the test class instance
    * @return the before-method configurations of that instance, or an empty list
    */
@@ -41,6 +44,9 @@ public interface ITestClassConfigInfo {
 
   /**
    * Returns the {@code @AfterMethod} configurations bound to one instance.
+   *
+   * <p>The default is an empty list and is not an index. Callers that need configurations must keep
+   * using {@link ITestClass#getAfterTestMethods()} unless the implementation overrides this.
    *
    * @param instanceId the per-instance id of the test class instance
    * @return the after-method configurations of that instance, or an empty list

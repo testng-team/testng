@@ -916,6 +916,7 @@
       <class name="test.configuration.issue2254.IssueTest"/>
       <class name="test.configuration.issue2663.IssueTest"/>
       <class name="test.configuration.issue3239.IssueTest"/>
+      <class name="test.configuration.issue3435.IssueTest"/>
     </classes>
   </test>
 
@@ -978,7 +979,6 @@
   <test name="TestClass_unit_tests">
     <classes>
       <class name="org.testng.TestClassConfigurationLookupTest"/>
-      <class name="org.testng.FactoryBeforeMethodScalingTest"/>
     </classes>
   </test>
 
