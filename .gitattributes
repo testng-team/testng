@@ -7,4 +7,4 @@
 *.yaml text
 *.yml text
 *.bat text eol=crlf
-/CHANGES.txt merge=union
+/CHANGELOG.md merge=union

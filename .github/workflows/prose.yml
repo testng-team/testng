@@ -3,8 +3,11 @@ name: prose
 on:
   pull_request:
     # .vale.ini and .vale/** are here so a pull request that breaks the rules themselves still
-    # runs the check. *.txt is not: .vale.ini deliberately covers only *.md and *.java.
-    paths: ['**.java', '**.md', '.vale.ini', '.vale/**', '.github/workflows/prose.yml']
+    # runs the check. CHANGELOG.md is not: .vale.ini switches every style off for it, so a pull
+    # request that only touches the changelog has nothing to check.
+    paths:
+      ['**.java', '**.md', '!**/CHANGELOG.md', '.vale.ini', '.vale/**',
+       '.github/workflows/prose.yml']
 
 # No write scope. github-pr-annotations reports through workflow commands rather than the API.
 permissions:

@@ -63,18 +63,20 @@ TestNG uses GitHub Actions to automate the release process. The workflow:
                     │                           │
                     └───────────┬───────────────┘
                                 ▼
-                    ┌───────────────────────┐
-                    │ Artifacts on Maven    │
-                    │ Central (~30 minutes) │
-                    └───────────────────────┘
+                    ┌─────────────────────────┐
+                    │ Artifacts on Maven      │
+                    │ Central (~30 minutes)   │
+                    └─────────────────────────┘
                                 │
                                 ▼
-                    ┌───────────────────────┐
-                    │ Post-Release Tasks    │
-                    │ - Create Git tag      │
-                    │ - Send announcement   │
-                    │ - Update README       │
-                    └───────────────────────┘
+                    ┌─────────────────────────┐
+                    │ Post-Release Tasks      │
+                    │ - Create Git tag        │
+                    │ - Promote changelog     │
+                    │ - Create GitHub release │
+                    │ - Send announcement     │
+                    │ - Update README + docs  │
+                    └─────────────────────────┘
 ```
 
 ## Prerequisites
@@ -102,6 +104,10 @@ The following secrets must be configured in GitHub repository settings. The GitH
 
 ## Release Workflow
 
+Releases are made from `master`, and only from `master`. The branches that carry a release tag
+further back, `release_7.5` above all, are history rather than a supported path: they explain how a
+tag such as 7.5.1 came about, and nothing is published from them today.
+
 ### Option 1: Automatic Release (Recommended)
 
 This is the simplest approach - artifacts are automatically published to Maven Central without manual intervention.
@@ -113,7 +119,7 @@ This is the simplest approach - artifacts are automatically published to Maven C
 3. Click **"Run workflow"** button
 4. Select:
 
-   - **Branch**: `master` (or your release branch)
+   - **Branch**: `master`
    - **Publishing type**: `AUTOMATIC`
 
 5. Click **"Run workflow"**.
@@ -173,7 +179,7 @@ This approach uploads artifacts to Central Portal but waits for you to manually 
 3. Click **"Run workflow"** button
 4. Select:
 
-   - **Branch**: `master` (or your release branch)
+   - **Branch**: `master`
    - **Publishing type**: `USER_MANAGED`
 
 5. Click **"Run workflow"**
@@ -313,35 +319,184 @@ After artifacts are published to Maven Central, complete these tasks:
 
 ### 1. Create Git Tag
 
-Every release must be tagged in Git.
+Every release must be tagged in Git, and tagging comes first: the next step adds commits, and the
+tag has to point at the commit the artifacts were built from.
+
+That commit is not always your local `HEAD`. `Publish to Maven Central` is a `workflow_dispatch`,
+and its checkout takes the head of the branch it was dispatched on, at the moment it was dispatched
+— while you reach this step half an hour later, once Central has synced, on a branch that may have
+moved. Read the commit off the run instead of assuming it:
+
+Name the run outright. Picking the newest successful one would be a guess: a re-run, a
+`USER_MANAGED` run that staged but was never published, and a second dispatch of the same version
+are all successful runs, and all of them build a commit that declares this version.
 
 ```bash
-# Get the version number from the release
 VERSION="7.10.0"  # Replace with actual version
 
-# Create and push the tag
-git tag -a v${VERSION} -m "Release ${VERSION}"
-git push origin v${VERSION}
+# The remote that is testng-team/testng. Working from a fork, `origin` is the
+# fork: pushing a tag there never reaches the project.
+CANONICAL=$(git remote -v | awk '/testng-team\/testng.*\(push\)/ {print $1; exit}')
+test -n "${CANONICAL}" && echo "canonical remote: ${CANONICAL}"
+
+# The dispatched commit may not be in this clone yet.
+git fetch "${CANONICAL}"
+
+# Find the run you dispatched and watched above; its id is also the last path
+# segment of its URL, .../actions/runs/<id>
+gh run list --repo testng-team/testng --workflow "Publish to Maven Central" --limit 5 \
+  --json databaseId,headSha,conclusion,createdAt
+
+RUN_ID="21236984900"  # Replace with that run's id
 ```
 
-**Note**: The tag should point to the exact commit that was released.
+Two guards before the tag is written. The first is the run, the second the commit, and neither is
+implied by the other. They are chained, so nothing after a failing guard runs, and nothing exits the
+shell you pasted into — `exit 1` here would close it and take `RELEASE_COMMIT` with it, which step 2
+still needs:
 
-### 2. Create GitHub Release
+```bash
+RELEASE_COMMIT=$(gh run view "${RUN_ID}" --repo testng-team/testng --json headSha --jq .headSha)
+
+gh run view "${RUN_ID}" --repo testng-team/testng --json conclusion --jq .conclusion \
+    | grep -qx success &&
+  git show "${RELEASE_COMMIT}:gradle.properties" | grep -qx "testng.version=${VERSION}" &&
+  git log -1 --oneline "${RELEASE_COMMIT}" &&
+  git tag -a "v${VERSION}" "${RELEASE_COMMIT}" -m "TestNG ${VERSION}" &&
+  git push "${CANONICAL}" "v${VERSION}" ||
+  echo "Stopped: run ${RUN_ID} did not succeed, or did not build ${VERSION}"
+```
+
+A silent chain that stops early leaves no tag, which is the safe outcome: read the guards back by
+hand before re-running.
+
+**Note**: The tag is the version with a `v` in front, `v7.10.0`. The `v` belongs to the tag name and
+not to the version: the release is `7.10.0`, which is what `gradle.properties` and Maven Central
+carry. Prefixing marks a ref as a version at a glance, keeps release tags apart from every other
+ref, and is what the surrounding tooling expects — `npm version`, GoReleaser and Go modules all
+assume it, and the Semantic Versioning FAQ names it as the usual way to write a version tag.
+
+Releases up to and including `7.12.0` are tagged without the prefix, so the first `v` tag compares
+against a bare one. Only that one link is mixed; the rest follow.
+
+### 2. Promote the Changelog
+
+`CHANGELOG.md` follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), so releasing turns
+the section contributors have been filling in into a dated one, and opens a fresh one for the
+version that comes next.
+
+All of it happens on `master`, in a working copy, in one commit. The example below releases
+`7.10.0` and opens `7.11.0`.
+
+```bash
+# CANONICAL and RELEASE_COMMIT carry over from step 1; the same shell, or set them again.
+git checkout master
+git pull "${CANONICAL}" master
+
+# Anything the changelog gained since the released commit is not in the release.
+git diff "${RELEASE_COMMIT}" HEAD -- CHANGELOG.md
+```
+
+An empty diff means the whole `## [Unreleased]` section is what shipped, and the steps below apply
+to it as written. A non-empty one means a pull request merged while Central was syncing: its entries
+are under `## [Unreleased]` but its code is not in the artifacts. Dating the section wholesale would
+file that work under a version that never carried it, and remove it from the version that will —
+wrong in both directions, and invisible afterwards. Leave those entries under the new
+`## [Unreleased]` you open in step 2.1, and date only the rest.
+
+#### 2.1 Date the section being released
+
+At the top of `CHANGELOG.md`, turn this:
+
+```markdown
+## [Unreleased]
+
+Next release: 7.10.0.
+
+### Added
+```
+
+into this, using the date the artifacts reached Maven Central:
+
+```markdown
+## [Unreleased]
+
+Next release: 7.11.0.
+
+## [7.10.0] - 2024-04-07
+
+### Added
+```
+
+The `### Added`, `### Changed` and other subsections stay where they are: they describe the release
+you just dated. The new `## [Unreleased]` starts empty, with only its `Next release:` line.
+
+A release that had to be pulled keeps its section and gains a `[YANKED]` marker in the heading,
+with the reason on the line underneath:
+
+```markdown
+## [7.10.0] - 2024-04-07 [YANKED]
+
+Bad release: wrong internal version.
+```
+
+#### 2.2 Update the link definitions
+
+At the foot of `CHANGELOG.md`, point `[Unreleased]` at the tag you just pushed and add a line for
+the release itself. The base is the release this one follows in the commit graph, which for a
+release made from `master` is the one before it there:
+
+```markdown
+[Unreleased]: https://github.com/testng-team/testng/compare/v7.10.0...HEAD
+[7.10.0]: https://github.com/testng-team/testng/compare/7.9.0...v7.10.0
+```
+
+It is not the section above it in the file. Sections are ordered by release date, while a comparison
+link describes a Git delta, and the two orders part company for the maintenance releases already in
+the file: 7.5.1 was cut from a branch and shipped after 7.7.1, so its section sits between 7.8.0 and
+7.7.1 while its changes belong to the 7.5 line. That is why `[7.8.0]` compares against 7.7.1 rather
+than the section above it — taking 7.5.1 there would answer with 150 commits of divergence instead
+of the 25 that release delivered. Since releases now come from `master` only, a new entry cannot
+land in that position.
+
+#### 2.3 Bump the version
+
+In `gradle.properties`, set `testng.version` to the version you named in `Next release:`:
+
+```properties
+testng.version=7.11.0
+```
+
+#### 2.4 Commit and push
+
+```bash
+git add CHANGELOG.md gradle.properties &&
+  git commit -m "chore(release): date 7.10.0 and open 7.11.0" &&
+  git push "${CANONICAL}" master
+```
+
+### 3. Create GitHub Release
 
 1. Go to https://github.com/testng-team/testng/releases
 2. Click **"Draft a new release"**
 3. Select the tag you just created (`v7.10.0`)
 4. Set release title: `TestNG 7.10.0`
-5. Add release notes:
+5. Click **"Generate release notes"**, which lists the merged pull requests and credits their
+   authors — what 7.6.0 through 7.12.0 all shipped with — then add a line pointing at the
+   section you just dated:
 
-   - Highlight major features
-   - List bug fixes
-   - Link to issues/PRs
-   - Credit contributors
+   ```markdown
+   Full changelog: https://github.com/testng-team/testng/blob/master/CHANGELOG.md#7100---2024-04-07
+   ```
 
 6. Click **"Publish release"**
 
-### 3. Send Release Announcement
+Link the section rather than pasting it. A release body resolves `@Factory`, `@Test` and
+`@Listeners` as GitHub accounts, so the entries that name an annotation come out as links to
+unrelated users. The changelog renders them as written, because it is a file rather than a
+comment body.
+
+### 4. Send Release Announcement
 
 Send an email to the TestNG users mailing list:
 
@@ -382,24 +537,22 @@ Thanks to all contributors who made this release possible!
 [Your Name]
 ```
 
-### 4. Update README.md
+### 5. Link the Announcement from README.md
 
-Update the version badge and links in README.md:
+The `### Release Notes` list in `README.md` points at one mailing list thread per release, because a
+single release is hard to find in the archive otherwise. Add the thread you just sent, at the top:
 
-```bash
-# Edit README.md
-# Update version numbers in:
-# - Maven dependency example
-# - Gradle dependency example
-# - Download links
-# - Version badges
-
-git add README.md
-git commit -m "Update README for 7.10.0 release"
-git push origin master
+```markdown
+* [7.10.0](https://groups.google.com/g/testng-users/c/<thread-id>)
 ```
 
-### 5. Update Documentation
+```bash
+git add README.md &&
+  git commit -m "docs(readme): link the 7.10.0 announcement" &&
+  git push "${CANONICAL}" master
+```
+
+### 6. Update Documentation
 
 If there are documentation changes:
 
@@ -517,12 +670,14 @@ If there are documentation changes:
 2. Wait ~5-10 minutes for workflow to complete
 3. Wait ~30 minutes for Maven Central sync
 4. Create Git tag
-5. Send announcement
+5. Promote the changelog and bump the version
+6. Create GitHub release
+7. Send announcement
 ```
 
 **Benefits**:
 
-- ✅ **Simpler**: 5 steps instead of 9
+- ✅ **Simpler**: 7 steps instead of 9
 - ✅ **Faster**: No manual staging/release steps
 - ✅ **Safer**: Validation happens during upload
 - ✅ **No RC builds needed**: Can test from snapshots instead
@@ -567,7 +722,9 @@ Developer                    GitHub Actions              Central Portal         
     ├──────────────────────────────────────────────────────────────────────────────────>│
     │                              │                           │                        │
     │ 9. Create Git tag            │                           │                        │
-    │ 10. Send announcement        │                           │                        │
+    │ 10. Promote changelog        │                           │                        │
+    │ 11. Create GitHub release    │                           │                        │
+    │ 12. Send announcement        │                           │                        │
 ```
 
 ### Complete Release Flow (USER_MANAGED)
@@ -615,7 +772,9 @@ Developer                    GitHub Actions              Central Portal         
     ├──────────────────────────────────────────────────────────────────────────────────>│
     │                              │                           │                        │
     │ 12. Create Git tag           │                           │                        │
-    │ 13. Send announcement        │                           │                        │
+    │ 13. Promote changelog        │                           │                        │
+    │ 14. Create GitHub release    │                           │                        │
+    │ 15. Send announcement        │                           │                        │
 ```
 
 ---
