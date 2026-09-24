@@ -1107,6 +1107,8 @@ test.configuration.issue3435.IssueTest#pooledFirstAndLastTimeOnlyStayScopedToEac
 test.configuration.issue3435.IssueTest$PooledTimeOnlyFactory#test	PASS 6
 test.configuration.issue3435.IssueTest$ScopedFactory#one	PASS 3
 test.configuration.issue3435.IssueTest$ScopedFactory#two	PASS 3
+test.configuration.issue3539.IssueTest#pooledTimeOnlyConfigsStayOnTheOwningInstanceWhenTheIndexIdIsMissing	PASS 1
+test.configuration.issue3539.IssueTest$PooledWrappedFactory#test	PASS 4
 test.configurationfailurepolicy.FailurePolicyTest#confFailureTest	PASS 12
 test.configurationfailurepolicy.FailurePolicyTest#confFailureTestInvolvingGroups	PASS 1
 test.configurationfailurepolicy.FailurePolicyTest#ensureFailurePolicyCanBeOverriddenWithAnnotationAndFailuresAtBaseClassLevel	PASS 1

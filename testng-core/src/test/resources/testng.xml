@@ -917,6 +917,7 @@
       <class name="test.configuration.issue2663.IssueTest"/>
       <class name="test.configuration.issue3239.IssueTest"/>
       <class name="test.configuration.issue3435.IssueTest"/>
+      <class name="test.configuration.issue3539.IssueTest"/>
     </classes>
   </test>
 
