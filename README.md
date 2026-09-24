@@ -12,6 +12,12 @@ Documentation available at [TestNG's main web site](https://testng.org). Visit [
 > **Note for contributors:** Building TestNG from source requires JDK 21 or higher. See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for details.
 
 ### Release Notes
+
+[CHANGELOG.md](CHANGELOG.md) carries the releases the project recorded, back to 0.2. Some published
+versions were never written down and have no section there. The announcements below carry each
+release as it was sent to the [testng-users](https://groups.google.com/g/testng-users) mailing list,
+where a single release is otherwise hard to find.
+
 * [7.12.0](https://groups.google.com/g/testng-users/c/KLK7I7jagTQ)
 * [7.11.0](https://groups.google.com/g/testng-users/c/2z_tdavjZbA)
 * [7.10.0](https://groups.google.com/g/testng-users/c/6DmFaKUjIxY)

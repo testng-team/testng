@@ -3,7 +3,7 @@ Fixes # .
 ### Did you remember to?
 
 - [ ] Add test case(s)
-- [ ] Update `CHANGES.txt`
+- [ ] Update `CHANGELOG.md`, under `## [Unreleased]`
 - [ ] Auto applied styling via `./gradlew autostyleApply`
 - [ ] Checked the wording of any javadoc, comments or docs you touched, via
       `./gradlew writingStyleCheckChanges` ([writing style](../docs/WRITING_STYLE.md))
