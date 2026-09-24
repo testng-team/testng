@@ -775,8 +775,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     ITestClass testClass = Utils.requireTestClassOf(testMethod);
     XmlSuite suite = m_testContext.getSuite().getXmlSuite();
     // The pool belongs to one test method, already bound to one instance. Walking every factory
-    // instance would fire the other instances' first/last configs as a side effect. A wrapper
-    // around a non-BaseTestMethod has no index id, so compare the embedded instance instead.
+    // instance would fire the other instances' first/last configurations as a side effect. A
+    // wrapper around a non-BaseTestMethod has no index id, so compare the embedded instance
+    // instead.
     // Skip on the index id before embedding: a lazy factory instance must not be built just to
     // discover it belongs to another pool.
     UUID wanted = TestNgMethodUtils.configInstanceId(testMethod);
