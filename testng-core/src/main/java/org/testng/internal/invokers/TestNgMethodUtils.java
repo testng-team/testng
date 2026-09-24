@@ -1,10 +1,12 @@
 package org.testng.internal.invokers;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import org.jspecify.annotations.Nullable;
@@ -13,7 +15,10 @@ import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ConfigurationMethod;
+import org.testng.internal.IInstanceIdentity;
+import org.testng.internal.ITestClassConfigInfo;
 import org.testng.internal.Utils;
+import org.testng.internal.WrappedTestNGMethod;
 
 /** Collections of helper methods to help deal with TestNG configuration methods */
 class TestNgMethodUtils {
@@ -76,14 +81,100 @@ class TestNgMethodUtils {
       @Nullable Object instance,
       ITestClass testClass,
       BiPredicate<ITestNGMethod, IClass> predicate) {
-    return filterMethods(instance, testClass, testClass.getBeforeTestMethods(), predicate);
+    return filterBeforeTestMethods(instance, testClass, predicate, null);
+  }
+
+  static ITestNGMethod[] filterBeforeTestMethods(
+      @Nullable Object instance,
+      ITestClass testClass,
+      BiPredicate<ITestNGMethod, IClass> predicate,
+      @Nullable UUID instanceId) {
+    return filterMethods(instance, testClass, methodsFor(testClass, instanceId, true), predicate);
   }
 
   static ITestNGMethod[] filterAfterTestMethods(
       @Nullable Object instance,
       ITestClass testClass,
       BiPredicate<ITestNGMethod, IClass> predicate) {
-    return filterMethods(instance, testClass, testClass.getAfterTestMethods(), predicate);
+    return filterAfterTestMethods(instance, testClass, predicate, null);
+  }
+
+  static ITestNGMethod[] filterAfterTestMethods(
+      @Nullable Object instance,
+      ITestClass testClass,
+      BiPredicate<ITestNGMethod, IClass> predicate,
+      @Nullable UUID instanceId) {
+    return filterMethods(instance, testClass, methodsFor(testClass, instanceId, false), predicate);
+  }
+
+  /**
+   * The flat accessors copy every {@code @Factory} instance. The index answers one instance, but
+   * only when the test class overrides it. The empty default on {@link ITestClassConfigInfo} is not
+   * an index: treating it as one would drop method configurations for an older implementation.
+   */
+  private static ITestNGMethod[] methodsFor(
+      ITestClass testClass, @Nullable UUID instanceId, boolean before) {
+    if (instanceId != null && usesMethodIndex(testClass, before)) {
+      ITestClassConfigInfo info = (ITestClassConfigInfo) testClass;
+      List<ITestNGMethod> indexed =
+          before
+              ? info.getInstanceBeforeTestMethods(instanceId)
+              : info.getInstanceAfterTestMethods(instanceId);
+      return indexed.toArray(ITestNGMethod[]::new);
+    }
+    return before ? testClass.getBeforeTestMethods() : testClass.getAfterTestMethods();
+  }
+
+  /**
+   * Per-class memo of whether the method index is overridden. A {@link ClassValue} drops the answer
+   * with the class, so a one-off test class does not stay pinned.
+   */
+  private static final ClassValue<boolean[]> METHOD_INDEX =
+      new ClassValue<>() {
+        @Override
+        protected boolean[] computeValue(Class<?> type) {
+          return new boolean[] {
+            overridesIndex(type, "getInstanceBeforeTestMethods"),
+            overridesIndex(type, "getInstanceAfterTestMethods")
+          };
+        }
+      };
+
+  private static boolean usesMethodIndex(ITestClass testClass, boolean before) {
+    if (!(testClass instanceof ITestClassConfigInfo)) {
+      return false;
+    }
+    boolean[] support = METHOD_INDEX.get(testClass.getClass());
+    return before ? support[0] : support[1];
+  }
+
+  private static boolean overridesIndex(Class<?> type, String name) {
+    try {
+      Method method = type.getMethod(name, UUID.class);
+      return method.getDeclaringClass() != ITestClassConfigInfo.class;
+    } catch (NoSuchMethodException ex) {
+      return false;
+    }
+  }
+
+  static @Nullable UUID instanceIdOf(ITestNGMethod method) {
+    if (method instanceof IInstanceIdentity) {
+      return ((IInstanceIdentity) method).getInstanceId();
+    }
+    return null;
+  }
+
+  /**
+   * The id the invoker should use to read the method index. A {@link WrappedTestNGMethod} around a
+   * non-{@link org.testng.internal.BaseTestMethod} invents a UUID so the graph can hold a
+   * duplicate. That UUID is not an index key, so the flat scan is the compatible path.
+   */
+  static @Nullable UUID configInstanceId(ITestNGMethod method) {
+    if (method instanceof WrappedTestNGMethod
+        && !((WrappedTestNGMethod) method).hasDelegatedInstanceId()) {
+      return null;
+    }
+    return instanceIdOf(method);
   }
 
   /** @return Only the ITestNGMethods applicable for this testClass */

@@ -53,6 +53,12 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
 
   private final Map<UUID, List<ITestNGMethod>> afterClassConfig = new LinkedHashMap<>();
 
+  // Same key as the class-level maps. A per-invocation scan of the flat
+  // @BeforeMethod/@AfterMethod lists is quadratic in the @Factory size.
+  private final Map<UUID, List<ITestNGMethod>> beforeMethodConfig = new LinkedHashMap<>();
+
+  private final Map<UUID, List<ITestNGMethod>> afterMethodConfig = new LinkedHashMap<>();
+
   @Override
   public List<ITestNGMethod> getAllBeforeClassMethods() {
     return getAllClassLevelConfigs(beforeClassConfig);
@@ -83,6 +89,16 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   @Override
   public List<ITestNGMethod> getInstanceAfterClassMethods(@Nullable UUID instanceId) {
     return afterClassConfig.getOrDefault(instanceId, Collections.emptyList());
+  }
+
+  @Override
+  public List<ITestNGMethod> getInstanceBeforeTestMethods(@Nullable UUID instanceId) {
+    return beforeMethodConfig.getOrDefault(instanceId, Collections.emptyList());
+  }
+
+  @Override
+  public List<ITestNGMethod> getInstanceAfterTestMethods(@Nullable UUID instanceId) {
+    return afterMethodConfig.getOrDefault(instanceId, Collections.emptyList());
   }
 
   private static final Logger LOG = Logger.getLogger(TestClass.class);
@@ -263,12 +279,16 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
       m_afterGroupsMethods =
           ConfigurationMethod.createAfterConfigurationMethods(
               objectFactory, afterGroupsTemplates, annotationFinder, false, eachInstance);
-      m_beforeTestMethods.addAll(
+      List<ITestNGMethod> beforeMethods =
           ConfigurationMethod.createTestMethodConfigurationMethods(
-              objectFactory, beforeMethodTemplates, annotationFinder, true, xmlTest, eachInstance));
-      m_afterTestMethods.addAll(
+              objectFactory, beforeMethodTemplates, annotationFinder, true, xmlTest, eachInstance);
+      m_beforeTestMethods.addAll(beforeMethods);
+      beforeMethodConfig.put(eachInstance.getInstanceId(), beforeMethods);
+      List<ITestNGMethod> afterMethods =
           ConfigurationMethod.createTestMethodConfigurationMethods(
-              objectFactory, afterMethodTemplates, annotationFinder, false, xmlTest, eachInstance));
+              objectFactory, afterMethodTemplates, annotationFinder, false, xmlTest, eachInstance);
+      m_afterTestMethods.addAll(afterMethods);
+      afterMethodConfig.put(eachInstance.getInstanceId(), afterMethods);
     }
   }
 

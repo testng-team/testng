@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -54,6 +55,7 @@ import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IObject;
+import org.testng.internal.IParameterInfo;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.ListenerOrderDeterminer;
 import org.testng.internal.MethodGroupsHelper;
@@ -237,10 +239,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     boolean onlyOne = testMethod.getThreadPoolSize() > 1 || timeOutInvocationCount > 0;
 
     ITestClass testClass = testMethod.getTestClass();
+    UUID instanceId = TestNgMethodUtils.configInstanceId(testMethod);
     ITestNGMethod[] beforeMethods =
-        TestNgMethodUtils.filterBeforeTestMethods(instance, testClass, CAN_RUN_FROM_CLASS);
+        TestNgMethodUtils.filterBeforeTestMethods(
+            instance, testClass, CAN_RUN_FROM_CLASS, instanceId);
     ITestNGMethod[] afterMethods =
-        TestNgMethodUtils.filterAfterTestMethods(instance, testClass, CAN_RUN_FROM_CLASS);
+        TestNgMethodUtils.filterAfterTestMethods(
+            instance, testClass, CAN_RUN_FROM_CLASS, instanceId);
     int invocationCount = onlyOne ? 1 : testMethod.getInvocationCount();
 
     TestMethodArguments arguments =
@@ -769,18 +774,27 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       ITestNGMethod testMethod, Map<String, String> parameters, boolean before) {
     ITestClass testClass = Utils.requireTestClassOf(testMethod);
     XmlSuite suite = m_testContext.getSuite().getXmlSuite();
+    // The pool belongs to one test method, already bound to one instance. Walking every factory
+    // instance would fire the other instances' first/last configs as a side effect.
+    UUID wanted = TestNgMethodUtils.configInstanceId(testMethod);
     for (IObject.IdentifiableObject identifiable : IObject.objects(testClass, true)) {
-      Object instance = identifiable.getInstance();
+      UUID instanceId = identifiable.getInstanceId();
+      if (wanted != null && !wanted.equals(instanceId)) {
+        continue;
+      }
+      // Config methods expose the embedded instance. The object list can still hold the
+      // IParameterInfo a @Factory returned, and isSameInstance compares with equals.
+      Object instance = IParameterInfo.embeddedInstance(identifiable.getInstance());
       ITestNGMethod[] configMethods =
           before
               ? TestNgMethodUtils.filterFirstTimeOnlySetupMethods(
                   testMethod,
                   TestNgMethodUtils.filterBeforeTestMethods(
-                      instance, testClass, CAN_RUN_FROM_CLASS))
+                      instance, testClass, CAN_RUN_FROM_CLASS, instanceId))
               : TestNgMethodUtils.filterLastTimeOnlyTeardownMethods(
                   testMethod,
                   TestNgMethodUtils.filterAfterTestMethods(
-                      instance, testClass, CAN_RUN_FROM_CLASS));
+                      instance, testClass, CAN_RUN_FROM_CLASS, instanceId));
       if (configMethods.length == 0) {
         continue;
       }
