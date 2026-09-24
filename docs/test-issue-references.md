@@ -282,7 +282,6 @@ its package name is the only thing that names it.
 | `GITHUB-2714` | dependsOnGroups on @AfterMethod seems to behave incorrectly | pull request #3471: "Fixes #2714" | **no link** |
 | `GITHUB-549` | Groups in @BeforeMethod and @AfterMethod don't work as expected | pull request #1738: "fixes #549" | **no link** |
 | `GITHUB-549` | Groups in @BeforeMethod and @AfterMethod don't work as expected | pull request #1741: "Fixes #549" | **no link** |
-| `GITHUB-1009` | Iterator&lt;Object[]&gt; DataProvider: indices not working | branch `issue-#1009-dp-indices-on-iterator`, in PR #1065 | **no link** |
 
 <!-- vale on -->
 
@@ -295,18 +294,23 @@ these references, and the script proves them the same way:
 - `GITHUB-3000`, `GITHUB-3003` and `GITHUB-3006`
 - `GITHUB-3358` and `GITHUB-3359`
 
-The sweep over methods with no description writes four references. The script proves each one:
+The sweep over methods with no description writes three references. The script proves each one, and
+each issue asks for what its method asserts:
 
-- `GITHUB-3239`, on the `issue3239.IssueTest` methods that carried no reference, apart from the one
-  below. Pull request #3471 closes #3239.
+- `GITHUB-3239`, on `beforeClassInheritanceSurvivesUnrelatedChildGroups`,
+  `alignedHardDependencyKeepsInheritanceOrder` and
+  `regexpDependsOnGroupsUsesSameMatchingAsExecutionGraph`, in `issue3239.IssueTest`. Each one pins the
+  order of an inherited configuration method when groups are in play. Pull request #3471 closes #3239.
 - `GITHUB-2714`, on `issue3239.IssueTest#afterMethodInheritanceSurvivesUnrelatedChildGroups`. The same
   pull request closes #2714. That method drives the same samples as its two neighbours, and they
   already carry `GITHUB-2714`.
 - `GITHUB-549`, on `BeforeMethodWithGroupFiltersTest` and `AfterMethodWithGroupFiltersTest`. Pull
   request #1738 added the first method, and #1741 added the second. Each one says it fixes #549.
-- `GITHUB-1009`, on `GroupsTest#verifyIteratorDataProviderAfterGroups`. Commit `b6c0e0a99` added it, on
-  the branch of pull request #1065. That pull request fixes #1009. The issue itself is about data
-  provider indices. This method came in as a case that failed with an iterator data provider.
+
+`GroupsTest#verifyIteratorDataProviderAfterGroups` gets no reference. The script proves `GITHUB-1009`
+for it, through the branch of pull request #1065. The issue asks for `indices` on an `Iterator` data
+provider. The method asserts the order of `@BeforeGroups` and `@AfterGroups` around such a provider,
+and it touches no index. Rule 2 is what decides, so the reference is not written.
 
 `GITHUB-1338` and `GITHUB-2729` were already in the code, written as a URL and as `github 2729`. They
 now use the same `GITHUB-<n>` form as the rest.
@@ -323,17 +327,26 @@ Each method of `issue1753.IssueTest` now carries the issue its own commit names:
 `issue2254.IssueTest` now carries `GITHUB-2209`, not `GITHUB-2254`. The commit that added it closes
 #2209. The maintainer closed #2254 as a duplicate of #2209, in a comment on #2254.
 
-Four methods of `issue3239.IssueTest` carried `GITHUB-2432`. They now carry `GITHUB-3239`:
-`inheritanceEdgeDoesNotCycleWhenAgnosticMethodIsTransitivelyUpstream`,
-`inheritanceEdgeDoesNotCycleForAfterClass`, `inheritanceEdgeDoesNotCycleOnPureDependsOnGroupsChain`
-and `twoHierarchiesDoNotFormACycleOnBeforeSuite`.
+Seven methods of `issue3239.IssueTest` carry `GITHUB-2432` as a recorded exception:
 
-The script proves `GITHUB-2432` on none of them. `f90a16bd2` names the issue only as "GITHUB-2432".
-The script does not read that form as proof. This project's commits use it to label the descriptions
-they write, so a commit would prove its own label. `eff8d53b1` does not name the issue at all.
+- `inheritanceEdgeDoesNotCycleWhenAgnosticMethodIsTransitivelyUpstream`
+- `inheritanceEdgeDoesNotCycleForAfterClass`
+- `inheritanceEdgeDoesNotCycleOnPureDependsOnGroupsChain`
+- `twoHierarchiesDoNotFormACycleOnBeforeSuite`
+- `twoHierarchiesDoNotFormACycleOnAfterSuite`
+- `threeLevelInheritanceSelectivelyRejectsCyclingEdges`
+- `oppositeHardDependencyWinsWithoutCycle`
 
-Both commits sit in pull request #3471, which closes #3239. Every method of that class now carries a
-reference the script proves.
+Each one asserts that an inheritance edge gives way. Six check that TestNG adds no edge that would
+close a cycle. The seventh checks that an explicit `dependsOnMethods` wins over the inherited order.
+That is what #2432 asks for: "Rework MethodInheritance.fixMethodInheritance to \"soft\" dependencies".
+Pull request #3471 says the same in its own words: the edge is left out when it would close a cycle,
+"so a group pipeline such as GITHUB-2432 still wins".
+
+The script proves `GITHUB-2432` on none of them. `f90a16bd2` names the issue only as "GITHUB-2432",
+and the script does not read that form as proof. This project's commits use it to label the
+descriptions they write, so a commit would prove its own label. `eff8d53b1` and `a5bb1290d` do not
+name the issue at all. Rule 1 fails and rule 2 holds, so the reference stays and this note records it.
 
 These methods get no reference:
 
@@ -346,6 +359,10 @@ These methods get no reference:
 - `ConfigurationTest#testConfiguration`, `ConfigurationTest#testMethodCallOrder` and
   `ConfigurationTest#testSuite`. The commit that added them names only "(#2626)", and #2626 is a pull
   request.
+- `issue3239.IssueTest#missingDependsOnMethodsStillFailsFromInheritanceWalk` and
+  `issue3239.IssueTest#missingDependsOnGroupsKeepsExistingErrorBehavior`. Pull request #3471 proves
+  `GITHUB-3239` for both. Each one guards the error TestNG already reported for a dependency that does
+  not exist, which is not what #3239 asks for.
 
 `OnlyOnceConfigurationTest` and `ParentTestClass`, under `issue2961`, move to `samples` like any other
 class that no suite file names. They came with the fix for #2961 in 2023, beside the samples in

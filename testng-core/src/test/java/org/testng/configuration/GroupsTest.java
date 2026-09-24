@@ -29,7 +29,7 @@ public class GroupsTest {
         Arrays.asList(1, 2, 2, 2, 3));
   }
 
-  @Test(description = "GITHUB-1009")
+  @Test
   public void verifyIteratorDataProviderAfterGroups() {
     runTest(
         ConfigurationGroupIteratorDataProviderSampleTest.class,

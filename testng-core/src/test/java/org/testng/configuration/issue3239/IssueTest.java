@@ -53,7 +53,7 @@ public class IssueTest extends SimpleBaseTest {
             "beforeMethod", "beforeChildMethod", "testCase", "afterChildMethod", "afterMethod");
   }
 
-  @Test(description = "GITHUB-3239")
+  @Test(description = "GITHUB-2432")
   public void inheritanceEdgeDoesNotCycleWhenAgnosticMethodIsTransitivelyUpstream() {
     InvokedMethodNameListener listener = run(TransitiveUpstreamChild.class);
 
@@ -61,7 +61,7 @@ public class IssueTest extends SimpleBaseTest {
         .containsExactly("baseGroup", "childAgnostic", "childGroup", "baseAfterGroup", "test");
   }
 
-  @Test(description = "GITHUB-3239")
+  @Test(description = "GITHUB-2432")
   public void twoHierarchiesDoNotFormACycleOnBeforeSuite() {
     InvokedMethodNameListener listener = run(SuiteAChild.class, SuiteBChild.class);
 
@@ -70,7 +70,7 @@ public class IssueTest extends SimpleBaseTest {
             "childB", "childBGroup", "baseA", "childA", "childAGroup", "baseB", "testA", "testB");
   }
 
-  @Test(description = "GITHUB-3239")
+  @Test(description = "GITHUB-2432")
   public void inheritanceEdgeDoesNotCycleForAfterClass() {
     InvokedMethodNameListener listener = run(AfterTransitiveUpstreamChild.class);
 
@@ -78,7 +78,7 @@ public class IssueTest extends SimpleBaseTest {
         .containsExactly("test", "parentAfter", "childDependsOnG", "childAgnostic");
   }
 
-  @Test(description = "GITHUB-3239")
+  @Test(description = "GITHUB-2432")
   public void inheritanceEdgeDoesNotCycleOnPureDependsOnGroupsChain() {
     InvokedMethodNameListener listener = run(GroupChainChild.class);
 
@@ -87,7 +87,6 @@ public class IssueTest extends SimpleBaseTest {
   }
 
   @Test(
-      description = "GITHUB-3239",
       expectedExceptions = TestNGException.class,
       expectedExceptionsMessageRegExp = ".*depends on nonexistent method doesNotExist")
   public void missingDependsOnMethodsStillFailsFromInheritanceWalk() {
@@ -118,14 +117,14 @@ public class IssueTest extends SimpleBaseTest {
     assertThat(listener.getInvokedMethodNames()).containsExactly("baseSetup", "childSetup", "test");
   }
 
-  @Test(description = "GITHUB-3239")
+  @Test(description = "GITHUB-2432")
   public void oppositeHardDependencyWinsWithoutCycle() {
     InvokedMethodNameListener listener = run(OppositeHardDepChild.class);
 
     assertThat(listener.getInvokedMethodNames()).containsExactly("childSetup", "baseSetup", "test");
   }
 
-  @Test(description = "GITHUB-3239")
+  @Test(description = "GITHUB-2432")
   public void threeLevelInheritanceSelectivelyRejectsCyclingEdges() {
     InvokedMethodNameListener listener = run(ThreeLevelChild.class);
 
@@ -141,7 +140,7 @@ public class IssueTest extends SimpleBaseTest {
         .containsExactly("baseSetup", "childSetup", "baseAfter", "test");
   }
 
-  @Test(description = "GITHUB-3239")
+  @Test(description = "GITHUB-2432")
   public void twoHierarchiesDoNotFormACycleOnAfterSuite() {
     InvokedMethodNameListener listener = run(AfterSuiteAChild.class, AfterSuiteBChild.class);
 
@@ -150,7 +149,7 @@ public class IssueTest extends SimpleBaseTest {
             "testA", "testB", "childA", "childAGroup", "childB", "childBGroup", "baseA", "baseB");
   }
 
-  @Test(description = "GITHUB-3239")
+  @Test
   public void missingDependsOnGroupsKeepsExistingErrorBehavior() {
     InvokedMethodNameListener listener = run(MissingGroupsChild.class);
 
