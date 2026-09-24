@@ -775,8 +775,12 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     ITestClass testClass = Utils.requireTestClassOf(testMethod);
     XmlSuite suite = m_testContext.getSuite().getXmlSuite();
     // The pool belongs to one test method, already bound to one instance. Walking every factory
-    // instance would fire the other instances' first/last configs as a side effect.
+    // instance would fire the other instances' first/last configs as a side effect. A wrapper
+    // around a non-BaseTestMethod has no index id, so compare the embedded instance instead.
+    // Skip on the index id before embedding: a lazy factory instance must not be built just to
+    // discover it belongs to another pool.
     UUID wanted = TestNgMethodUtils.configInstanceId(testMethod);
+    Object owner = wanted == null ? embeddedInstance(testMethod.getInstance()) : null;
     for (IObject.IdentifiableObject identifiable : IObject.objects(testClass, true)) {
       UUID instanceId = identifiable.getInstanceId();
       if (wanted != null && !wanted.equals(instanceId)) {
@@ -785,6 +789,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       // Config methods expose the embedded instance. The object list can still hold the
       // IParameterInfo a @Factory returned, and isSameInstance compares with equals.
       Object instance = IParameterInfo.embeddedInstance(identifiable.getInstance());
+      if (wanted == null && !sameEmbeddedInstance(owner, instance)) {
+        continue;
+      }
       ITestNGMethod[] configMethods =
           before
               ? TestNgMethodUtils.filterFirstTimeOnlySetupMethods(
@@ -809,6 +816,25 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               .build();
       invoker.invokeConfigurations(cfgArgs);
     }
+  }
+
+  /**
+   * Answers whether {@code candidate} is the embedded instance the pooled method belongs to. Used
+   * only when the method has no index id. A null candidate is kept, which is what method
+   * configuration filtering does.
+   */
+  private static boolean sameEmbeddedInstance(@Nullable Object owner, @Nullable Object candidate) {
+    if (candidate == null) {
+      return true;
+    }
+    return owner != null && candidate.equals(owner);
+  }
+
+  private static @Nullable Object embeddedInstance(@Nullable Object original) {
+    if (original == null) {
+      return null;
+    }
+    return IParameterInfo.embeddedInstance(original);
   }
 
   /**
