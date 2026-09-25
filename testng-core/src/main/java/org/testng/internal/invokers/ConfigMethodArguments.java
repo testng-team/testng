@@ -16,6 +16,7 @@ public class ConfigMethodArguments extends MethodArguments {
   private final XmlSuite suite;
   private final @Nullable ITestResult testMethodResult;
   private final long ignoredFailureMark;
+  private final int parametersIndex;
 
   private ConfigMethodArguments(
       @Nullable IClass testClass,
@@ -26,13 +27,15 @@ public class ConfigMethodArguments extends MethodArguments {
       Object @Nullable [] parameterValues,
       @Nullable Object instance,
       @Nullable ITestResult testMethodResult,
-      long ignoredFailureMark) {
+      long ignoredFailureMark,
+      int parametersIndex) {
     super(instance, currentTestMethod, params, parameterValues);
     this.testClass = testClass;
     this.allMethods = allMethods;
     this.suite = suite;
     this.testMethodResult = testMethodResult;
     this.ignoredFailureMark = ignoredFailureMark;
+    this.parametersIndex = parametersIndex;
   }
 
   public @Nullable IClass getTestClass() {
@@ -64,6 +67,11 @@ public class ConfigMethodArguments extends MethodArguments {
     return ignoredFailureMark;
   }
 
+  /** The data-provider row this invocation belongs to. Zero when the method has no row. */
+  public int getParametersIndex() {
+    return parametersIndex;
+  }
+
   public void setTestClass(IClass testClass) {
     this.testClass = testClass;
   }
@@ -79,6 +87,7 @@ public class ConfigMethodArguments extends MethodArguments {
     private @Nullable Object instance;
     private @Nullable ITestResult testMethodResult;
     private long ignoredFailureMark = IConfigInvoker.NO_IGNORED_FAILURES;
+    private int parametersIndex;
 
     public Builder forTestClass(IClass testClass) {
       this.testClass = testClass;
@@ -132,6 +141,11 @@ public class ConfigMethodArguments extends MethodArguments {
       return this;
     }
 
+    public Builder withParametersIndex(int parametersIndex) {
+      this.parametersIndex = parametersIndex;
+      return this;
+    }
+
     public ConfigMethodArguments build() {
       return new ConfigMethodArguments(
           testClass,
@@ -142,7 +156,8 @@ public class ConfigMethodArguments extends MethodArguments {
           parameterValues,
           instance,
           testMethodResult,
-          ignoredFailureMark);
+          ignoredFailureMark,
+          parametersIndex);
     }
   }
 }

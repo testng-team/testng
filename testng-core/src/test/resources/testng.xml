@@ -106,6 +106,7 @@
       <class name="org.testng.conffailure.RetriedInvocationTest" />
       <class name="org.testng.conffailure.issue1622.IssueTest" />
       <class name="org.testng.conffailure.issue3522.Issue3522Test" />
+      <class name="org.testng.conffailure.issue3533.Issue3533Test" />
       <class name="test.superclass.MainTest" />
       <class name="test.superclass.Test3" />
       <class name="test.failures.FailuresTest" />

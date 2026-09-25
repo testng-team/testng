@@ -245,14 +245,12 @@ class TestNgMethodUtils {
     return null != methods && methods.length > 0;
   }
 
-  // Creates a token for tracking a unique invocation of a method on an instance.
-  // Is used when configFailurePolicy=continue.
-  static Object getMethodInvocationToken(ITestNGMethod method, Object instance) {
+  // The row index is the invocation's own, not method.getParameterInvocationCount(). Parallel
+  // data-provider workers share that field, so it cannot tell their rows apart.
+  static Object getMethodInvocationToken(
+      ITestNGMethod method, Object instance, int parameterIndex) {
     return String.format(
-        "%s+%d+%d",
-        instance.toString(),
-        method.getCurrentInvocationCount(),
-        method.getParameterInvocationCount());
+        "%s+%d+%d", instance.toString(), method.getCurrentInvocationCount(), parameterIndex);
   }
 
   private static boolean doesSetupMethodPassFirstTimeFilter(

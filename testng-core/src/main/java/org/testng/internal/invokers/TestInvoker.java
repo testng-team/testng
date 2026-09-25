@@ -998,7 +998,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         arguments.getTestMethod().getGroups(),
         arguments.getTestClass(),
         arguments.getInstance(),
-        failureContext.ignoredFailureMark)) {
+        failureContext.ignoredFailureMark,
+        arguments.getParametersIndex())) {
       Throwable exception =
           ExceptionUtils.getExceptionDetails(m_testContext, arguments.getInstance());
       ITestResult result =
@@ -1226,6 +1227,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             .usingInstance(arguments.getInstance())
             .withResult(testResult)
             .ignoringFailuresUpTo(ignoredFailureMark)
+            .withParametersIndex(arguments.getParametersIndex())
             .build();
     invoker.invokeConfigurations(cfgArgs);
   }
