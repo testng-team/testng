@@ -969,6 +969,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // Every route in here rebuilds the arguments with the values for this one invocation; the
     // template object the invocation loop starts from never reaches this method.
     Object[] parameterValues = Objects.requireNonNull(arguments.getParameterValues());
+    // Captured once. A sibling can increment the shared counter before this invocation looks its
+    // own configuration failure up, and an @AfterMethod runs after this invocation increments it.
+    int invocationCount = arguments.getTestMethod().getCurrentInvocationCount();
     TestResult testResult =
         TestResult.newTestResult(
             arguments.getTestMethod(), parameterValues, arguments.getParametersIndex());
@@ -987,7 +990,12 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         TestNgMethodUtils.filterSetupConfigurationMethods(
             arguments.getTestMethod(), arguments.getBeforeMethods());
     runConfigMethods(
-        arguments, suite, testResult, setupConfigMethods, failureContext.ignoredFailureMark);
+        arguments,
+        suite,
+        testResult,
+        setupConfigMethods,
+        failureContext.ignoredFailureMark,
+        invocationCount);
 
     long startTime = System.currentTimeMillis();
     InvokedMethod invokedMethod = new InvokedMethod(startTime, testResult);
@@ -999,7 +1007,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         arguments.getTestClass(),
         arguments.getInstance(),
         failureContext.ignoredFailureMark,
-        arguments.getParametersIndex())) {
+        arguments.getParametersIndex(),
+        invocationCount)) {
       Throwable exception =
           ExceptionUtils.getExceptionDetails(m_testContext, arguments.getInstance());
       ITestResult result =
@@ -1009,7 +1018,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       arguments.getTestMethod().incrementCurrentInvocationCount();
       invokedMethod = new InvokedMethod(startTime, result);
       invokeListenersForSkippedTestResult(result, invokedMethod);
-      runAfterConfigurations(arguments, suite, result, failureContext.ignoredFailureMark);
+      runAfterConfigurations(
+          arguments, suite, result, failureContext.ignoredFailureMark, invocationCount);
       runAfterGroupsConfigurations(arguments);
 
       return result;
@@ -1168,7 +1178,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
       collectResults(arguments.getTestMethod(), testResult);
 
-      runAfterConfigurations(arguments, suite, testResult, failureContext.ignoredFailureMark);
+      runAfterConfigurations(
+          arguments, suite, testResult, failureContext.ignoredFailureMark, invocationCount);
       if (!willRetryMethod) {
         runAfterGroupsConfigurations(arguments);
       }
@@ -1191,11 +1202,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       TestMethodArguments arguments,
       XmlSuite suite,
       ITestResult testResult,
-      long ignoredFailureMark) {
+      long ignoredFailureMark,
+      int invocationCount) {
     ITestNGMethod[] teardownConfigMethods =
         TestNgMethodUtils.filterTeardownConfigurationMethods(
             arguments.getTestMethod(), arguments.getAfterMethods());
-    runConfigMethods(arguments, suite, testResult, teardownConfigMethods, ignoredFailureMark);
+    runConfigMethods(
+        arguments, suite, testResult, teardownConfigMethods, ignoredFailureMark, invocationCount);
   }
 
   private void runAfterGroupsConfigurations(TestMethodArguments arguments) {
@@ -1215,7 +1228,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       XmlSuite suite,
       ITestResult testResult,
       ITestNGMethod[] configMethods,
-      long ignoredFailureMark) {
+      long ignoredFailureMark,
+      int invocationCount) {
     ConfigMethodArguments cfgArgs =
         new ConfigMethodArguments.Builder()
             .forTestClass(arguments.getTestClass())
@@ -1228,6 +1242,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             .withResult(testResult)
             .ignoringFailuresUpTo(ignoredFailureMark)
             .withParametersIndex(arguments.getParametersIndex())
+            .withInvocationCount(invocationCount)
             .build();
     invoker.invokeConfigurations(cfgArgs);
   }
