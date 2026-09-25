@@ -39,8 +39,14 @@ public class Issue3533Test extends SimpleBaseTest {
     testng.addListener(recorder);
     testng.run();
 
+    // The other row may skip sharedSetup once the failure is visible, or never invoke
+    // it if that row lost the firstTimeOnly slot. Either way both tests skip.
     assertThat(recorder.getOutcomes())
+        .filteredOn(outcome -> !"CONFIG SKIP sharedSetup".equals(outcome))
         .containsExactlyInAnyOrder("CONFIG FAIL sharedSetup", "TEST SKIP t(0)", "TEST SKIP t(1)");
+    assertThat(recorder.getOutcomes())
+        .filteredOn(outcome -> "CONFIG SKIP sharedSetup".equals(outcome))
+        .hasSizeLessThanOrEqualTo(1);
   }
 
   @Test(timeOut = 20_000)
@@ -54,13 +60,19 @@ public class Issue3533Test extends SimpleBaseTest {
     testng.addListener(new SkippedFirstTimeOnlyIsNotSharedSample.Gate());
     testng.run();
 
+    // sharedSetup runs only on the row that still has invocation count 0. When that
+    // row is the one whose own setup failed, the sibling never invokes it.
     assertThat(recorder.getOutcomes())
+        .filteredOn(outcome -> !"CONFIG PASS sharedSetup".equals(outcome))
         .containsExactlyInAnyOrder(
             "CONFIG FAIL rowSetup",
             "CONFIG SKIP sharedSetup",
             "CONFIG PASS rowSetup",
-            "CONFIG PASS sharedSetup",
             "TEST SKIP t(0)",
             "TEST PASS t(1)");
+    assertThat(recorder.getOutcomes())
+        .filteredOn(outcome -> "CONFIG PASS sharedSetup".equals(outcome))
+        .hasSizeLessThanOrEqualTo(1);
+    assertThat(recorder.getOutcomes()).doesNotContain("CONFIG FAIL sharedSetup", "TEST SKIP t(1)");
   }
 }
