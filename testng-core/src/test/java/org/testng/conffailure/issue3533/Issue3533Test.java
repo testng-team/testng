@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 import org.testng.conffailure.samples.OutcomeRecorder;
 import org.testng.conffailure.samples.ParallelFirstTimeOnlyContinueSample;
 import org.testng.conffailure.samples.ParallelMethodConfigIsolationSample;
+import org.testng.conffailure.samples.SkippedFirstTimeOnlyIsNotSharedSample;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 
@@ -40,5 +41,26 @@ public class Issue3533Test extends SimpleBaseTest {
 
     assertThat(recorder.getOutcomes())
         .containsExactlyInAnyOrder("CONFIG FAIL sharedSetup", "TEST SKIP t(0)", "TEST SKIP t(1)");
+  }
+
+  @Test(timeOut = 20_000)
+  public void aSkippedFirstTimeOnlySetupDoesNotSkipTheSiblingRowUnderContinue() {
+    SkippedFirstTimeOnlyIsNotSharedSample.reset();
+    TestNG testng = create(SkippedFirstTimeOnlyIsNotSharedSample.class);
+    testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
+    testng.setDataProviderThreadCount(2);
+    OutcomeRecorder recorder = new OutcomeRecorder();
+    testng.addListener(recorder);
+    testng.addListener(new SkippedFirstTimeOnlyIsNotSharedSample.Gate());
+    testng.run();
+
+    assertThat(recorder.getOutcomes())
+        .containsExactlyInAnyOrder(
+            "CONFIG FAIL rowSetup",
+            "CONFIG SKIP sharedSetup",
+            "CONFIG PASS rowSetup",
+            "CONFIG PASS sharedSetup",
+            "TEST SKIP t(0)",
+            "TEST PASS t(1)");
   }
 }
