@@ -23,6 +23,19 @@ A reference is written only when **both** ends check out:
 Package names are not evidence. `test.testng173` and `test.testng317` look identical; one is a
 GitHub issue and the other is nothing.
 
+### The one exception
+
+A reference can stay, or go on a method beside others that already carry it, when rule 2 holds and
+rule 1 fails. Three things must be true:
+
+1. The phase section names every method that carries it.
+2. It names the commit that added each method, and says what that commit says about the issue.
+3. It says why the issue is what those methods assert, and quotes the words that show it.
+
+A maintainer decides each case, in the pull request. The script never reports such a reference as
+proven, and the section says which rule failed. `GITHUB-2110` in phase 6 and `GITHUB-2432` in phase 7
+are the two of these.
+
 Where GitHub's own timeline for the issue links the introducing commit, that is recorded as
 `timeline` below — the issue itself points at the code, which is as strong as this gets.
 
@@ -233,8 +246,8 @@ names the same pull request for each.
 Four references already in the code are re-proven: `GITHUB-3066`, `GITHUB-2019`, `GITHUB-3242` and
 `GITHUB-3179`.
 
-`GITHUB-2110` on `ThreadAffinityTest#ensureNoNPEIsThrown` is proven through the file the test came
-from. `METHOD` mode answers with `839a01980`, in pull request #2368, which closes only #2321. That
+`GITHUB-2110` on `ThreadAffinityTest#ensureNoNPEIsThrown` falls under "The one exception" above. It
+is proven through the file the test came from. `METHOD` mode answers with `839a01980`, in pull request #2368, which closes only #2321. That
 commit did not write the test. It deleted `test/thread/parallelization/issue2110/IssueTest.java` and
 moved the only test of that file into `ThreadAffinityTest`, under a new name. The script follows the
 history of one file, so it cannot see a method move from one file to another.
@@ -329,13 +342,13 @@ Each method of `issue1753.IssueTest` now carries the issue its own commit names:
 
 Seven methods of `issue3239.IssueTest` carry `GITHUB-2432` as a recorded exception:
 
-- `inheritanceEdgeDoesNotCycleWhenAgnosticMethodIsTransitivelyUpstream`
-- `inheritanceEdgeDoesNotCycleForAfterClass`
-- `inheritanceEdgeDoesNotCycleOnPureDependsOnGroupsChain`
-- `twoHierarchiesDoNotFormACycleOnBeforeSuite`
-- `twoHierarchiesDoNotFormACycleOnAfterSuite`
-- `threeLevelInheritanceSelectivelyRejectsCyclingEdges`
-- `oppositeHardDependencyWinsWithoutCycle`
+- `inheritanceEdgeDoesNotCycleWhenAgnosticMethodIsTransitivelyUpstream`, added by `f90a16bd2`
+- `inheritanceEdgeDoesNotCycleForAfterClass`, added by `eff8d53b1`
+- `inheritanceEdgeDoesNotCycleOnPureDependsOnGroupsChain`, added by `eff8d53b1`
+- `twoHierarchiesDoNotFormACycleOnBeforeSuite`, added by `eff8d53b1`
+- `twoHierarchiesDoNotFormACycleOnAfterSuite`, added by `a5bb1290d`
+- `threeLevelInheritanceSelectivelyRejectsCyclingEdges`, added by `a5bb1290d`
+- `oppositeHardDependencyWinsWithoutCycle`, added by `a5bb1290d`
 
 Each one asserts that an inheritance edge gives way. Six check that TestNG adds no edge that would
 close a cycle. The seventh checks that an explicit `dependsOnMethods` wins over the inherited order.
@@ -346,7 +359,8 @@ Pull request #3471 says the same in its own words: the edge is left out when it 
 The script proves `GITHUB-2432` on none of them. `f90a16bd2` names the issue only as "GITHUB-2432",
 and the script does not read that form as proof. This project's commits use it to label the
 descriptions they write, so a commit would prove its own label. `eff8d53b1` and `a5bb1290d` do not
-name the issue at all. Rule 1 fails and rule 2 holds, so the reference stays and this note records it.
+name the issue at all. Rule 1 fails and rule 2 holds. "The one exception" above covers this, and the
+maintainer asked for these seven in pull request #3536.
 
 These methods get no reference:
 
