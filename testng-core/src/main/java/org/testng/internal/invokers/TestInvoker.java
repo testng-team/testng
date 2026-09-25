@@ -970,8 +970,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // template object the invocation loop starts from never reaches this method.
     Object[] parameterValues = Objects.requireNonNull(arguments.getParameterValues());
     // Captured once. A sibling can increment the shared counter before this invocation looks its
-    // own configuration failure up, and an @AfterMethod runs after this invocation increments it.
+    // own configuration failure up. Teardown runs after this invocation increments the counter, so
+    // it uses the next value: a setup failure is recorded against this one and skips the test, not
+    // @AfterMethod.
     int invocationCount = arguments.getTestMethod().getCurrentInvocationCount();
+    int teardownCount = invocationCount + 1;
     TestResult testResult =
         TestResult.newTestResult(
             arguments.getTestMethod(), parameterValues, arguments.getParametersIndex());
@@ -1019,7 +1022,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       invokedMethod = new InvokedMethod(startTime, result);
       invokeListenersForSkippedTestResult(result, invokedMethod);
       runAfterConfigurations(
-          arguments, suite, result, failureContext.ignoredFailureMark, invocationCount);
+          arguments, suite, result, failureContext.ignoredFailureMark, teardownCount);
       runAfterGroupsConfigurations(arguments);
 
       return result;
@@ -1179,7 +1182,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       collectResults(arguments.getTestMethod(), testResult);
 
       runAfterConfigurations(
-          arguments, suite, testResult, failureContext.ignoredFailureMark, invocationCount);
+          arguments, suite, testResult, failureContext.ignoredFailureMark, teardownCount);
       if (!willRetryMethod) {
         runAfterGroupsConfigurations(arguments);
       }

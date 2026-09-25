@@ -897,7 +897,10 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     else if (annotation.getBeforeTestMethod() || annotation.getAfterTestMethod()) {
       if (m_continueOnFailedConfiguration || canIgnoreConfigFailure(tm)) {
         setMethodInvocationFailure(currentTestMethod, instance, parameterIndex, invocationCount);
-        if (instance != null
+        // A skip after an earlier row-specific failure is not itself a shared failure. Recording
+        // one here would make every other row skip under CONTINUE.
+        if (failed
+            && instance != null
             && currentTestMethod != null
             && tm instanceof ConfigurationMethod
             && ((ConfigurationMethod) tm).isFirstTimeOnly()) {
