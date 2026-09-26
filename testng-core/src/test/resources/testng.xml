@@ -86,6 +86,7 @@
       <class name="org.testng.internal.MethodSortingTest"/>
       <class name="org.testng.internal.MethodInstanceTest"/>
       <class name="org.testng.internal.TestResultMethodBindingTest"/>
+      <class name="org.testng.internal.ConfigurationMethodBindTest"/>
       <class name="org.testng.reporters.TestHTMLReporterTest"/>
       <class name="org.testng.internal.invokers.ParameterHandlerTest"/>
       <class name="org.testng.internal.TestListenerHelperTest"/>

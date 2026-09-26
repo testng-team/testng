@@ -53,6 +53,14 @@ tasks.compileTestGroovy {
     classpath += files(tasks.compileTestKotlin)
 }
 
+
+tasks.register<JavaExec>("runBindMeasurement") {
+    group = "verification"
+    description = "Local-only Factory bind / TestClass performance probe (not CI)"
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("org.testng.TestClassFactoryBindMeasurement")
+}
+
 tasks.test {
     maxParallelForks = Runtime.getRuntime().availableProcessors().div(2)
     // Classes under org.testng.**.samples are TestNG input, not tests: a driver builds a suite
