@@ -29,14 +29,14 @@ tests:
       - test.sample.AfterClassCalledAtEnd
       - test.GraphTest
       - org.testng.internal.DynamicGraphTest
-      - test.configuration.BaseGroupsTest
-      - test.configuration.BeforeClassThreadTest
-      - test.configuration.BeforeTestOrderingTest
-      - test.configuration.ConfigurationTest
-      - test.configuration.GroupsTest
-      - test.configuration.MultipleBeforeGroupTest
-      - test.configuration.ReflectMethodParametrizedConfigurationMethodTest
-      - test.configuration.SuiteFactoryOnceTest
+      - org.testng.configuration.BaseGroupsTest
+      - org.testng.configuration.BeforeClassThreadTest
+      - org.testng.configuration.BeforeTestOrderingTest
+      - org.testng.configuration.ConfigurationTest
+      - org.testng.configuration.GroupsTest
+      - org.testng.configuration.samples.MultipleBeforeGroupTest
+      - org.testng.configuration.ReflectMethodParametrizedConfigurationMethodTest
+      - org.testng.configuration.SuiteFactoryOnceTest
       - test.privatemethod.PrivateMethodTest$PrivateMethodInnerTest
       - test.multiple.TestMultiple
       - test.ClassConfigurations
@@ -83,7 +83,7 @@ tests:
 
   - name: BeforeMethod
     classes:
-      - test.configuration.BeforeMethodTest
+      - org.testng.configuration.BeforeMethodTest
 
   - name: Factory tests
     classes:
@@ -232,12 +232,12 @@ tests:
   - name: Parameters in init 1
     parameters: { param: value1 }
     classes:
-      - test.configuration.ConfigurationWithParameters
+      - org.testng.configuration.ConfigurationWithParameters
 
   - name: Parameters in init 2
     parameters: { param: value2 }
     classes:
-      - test.configuration.ConfigurationWithParameters
+      - org.testng.configuration.ConfigurationWithParameters
 
   - name: Individual method
     classes:
@@ -280,7 +280,7 @@ tests:
   - name: InheritGroups
     includedGroups: [ group1 ]
     classes:
-      - test.configuration.ConfigurationInheritGroupsSampleTest
+      - org.testng.configuration.ConfigurationInheritGroupsSampleTest
 
   - name: Nested
     includedGroups: [ unittest ]
@@ -294,18 +294,18 @@ tests:
 
   - name: BeforeGroups-AfterGroups-1
     classes:
-      - test.configuration.ConfigurationGroups1SampleTest
-      - test.configuration.ConfigurationGroups2SampleTest
-      - test.configuration.ConfigurationGroups3SampleTest
-      - test.configuration.ConfigurationGroups4SampleTest
-      - test.configuration.ConfigurationGroups5SampleTest
-      - test.configuration.ConfigurationGroups6SampleTest
-      - test.configuration.ConfigurationGroups7SampleTest
+      - org.testng.configuration.samples.ConfigurationGroups1SampleTest
+      - org.testng.configuration.samples.ConfigurationGroups2SampleTest
+      - org.testng.configuration.samples.ConfigurationGroups3SampleTest
+      - org.testng.configuration.samples.ConfigurationGroups4SampleTest
+      - org.testng.configuration.samples.ConfigurationGroups5SampleTest
+      - org.testng.configuration.samples.ConfigurationGroups6SampleTest
+      - org.testng.configuration.samples.ConfigurationGroups7SampleTest
 
   - name: BeforeGroups-AfterGroups-2
     includedGroups: [ A, B ]
     classes:
-      - test.configuration.ConfigurationGroups8SampleTest
+      - org.testng.configuration.ConfigurationGroups8SampleTest
 
   - name: JUnit
     classes:

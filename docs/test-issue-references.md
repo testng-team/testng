@@ -23,6 +23,19 @@ A reference is written only when **both** ends check out:
 Package names are not evidence. `test.testng173` and `test.testng317` look identical; one is a
 GitHub issue and the other is nothing.
 
+### The one exception
+
+A reference can stay, or go on a method beside others that already carry it, when rule 2 holds and
+rule 1 fails. Three things must be true:
+
+1. The phase section names every method that carries it.
+2. It names the commit that added each method, and says what that commit says about the issue.
+3. It says why the issue is what those methods assert, and quotes the words that show it.
+
+A maintainer decides each case, in the pull request. The script never reports such a reference as
+proven, and the section says which rule failed. `GITHUB-2110` in phase 6 and `GITHUB-2432` in phase 7
+are the two of these.
+
 Where GitHub's own timeline for the issue links the introducing commit, that is recorded as
 `timeline` below — the issue itself points at the code, which is as strong as this gets.
 
@@ -233,8 +246,8 @@ names the same pull request for each.
 Four references already in the code are re-proven: `GITHUB-3066`, `GITHUB-2019`, `GITHUB-3242` and
 `GITHUB-3179`.
 
-`GITHUB-2110` on `ThreadAffinityTest#ensureNoNPEIsThrown` is proven through the file the test came
-from. `METHOD` mode answers with `839a01980`, in pull request #2368, which closes only #2321. That
+`GITHUB-2110` on `ThreadAffinityTest#ensureNoNPEIsThrown` falls under "The one exception" above. It
+is proven through the file the test came from. `METHOD` mode answers with `839a01980`, in pull request #2368, which closes only #2321. That
 commit did not write the test. It deleted `test/thread/parallelization/issue2110/IssueTest.java` and
 moved the only test of that file into `ThreadAffinityTest`, under a new name. The script follows the
 history of one file, so it cannot see a method move from one file to another.
@@ -264,6 +277,111 @@ test. The driver checks configuration failures as well, or a wrong count would p
 No description is written for `GITHUB-3028`. Its samples came from a commit that names it, but the one
 test that runs them came from pull request #3289, which closes only #3242. `GITHUB-1773` is refused:
 its package name is the only thing that names it.
+
+## Verified in phase 7
+
+<!-- vale off -->
+
+| Ref | Issue title on GitHub | Provenance | Timeline |
+| --- | --- | --- | --- |
+| `GITHUB-1753` | TestResult for an SKIP test lose attributes contributed by @BeforeMethod's or @AfterMethod's | "Streamline TestResult sharing in Native Injection. Closes #1753" | links commit |
+| `GITHUB-1622` | BUG: Parameter alwaysRun=true for before-methods forces execution of those methods | "fix(config): stop alwaysRun on @Before* from bypassing a failure. Fix #1622" | links commit |
+| `GITHUB-2209` |  @Before and @After are not executed as expected when a combination of class and method level groupping is applied | "Streamline config invocation when coupled with groups. Closes #2209" | links commit |
+| `GITHUB-1625` | Null fields in parallel method tests | "Null fields in parallel method tests. Closes #1625" | links commit |
+| `GITHUB-2426` | New feature TestNG - getFactoryMethodParamsInfo on ConfigurationMethod | "Expose Factory params on config methods. Closes #2426" | links commit |
+| `GITHUB-1338` | BeforeClass doesn't work when BeforeGroup run on Class with excluded tests | "Add test case for #1338" | links commit |
+| `GITHUB-2729` | beforeConfiguration() listener method should be invoked for skipped configurations as well | "beforeConfiguration() listener method should be invoked for skipped configurations as well Fixes #2729" | links commit |
+| `GITHUB-3239` | @BeforeClass methods in base class with dependsOnGroups and groups are not executed in the expected order. | pull request #3471: "Fixes #3239" | **no link** |
+| `GITHUB-2714` | dependsOnGroups on @AfterMethod seems to behave incorrectly | pull request #3471: "Fixes #2714" | **no link** |
+| `GITHUB-549` | Groups in @BeforeMethod and @AfterMethod don't work as expected | pull request #1738: "fixes #549" | **no link** |
+| `GITHUB-549` | Groups in @BeforeMethod and @AfterMethod don't work as expected | pull request #1741: "Fixes #549" | **no link** |
+
+<!-- vale on -->
+
+The commit that added each method proves its row, with `METHOD=<name>`. The code already carries
+these references, and the script proves them the same way:
+
+- `GITHUB-1035`, `GITHUB-1346` and `GITHUB-1700`
+- `GITHUB-2400`, `GITHUB-2432` on `issue2432.IssueTest`, `GITHUB-2663` and `GITHUB-2664`
+- `GITHUB-2726`, `GITHUB-2743` and `GITHUB-2961`
+- `GITHUB-3000`, `GITHUB-3003` and `GITHUB-3006`
+- `GITHUB-3358` and `GITHUB-3359`
+
+The sweep over methods with no description writes three references. The script proves each one, and
+each issue asks for what its method asserts:
+
+- `GITHUB-3239`, on `beforeClassInheritanceSurvivesUnrelatedChildGroups`,
+  `alignedHardDependencyKeepsInheritanceOrder` and
+  `regexpDependsOnGroupsUsesSameMatchingAsExecutionGraph`, in `issue3239.IssueTest`. Each one pins the
+  order of an inherited configuration method when groups are in play. Pull request #3471 closes #3239.
+- `GITHUB-2714`, on `issue3239.IssueTest#afterMethodInheritanceSurvivesUnrelatedChildGroups`. The same
+  pull request closes #2714. That method drives the same samples as its two neighbours, and they
+  already carry `GITHUB-2714`.
+- `GITHUB-549`, on `BeforeMethodWithGroupFiltersTest` and `AfterMethodWithGroupFiltersTest`. Pull
+  request #1738 added the first method, and #1741 added the second. Each one says it fixes #549.
+
+`GroupsTest#verifyIteratorDataProviderAfterGroups` gets no reference. The script proves `GITHUB-1009`
+for it, through the branch of pull request #1065. The issue asks for `indices` on an `Iterator` data
+provider. The method asserts the order of `@BeforeGroups` and `@AfterGroups` around such a provider,
+and it touches no index. Rule 2 is what decides, so the reference is not written.
+
+`GITHUB-1338` and `GITHUB-2729` were already in the code, written as a URL and as `github 2729`. They
+now use the same `GITHUB-<n>` form as the rest.
+
+Each method of `issue1753.IssueTest` now carries the issue its own commit names:
+
+- `testToEnsureProperTestResultIsReferredInNativeInjection` came with the fix for #1753. It carries
+  `GITHUB-1753`.
+- `testToEnsureAFailingParentConfigurationStillContributesItsAttributes` came with the fix for #1622,
+  in pull request #3453. It carries `GITHUB-1622`. It runs the case that #1753 first reported, in
+  which the parent `@BeforeMethod` fails. The fix for #1622 changed the samples of the other method, so
+  that its parent passes and its child fails.
+
+`issue2254.IssueTest` now carries `GITHUB-2209`, not `GITHUB-2254`. The commit that added it closes
+#2209. The maintainer closed #2254 as a duplicate of #2209, in a comment on #2254.
+
+Seven methods of `issue3239.IssueTest` carry `GITHUB-2432` as a recorded exception:
+
+- `inheritanceEdgeDoesNotCycleWhenAgnosticMethodIsTransitivelyUpstream`, added by `f90a16bd2`
+- `inheritanceEdgeDoesNotCycleForAfterClass`, added by `eff8d53b1`
+- `inheritanceEdgeDoesNotCycleOnPureDependsOnGroupsChain`, added by `eff8d53b1`
+- `twoHierarchiesDoNotFormACycleOnBeforeSuite`, added by `eff8d53b1`
+- `twoHierarchiesDoNotFormACycleOnAfterSuite`, added by `a5bb1290d`
+- `threeLevelInheritanceSelectivelyRejectsCyclingEdges`, added by `a5bb1290d`
+- `oppositeHardDependencyWinsWithoutCycle`, added by `a5bb1290d`
+
+Each one asserts that an inheritance edge gives way. Six check that TestNG adds no edge that would
+close a cycle. The seventh checks that an explicit `dependsOnMethods` wins over the inherited order.
+That is what #2432 asks for: "Rework MethodInheritance.fixMethodInheritance to \"soft\" dependencies".
+Pull request #3471 says the same in its own words: the edge is left out when it would close a cycle,
+"so a group pipeline such as GITHUB-2432 still wins".
+
+The script proves `GITHUB-2432` on none of them. `f90a16bd2` names the issue only as "GITHUB-2432",
+and the script does not read that form as proof. This project's commits use it to label the
+descriptions they write, so a commit would prove its own label. `eff8d53b1` and `a5bb1290d` do not
+name the issue at all. Rule 1 fails and rule 2 holds. "The one exception" above covers this, and the
+maintainer asked for these seven in pull request #3536.
+
+These methods get no reference:
+
+- `BeforeClassTest#beforeClassMethodsShouldRunInParallel` and
+  `BeforeClassTest#afterClassShouldRunEvenWithDisabledMethods`. They moved into the class with the fix
+  for #1035, but they are older. The first came from a 2009 test. The second came from a 2011 fix that
+  names no issue.
+- `ConfigurationGroupsTest#multipleBeforeGroupTest` and `ConfigurationGroupsTest#runTest`. They came
+  with the fix for #2152, but they only drive samples from 2006 and 2007.
+- `ConfigurationTest#testConfiguration`, `ConfigurationTest#testMethodCallOrder` and
+  `ConfigurationTest#testSuite`. The commit that added them names only "(#2626)", and #2626 is a pull
+  request.
+- `issue3239.IssueTest#missingDependsOnMethodsStillFailsFromInheritanceWalk` and
+  `issue3239.IssueTest#missingDependsOnGroupsKeepsExistingErrorBehavior`. Pull request #3471 proves
+  `GITHUB-3239` for both. Each one guards the error TestNG already reported for a dependency that does
+  not exist, which is not what #3239 asks for.
+
+`OnlyOnceConfigurationTest` and `ParentTestClass`, under `issue2961`, move to `samples` like any other
+class that no suite file names. They came with the fix for #2961 in 2023, beside the samples in
+`test.listeners.issue2961` that `ConfigurationTest` runs. Nothing runs them, and
+`OnlyOnceConfigurationTest` asserts nothing.
 
 ## Verified, description not yet written
 

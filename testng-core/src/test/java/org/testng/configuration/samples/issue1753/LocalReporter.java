@@ -1,0 +1,40 @@
+package org.testng.configuration.samples.issue1753;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.ISuiteResult;
+import org.testng.ITestResult;
+import org.testng.xml.XmlSuite;
+
+public class LocalReporter implements IReporter {
+
+  private final Map<String, String> attributes = new HashMap<>();
+
+  @Override
+  public void generateReport(
+      List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+    suites.forEach(
+        suite ->
+            suite.getResults().values().stream()
+                .flatMap(iSuiteResult -> extractSkippedResults(iSuiteResult).stream())
+                .forEach(this::extractAttributes));
+  }
+
+  private void extractAttributes(ITestResult result) {
+    Consumer<String> attribute = each -> attributes.put(each, result.getAttribute(each).toString());
+    result.getAttributeNames().forEach(attribute);
+  }
+
+  private static Set<ITestResult> extractSkippedResults(ISuiteResult suiteResult) {
+    return suiteResult.getTestContext().getSkippedTests().getAllResults();
+  }
+
+  public Map<String, String> getAttributes() {
+    return attributes;
+  }
+}

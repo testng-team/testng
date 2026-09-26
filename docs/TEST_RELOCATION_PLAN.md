@@ -183,8 +183,8 @@ verified descriptions, the #1362 merge — is redistributed into the phase that 
 | 3 ([#3493](https://github.com/testng-team/testng/issues/3493)) — **done** | `invocationcount`, `parameters`, `inheritance` |
 | 4 ([#3494](https://github.com/testng-team/testng/issues/3494)) — **done** | `dependent` |
 | 5 ([#3495](https://github.com/testng-team/testng/issues/3495)) — **done** | `factory` |
-| 6 ([#3496](https://github.com/testng-team/testng/issues/3496)) | `thread` → `org.testng.concurrency` |
-| 7 ([#3497](https://github.com/testng-team/testng/issues/3497)) | `configuration` |
+| 6 ([#3496](https://github.com/testng-team/testng/issues/3496)) — **done** | `thread` → `org.testng.concurrency` |
+| 7 ([#3497](https://github.com/testng-team/testng/issues/3497)) — **done** | `configuration` |
 | 8 ([#3498](https://github.com/testng-team/testng/issues/3498)) | `listeners` |
 
 To size a phase, count its tree rather than trusting a table. For a feature already moved:
