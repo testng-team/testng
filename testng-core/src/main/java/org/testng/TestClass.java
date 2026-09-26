@@ -313,10 +313,8 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
       beforeClassConfig.put(eachInstance.getInstanceId(), m_beforeClassMethods);
       m_afterClassMethods = ConfigurationMethod.bind(afterClassPrototypes, eachInstance);
       afterClassConfig.put(eachInstance.getInstanceId(), m_afterClassMethods);
-      m_beforeGroupsMethods =
-          ConfigurationMethod.bind(beforeGroupsPrototypes, eachInstance);
-      m_afterGroupsMethods =
-          ConfigurationMethod.bind(afterGroupsPrototypes, eachInstance);
+      m_beforeGroupsMethods = ConfigurationMethod.bind(beforeGroupsPrototypes, eachInstance);
+      m_afterGroupsMethods = ConfigurationMethod.bind(afterGroupsPrototypes, eachInstance);
       List<ITestNGMethod> beforeMethods =
           ConfigurationMethod.bind(beforeMethodPrototypes, eachInstance);
       m_beforeTestMethods.addAll(beforeMethods);

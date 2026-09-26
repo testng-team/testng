@@ -6,6 +6,7 @@ import java.util.List;
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
@@ -36,10 +37,47 @@ public class ConfigurationMethodBindTest {
     assertThat(bound.getInstance()).isNotSameAs(prototype.getInstance());
   }
 
+  /**
+   * When a @Factory yields instances of different runtime classes, configuration methods that
+   * inherit class-level groups must re-run {@link ConfigurationMethod#init()} on bind — otherwise
+   * every instance keeps the prototype's groups.
+   */
+  @Test
+  public void boundConfigurationMethodsReinitInheritedGroupsForDifferingRuntimeClass() {
+    ConfigurationMethod prototype =
+        (ConfigurationMethod) beforeClassPrototype(new RuntimeGroupsSubA());
+    ConfigurationMethod boundSubA =
+        prototype.bind(new IObject.IdentifiableObject(new RuntimeGroupsSubA()));
+    ConfigurationMethod boundSubB =
+        prototype.bind(new IObject.IdentifiableObject(new RuntimeGroupsSubB()));
+
+    assertThat(boundSubA.getGroups()).containsExactly("group-a");
+    assertThat(boundSubB.getGroups()).containsExactly("group-b");
+  }
+
+  /**
+   * {@link ConfigurationMethod#clone()} keeps the historical copy set; bind carries more metadata.
+   */
+  @Test
+  public void clonePreservesHistoricalMetadataButBindCopiesPriority() {
+    ConfigurationMethod source = (ConfigurationMethod) beforeMethodPrototype();
+    assertThat(source.getPriority()).isEqualTo(7);
+
+    ConfigurationMethod cloned = source.clone();
+    assertThat(cloned.getPriority()).isZero();
+
+    ConfigurationMethod bound = source.bind(new IObject.IdentifiableObject(new PrioritySample()));
+    assertThat(bound.getPriority()).isEqualTo(7);
+  }
+
   private ITestNGMethod beforeMethodPrototype() {
+    return testMethodConfigurationPrototype(PrioritySample.class, new PrioritySample());
+  }
+
+  private ITestNGMethod beforeClassPrototype(Object instance) {
     XmlSuite suite = new XmlSuite();
     XmlTest xmlTest = new XmlTest(suite);
-    XmlClass xmlClass = new XmlClass(PrioritySample.class.getName());
+    XmlClass xmlClass = new XmlClass(RuntimeGroupsBase.class.getName());
     xmlTest.getXmlClasses().add(xmlClass);
 
     XmlMethodSelector selector = new XmlMethodSelector();
@@ -48,11 +86,33 @@ public class ConfigurationMethodBindTest {
     runInfo.addMethodSelector(selector, 10);
 
     ITestMethodFinder finder = new TestNGMethodFinder(objectFactory, runInfo, annotationFinder);
-    ITestNGMethod[] templates = finder.getBeforeTestMethods(PrioritySample.class);
+    ITestNGMethod[] templates = finder.getBeforeClassMethods(RuntimeGroupsBase.class);
     assertThat(templates).hasSize(1);
 
-    IObject.IdentifiableObject prototypeInstance =
-        new IObject.IdentifiableObject(new PrioritySample());
+    IObject.IdentifiableObject prototypeInstance = new IObject.IdentifiableObject(instance);
+    List<ITestNGMethod> prototypes =
+        ConfigurationMethod.createClassConfigurationMethods(
+            objectFactory, templates, annotationFinder, true, xmlTest, prototypeInstance);
+    assertThat(prototypes).hasSize(1);
+    return prototypes.get(0);
+  }
+
+  private ITestNGMethod testMethodConfigurationPrototype(Class<?> realClass, Object instance) {
+    XmlSuite suite = new XmlSuite();
+    XmlTest xmlTest = new XmlTest(suite);
+    XmlClass xmlClass = new XmlClass(realClass.getName());
+    xmlTest.getXmlClasses().add(xmlClass);
+
+    XmlMethodSelector selector = new XmlMethodSelector();
+    selector.setXmlClasses(xmlTest.getXmlClasses());
+    RunInfo runInfo = new RunInfo(() -> xmlTest);
+    runInfo.addMethodSelector(selector, 10);
+
+    ITestMethodFinder finder = new TestNGMethodFinder(objectFactory, runInfo, annotationFinder);
+    ITestNGMethod[] templates = finder.getBeforeTestMethods(realClass);
+    assertThat(templates).hasSize(1);
+
+    IObject.IdentifiableObject prototypeInstance = new IObject.IdentifiableObject(instance);
     List<ITestNGMethod> prototypes =
         ConfigurationMethod.createTestMethodConfigurationMethods(
             objectFactory, templates, annotationFinder, true, xmlTest, prototypeInstance);
@@ -71,6 +131,21 @@ public class ConfigurationMethodBindTest {
     @Test
     public void test() {}
   }
+
+  public static class RuntimeGroupsBase {
+
+    @BeforeClass
+    public void beforeClass() {}
+
+    @Test
+    public void test() {}
+  }
+
+  @Test(groups = "group-a")
+  public static class RuntimeGroupsSubA extends RuntimeGroupsBase {}
+
+  @Test(groups = "group-b")
+  public static class RuntimeGroupsSubB extends RuntimeGroupsBase {}
 
   private final DefaultTestObjectFactory objectFactory = new DefaultTestObjectFactory();
   private final IAnnotationFinder annotationFinder =

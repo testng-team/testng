@@ -453,7 +453,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     // defined in the @Test class
     if (inheritGroupsFromTestClass()) {
       ITestAnnotation classAnnotation =
-          m_annotationFinder.findAnnotation(m_methodClass, ITestAnnotation.class);
+          m_annotationFinder.findAnnotation(effectiveClassForGroups(), ITestAnnotation.class);
       if (classAnnotation != null) {
         String[] groups = classAnnotation.getGroups();
         Map<String, String> newGroups = new HashMap<>();
@@ -498,14 +498,15 @@ public class ConfigurationMethod extends BaseTestMethod {
             getAfterGroups(),
             false /* do not call init() */,
             instance);
-    copyInitializedState(bound);
+    copyInitializedStateForBind(bound);
     if (!effectiveClassForGroups().equals(bound.effectiveClassForGroups())) {
       bound.init();
     }
     return bound;
   }
 
-  private void copyInitializedState(ConfigurationMethod target) {
+  /** Copies metadata that both {@link #bind} and {@link #clone} have always propagated. */
+  private void copySharedInitializedState(ConfigurationMethod target) {
     target.m_testClass = getTestClass();
     target.setDate(getDate());
     target.setGroups(getGroups());
@@ -514,10 +515,15 @@ public class ConfigurationMethod extends BaseTestMethod {
     target.setAlwaysRun(isAlwaysRun());
     target.setMissingGroup(getMissingGroup());
     target.setDescription(getDescription());
-    target.setPriority(getPriority());
     target.setEnabled(getEnabled());
     target.setParameterInvocationCount(getParameterInvocationCount());
     target.m_inheritGroupsFromTestClass = inheritGroupsFromTestClass();
+  }
+
+  /** Copies full initialized metadata for {@link #bind}; not used by {@link #clone}. */
+  private void copyInitializedStateForBind(ConfigurationMethod target) {
+    copySharedInitializedState(target);
+    target.setPriority(getPriority());
     target.m_isBeforeGroupsConfiguration = m_isBeforeGroupsConfiguration;
     target.m_isAfterGroupsConfiguration = m_isAfterGroupsConfiguration;
     target.setTimeOut(getTimeOut());
@@ -562,7 +568,7 @@ public class ConfigurationMethod extends BaseTestMethod {
             getAfterGroups(),
             false /* do not call init() */,
             cloneInstance());
-    copyInitializedState(clone);
+    copySharedInitializedState(clone);
     return clone;
   }
 

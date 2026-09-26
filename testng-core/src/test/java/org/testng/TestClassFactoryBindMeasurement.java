@@ -1,9 +1,9 @@
-package org.testng.internal;
+package org.testng;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.testng.ITestMethodFinder;
-import org.testng.ITestNGMethod;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.AfterMethod;
@@ -15,6 +15,12 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import org.testng.internal.ConfigurationMethod;
+import org.testng.internal.IObject;
+import org.testng.internal.RunInfo;
+import org.testng.internal.TestNGMethod;
+import org.testng.internal.TestNGMethodFinder;
+import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
@@ -27,10 +33,9 @@ import org.testng.xml.XmlTest;
  * Local measurement for {@link ConfigurationMethod#bind(IObject.IdentifiableObject)} on a class
  * carrying one method of every configuration type, at the 5000-instance scale from GITHUB-3436.
  *
- * <p>Not part of CI — run after {@code ./gradlew :testng-core:testClasses} with the test runtime
- * classpath.
+ * <p>Not part of CI — run {@code ./gradlew :testng-core:runBindMeasurement --rerun-tasks}.
  */
-public final class ConfigurationMethodBindMeasurement {
+public final class TestClassFactoryBindMeasurement {
 
   private static final int INSTANCES = 5000;
   private static final int WARMUP = 3;
@@ -38,21 +43,67 @@ public final class ConfigurationMethodBindMeasurement {
 
   public static void main(String[] args) {
     FactoryConfigurationPrototypes prototypes = FactoryConfigurationPrototypes.build();
+    IObject.IdentifiableObject[] instances = newInstances();
+
+    long configBindNanos = medianNanos(() -> bindAll(prototypes, instances));
+    long configInitNanos = medianNanos(() -> initAll(prototypes.templates, instances));
+    TestNGMethod testPrototype = testMethodPrototype(instances[0]);
+    long testBindNanos = medianNanos(() -> bindTestMethod(testPrototype, instances));
+    long testClassNanos = medianNanos(() -> buildTestClass(instances));
+
+    System.out.printf(
+        "Factory bind measurements at %d instances (median of %d runs):%n", INSTANCES, RUNS);
+    System.out.printf("%nConfigurationMethod bind vs fresh init() (ns):%n");
+    System.out.printf(
+        "  bind():              %,d (~%.2f ms)%n", configBindNanos, configBindNanos / 1e6);
+    System.out.printf(
+        "  new ConfigurationMethod(..., init): %,d (~%.2f ms)%n",
+        configInitNanos, configInitNanos / 1e6);
+    System.out.printf("  ratio (init/bind):   %.1fx%n", (double) configInitNanos / configBindNanos);
+    System.out.printf(
+        "%nTestNGMethod bind (ns): %,d (~%.2f ms)%n", testBindNanos, testBindNanos / 1e6);
+    System.out.printf(
+        "%nTestClass construction with bind path (ns): %,d (~%.2f ms)%n",
+        testClassNanos, testClassNanos / 1e6);
+    System.out.printf(
+        "%nCompare TestClass time on master (per-instance init) vs this branch for base-vs-HEAD.%n");
+  }
+
+  private static IObject.IdentifiableObject[] newInstances() {
     IObject.IdentifiableObject[] instances = new IObject.IdentifiableObject[INSTANCES];
     for (int i = 0; i < INSTANCES; i++) {
       instances[i] = new IObject.IdentifiableObject(new FactoryConfigurationSample());
     }
+    return instances;
+  }
 
-    long bindNanos = medianNanos(() -> bindAll(prototypes, instances));
-    long initNanos = medianNanos(() -> initAll(prototypes.templates, instances));
+  private static TestNGMethod testMethodPrototype(IObject.IdentifiableObject prototypeInstance) {
+    ITestMethodFinder finder = newFinder();
+    ITestNGMethod[] templates = finder.getTestMethods(FactoryConfigurationSample.class, XML_TEST);
+    return new TestNGMethod(
+        OBJECT_FACTORY,
+        templates[0].getConstructorOrMethod().requireMethod(),
+        ANNOTATION_FINDER,
+        XML_TEST,
+        prototypeInstance);
+  }
 
-    System.out.printf(
-        "ConfigurationMethod bind vs fresh init() at %d instances (median of %d runs, ns):%n",
-        INSTANCES, RUNS);
-    System.out.printf("  bind():              %,d ns (~%.2f ms)%n", bindNanos, bindNanos / 1e6);
-    System.out.printf(
-        "  new ConfigurationMethod(..., init): %,d ns (~%.2f ms)%n", initNanos, initNanos / 1e6);
-    System.out.printf("  ratio (init/bind):   %.1fx%n", (double) initNanos / bindNanos);
+  private static void bindTestMethod(
+      TestNGMethod prototype, IObject.IdentifiableObject[] instances) {
+    for (IObject.IdentifiableObject each : instances) {
+      prototype.bind(each);
+    }
+  }
+
+  private static void buildTestClass(IObject.IdentifiableObject[] instances) {
+    new TestClass(
+        OBJECT_FACTORY,
+        new FactoryInstancesClass(instances),
+        newFinder(),
+        ANNOTATION_FINDER,
+        XML_TEST,
+        java.util.List.of(XML_CLASS),
+        null);
   }
 
   private static long medianNanos(Runnable work) {
@@ -302,5 +353,73 @@ public final class ConfigurationMethodBindMeasurement {
     public void aTest() {}
   }
 
-  private ConfigurationMethodBindMeasurement() {}
+  /** Minimal @Factory stand-in for end-to-end {@link org.testng.TestClass} timing. */
+  private static final class FactoryInstancesClass implements IClass, IObject {
+    private final List<IObject.IdentifiableObject> objects;
+
+    FactoryInstancesClass(IObject.IdentifiableObject[] instances) {
+      objects = new ArrayList<>(Arrays.asList(instances));
+    }
+
+    @Override
+    public IObject.IdentifiableObject[] getObjects(
+        boolean create, @Nullable String errorMsgPrefix) {
+      return objects.toArray(new IObject.IdentifiableObject[0]);
+    }
+
+    @Override
+    public void addObject(IObject.IdentifiableObject instance) {
+      objects.add(instance);
+    }
+
+    @Override
+    public String getName() {
+      return FactoryConfigurationSample.class.getName();
+    }
+
+    @Override
+    public @Nullable XmlTest getXmlTest() {
+      return null;
+    }
+
+    @Override
+    public @Nullable XmlClass getXmlClass() {
+      return null;
+    }
+
+    @Override
+    public @Nullable String getTestName() {
+      return null;
+    }
+
+    @Override
+    public Class<?> getRealClass() {
+      return FactoryConfigurationSample.class;
+    }
+
+    @Override
+    public long[] getObjectHashCodes() {
+      throw new UnsupportedOperationException("not used");
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public long[] getInstanceHashCodes() {
+      return getObjectHashCodes();
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public Object[] getInstances(boolean create) {
+      throw new UnsupportedOperationException("not used");
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void addInstance(Object instance) {
+      throw new UnsupportedOperationException("not used");
+    }
+  }
+
+  private TestClassFactoryBindMeasurement() {}
 }
