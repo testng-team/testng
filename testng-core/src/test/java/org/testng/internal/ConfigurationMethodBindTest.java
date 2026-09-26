@@ -64,7 +64,7 @@ public class ConfigurationMethodBindTest {
     assertThat(source.getPriority()).isEqualTo(7);
 
     ConfigurationMethod cloned = source.clone();
-    assertThat(cloned.getPriority()).isZero();
+    assertThat(cloned.getPriority()).isEqualTo(7);
 
     ConfigurationMethod bound = source.bind(new IObject.IdentifiableObject(new PrioritySample()));
     assertThat(bound.getPriority()).isEqualTo(7);

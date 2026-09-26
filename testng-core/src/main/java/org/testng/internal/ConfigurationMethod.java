@@ -515,6 +515,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     target.setAlwaysRun(isAlwaysRun());
     target.setMissingGroup(getMissingGroup());
     target.setDescription(getDescription());
+    target.setPriority(getPriority());
     target.setEnabled(getEnabled());
     target.setParameterInvocationCount(getParameterInvocationCount());
     target.m_inheritGroupsFromTestClass = inheritGroupsFromTestClass();
@@ -523,7 +524,6 @@ public class ConfigurationMethod extends BaseTestMethod {
   /** Copies full initialized metadata for {@link #bind}; not used by {@link #clone}. */
   private void copyInitializedStateForBind(ConfigurationMethod target) {
     copySharedInitializedState(target);
-    target.setPriority(getPriority());
     target.m_isBeforeGroupsConfiguration = m_isBeforeGroupsConfiguration;
     target.m_isAfterGroupsConfiguration = m_isAfterGroupsConfiguration;
     target.setTimeOut(getTimeOut());
