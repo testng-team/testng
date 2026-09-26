@@ -245,14 +245,24 @@ class TestNgMethodUtils {
     return null != methods && methods.length > 0;
   }
 
-  // Creates a token for tracking a unique invocation of a method on an instance.
-  // Is used when configFailurePolicy=continue.
-  static Object getMethodInvocationToken(ITestNGMethod method, Object instance) {
-    return String.format(
-        "%s+%d+%d",
-        instance.toString(),
-        method.getCurrentInvocationCount(),
-        method.getParameterInvocationCount());
+  /**
+   * Identity of one invocation. {@code invocationCount} is the value captured when that invocation
+   * started, not a fresh {@link ITestNGMethod#getCurrentInvocationCount()}. Parallel workers share
+   * the counter and increment it when a sibling finishes, so reading it again at lookup can miss
+   * the failure this invocation just recorded. The row index is the invocation's own, not {@link
+   * ITestNGMethod#getParameterInvocationCount()}: parallel data-provider workers share that field
+   * too.
+   */
+  static Object getMethodInvocationToken(Object instance, int invocationCount, int parameterIndex) {
+    return String.format("%s+%d+%d", instance.toString(), invocationCount, parameterIndex);
+  }
+
+  /**
+   * Identity of a {@code firstTimeOnly} failure. That setup runs once for the method, so every row
+   * looks here. Keying it by the row that happened to run it hides the failure from the others.
+   */
+  static Object getSharedConfigToken(Object instance) {
+    return instance.toString() + "+shared";
   }
 
   private static boolean doesSetupMethodPassFirstTimeFilter(
