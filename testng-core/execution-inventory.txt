@@ -720,6 +720,7 @@ org.testng.parameters.resolver.ParameterResolverTest#resolvedParameterBesideAnXm
 org.testng.parameters.resolver.ParameterResolverTest#resolvedParameterBetweenDataProviderValues	PASS 1
 org.testng.parameters.resolver.ParameterResolverTest#resolverCoexistsWithNativeInjection	PASS 1
 org.testng.parameters.resolver.ParameterResolverTest#resolverFailingOnCachedRowRetryKeepsTheRemainingRows	PASS 1
+org.testng.parameters.resolver.ParameterResolverTest#resolverFailingOnOneSequentialRowKeepsTheOthers	PASS 1
 org.testng.parameters.resolver.ParameterResolverTest#resolverFailingOnRetryFailsTheRetry	PASS 1
 org.testng.parameters.resolver.ParameterResolverTest#resolverFailureOnDataDrivenMethodFailsTheMethod	PASS 1
 org.testng.parameters.resolver.ParameterResolverTest#resolverMayAnswerNull	PASS 1
@@ -731,6 +732,7 @@ org.testng.parameters.resolver.ParameterResolverTest#retryThatCannotRebuildItsRo
 org.testng.parameters.resolver.ParameterResolverTest#retryWithABlankedRowResolvesAfresh	PASS 1
 org.testng.parameters.resolver.ParameterResolverTest#retryWithARowThatNoLongerFitsKeepsTheRemainingRows	PASS 1
 org.testng.parameters.resolver.ParameterResolverTest#secondMethodParameterIsResolvable	PASS 1
+org.testng.parameters.resolver.ParameterResolverTest#sequentialBadRowStopsTheMethod	PASS 1
 org.testng.parameters.resolver.ParameterResolverTest#severalResolvedParameters	PASS 1
 org.testng.parameters.resolver.ParameterResolverTest#skippedRowsAreNotResolved	PASS 1
 org.testng.parameters.resolver.ParameterResolverTest#supportsParameterFailurePropagates	PASS 1
