@@ -15,7 +15,9 @@
 # lookup the provenance step makes is given a local command. The cases about the issue check give
 # the script a local "gh" instead.
 set -u
-SCRIPT=$(cd "$(dirname "$0")/../.." && pwd)/scripts/verify-issue-refs.sh
+# Overridable so a copy with one fix taken out can be run against this suite, which is how the
+# phase procedure checks that a test guards something. Nothing in the repository sets it.
+SCRIPT=${SCRIPT:-$(cd "$(dirname "$0")/../.." && pwd)/scripts/verify-issue-refs.sh}
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
 
@@ -451,6 +453,99 @@ for body in 'Still unresolved: #765' \
   check "body <$body> is not a closing word" "NOT PROVEN" "$(body_verdict "$body" 765)"
 done
 
+# --- a body that links the issue at the repository's old address --------------------------------
+# The repository was cbeust/testng until 2022, so a pull request body written before the move links
+# the issue there. GitHub closed the issue from that body, because that was the repository's name at
+# the time. Pull request #1285 says "Fixes https://github.com/cbeust/testng/issues/1284", and nothing
+# else proves GITHUB-1284.
+#
+# The rejected cases come first. Each one holds the number inside a github.com address, and none of
+# them closes this issue in this repository.
+for body in 'Fixes https://github.com/someone/testng/issues/765' \
+            'Fixes https://github.com/cbeust/testng-plugin/issues/765' \
+            'Fixes https://github.com/cbeust/testng/issues/7650' \
+            'Fixes https://github.com/cbeust/testng/pull/765' \
+            'See https://github.com/cbeust/testng/issues/765' \
+            'Fixes https://github.com/cbeust/testng/issues/173'; do
+  check "body <$body> is not provenance" "NOT PROVEN" "$(body_verdict "$body" 765)"
+done
+
+check "an old address closes the issue" PROVEN \
+  "$(body_verdict 'Fixes https://github.com/cbeust/testng/issues/765' 765)"
+check "the current address closes the issue" PROVEN \
+  "$(body_verdict 'Fixes https://github.com/testng-team/testng/issues/765' 765)"
+
+# --- the issue number is checked before anything uses it -----------------------------------------
+# The number goes into four regular expressions and into a GraphQL query. A number that is not
+# digits is not a number: "#765" sends "##765" to the patterns, and ".*" is named by every commit
+# message there is, so it proves any reference asked for.
+# The number itself is optional, so the empty string is not in this list. The three values holding a
+# newline are the reason the guard is a glob: grep reads one line at a time, so each of these has a
+# digits-only line and passed. Inside a pattern that newline is alternation, and "765" followed by a
+# newline alone names every commit message there is.
+r=$(new_repo)
+add "$r" src/foo/AlphaTest.java "Reject the empty name. Fixes #765"
+for bad in '.*' '#765' '765a' '0' '-1' 'GITHUB-765' '1 765' '765 ' \
+           $'765\n' $'765\n.*' $'.*\n765'; do
+  # Stderr, and exit 2: a bad argument is not a verdict about the reference. Exit 1 is what the
+  # caller reads as "this reference is not real", and a typo must never say that.
+  out=$(cd "$r" && PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/AlphaTest.java "$bad" 2>&1 >/dev/null)
+  rc=$?
+  check "number <$bad> is refused as a usage error" 2 "$rc"
+  check "number <$bad> says why, on stderr" yes "$(says "is not an issue number" "$out")"
+done
+
+# --- the repository name is checked, not escaped -------------------------------------------------
+# The name reaches a pattern and a GraphQL string. Checking it is what lets the pattern quote only
+# the dot, so loosening this guard would put the pattern back in reach of a metacharacter.
+# The empty string is not in this list: REPO=${REPO:-...} at the top of the script gives an empty
+# value the default back, so it never reaches the guard.
+for name in 'testng-team' 'a/b/c' '/testng' 'testng/' 'testng-team/.hidden' 'x/(y)' 'x/y;id' \
+            'a b/c' $'a\nb/c'; do
+  out=$(cd "$r" && REPO="$name" PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/AlphaTest.java 765 \
+          2>&1 >/dev/null)
+  rc=$?
+  check "repository <$name> is refused as a usage error" 2 "$rc"
+  check "repository <$name> says why, on stderr" yes "$(says "is not an owner/name" "$out")"
+done
+
+# The names this repository really uses have to pass, including the dot in a former name.
+r=$(new_repo)
+add "$r" src/foo/AlphaTest.java "Reject the empty name. Fixes #765"
+for name in 'testng-team/testng' 'cbeust/testng' 'someone/my.project' 'a_b/c-d.e'; do
+  out=$(cd "$r" && REPO="$name" PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/AlphaTest.java 765 2>&1)
+  check "repository <$name> is accepted" no "$(says "is not an owner/name" "$out")"
+done
+
+
+# --- the former name is accepted only while it is set ---------------------------------------------
+# The comment beside REPO_WAS offers the empty string for a repository that was never renamed. With
+# ${REPO_WAS:-...} the empty string got the default back, so the escape hatch did nothing and a fork
+# still accepted a body closing an issue in this repository.
+old_address='Fixes https://github.com/cbeust/testng/issues/765'
+check "an empty former name rejects the old address" "NOT PROVEN" \
+  "$(REPO_WAS= body_verdict "$old_address" 765)"
+# Another repository never had this one's old name, so the default must not carry over to it.
+check "another repository does not inherit the former name" "NOT PROVEN" \
+  "$(REPO=someone/myproject body_verdict "$old_address" 765)"
+
+# A repository name holds a dot often enough, and a dot is any character in a regular expression.
+# Without escaping, a body linking someone else's repository proves the reference.
+check "a dot in the repository name is not a wildcard" "NOT PROVEN" \
+  "$(REPO=someone/testng.old REPO_WAS= body_verdict \
+     'Fixes https://github.com/someone/testngXold/issues/765' 765)"
+check "the escaped name still matches itself" PROVEN \
+  "$(REPO=someone/testng.old REPO_WAS= body_verdict \
+     'Fixes https://github.com/someone/testng.old/issues/765' 765)"
+
+# The former name exists for bodies written before 2022, when a plain http link was ordinary. The
+# host is matched without regard to case, as GitHub reads it.
+for body in 'Fixes http://github.com/cbeust/testng/issues/765' \
+            'Fixes https://www.github.com/cbeust/testng/issues/765' \
+            'Fixes HTTPS://GITHUB.COM/CBEUST/TESTNG/ISSUES/765'; do
+  check "body <$body> closes the issue" PROVEN "$(body_verdict "$body" 765)"
+done
+
 # --- the pull request title names the issue -------------------------------------------------------
 # GitHub writes a pull request's title into the body of its merge commit. Pull request #1065 is titled
 # "Fix issue #1009: Iterator<Object[]> DataProvider: indices not working". Its commit and its body
@@ -604,9 +699,14 @@ check "the evidence is the text that proved it" "#765" \
 r=$(new_repo)
 add "$r" src/foo/MixedTest.java "Create the class"
 add_method "$r" src/foo/MixedTest.java target "Fix #111"
-for name in 'tar.et' 'tar get' 'target(' '1target'; do
-  out=$(cd "$r" && METHOD="$name" PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/MixedTest.java 111 2>&1)
+# The two values holding a newline are why this guard is a glob rather than grep: grep reads one
+# line at a time, so each of these has an identifier-shaped line and passed.
+for name in 'tar.et' 'tar get' 'target(' '1target' $'target\n.*' $'target\n'; do
+  out=$(cd "$r" && METHOD="$name" PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/MixedTest.java 111 \
+          2>&1 >/dev/null)
+  rc=$?
   check "method: <$name> is refused as a name" yes "$(says 'plain method name' "$out")"
+  check "method: <$name> is a usage error, not a verdict" 2 "$rc"
 done
 
 # A matcher that fails gives no answer. Read as "no method here", it would refuse every method, or
@@ -1075,8 +1175,13 @@ fi
 # prints GitHub's error message, as JSON, on stdout. Read as an issue, a bad token passes a pull
 # request number as an issue, with exit 0. So each case here gives the script a local "gh".
 #
-# issue_check <stdout> <stderr> <exit>  -- runs the whole script against a commit that names #765,
-# with a "gh" that answers the issue call this way. Prints "<exit code> <output>".
+# issue_check <stdout> <stderr> <exit> [discussion-stdout] [discussion-exit]
+#   -- runs the whole script against a commit that names #765, with a "gh" that answers the issue
+#      call this way. Prints "<exit code> <output>".
+#
+# The last two arguments answer the discussion lookup, which runs only after the issue call reports
+# 404. A case that leaves them out and still reaches that lookup calls the recording "gh", and the
+# run fails at the end. So every case that needs a discussion answer has to say what it is.
 issue_check() {
   local r d
   r=$(new_repo)
@@ -1084,27 +1189,39 @@ issue_check() {
   d=$(mktemp -d "$WORK/issuegh.XXXXXX")
   printf '%s' "$1" > "$d/stdout"
   printf '%s\n' "$2" > "$d/stderr"
-  cat > "$d/gh" <<SHIM
-#!/bin/sh
-case "\$2" in
-  */issues/765/timeline) exit 0 ;;
-  */issues/765) cat "$d/stdout"; cat "$d/stderr" >&2; exit $3 ;;
-esac
-echo "\$*" >> "$WORK/gh-calls"
-exit 1
-SHIM
+  printf '%s' "${4:-}" > "$d/discussion"
+  if [ -n "${6:-}" ]; then
+    printf '#!/bin/sh\n%s\n' "$6" > "$d/python3"
+    chmod +x "$d/python3"
+  fi
+  {
+    printf '#!/bin/sh\n'
+    printf 'case "$2" in\n'
+    if [ "$#" -ge 4 ]; then
+      printf '  graphql) cat "%s/discussion"; exit %s ;;\n' "$d" "${5:-0}"
+    fi
+    printf '  */issues/765/timeline) exit 0 ;;\n'
+    printf '  */issues/765) cat "%s/stdout"; cat "%s/stderr" >&2; exit %s ;;\n' "$d" "$d" "$3"
+    printf 'esac\n'
+    printf 'echo "$*" >> "%s/gh-calls"\n' "$WORK"
+    printf 'exit 1\n'
+  } > "$d/gh"
   chmod +x "$d/gh"
   out=$(cd "$r" && PATH="$d:$PATH" bash "$SCRIPT" src/foo/AlphaTest.java 765 2>&1)
   printf '%s %s' "$?" "$out"
 }
+
+# The answers the GitHub API gives for the issue call.
+not_found='{"message":"Not Found","documentation_url":"https://docs.github.com/rest","status":"404"}'
+# What GraphQL answers when the repository has no discussion with this number.
+no_discussion='{"data":{"repository":{"discussion":null}}}'
 
 out=$(issue_check '{"message":"Bad credentials","documentation_url":"https://docs.github.com/rest","status":"401"}' \
         'gh: Bad credentials (HTTP 401)' 1)
 check "issue: a rejected token exits 3" 3 "${out%% *}"
 check "issue: a rejected token is not a verdict" yes "$(says "CANNOT CHECK" "$out")"
 
-out=$(issue_check '{"message":"Not Found","documentation_url":"https://docs.github.com/rest","status":"404"}' \
-        'gh: Not Found (HTTP 404)' 1)
+out=$(issue_check "$not_found" 'gh: Not Found (HTTP 404)' 1 "$no_discussion")
 check "issue: a missing issue exits 1" 1 "${out%% *}"
 check "issue: a missing issue says so" yes "$(says "does not exist" "$out")"
 
@@ -1136,6 +1253,156 @@ out=$(issue_check '{"number":765,"state":"open","title":"Crash when \"pull_reque
 check "issue: a title that quotes pull_request is still an issue" 0 "${out%% *}"
 check "issue: that title is printed on its title line" yes \
   "$(says 'title       Crash when "pull_request" is null' "$out")"
+
+# --- the number may name a discussion ------------------------------------------------------------
+# GitHub keeps discussions in a number space of their own. The commit that added the listener
+# ordering tests says "Closes #2916", and #2916 is the discussion "Allow users to define ordering
+# for TestNG listeners". No issue and no pull request holds that number, so the reference points at
+# the discussion, and refusing it would delete a true reference.
+#
+# This lookup runs only after the issue call answered 404. That call answers for a pull request too,
+# so a 404 means neither an issue nor a pull request holds the number. A discussion never rescues a
+# number that one of those holds: the cases above give no discussion answer, and the run fails at the
+# end if the script asks for one.
+#
+# The rejected answers come first. Each one exits 0 from gh, so only the fields decide.
+for answer in '{not json' \
+              '[]' \
+              '{"data":{"repository":null}}' \
+              '{"data":{"repository":{"discussion":{"number":766,"title":"Some topic"}}}}' \
+              '{"data":{"repository":{"discussion":{"number":765,"title":""}}}}' \
+              '{"data":{"repository":{"discussion":{"number":765}}}}' \
+              '{"errors":[{"message":"Something went wrong"}]}'; do
+  out=$(issue_check "$not_found" 'gh: Not Found (HTTP 404)' 1 "$answer")
+  check "discussion: answer <$answer> exits 3" 3 "${out%% *}"
+  check "discussion: answer <$answer> is not a verdict" yes "$(says "CANNOT CHECK" "$out")"
+done
+
+# A failed call is not an answer here either. gh still prints an error message on stdout.
+out=$(issue_check "$not_found" 'gh: Not Found (HTTP 404)' 1 \
+        '{"message":"Bad credentials","status":"401"}' 1)
+check "discussion: a failed lookup exits 3" 3 "${out%% *}"
+check "discussion: a failed lookup is not a verdict" yes "$(says "CANNOT CHECK" "$out")"
+
+# No discussion either. This is the real "does not exist", and it must stay exit 1.
+# The number is optional, and no case ran the script without one, so dropping the guard's own
+# "no number" arm went unnoticed.
+r=$(new_repo)
+add "$r" src/foo/OmegaTest.java "Reject the empty name. Fixes #765"
+out=$(cd "$r" && PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/OmegaTest.java 2>&1)
+rc=$?
+check "no number at all is allowed" 0 "$rc"
+check "no number at all reports the commit" yes "$(says "introduced" "$out")"
+
+# A title of spaces is not a title. Without this, dropping .strip() records an empty one as proof.
+out=$(issue_check "$not_found" 'gh: Not Found (HTTP 404)' 1 \
+        '{"data":{"repository":{"discussion":{"number":765,"title":"   "}}}}')
+check "discussion: a title of spaces exits 3" 3 "${out%% *}"
+check "discussion: a title of spaces is not a verdict" yes "$(says "CANNOT CHECK" "$out")"
+
+# The title goes out on one line. evidence-row.sh reads this output line by line, so a title
+# holding a newline would truncate the row it writes.
+out=$(issue_check "$not_found" 'gh: Not Found (HTTP 404)' 1 \
+        '{"data":{"repository":{"discussion":{"number":765,"title":"Allow ordering\nfor listeners"}}}}')
+check "discussion: a title holding a newline is folded onto one line" yes \
+  "$(says "title       Allow ordering for listeners" "$out")"
+
+# A real discussion. The script says which kind it found, so nobody reads it as an issue.
+out=$(issue_check "$not_found" 'gh: Not Found (HTTP 404)' 1 \
+        '{"data":{"repository":{"discussion":{"number":765,"title":"Allow users to define ordering"}}}}')
+check "discussion: a real discussion exits 0" 0 "${out%% *}"
+check "discussion: a real discussion says it is one" yes "$(says "is a DISCUSSION" "$out")"
+check "discussion: a real discussion prints its title" yes \
+  "$(says "title       Allow users to define ordering" "$out")"
+check "discussion: a real discussion says there is no timeline to read" yes \
+  "$(says "timeline    not checked" "$out")"
+
+# --- the 404 verdict comes from the call that failed ----------------------------------------------
+# The status used to be read from a SECOND call to the same endpoint, with stdout and stderr merged
+# and grepped for "HTTP <n>". On a call that succeeds, stdout is the whole issue, body and all, so an
+# issue whose body pastes a transcript holding "HTTP 404" read as a 404. Once the discussion lookup
+# existed, that path could accept a number that is really a pull request.
+pr_body_404='{"number":765,"state":"closed","title":"Some change","body":"log: < HTTP 404 Not Found","pull_request":{"url":"x"}}'
+disc_765='{"data":{"repository":{"discussion":{"number":765,"title":"Allow users to define ordering"}}}}'
+
+# The first call fails with no status on stderr. That is not a 404, so it is not a verdict, whatever
+# the body says and whatever discussion exists.
+out=$(issue_check "$pr_body_404" '' 1 "$disc_765")
+check "a failure with no status is not a 404" 3 "${out%% *}"
+check "a failure with no status is not a verdict" yes "$(says "CANNOT CHECK" "$out")"
+check "a body that says 404 does not make a discussion" no "$(says "DISCUSSION" "$out")"
+
+# The same answer on a call that SUCCEEDS is a pull request, and stays refused.
+out=$(issue_check "$pr_body_404" '' 0)
+check "a pull request whose body says 404 is still a pull request" 1 "${out%% *}"
+check "and it says so" yes "$(says "PULL REQUEST" "$out")"
+
+# --- a crash in the reader is not "no discussion" ------------------------------------------------
+# A failing reader is not a verdict. Python exits 1 when it dies, so 1 cannot mean "no discussion".
+# A title holding a character the environment cannot encode used to read as "does not exist", and
+# the caller then deleted a true reference.
+out=$(issue_check "$not_found" 'gh: Not Found (HTTP 404)' 1 \
+        '{"data":{"repository":{"discussion":{"number":765,"title":"Allow ordering"}}}}' 0 'exit 1')
+check "discussion: a reader that dies exits 3" 3 "${out%% *}"
+check "discussion: a reader that dies is not a verdict" yes "$(says "CANNOT CHECK" "$out")"
+
+# A null discussion is absence only when GitHub says the number resolves to nothing. These three
+# answers all null the field for another reason, and reading them as absence deletes a true
+# reference.
+for kind in FORBIDDEN INSUFFICIENT_SCOPES RATE_LIMITED; do
+  out=$(issue_check "$not_found" 'gh: Not Found (HTTP 404)' 1 \
+          '{"data":{"repository":{"discussion":null}},"errors":[{"type":"'"$kind"'"}]}' 1)
+  check "discussion: a null field with $kind exits 3" 3 "${out%% *}"
+  check "discussion: a null field with $kind is not a verdict" yes "$(says "CANNOT CHECK" "$out")"
+done
+
+# What the real API answers for a number that holds nothing: gh exits 1, and the body carries both
+# a null discussion and a NOT_FOUND error. That is a verdict, and it has to stay exit 1. Reading the
+# exit status before the body turned every bogus reference into "not a verdict".
+not_found_discussion='{"data":{"repository":{"discussion":null}},"errors":[{"type":"NOT_FOUND","message":"Could not resolve to a Discussion with the number of 765."}]}'
+out=$(issue_check "$not_found" 'gh: Not Found (HTTP 404)' 1 "$not_found_discussion" 1)
+check "discussion: the real not-found answer exits 1" 1 "${out%% *}"
+check "discussion: the real not-found answer says so" yes "$(says "does not exist" "$out")"
+
+# The provenance still decides the exit status on the discussion path. A caller reads that code.
+r=$(new_repo)
+add "$r" src/foo/GammaTest.java "Some cleanup"
+d=$(mktemp -d "$WORK/discrc.XXXXXX")
+cat > "$d/gh" <<SHIM
+#!/bin/sh
+case "\$2" in
+  graphql) echo '{"data":{"repository":{"discussion":{"number":765,"title":"Some topic"}}}}'; exit 0 ;;
+  */issues/765) echo '$not_found'; echo 'gh: Not Found (HTTP 404)' >&2; exit 1 ;;
+esac
+echo "\$*" >> "$WORK/gh-calls"
+exit 1
+SHIM
+chmod +x "$d/gh"
+out=$(cd "$r" && PATH="$d:$PATH" bash "$SCRIPT" src/foo/GammaTest.java 765 2>&1)
+rc=$?
+check "discussion: a discussion does not prove the provenance" yes "$(says "NOT PROVEN" "$out")"
+check "discussion: and the caller reads a refusal" 1 "$rc"
+
+# The query has to name this repository, owner and name the right way round. The shim answers only
+# for the right one, so a swap gets the recording shim and fails the run.
+r=$(new_repo)
+add "$r" src/foo/DeltaTest.java "Reject the empty name. Fixes #765"
+d=$(mktemp -d "$WORK/discq.XXXXXX")
+cat > "$d/gh" <<SHIM
+#!/bin/sh
+case "\$*" in
+  *'owner:"testng-team",name:"testng"'*'discussion(number:765){number title}'*)
+    echo '{"data":{"repository":{"discussion":{"number":765,"title":"Some topic"}}}}'; exit 0 ;;
+esac
+case "\$2" in
+  */issues/765) echo '$not_found'; echo 'gh: Not Found (HTTP 404)' >&2; exit 1 ;;
+esac
+echo "\$*" >> "$WORK/gh-calls"
+exit 1
+SHIM
+chmod +x "$d/gh"
+out=$(cd "$r" && PATH="$d:$PATH" bash "$SCRIPT" src/foo/DeltaTest.java 765 2>&1)
+check "discussion: the query names this repository" yes "$(says "is a DISCUSSION" "$out")"
 
 if [ -s "$WORK/gh-calls" ]; then
   fail=$((fail + 1))
