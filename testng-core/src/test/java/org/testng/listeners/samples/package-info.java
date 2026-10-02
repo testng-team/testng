@@ -3,9 +3,11 @@
  * classes, then checks which listener calls happened.
  *
  * <p>Other features borrow from here too, because a listener fixture is useful beyond this one. So
- * a change here can break another feature's tests. To list the borrowers, run {@code grep -rl
- * org.testng.listeners.samples testng-core/src/test/java | grep -v /org/testng/listeners/} — the
- * second part drops this package's own files, which match their own package line.
+ * a change here can break another feature's tests. To list those borrowers, run {@code grep -rl
+ * org.testng.listeners.samples testng-core/src/test/java | grep -v /org/testng/listeners/}. The
+ * second part drops every file of this feature, both these samples and the tests in {@code
+ * org.testng.listeners}, so what is left is the users outside the feature. To list every user
+ * instead, drop only {@code /org/testng/listeners/samples/}.
  *
  * <p>These are not tests. Some carry {@code @Test} methods, and some of those are written to fail.
  * Running them directly reports failures that mean nothing. {@code verifyTestExecution} fails the

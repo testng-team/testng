@@ -321,6 +321,23 @@ Follow the order.
 
    Read that diff. It is the review's evidence that the phase moved tests without losing any.
 
+   Each phase issue asks for a diff of renames only. A phase that wakes a test which never ran
+   breaks that on purpose, and the diff then holds one added line per woken test. Say which lines
+   those are, in the commit message and in the pull request. A reviewer cannot otherwise tell an
+   intended line from a lost one.
+
+   To separate the two, map every package the phase moved onto one name and compare the sides:
+
+   ```bash
+   # One rule per package this phase moves. Phase 8 moved two: test.listeners and test.issue107.
+   norm() { sed -E 's/^.//; s/^(org\.testng|test)\.listeners\./F./; s/^test\.issue107\./F.issue107./'; }
+   git diff master...HEAD -- testng-core/execution-inventory.txt > /tmp/inv.diff
+   grep -E '^\+[^+]' /tmp/inv.diff | norm | sort > /tmp/after.txt
+   grep -E '^-[^-]'  /tmp/inv.diff | norm | sort > /tmp/before.txt
+   comm -23 /tmp/after.txt /tmp/before.txt   # added: each line must be a test the phase woke
+   comm -13 /tmp/after.txt /tmp/before.txt   # lost: must be empty
+   ```
+
 ## The execution guard
 
 Phase 1 proved the parity by hand and reported the numbers. That does not survive the next seven

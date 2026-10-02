@@ -517,6 +517,18 @@ for name in 'testng-team/testng' 'cbeust/testng' 'someone/my.project' 'a_b/c-d.e
   check "repository <$name> is accepted" no "$(says "is not an owner/name" "$out")"
 done
 
+# The former name reaches the same pattern, so the guard reads it too. The loop that checks the two
+# names holds ${REPO_WAS:+"$REPO_WAS"}, and the quotes inside that expansion are what stop the shell
+# splitting the value into words or expanding a "*" in it. Drop REPO_WAS from the loop and both
+# checks below fail, while every REPO case above still passes.
+for name in 'x/y.*' $'a/b\nc/d'; do
+  out=$(cd "$r" && REPO_WAS="$name" PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/AlphaTest.java 765 \
+          2>&1 >/dev/null)
+  rc=$?
+  check "former name <$name> is refused as a usage error" 2 "$rc"
+  check "former name <$name> says why, on stderr" yes "$(says "is not an owner/name" "$out")"
+done
+
 
 # --- the former name is accepted only while it is set ---------------------------------------------
 # The comment beside REPO_WAS offers the empty string for a repository that was never renamed. With
