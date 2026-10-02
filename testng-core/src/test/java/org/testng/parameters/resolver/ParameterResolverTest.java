@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -50,6 +51,8 @@ import org.testng.parameters.samples.resolver.RowDroppingInterceptor;
 import org.testng.parameters.samples.resolver.SampleParameterResolver;
 import org.testng.parameters.samples.resolver.SampleRun;
 import org.testng.parameters.samples.resolver.SecondMethodParameterSample;
+import org.testng.parameters.samples.resolver.SequentialBadRowSample;
+import org.testng.parameters.samples.resolver.SequentialResolverFailureSample;
 import org.testng.parameters.samples.resolver.SkippedDataDrivenSample;
 import org.testng.parameters.samples.resolver.ThreadRecordingResolver;
 import org.testng.parameters.samples.resolver.TooManyDataProviderValuesSample;
@@ -686,6 +689,51 @@ public class ParameterResolverTest extends SimpleBaseTest {
         .isInstanceOf(TestNGException.class)
         .hasMessageContaining(FailsOnSecondResolutionResolver.class.getName());
     assertThat(failed.getParameters()).hasSize(2).contains("a");
+  }
+
+  @Test(
+      description =
+          "GITHUB-3528: a resolver that throws on one sequential row fails that row and runs the"
+              + " others")
+  public void resolverFailingOnOneSequentialRowKeepsTheOthers() {
+    AtomicInteger calls = new AtomicInteger();
+    SampleRun run =
+        SampleRun.of(
+            SequentialResolverFailureSample.class,
+            ConfigurableParameterResolver.answering(
+                parameter -> {
+                  if (calls.incrementAndGet() == 2) {
+                    throw new IllegalStateException("resolving blew up");
+                  }
+                  return new CustomObject("ok");
+                }));
+
+    assertThat(ParameterRecorder.invocationsOf("test"))
+        .extracting(row -> row[1])
+        .containsExactly("a", "c");
+    assertThat(run.failed()).hasSize(1);
+    ITestResult failed = run.failed().get(0);
+    assertThat(failed.getThrowable())
+        .isInstanceOf(TestNGException.class)
+        .hasMessageContaining(ConfigurableParameterResolver.class.getName())
+        .hasMessageContaining("resolveParameter() failed");
+    assertThat(failed.getParameters()).contains("b");
+  }
+
+  @Test(description = "A sequential data provider still stops at the first row that does not fit")
+  public void sequentialBadRowStopsTheMethod() {
+    ParameterRecorder.clear();
+    TestNG testng = create(SequentialBadRowSample.class);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    testng.addListener(adapter);
+    testng.run();
+
+    assertThat(ParameterRecorder.invocationsOf("test"))
+        .extracting(row -> row[0])
+        .containsExactly("a");
+    assertThat(adapter.getFailedTests()).hasSize(1);
+    assertThat(adapter.getFailedTests().get(0).getThrowable())
+        .isInstanceOf(MethodMatcherException.class);
   }
 
   @Test(description = "A parallel data provider row that does not fit fails as itself, unwrapped")
