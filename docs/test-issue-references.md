@@ -295,6 +295,8 @@ its package name is the only thing that names it.
 | `GITHUB-2714` | dependsOnGroups on @AfterMethod seems to behave incorrectly | pull request #3471: "Fixes #2714" | **no link** |
 | `GITHUB-549` | Groups in @BeforeMethod and @AfterMethod don't work as expected | pull request #1738: "fixes #549" | **no link** |
 | `GITHUB-549` | Groups in @BeforeMethod and @AfterMethod don't work as expected | pull request #1741: "Fixes #549" | **no link** |
+| `GITHUB-3435` | A @Factory with @BeforeMethod/@AfterMethod runs quadratically in the instance count | pull request #3535: "Fixes #3435" | **no link** |
+| `GITHUB-3539` | Scope pooled firstTimeOnly/lastTimeOnly configurations when instance id is unavailable | pull request #3541: "Fixes #3539." | **no link** |
 
 <!-- vale on -->
 
@@ -324,6 +326,11 @@ each issue asks for what its method asserts:
 for it, through the branch of pull request #1065. The issue asks for `indices` on an `Iterator` data
 provider. The method asserts the order of `@BeforeGroups` and `@AfterGroups` around such a provider,
 and it touches no index. Rule 2 is what decides, so the reference is not written.
+
+`GITHUB-3435` and `GITHUB-3539` came in with the rebase onto master. Master added
+`issue3435.IssueTest` and `issue3539.IssueTest` to `test.configuration` while this phase was open, and
+both already carried their reference. They move with the rest of the feature, and the script proves
+each one from the commit that added its file.
 
 `GITHUB-1338` and `GITHUB-2729` were already in the code, written as a URL and as `github 2729`. They
 now use the same `GITHUB-<n>` form as the rest.
