@@ -69,9 +69,9 @@ tests:
       - test.verify.VerifyTest
       - test.abstractconfmethod.C
       - test.issue78.NonPublicClassTest
-      - test.listeners.ListenerTest
+      - org.testng.listeners.ListenerTest
       - org.testng.preserveorder.PreserveOrderTest
-      - test.listeners.ResultEndMillisTest
+      - org.testng.listeners.ResultEndMillisTest
 
   - name: Injection
     classes:

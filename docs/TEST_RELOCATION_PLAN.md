@@ -185,7 +185,7 @@ verified descriptions, the #1362 merge — is redistributed into the phase that 
 | 5 ([#3495](https://github.com/testng-team/testng/issues/3495)) — **done** | `factory` |
 | 6 ([#3496](https://github.com/testng-team/testng/issues/3496)) — **done** | `thread` → `org.testng.concurrency` |
 | 7 ([#3497](https://github.com/testng-team/testng/issues/3497)) — **done** | `configuration` |
-| 8 ([#3498](https://github.com/testng-team/testng/issues/3498)) | `listeners` |
+| 8 ([#3498](https://github.com/testng-team/testng/issues/3498)) — **done** | `listeners` |
 
 To size a phase, count its tree rather than trusting a table. For a feature already moved:
 
@@ -384,9 +384,14 @@ on master, and opens a pull request if it moved.
   | `methodinterceptors` | 2 |
   | each of the rest | 1 |
 
-- **`testng-core/src/test/resources/test/listeners/` mirrors the package path** and holds four
-  suite files. Phase 8 has to decide whether that directory moves with the package or stays put;
-  the answer depends on how each file is loaded. No other feature has such a directory.
+- **`testng-core/src/test/resources/test/listeners/` mirrors the package path.** So do
+  `resources/test/timeout` and `resources/test/issue2724`, whose features no phase owns. To list
+  them, run `find testng-core/src/test/resources/test -type d`. `TestListeners` loads each file in
+  the listeners one with
+  `getPathToResource("test/listeners/github1284/…")`, a plain resource path, so the directory name is
+  free. Phase 8 moves it to `resources/listeners/github1284/` and changes every such string in that
+  class. That matches the other features: `resources/concurrency` and `resources/methodinterceptors`
+  carry no `test/` segment.
 - **Other modules hold the same package names.** `test.groups.issue2232` exists in
   `testng-test-kit` (the shared suite builder) and `testng-jcommander` (a forked-process twin).
   Phase 1 moved only the `testng-core` half. Grep every module, not just `testng-core`.

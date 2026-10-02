@@ -27,7 +27,7 @@
       </run>
     </groups>
     <classes>
-      <class name="test.listeners.ResultEndMillisTest">
+      <class name="org.testng.listeners.ResultEndMillisTest">
 <!-- 
         <methods>
           <include name="withFactory" />

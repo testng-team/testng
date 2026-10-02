@@ -20,6 +20,11 @@ A reference is written only when **both** ends check out:
    its subject is what the test asserts. The state is reported, never enforced; a regression test
    may reference an issue that is still open.
 
+   A number that no issue and no pull request holds may still name a **discussion**, and that
+   counts. GitHub gives discussions a number space of their own, so the script asks about one only
+   after the issue lookup answers 404, which it does for a pull request too. The row then says
+   `discussion:` in front of the title. Phase 8 records `GITHUB-2916` that way.
+
 Package names are not evidence. `test.testng173` and `test.testng317` look identical; one is a
 GitHub issue and the other is nothing.
 
@@ -76,7 +81,8 @@ Every one is an issue rather than a pull request. All happen to be closed. The c
 no commit or PR at all. It rests on the commit saying "Issue 107" in words and on the issue title
 matching what the test asserts — it counts passed tests. It is also **not something this work
 added**: the description predates it. Left as it stands; flagged so nobody assumes it carries the
-same weight as the rest.
+same weight as the rest. Phase 8 finds a stronger proof for it, under "Verified in phase 8", so
+read that row beside this one.
 
 ## Verified in phase 2
 
@@ -387,8 +393,124 @@ These methods get no reference:
 
 `OnlyOnceConfigurationTest` and `ParentTestClass`, under `issue2961`, move to `samples` like any other
 class that no suite file names. They came with the fix for #2961 in 2023, beside the samples in
-`test.listeners.issue2961` that `ConfigurationTest` runs. Nothing runs them, and
+`org.testng.listeners.samples.issue2961` that `ConfigurationTest` runs. Nothing runs them, and
 `OnlyOnceConfigurationTest` asserts nothing.
+
+## Verified in phase 8
+
+<!-- vale off -->
+
+| Ref | Issue title on GitHub | Provenance | Timeline |
+| --- | --- | --- | --- |
+| `GITHUB-107` | TestNG printout wrong statistic number | branch `issue-107-test`, in PR #308 | **no link** |
+| `GITHUB-154` | MethodInterceptor will be called twice in test ng 6.3.1 | "Add test case for #154" | links commit |
+| `GITHUB-169` | beforeInvocation and afterInvocation methods (IInvokedMethodListener) executed several times before/after each test method | "Add test case for #169" | links commit |
+| `GITHUB-171` | ISuiteListener.onStart method called mulitple times if i have multiple test elements in xml configuration file | "Add test case for #171" | links commit |
+| `GITHUB-551` | BeforeMethod has wrong value of endTime | "Add test for github issue #551" | **no link** |
+| `GITHUB-767` | different behavior depending if Listener is declared with @Listeners annotation or in the suite XML file. | "Add test case for #767" | links commit |
+| `GITHUB-776` | Add BeforeClass/AfterClass like on ITestListener | "Fix #776 Add IClassListener, a @BeforeClass/@AfterClass alternative" | links commit |
+| `GITHUB-795` | "@Listeners" defined listeners applies to whole suite even if repeated. | "Add test case for #795" | links commit |
+| `GITHUB-895` | Changing status of test by setStatus of ITestResult | "Add test case for #895 Changing status of test by setStatus of ITestResult From a sample provided by @rajsrivastav1919" | links commit |
+| `GITHUB-911` | If a configuration fails, the onTestStart method of a TestListener is invoked once | "Fix #911: TestListener#onTestStart should not be invoked if a suite configuration method fails" | links commit |
+| `GITHUB-1029` | Issue with getting XmlTest from test method | "XmlTest is null when read via IInvokedMethodListener. Closes #1029" | links commit |
+| `GITHUB-1084` | testng 6.9.12 start to post 3 org.testng.ITestListener#onTestStart events for one test method | "Fix #1084 Using deprecated addListener methods should not register any times" | links commit |
+| `GITHUB-1130` | Listener in multi-test context | "Fix #1130 IClassListener should only be instantiated once" | links commit |
+| `GITHUB-1284` | Listeners on the child suites are not applied | pull request #1285: "Fixes https://github.com/cbeust/testng/issues/1284" | **no link** |
+| `GITHUB-1296` | Listeners method run multiple times - testng 6.10 | "Add test case for #1296" | links commit |
+| `GITHUB-1319` | ITestResult#getInstance() method returns null for IConfigurationListener | "Ensure instance is not null in IConfigurationListener implementations. Fixes #1319" | links commit |
+| `GITHUB-1393` | How to fail a test from onTestStart method | "#1393: add test case" | links commit |
+| `GITHUB-1465` | Version 6.11 - Failure policy CONTINUE handling is broken for tests that are skipped in @BeforeMethod method | "IInvokedMethodListener implementation called for skipped methods. Closes #1465" | links commit |
+| `GITHUB-1602` | beforeInvocation method don't get called for skipped tests | "Streamline listener invocation with config methods. Closes #1602" | links commit |
+| `GITHUB-1735` | IExecutionListener.onStart() running twice when used as annotation in mediumSuite file | "IExecutionListener.onStart() running multiple times. Closes #1735" | links commit |
+| `GITHUB-1777` | ITestListener.onTestStart() not called after fail or skip from @BeforeMethod | "onTestStart() not called for skipped methods. Closes #1777" | links commit |
+| `GITHUB-1863` | IMethodInterceptor will be invoked twice when listener implements both ITestListener and IMethodInterceptor via eclipse execution way. | "Fix #1863 patchset3: remove the blank methods since default methods already implemented from org.testng.ITestListener patchset2: fix the comments from juherr" | links commit |
+| `GITHUB-1952` | Provide a TestNGListener that can be invoked when a test fails due to a timeout | "TestNGListener for test fails due to a timeout. Closes #1952" | links commit |
+| `GITHUB-2043` | IConfigurationListener is not executed and IDataProviderListener is not added to the list of the listeners if a new listener is added at the runtime | "Streamline dynamic listener injection. Closes #2043" | links commit |
+| `GITHUB-2055` | It's not possible to register a new ITestListener at the runtime | "Streamline dynamic ITestListener injection. Closes #2055" | links commit |
+| `GITHUB-2061` | java.util.ConcurrentModificationException after registration of SuiteListener at the runtime | "Avoid ConcurrentModificationException. Closes #2061" | links commit |
+| `GITHUB-2220` | ITestListener's methods get called multiple times for one test, when @Listeners annotation is used in multiple test classes | "Prevent duplicate wiring in of listeners. Closes #2220" | links commit |
+| `GITHUB-2328` | Add ability to get test method for which configuration method was called | "Make ConfigListeners aware of Test Methods. Closes #2328" | links commit |
+| `GITHUB-2381` | [FR] Controlling the inclusion of the listener at runtime | "Allow listeners to be disabled at runtime. Closes #2381" | links commit |
+| `GITHUB-2385` | [BUG] @Listeners doesn't work for interfaces | "Features #2385 @Listeners doesn't work for interfaces" | links commit |
+| `GITHUB-2456` | [Feature request] Add onDataProviderFailure listener? | "Add onFailure support for DataProvider Listener. Closes #2456" | links commit |
+| `GITHUB-2469` | Parameters added in XmlTest during AlterSuiteListener not available in SuiteListener | "Issue #2469 (#2470)" | links commit |
+| `GITHUB-2522` | TestNG 7.4.0  Can not skip test through listener | branch `github2522`, in PR #2528 | **no link** |
+| `GITHUB-2558` | Make IExecutionListener, ITestListener, IInvokedMethodListener, IConfigurationListener, ISuiteListenerexecute in the order of insertion | "Honour Insertion order for listeners. Closes #2558" | links commit |
+| `GITHUB-2578` | If testng fails to create an instance, it should say which class fails | "Task/bugfix 2578 (#3270). Closes #2578" | links commit |
+| `GITHUB-2638` | "[WARN] Ignoring duplicate listener" appears when running .xml suite with &lt;listeners&gt; and &lt;suite-files&gt; | "Streamline adding listeners. Closes #2638" | links commit |
+| `GITHUB-2685` | TestInvoker should clear Thread.interrupted flag before calling ITestListeners | pull request #2691: "Fixes #2685." | **no link** |
+| `GITHUB-2752` | TestListener is being lost when implenting both IClassListener and ITestListener | "Wire-In listeners consistently. Closes #2752" | links commit |
+| `GITHUB-2771` | After upgrading to TestNG 7.5.0, setting ITestResult.status to `FAILURE` doesn't fail the test anymore | pull request #2864: "Closes #2771" | **no link** |
+| `GITHUB-2880` | before configuration and before invocation should be 'SKIP' when beforeMethod is 'skip' | "Skip config listener calls for skipped configs. Closes #2880 " | links commit |
+| `GITHUB-2916` | discussion: Allow users to define ordering for TestNG listeners | "Support ordering of listeners. Closes #2916" | no timeline for a discussion |
+| `GITHUB-3059` | Support the ability to inject custom listener factory | "Support ITestNGFactory customisation. Closes #3059" | links commit |
+| `GITHUB-3064` | TestResult lost if failure creating RetryAnalyzer | "Copy test result attributes when unexpected failures. Closes #3064" | links commit |
+| `GITHUB-3082` | IInvokedMethodListener Iinvoked method does not return correct instance during @BeforeMethod, @AfterMethod and @AfterClass | branch `fix_3082`, in PR #3089 | **no link** |
+| `GITHUB-3095` | Super class annotated with ITestNGListenerFactory makes derived test class throw TestNGException on execution | "Honour inheritance when parsing listener factories. Closes #3095" | links commit |
+| `GITHUB-3117` | ListenerComparator doesn't work | "Streaming working of listener comparator. Closes #3117" | links commit |
+| `GITHUB-3120` | ITestNGListenerFactory is broken and never invoked | "Streamline Listener factory invocation (#3256). Closes #3120" | links commit |
+| `GITHUB-3166` | Subsequent skipped configurations do not set a throwable | branch `fix-3166-skipped-config-throwable`, in PR #3276 | **no link** |
+| `GITHUB-3238` | Tests never finish if helper throws exception while executing parallel tests | "fix(graph): hand the worker to the orchestrator when it completes exceptionally. Fix #3238" | links commit |
+
+<!-- vale on -->
+
+Every row is proven with `METHOD=<name>`, for the commit that added that one method. `ListenerTest`
+comes from 2010 and carries more references than any other file in this scope, so its own first
+commit answers for none of them. To count them, run `grep -oE 'GITHUB-[0-9]+'` over
+`testng-core/src/test/java/org/testng/listeners/ListenerTest.java` and pipe it through `sort -u`.
+
+Two of these needed `scripts/verify-issue-refs.sh` to learn something, and both changes come with
+tests that reject the near misses:
+
+- **`GITHUB-2916` is a discussion, not an issue.** The commit says "Support ordering of listeners.
+  Closes #2916", as the row above quotes it. The branch is `feature/2916`, and the discussion is
+  titled "Allow users to define ordering for TestNG listeners". GitHub keeps discussions in a number
+  space of their own, so the script asks about one only after the issue lookup answers 404. That
+  lookup covers a pull request as well as an issue, so a 404 means neither of those holds the
+  number. The row says `discussion:` in front of
+  the title.
+- **`GITHUB-1284` is closed by a pull request body that links the old address.** Pull request #1285
+  says "Fixes https://github.com/cbeust/testng/issues/1284". This repository was `cbeust/testng`
+  until 2022, and GitHub closed the issue from that body. The script now accepts either name of this
+  repository, and no other.
+
+**`GITHUB-356` was the wrong issue.** Issue #356 is "Listener for XmlTest test start and stop".
+`ListenerTest#classListenerShouldWork` and `#classListenerShouldWorkFromAnnotation` assert that
+TestNG calls a class listener around `@BeforeClass` and `@AfterClass`. The commit that added both
+says "Fix #776 Add IClassListener, a @BeforeClass/@AfterClass alternative", and #776 is titled
+"Add BeforeClass/AfterClass like on ITestListener". Both methods carry `GITHUB-776` now.
+
+**Three references are rewritten so the check can read them.** `ConfigurationListenerTest` said
+`github 3166`, `GitHub1296Test` held the issue URL, and `issue1777.IssueTest` held the string in a
+constant of its own. `refs-in-sync.sh` reads the source as text, so it sees none of those shapes.
+
+**`GITHUB-107` gets a stronger proof than phase 1 gave it.** Phase 1 recorded it as the weakest
+of the set, resting on a commit that said "Issue 107" in words. The script finds pull
+request #308 for it, whose branch is `issue-107-test`. This is the second row for
+`GITHUB-107`; the phase 1 section records the weaker proof and flags it. The description does not
+change.
+
+The sweep over methods with no description writes these references. Each one is proven for its own
+method, and each issue asks for what the method asserts:
+
+- `GITHUB-551` on `github551.Test551#testExecutionTimeOfFailedConfig`. Issue #551 says
+  `@BeforeMethod` and the test uses a `@BeforeClass`, and the fix in pull request #1256 sets the end
+  time in the shared configuration path, which both reach. `GITHUB-1130` on the second
+  method of `github1130.GitHub1130Test`, and `GITHUB-1319` on
+  `github1319.TestResultInstanceCheckTest#testInstances`
+- `GITHUB-1284` on all three methods of `github1284.TestListeners`. Each one runs a suite file from
+  `resources/listeners/github1284/`, and `github1284.xml` is the one that names a child suite
+- `GITHUB-1465`, `GITHUB-1602` and `GITHUB-2220` on the one method of each `IssueTest` in those
+  packages, `GITHUB-1735` on `github1735.ExecutionListenerTest`, and `GITHUB-2522` on both methods
+  of `github2522.IssueTest`
+- `GITHUB-2385` on every test method of `github2385.IssueTest`. Eight assert that a listener
+  declared on a class or an interface reaches the test. The ninth, `testPackages`, asserts the
+  opposite case: a listener declared on an interface that no test class implements must not be
+  called. It also asserts the scanned sample ran, so the package name it holds in a string cannot
+  go stale unnoticed.
+
+`TESTNG-400` stays as prose in `ListenerTest`. It is a JIRA item, and `jira.opensymphony.com` is
+dead, so the number points at nothing a reader can open.
 
 ## Verified, description not yet written
 

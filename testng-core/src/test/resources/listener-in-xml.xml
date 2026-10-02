@@ -4,13 +4,13 @@
     data-provider-thread-count="3">
 
   <listeners>
-    <listener class-name="test.listeners.LListener" />
+    <listener class-name="org.testng.listeners.samples.LListener" />
   </listeners>
 
   <test name="Regression2" preserve-order="true">
 
     <classes>
-      <class name="test.listeners.LSampleTest" />
+      <class name="org.testng.listeners.samples.LSampleTest" />
     </classes>
   </test>
 

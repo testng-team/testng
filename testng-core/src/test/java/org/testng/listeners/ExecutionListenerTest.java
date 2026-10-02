@@ -1,0 +1,66 @@
+package org.testng.listeners;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+import org.testng.IExecutionListener;
+import org.testng.TestNG;
+import org.testng.annotations.Test;
+import org.testng.listeners.samples.ExecutionListener1SampleTest;
+import org.testng.listeners.samples.ExecutionListener2SampleTest;
+import org.testng.xml.XmlSuite;
+import test.SimpleBaseTest;
+
+public class ExecutionListenerTest extends SimpleBaseTest {
+
+  public static class ExecutionListener implements IExecutionListener {
+    public static boolean m_start = false;
+    public static boolean m_finish = false;
+
+    @Override
+    public void onExecutionStart() {
+      m_start = true;
+    }
+
+    @Override
+    public void onExecutionFinish() {
+      m_finish = true;
+    }
+  }
+
+  @Test
+  public void executionListenerWithXml() {
+    runTest(ExecutionListener1SampleTest.class, true /* add listener */, true /* should run */);
+  }
+
+  @Test
+  public void executionListenerWithoutListener() {
+    runTest(
+        ExecutionListener1SampleTest.class,
+        false /* don't add listener */,
+        false /* should not run */);
+  }
+
+  @Test
+  public void executionListenerAnnotation() {
+    runTest(
+        ExecutionListener2SampleTest.class, false /* don't add listener */, true /* should run */);
+  }
+
+  private void runTest(Class<?> listenerClass, boolean addListener, boolean expected) {
+    XmlSuite s = createXmlSuite("ExecutionListener");
+    createXmlTest(s, "Test", listenerClass.getName());
+
+    if (addListener) {
+      s.addListener(ExecutionListener.class.getName());
+    }
+    TestNG tng = create();
+    tng.setXmlSuites(List.of(s));
+    ExecutionListener.m_start = false;
+    ExecutionListener.m_finish = false;
+    tng.run();
+
+    assertThat(ExecutionListener.m_start).isEqualTo(expected);
+    assertThat(ExecutionListener.m_finish).isEqualTo(expected);
+  }
+}
