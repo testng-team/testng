@@ -2,10 +2,15 @@
 #
 # verifyTestExecution fails on any class named in the suite that does not run, because that is how
 # GitHub issue #1362 stayed invisible for years. Everything below predates the GitHub issue #3446
-# migration and is listed so the guard can be switched on without fixing eleven unrelated things
-# first. The list must shrink, never grow.
+# migration and is listed so the guard can be switched on without first fixing every unrelated
+# class in it. The list must shrink, never grow. To count what is left, run
+# `grep -cvE '^\s*#|^\s*$' testng-core/execution-known-silent.txt`.
 #
 # A class here that starts running is also an error: the entry is stale and must be removed.
+#
+# Two entries cannot go: test.SerializationTest and org.testng.concurrency.ThreadTest are correct
+# behaviour, because the <test> block that names them excludes their group on purpose. This file
+# goes away only when verifyTestExecution learns to read group filters.
 
 # --- no source file exists. The suite names a class that is not in the tree, and TestNG says
 # --- nothing. These entries are simply dead.
