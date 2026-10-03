@@ -3,4 +3,4 @@ name: a3-a
 tests:
   - name: Test-a3-a
     classes:
-      - test.listeners.ResultEndMillisTest
+      - org.testng.listeners.ResultEndMillisTest

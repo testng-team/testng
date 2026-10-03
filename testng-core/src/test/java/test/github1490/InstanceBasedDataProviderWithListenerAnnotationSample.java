@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-import test.listeners.github1490.DataProviderInfoProvider;
+import org.testng.listeners.samples.github1490.DataProviderInfoProvider;
 
 @Listeners(DataProviderInfoProvider.class)
 public class InstanceBasedDataProviderWithListenerAnnotationSample {

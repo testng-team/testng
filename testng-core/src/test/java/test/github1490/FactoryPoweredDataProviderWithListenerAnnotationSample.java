@@ -6,7 +6,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-import test.listeners.github1490.LocalDataProviderListener;
+import org.testng.listeners.samples.github1490.LocalDataProviderListener;
 
 @Listeners(LocalDataProviderListener.class)
 public class FactoryPoweredDataProviderWithListenerAnnotationSample {

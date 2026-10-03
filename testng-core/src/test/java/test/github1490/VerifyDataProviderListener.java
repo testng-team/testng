@@ -9,12 +9,12 @@ import org.testng.IDataProviderMethod;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+import org.testng.listeners.samples.github1490.DataProviderInfoProvider;
+import org.testng.listeners.samples.github1490.InstanceAwareLocalDataProviderListener;
+import org.testng.listeners.samples.github1490.LocalDataProviderListener;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
-import test.listeners.github1490.DataProviderInfoProvider;
-import test.listeners.github1490.InstanceAwareLocalDataProviderListener;
-import test.listeners.github1490.LocalDataProviderListener;
 
 public class VerifyDataProviderListener extends SimpleBaseTest {
 

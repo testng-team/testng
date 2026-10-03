@@ -1,0 +1,14 @@
+package org.testng.listeners.samples;
+
+import org.testng.annotations.Listeners;
+import org.testng.annotations.Test;
+
+@Listeners(MyClassListener.class)
+public class ClassListenerSample {
+
+  @Test
+  public void test() {}
+
+  @Test
+  public void test2() {}
+}

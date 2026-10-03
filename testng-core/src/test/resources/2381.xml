@@ -2,14 +2,14 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="2381_suite"  verbose="2">
   <listeners>
-    <listener class-name="test.listeners.issue2381.SampleTransformer"/>
-    <listener class-name="test.listeners.issue2381.SampleGlobalListener"/>
+    <listener class-name="org.testng.listeners.samples.issue2381.SampleTransformer"/>
+    <listener class-name="org.testng.listeners.samples.issue2381.SampleGlobalListener"/>
   </listeners>
 
   <test name="2381_test" verbose="2">
     <classes>
-      <class name="test.listeners.issue2381.TestClassSample"/>
-      <class name="test.listeners.issue2381.FactoryTestClassSample"/>
+      <class name="org.testng.listeners.samples.issue2381.TestClassSample"/>
+      <class name="org.testng.listeners.samples.issue2381.FactoryTestClassSample"/>
     </classes>
   </test>
 

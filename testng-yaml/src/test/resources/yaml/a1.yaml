@@ -22,4 +22,4 @@ tests:
     parameters: { count: 10 }
     excludedGroups: [ broken ]
     classes:
-      - test.listeners.ResultEndMillisTest
+      - org.testng.listeners.ResultEndMillisTest

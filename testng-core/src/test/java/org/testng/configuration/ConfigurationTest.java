@@ -32,10 +32,10 @@ import org.testng.configuration.samples.issue3358.ChildFirstTimeOnlyWithLastTime
 import org.testng.configuration.samples.issue3358.FactoryFirstTimeOnlySample;
 import org.testng.configuration.samples.issue3358.OverloadedFirstTimeOnlySample;
 import org.testng.internal.IConfigEavesdropper;
+import org.testng.listeners.samples.issue2961.OnlyOnceConfigurationThatFailsTestSample;
+import org.testng.listeners.samples.issue2961.OnlyOnceConfigurationThatPassesTestSample;
 import org.testng.xml.XmlSuite;
 import test.InvokedMethodNameListener;
-import test.listeners.issue2961.OnlyOnceConfigurationThatFailsTestSample;
-import test.listeners.issue2961.OnlyOnceConfigurationThatPassesTestSample;
 
 /**
  * Test @Configuration

@@ -3,7 +3,8 @@
 #
 #   1. provenance -- the commit that introduced the test names THIS issue number, or a pull request
 #                    GitHub lists for that commit does
-#   2. the issue  -- #<n> is a real GitHub issue, not a pull request
+#   2. the issue  -- #<n> is a real GitHub issue, not a pull request. A number that no issue and no
+#                    pull request holds may still name a discussion, and that counts, named as one.
 #
 # Package names are not evidence: test.testng173 and test.testng317 look identical, and only one of
 # them is a GitHub issue.
@@ -15,6 +16,16 @@
 #   scripts/verify-issue-refs.sh github765/ExcludeSyntheticMethodsFromTemplateCallsTest.java 765
 set -u
 REPO=${REPO:-testng-team/testng}
+# The name the repository had before. TestNG moved from cbeust/testng to testng-team/testng in 2022,
+# and a pull request body written before the move links the issue at the old address. Set it to the
+# empty string for a repository that was never renamed. The default fills an UNSET value only, so
+# REPO_WAS= really turns the second name off, and it applies to this repository alone: another
+# repository never had this one's old name.
+if [ "$REPO" = testng-team/testng ]; then
+  REPO_WAS=${REPO_WAS-cbeust/testng}
+else
+  REPO_WAS=${REPO_WAS-}
+fi
 # The branch that provenance is judged against. Overridable for a fork or a release branch.
 BASE=${BASE:-master}
 # Set to 1 to stop after step 1 and skip step 2. Step 1 still asks GitHub which pull request holds
@@ -53,16 +64,56 @@ frag=${1:?usage: verify-issue-refs.sh <path-fragment> [issue-number]}
 num=${2:-}
 rc=0
 
+# Every argument and every overridable name is checked here, before anything reads one.
+#
+# A repository name reaches a pattern and a GraphQL string, so it is checked rather than escaped.
+# GitHub allows letters, digits, a dot, a hyphen and an underscore in an owner and in a name, so
+# after this the only character that means anything in a pattern is the dot.
+for name in "$REPO" ${REPO_WAS:+"$REPO_WAS"}; do
+  case "$name" in
+    *[!A-Za-z0-9._/-]* | */*/* | */ | /* | */.* )
+      echo "USAGE       <$name> is not an owner/name for this repository" >&2
+      exit 2
+      ;;
+    */*) ;;
+    *)
+      echo "USAGE       <$name> is not an owner/name for this repository" >&2
+      exit 2
+      ;;
+  esac
+done
+
+# The number is used as text, in four patterns and in a GraphQL query, so it has to be a number. A
+# "." matches any character and ".*" matches everything, so ".*" would be named by every commit
+# message there is, and the script would prove whatever it was asked.
+#
+# A glob, not grep: grep matches one line at a time, so a value holding a newline passed, and inside
+# a pattern that newline reads as alternation rather than as text.
+case "$num" in
+  "") ;;
+  *[!0-9]* | 0*)
+    echo "USAGE       <$num> is not an issue number" >&2
+    exit 2
+    ;;
+esac
+
 if [ -n "$METHOD" ]; then
   if [ "$BY_DESCRIPTION" = 1 ]; then
     echo "METHOD and BY_DESCRIPTION each pick the commit a different way; set only one"
     exit 1
   fi
-  # A Java identifier, so the name is safe inside the patterns below.
-  if ! printf '%s' "$METHOD" | grep -qE '^[A-Za-z_][A-Za-z0-9_]*$'; then
-    echo "METHOD must be a plain method name, got <$METHOD>"
-    exit 1
-  fi
+  # A Java identifier, so the name is safe inside the patterns below. A glob, not grep: grep reads
+  # one line at a time, so a value holding a newline would pass and reach those patterns.
+  case "$METHOD" in
+    [A-Za-z_]*) ;;
+    *) echo "USAGE       METHOD must be a plain method name, got <$METHOD>" >&2; exit 2 ;;
+  esac
+  case "$METHOD" in
+    *[!A-Za-z0-9_]*)
+      echo "USAGE       METHOD must be a plain method name, got <$METHOD>" >&2
+      exit 2
+      ;;
+  esac
 fi
 
 # git reads a pathspec from the current directory, but prints the paths it reports from the top of the
@@ -395,7 +446,17 @@ names_num() {
 # "Still unresolved: #765" holds "resolved", and GitHub closes nothing on either. Both would have
 # been written into the code as proof.
 CLOSING='(close[sd]?|fix(e[sd])?|resolve[sd]?)'
-CLOSES_NUM="(^|[^[:alnum:]_])${CLOSING}:? +(https://github\.com/${REPO}/issues/|#)${num}([^0-9]|$)"
+#
+# A body may link the issue instead of naming it. Only this repository's own address counts, at
+# either name: GitHub closed issue #1284 from "Fixes https://github.com/cbeust/testng/issues/1284",
+# because cbeust/testng was this repository at the time. A body that links someone else's repository
+# closes nothing here, and "/pull/" is not "/issues/".
+quote_dots() { printf '%s' "$1" | sed 's/\./\\./g'; }
+ISSUE_HOST='https?://(www\.)?github\.com/'
+names=$(quote_dots "$REPO")
+[ -n "$REPO_WAS" ] && names="($names|$(quote_dots "$REPO_WAS"))"
+ISSUE_URL="${ISSUE_HOST}${names}/issues/"
+CLOSES_NUM="(^|[^[:alnum:]_])${CLOSING}:? +(${ISSUE_URL}|#)${num}([^0-9]|$)"
 body_closes_num() {
   printf '%s' "$1" | grep -qiE "$CLOSES_NUM"
 }
@@ -518,6 +579,45 @@ fi
 
 [ "$PROVENANCE_ONLY" = 1 ] && exit $rc
 
+# Reads GitHub's GraphQL answer for one discussion on stdin, and prints its title. Exits 10 when the
+# repository has no discussion with this number, and 3 when the answer is not one for that
+# discussion. A call can succeed and still answer with an error, and reading that as a discussion
+# would print an empty title and exit 0.
+#
+# 10 for "no", never 1: Python exits 1 when it dies, and this ran as the verdict "does not exist"
+# for a title the environment could not encode. The title goes out as bytes for the same reason.
+read -r -d '' DISCUSSION_TITLE <<'PYTHON'
+import json
+import sys
+
+try:
+    answer = json.loads(sys.stdin.buffer.read())
+except ValueError:
+    sys.exit(3)
+if not isinstance(answer, dict):
+    sys.exit(3)
+data = answer.get('data')
+if not isinstance(data, dict):
+    sys.exit(3)
+repository = data.get('repository')
+if not isinstance(repository, dict):
+    sys.exit(3)
+errors = answer.get('errors')
+if isinstance(errors, list):
+    kinds = {e.get('type') for e in errors if isinstance(e, dict)}
+    if kinds - {'NOT_FOUND'}:
+        sys.exit(3)
+discussion = repository.get('discussion')
+if discussion is None:
+    sys.exit(10)
+if not isinstance(discussion, dict) or str(discussion.get('number')) != sys.argv[1]:
+    sys.exit(3)
+title = discussion.get('title')
+if not isinstance(title, str) or not title.strip():
+    sys.exit(3)
+sys.stdout.buffer.write(' '.join(title.split()).encode('utf-8', 'replace') + b'\n')
+PYTHON
+
 # Distinguish "no such issue" from an API that is unreachable, rate limited or unauthenticated.
 # Treating those alike would delete valid references.
 #
@@ -526,10 +626,46 @@ fi
 # issue, with exit 0.
 body=$(gh api "repos/$REPO/issues/$num" 2>/dev/null); issue_rc=$?
 if [ "$issue_rc" != 0 ] || [ -z "$body" ]; then
-  status=$(gh api "repos/$REPO/issues/$num" 2>&1 | grep -oE 'HTTP [0-9]+' | head -1)
-  case "$status" in
-    "HTTP 404") echo "issue       #$num does not exist"; exit 1 ;;
-    *)          echo "issue       CANNOT CHECK -- the API call failed (${status:-no status}). Not a verdict."; exit 3 ;;
+  # Only stderr. ">/dev/null" after "2>&1" sends the error message to the pipe and throws the body
+  # away, so no text inside an issue can look like a status.
+  status=$(gh api "repos/$REPO/issues/$num" 2>&1 >/dev/null | grep -oE 'HTTP [0-9]+' | head -1)
+  if [ "$status" != "HTTP 404" ]; then
+    echo "issue       CANNOT CHECK -- the API call failed (${status:-no status}). Not a verdict."
+    exit 3
+  fi
+  # The number may name a DISCUSSION. The commit that added the listener ordering tests says
+  # "Closes #2916", and #2916 is the discussion "Allow users to define ordering for TestNG
+  # listeners". Refusing that would delete a true reference.
+  #
+  # GitHub keeps discussions in a number space of their own, so a discussion number proves nothing
+  # while an issue or a pull request holds the same number. This lookup runs only after the call
+  # above answered 404, and that call answers for a pull request too. So a 404 means neither holds
+  # the number, and the discussion is the only thing it can name.
+  #
+  # The discussions API is GraphQL only. There is no REST endpoint to read one.
+  answer=$(gh api graphql -f query="{repository(owner:\"${REPO%%/*}\",name:\"${REPO##*/}\"){discussion(number:$num){number title}}}" 2>/dev/null)
+  graphql_rc=$?
+  # The answer is read before the exit status. GitHub reports a number that holds no discussion as a
+  # NOT_FOUND entry beside a null discussion, and gh exits non-zero on it. Reading the status first
+  # made "does not exist" unreachable, so a bogus reference came back as "not a verdict" and stayed.
+  title=$(printf '%s' "$answer" | python3 -c "$DISCUSSION_TITLE" "$num")
+  title_rc=$?
+  case $title_rc in
+    0)
+      printf 'issue       #%s is a DISCUSSION, not an issue\n' "$num"
+      printf 'title       %s\n' "$title"
+      echo "timeline    not checked -- GitHub keeps no commit timeline for a discussion"
+      exit $rc
+      ;;
+    10)
+      echo "issue       #$num does not exist, as an issue or as a discussion"
+      exit 1
+      ;;
+    *)
+      # The answer said nothing. Only now does the call's own exit status decide which it was.
+      echo "issue       CANNOT CHECK -- #$num is not an issue, and the discussion lookup did not answer (gh exited $graphql_rc, the reader exited $title_rc). Not a verdict."
+      exit 3
+      ;;
   esac
 fi
 
