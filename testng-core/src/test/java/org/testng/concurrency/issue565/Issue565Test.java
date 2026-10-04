@@ -94,7 +94,8 @@ public class Issue565Test extends SimpleBaseTest {
 
   /**
    * Names the threads that are blocked on a lock another one holds, so a failure says where the run
-   * stopped. Returns a sentence saying so when the JVM finds none.
+   * stopped. Returns a sentence instead when the JVM names none, and a different one when it names
+   * some but every one of them ended before it could be read.
    */
   private static String lockedThreads() {
     ThreadMXBean threads = ManagementFactory.getThreadMXBean();
