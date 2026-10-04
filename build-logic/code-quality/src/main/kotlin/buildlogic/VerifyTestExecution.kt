@@ -230,7 +230,10 @@ abstract class VerifyTestExecution : DefaultTask() {
                     } else {
                         val groups = QUOTED_STRING.findAll(groupsValue.groupValues[1])
                             .map { it.groupValues[1] }.toSet()
-                        groups.isNotEmpty() && groups.all { it in excludedGroups }
+                        // TestNG excludes a test when it belongs to ANY excluded group, so a test
+                        // with groups {"broken","maven-broken"} does not run when "broken" is
+                        // excluded even though "maven-broken" is not in the excluded set.
+                        groups.isNotEmpty() && groups.any { it in excludedGroups }
                     }
                 }
                 if (allExcluded) filtered += className
