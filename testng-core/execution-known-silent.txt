@@ -18,11 +18,6 @@ org.testng.factory.FactoryTest
 org.testng.factory.FactoryWithInstanceInfoTest
 test.groupinvocation.GroupConfiguration
 
-# --- every @Test is in group "broken", and the owning <test> block excludes that group. This is
-# --- deliberate and is the one category here that is not a defect.
-test.SerializationTest
-org.testng.concurrency.ThreadTest
-
 # --- not diagnosed. Each has plain @Test methods, and the <test> block that names it applies no
 # --- group filter, so there is no visible reason for the silence. Worth an issue of its own.
 org.testng.factory.FactoryAndTestMethodTest

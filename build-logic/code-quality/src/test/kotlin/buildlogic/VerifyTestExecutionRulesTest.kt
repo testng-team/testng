@@ -167,6 +167,41 @@ class VerifyTestExecutionRulesTest {
         )
     }
 
+    // --- the group-filter classification -----------------------------------------------------------
+
+    @Test(description = "a class filtered by the suite's group exclusion is not reported as silent")
+    fun aGroupFilteredClassIsNotReportedAsSilent() {
+        // test.SerializationTest is declared and never ran, but every @Test is in group "broken"
+        // and the Regression2 <test> block excludes "broken". It must not appear in "never ran".
+        assertNoProblem(
+            Evidence(
+                declared = setOf("test.SerializationTest"),
+                mentioned = setOf("test.SerializationTest"),
+                groupFiltered = setOf("test.SerializationTest"),
+            )
+        )
+    }
+
+    @Test(description = "a group-filtered class that starts running is reported")
+    fun aGroupFilteredClassThatStartsRunningIsReported() {
+        // If the group exclusion or the @Test annotations change, the class may start producing
+        // results. The guard catches this so the classification can be re-verified.
+        assertProblem(
+            Evidence(
+                declared = setOf("test.SerializationTest"),
+                executed = setOf("test.SerializationTest"),
+                groupFiltered = setOf("test.SerializationTest"),
+            ),
+            "Classified as group-filtered but producing results now",
+        )
+    }
+
+    @Test(description = "groupFiltered does not cover a class outside the declared set")
+    fun aGroupFilteredClassNotDeclaredIsNotAffected() {
+        // The guard only fires on declared classes. An undeclared class in groupFiltered is inert.
+        assertNoProblem(Evidence(groupFiltered = setOf("test.NotInSuite")))
+    }
+
     // --- the inventory ------------------------------------------------------------------------------
 
     @Test(description = "a test that stops running fails, however it stopped")
@@ -395,5 +430,20 @@ class VerifyTestExecutionRulesTest {
             )
         )
         assert(found.size == 5) { "expected five problems, got ${found.size}:\n${found.joinToString("\n")}" }
+    }
+
+    @Test(description = "a group-filtered class that ran is counted alongside the other problems")
+    fun everyProblemIsReportedIncludingFilteredButRan() {
+        val found = problems(
+            Evidence(
+                declared = setOf("test.Parked"),
+                mentioned = setOf("test.Parked"),
+                executed = setOf("org.testng.factory.samples.Leaked", "test.Filtered"),
+                silent = setOf("test.Renamed"),
+                byFactory = setOf("org.testng.factory.Outside"),
+                groupFiltered = setOf("test.Filtered"),
+            )
+        )
+        assert(found.size == 6) { "expected six problems, got ${found.size}:\n${found.joinToString("\n")}" }
     }
 }

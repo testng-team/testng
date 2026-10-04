@@ -89,6 +89,18 @@ abstract class VerifyTestExecution : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val results: DirectoryProperty
 
+    /**
+     * The root of the Java test source tree.
+     *
+     * Optional. When present, the task scans source files to find classes whose every {@code @Test}
+     * method is excluded by the group filter of the {@code <test>} block that names them. Those
+     * classes are classified as filtered, not silent, and the guard says nothing about them.
+     */
+    @get:InputDirectory
+    @get:Optional
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val testSources: DirectoryProperty
+
     /** When true, rewrite [inventory] from this run instead of comparing against it. */
     @get:Internal
     abstract val update: Property<Boolean>
@@ -107,6 +119,7 @@ abstract class VerifyTestExecution : DefaultTask() {
             expected = if (updating) emptyMap() else readInventory(baseline.name, baseline.readLines()),
             silent = knownSilent.entries(),
             byFactory = if (factoryProduced.isPresent) factoryProduced.entries() else emptySet(),
+            groupFiltered = groupFilteredClasses(),
             silentFile = knownSilent.get().asFile.name,
             factoryFile = factoryProduced.orNull?.asFile?.name ?: "execution-factory-produced.txt",
             updatingInventory = updating,
@@ -161,6 +174,69 @@ abstract class VerifyTestExecution : DefaultTask() {
         }
         visit(suite.get().asFile)
         return found
+    }
+
+    /**
+     * Returns every class whose every {@code @Test} method is excluded by the group filter of the
+     * {@code <test>} block that declares it.
+     *
+     * The task parses the suite XML for {@code <test>} blocks that carry
+     * {@code <groups><run><exclude name="…"/>} entries. For each such block it reads the Java
+     * source of every named class and checks whether all {@code @Test} annotations carry only
+     * groups that are in the excluded set. A class that meets this condition is classified as
+     * filtered, not silent: the suite names it, the group filter excludes it on purpose, and the
+     * guard should say nothing about it.
+     *
+     * The scan uses the same text-only approach as [declaredClasses]: no compiler, no bytecode.
+     * It handles {@code @Test(groups = "g")} and {@code @Test(groups = {"g1", "g2"})} forms.
+     * A plain {@code @Test} with no groups attribute is treated as belonging to no group and
+     * therefore not excluded, so the class is not classified as filtered.
+     *
+     * Requires [testSources] to be set. Returns an empty set when the property is absent.
+     */
+    private fun groupFilteredClasses(): Set<String> {
+        val sourcesDir = testSources.orNull?.asFile ?: return emptySet()
+        val filtered = sortedSetOf<String>()
+        val suiteText = suite.get().asFile.readText()
+            .replace(Regex("<!--.*?-->", RegexOption.DOT_MATCHES_ALL), "")
+
+        TEST_BLOCK.findAll(suiteText).forEach { testMatch ->
+            val blockText = testMatch.value
+
+            // Collect the group names this <test> block excludes.
+            val groupsBlock = GROUPS_BLOCK.find(blockText)?.groupValues?.get(1) ?: return@forEach
+            val excludedGroups = EXCLUDE_NAME.findAll(groupsBlock).map { it.groupValues[1] }.toSet()
+            if (excludedGroups.isEmpty()) return@forEach
+
+            // Check each class named in this block.
+            CLASS_ENTRY.findAll(blockText).forEach classLoop@{ classMatch ->
+                val className = classMatch.groupValues[1]
+                // Inner classes live in the outer class source file.
+                val outerName = className.substringBefore('$')
+                val sourcePath = outerName.replace('.', '/') + ".java"
+                val sourceFile = sourcesDir.resolve(sourcePath)
+                if (!sourceFile.isFile) return@classLoop
+
+                val sourceText = sourceFile.readText()
+                val annotations = TEST_ANNOTATION.findAll(sourceText).toList()
+                // A class with no @Test annotations at all is a different kind of defect.
+                if (annotations.isEmpty()) return@classLoop
+
+                val allExcluded = annotations.all { ann ->
+                    val groupsValue = GROUPS_VALUE.find(ann.value)
+                    if (groupsValue == null) {
+                        // Plain @Test with no groups attribute is not excluded by any group filter.
+                        false
+                    } else {
+                        val groups = QUOTED_STRING.findAll(groupsValue.groupValues[1])
+                            .map { it.groupValues[1] }.toSet()
+                        groups.isNotEmpty() && groups.all { it in excludedGroups }
+                    }
+                }
+                if (allExcluded) filtered += className
+            }
+        }
+        return filtered
     }
 
     /** Returns the classes that ran, and `class#method` -> [Outcome] for the inventory. */
@@ -243,6 +319,19 @@ abstract class VerifyTestExecution : DefaultTask() {
             """<testcase\s+name="([^"]*)"\s+classname="([^"]*)"[^>]*(/>|>(.*?)</testcase>)""",
             RegexOption.DOT_MATCHES_ALL,
         )
+        // Matches a full <test> block, after comments are stripped.
+        val TEST_BLOCK = Regex("""<test\b[^>]*>.*?</test>""", RegexOption.DOT_MATCHES_ALL)
+        // Captures the content of the <groups>...<\/groups> element inside a <test> block.
+        val GROUPS_BLOCK = Regex("""<groups\b[^>]*>(.*?)</groups>""", RegexOption.DOT_MATCHES_ALL)
+        // Matches <exclude name="groupName"/> inside a <groups><run> block.
+        val EXCLUDE_NAME = Regex("""<exclude\s+name="([^"]+)"""")
+        // Captures the full body of one @Test annotation (up to the closing parenthesis).
+        // Groups are not nested inside @Test(...), so a single [^)]* suffices.
+        val TEST_ANNOTATION = Regex("""@Test\b\s*(?:\(([^)]*)\))?""", RegexOption.DOT_MATCHES_ALL)
+        // Captures the value of the groups attribute: groups = "g" or groups = {"g1", "g2"}.
+        val GROUPS_VALUE = Regex("""groups\s*=\s*(\{[^}]*\}|"[^"]*")""", RegexOption.DOT_MATCHES_ALL)
+        // Extracts individual quoted strings from a groups value.
+        val QUOTED_STRING = Regex(""""([^"]+)"""")
     }
 }
 
@@ -271,6 +360,14 @@ internal data class Evidence(
     val silent: Set<String> = emptySet(),
     /** Entries of the factory-produced list. */
     val byFactory: Set<String> = emptySet(),
+    /**
+     * Classes whose every {@code @Test} method is excluded by the group filter of the
+     * {@code <test>} block that names them.
+     *
+     * These classes are silent by design. The guard does not report them as missing, because the
+     * suite excludes their tests on purpose rather than ignoring them by accident.
+     */
+    val groupFiltered: Set<String> = emptySet(),
     val silentFile: String = "execution-known-silent.txt",
     val factoryFile: String = "execution-factory-produced.txt",
     /** True while the inventory is being rewritten, so the inventory rules have nothing to compare. */
@@ -329,11 +426,22 @@ internal fun updateOrFail(e: Evidence, write: () -> Unit): List<String> {
 internal fun problemsIn(e: Evidence): List<String> {
     val problems = mutableListOf<String>()
 
-    val neverRan = e.declared - e.executed - e.silent
+    // A class is allowed to produce no results when it is in the known-silent list, or when every
+    // one of its @Test methods belongs to a group the owning <test> block excludes on purpose.
+    val neverRan = e.declared - e.executed - e.silent - e.groupFiltered
     if (neverRan.isNotEmpty()) {
         problems += "Named in the suite but never ran -- compiled, and invisible:\n  " +
             neverRan.joinToString("\n  ") +
             "\n  Register it so it runs, or add it to ${e.silentFile} with a reason."
+    }
+
+    // A group-filtered class that starts running means the filter was removed or the groups changed.
+    // The entry is then stale and the class should be re-examined.
+    val filteredButRan = e.groupFiltered intersect e.executed
+    if (filteredButRan.isNotEmpty()) {
+        problems += "Classified as group-filtered but producing results now:\n  " +
+            filteredButRan.joinToString("\n  ") +
+            "\n  The group filter or the @Test annotations changed. Verify the class and update ${e.silentFile} if needed."
     }
 
     val staleEntries = e.silent intersect e.executed
