@@ -223,7 +223,7 @@
       <class name="org.testng.parameters.github1417.TestParamsInjectionInBeforeClass"/>
       <class name="test.order.OrderTest" />
       <class name="org.testng.memory.MemoryLeakTestNg" />
-      <!-- TODO fix the random issue <class name="test.issue565.Issue565Test"/>-->
+      <class name="test.issue565.Issue565Test"/>
       <class name="test.failedreporter.issue3111.FactoryInstanceFailedReporterTest"/>
       <class name="test.failedreporter.skippedposition.SkippedPositionRerunTest"/>
       <class name="org.testng.factory.issue3111.FactoryInstanceTest"/>

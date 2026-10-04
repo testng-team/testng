@@ -512,6 +512,29 @@ method, and each issue asks for what the method asserts:
 `TESTNG-400` stays as prose in `ListenerTest`. It is a JIRA item, and `jira.opensymphony.com` is
 dead, so the number points at nothing a reader can open.
 
+## Verified for the numbered packages
+
+GitHub issue #3551 covers the ten packages under `test.*` that are named after a tracker number.
+No phase owned them, because the eight phases moved tests by feature.
+
+<!-- vale off -->
+
+| Ref | Issue title on GitHub | Provenance | Timeline |
+| --- | --- | --- | --- |
+| `GITHUB-565` | Deadlock when using group dependency (plus other factors) | "Add test for #565 (cherry picked from commit fddb95d)" | links commit |
+
+<!-- vale on -->
+
+`GITHUB-565` sits on `issue565.Issue565Test`, which had never run. `testng.xml` named it inside an
+XML comment that read `TODO fix the random issue`, so no guard saw it: `verifyTestExecution` fails
+on a class the suite names, and a commented line names nothing.
+
+The random failure was the test's own guard. It gave every method in the inner suite 1000
+milliseconds and called that "prevent real deadlock", which also made a slow run look like one. The
+scenario does stall: over 1000 runs on an idle machine it took about 0.05 seconds most times, 6.6
+seconds once in roughly 300, and 18.4 seconds once. The guard is now a wall clock on the whole run,
+the inner suite carries no timeout, and a failure reports the threads the JVM finds blocked.
+
 ## Verified, description not yet written
 
 A row above is a claim that the code carries that description. The rows below are the exception.
@@ -522,7 +545,6 @@ packages that no phase has moved. The description goes in when the owning featur
 
 | Ref | Class still at |
 | --- | --- |
-| `GITHUB-565` | `test.issue565` |
 | `GITHUB-1231` | `test.testng1231` |
 | `GITHUB-1232` | `test.testng1232` |
 | `GITHUB-1490` | `test.github1490` |
