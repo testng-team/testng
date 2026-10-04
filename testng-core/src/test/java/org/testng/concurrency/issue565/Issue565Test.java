@@ -52,7 +52,18 @@ public class Issue565Test extends SimpleBaseTest {
     //
     // So the suite now carries no timeout and the methods are free to be slow. A real deadlock does
     // not finish at all, and that is what this waits for.
-    ExecutorService runner = Executors.newSingleThreadExecutor(r -> new Thread(r, "issue565-run"));
+    // The runner is a daemon, and that is what lets the JVM exit after a real deadlock.
+    // shutdownNow() only interrupts, and a thread blocked on a lock ignores that, so a non-daemon
+    // worker would keep the JVM alive after this test has already reported its failure.
+    // TestNGThreadFactory does not set daemon, and a new thread inherits its creator's status, so
+    // every thread the nested run starts below this one is a daemon too.
+    ExecutorService runner =
+        Executors.newSingleThreadExecutor(
+            r -> {
+              Thread t = new Thread(r, "issue565-run");
+              t.setDaemon(true);
+              return t;
+            });
     try {
       Future<?> finished = runner.submit((Runnable) tng::run);
       try {
