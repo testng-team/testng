@@ -5,7 +5,10 @@ import static org.assertj.core.api.Assertions.fail;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -39,24 +42,21 @@ public class Issue565Test extends SimpleBaseTest {
     TestListenerAdapter listener = new TestListenerAdapter();
     tng.addListener((ITestNGListener) listener);
 
-    // The run is guarded by a wall clock here, not by a TestNG timeout on the suite.
+    // A wall clock guards the run, not a TestNG timeout on the suite.
     //
-    // The earlier version of this test gave every method in the suite 1000 milliseconds and called
-    // that "prevent real deadlock". It also made a slow run look like a deadlock, which is why the
-    // class sat commented out of testng.xml with a note about a random failure. The scenario
-    // stalls:
-    // over 1000 runs on an idle machine the test took 0.05 seconds most times, 6.6 seconds once in
-    // about 300, and 18.4 seconds once. Against a 1000 millisecond guard, a stall inside a timed
-    // method fails the method, and the counts below then disagree for a reason that is not a
-    // deadlock.
+    // The earlier version gave every method in the inner suite 1000 milliseconds and called that
+    // "prevent real deadlock". It also made a slow run look like one, which is why the class sat
+    // commented out of testng.xml with a note about a random failure. The scenario really does
+    // stall. Over 1000 runs on an idle machine it took 0.05 seconds most times, 6.6 seconds once
+    // in about 300, and 18.4 seconds once. A stall inside a method with a 1000 millisecond
+    // timeout fails that method, and the counts below then disagree for a reason that is not a
+    // deadlock. So the inner suite carries no timeout and its methods are free to be slow.
     //
-    // So the suite now carries no timeout and the methods are free to be slow. A real deadlock does
-    // not finish at all, and that is what this waits for.
-    // The runner is a daemon, and that is what lets the JVM exit after a real deadlock.
+    // The runner thread is a daemon, and that is what lets the JVM exit after a real deadlock.
     // shutdownNow() only interrupts, and a thread blocked on a lock ignores that, so a non-daemon
-    // worker would keep the JVM alive after this test has already reported its failure.
+    // worker would hold the JVM open after this test had already reported its failure.
     // TestNGThreadFactory does not set daemon, and a new thread inherits its creator's status, so
-    // every thread the nested run starts below this one is a daemon too.
+    // every thread the inner run starts below this one is a daemon too.
     ExecutorService runner =
         Executors.newSingleThreadExecutor(
             r -> {
@@ -72,6 +72,12 @@ public class Issue565Test extends SimpleBaseTest {
         fail(
             "The run did not finish in %d seconds, so the group dependency deadlocked.%n%s",
             LIMIT_SECONDS, lockedThreads());
+      } catch (ExecutionException crashed) {
+        // The run threw instead of finishing. That is neither a deadlock nor a failed method, and
+        // without this the test reports an ExecutionException that a reader has to unwrap.
+        fail(
+            "The run threw instead of finishing, so no count below means anything",
+            crashed.getCause());
       }
     } finally {
       runner.shutdownNow();
@@ -91,12 +97,21 @@ public class Issue565Test extends SimpleBaseTest {
    * stopped. Returns a sentence saying so when the JVM finds none.
    */
   private static String lockedThreads() {
-    long[] ids = ManagementFactory.getThreadMXBean().findDeadlockedThreads();
+    ThreadMXBean threads = ManagementFactory.getThreadMXBean();
+    long[] ids = threads.findDeadlockedThreads();
     if (ids == null) {
       return "No thread is blocked on a lock another holds, so the run is stuck elsewhere.";
     }
-    return Arrays.stream(ManagementFactory.getThreadMXBean().getThreadInfo(ids, true, true))
-        .map(ThreadInfo::toString)
-        .collect(Collectors.joining(System.lineSeparator()));
+    // getThreadInfo puts null in the slot of a thread that ended between the two calls. Mapping
+    // toString over that null would replace this whole report with a NullPointerException, and
+    // the deadlock the test had just caught would be lost.
+    String report =
+        Arrays.stream(threads.getThreadInfo(ids, true, true))
+            .filter(Objects::nonNull)
+            .map(ThreadInfo::toString)
+            .collect(Collectors.joining(System.lineSeparator()));
+    return report.isEmpty()
+        ? "The JVM named blocked threads, and every one of them ended before it could be read."
+        : report;
   }
 }
