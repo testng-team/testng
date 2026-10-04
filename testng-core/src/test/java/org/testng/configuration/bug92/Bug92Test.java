@@ -1,0 +1,31 @@
+package org.testng.configuration.bug92;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collections;
+import org.testng.TestNG;
+import org.testng.annotations.Test;
+import org.testng.configuration.samples.bug92.TestAlpha;
+import org.testng.configuration.samples.bug92.TestBase;
+import org.testng.configuration.samples.bug92.TestBravo;
+import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
+import test.SimpleBaseTest;
+
+public class Bug92Test extends SimpleBaseTest {
+
+  @Test(description = "Fix for https://github.com/cbeust/testng/issues/92")
+  public void BeforeTestShouldRunOnce() {
+    XmlSuite s = createXmlSuite("Bug92");
+    XmlTest t =
+        createXmlTest(s, "Bug92 test", TestAlpha.class.getName(), TestBravo.class.getName());
+    s.setTests(Collections.singletonList(t));
+    TestNG tng = create();
+    tng.setXmlSuites(Collections.singletonList(s));
+    TestBase.beforeTestCount = 0;
+    TestBase.beforeTestAlwaysCount = 0;
+    tng.run();
+    assertThat(TestBase.beforeTestCount).isEqualTo(1);
+    assertThat(TestBase.beforeTestAlwaysCount).isEqualTo(1);
+  }
+}

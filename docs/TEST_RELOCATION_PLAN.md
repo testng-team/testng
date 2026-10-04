@@ -272,7 +272,7 @@ Follow the order.
    | Class | Owner |
    | --- | --- |
    | `test.distributed.DistributedTest` | no phase owns it |
-   | `test.issue565.Issue565Test` | no phase owns it, and `GITHUB-565` is already verified |
+   | `org.testng.concurrency.issue565.Issue565Test` | moved by GitHub issue #3551, and `GITHUB-565` is written |
    | `test.jar.JarTest` | no phase owns it |
    | `test.timeout.TimeOutThreadLocalSampleTest` | no phase owns it |
 

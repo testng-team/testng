@@ -60,10 +60,10 @@ tests:
       - test.jar.JarTest
       - test.xml.XmlVerifyTest
       - test.invokedmethodlistener.InvokedMethodListenerTest
-      - test.testng249.VerifyTest
-      - test.testng195.AfterMethodTest
+      - org.testng.inheritance.testng249.VerifyTest
+      - org.testng.configuration.testng195.AfterMethodTest
       - test.regression.BeforeTestFailingTest
-      - test.testng285.TestNG285Test
+      - org.testng.concurrency.testng285.TestNG285Test
       - test.failedreporter.FailedReporterTest
       - test.attributes.AttributeTest
       - test.verify.VerifyTest
