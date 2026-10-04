@@ -8,11 +8,13 @@ import org.testng.collections.Objects;
 import org.testng.internal.IResultListener2;
 
 /**
- * A simple ITestListener adapter that stores all the tests that were run. You can retrieve these
- * results with the following methods: getPassedTests() getFailedTests() getSkippedTests()
+ * A test listener that keeps the results of the test methods and configuration methods that run.
  *
- * <p>If you extend this class in order to override any of these methods, remember to call their
- * super equivalent if you want this list of tests to be maintained.
+ * <p>Read the results with methods such as {@link #getPassedTests()}, {@link #getFailedTests()} and
+ * {@link #getSkippedTests()}.
+ *
+ * <p>When you extend this class and override a listener method, call the {@code super} method too.
+ * If you do not, this class does not record that result.
  *
  * @author Cedric Beust, Aug 6, 2004
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
@@ -60,6 +62,11 @@ public class TestListenerAdapter implements IResultListener2 {
     m_failedButWSPerTests.add(tr);
   }
 
+  /**
+   * Returns the test methods of the test results that this listener received.
+   *
+   * @return the test methods, in a new array.
+   */
   protected ITestNGMethod[] getAllTestMethods() {
     return m_allTestMethods.toArray(new ITestNGMethod[0]);
   }
@@ -69,77 +76,132 @@ public class TestListenerAdapter implements IResultListener2 {
     m_testContexts.add(testContext);
   }
 
-  /** @return Returns the failedButWithinSuccessPercentageTests. */
+  /**
+   * Returns the results of the tests that failed, but stayed within the {@code successPercentage}
+   * of their method.
+   *
+   * @return a copy of the list.
+   */
   public List<ITestResult> getFailedButWithinSuccessPercentageTests() {
     return new ArrayList<>(m_failedButWSPerTests);
   }
-  /** @return Returns the failedTests. */
+  /**
+   * Returns the results of the tests that failed. The tests that timed out are in this list too.
+   *
+   * @return a copy of the list.
+   */
   public List<ITestResult> getFailedTests() {
     return new ArrayList<>(m_failedTests);
   }
-  /** @return Returns the passedTests. */
+  /**
+   * Returns the results of the tests that passed.
+   *
+   * @return a copy of the list.
+   */
   public List<ITestResult> getPassedTests() {
     return new ArrayList<>(m_passedTests);
   }
-  /** @return Returns the skippedTests. */
+  /**
+   * Returns the results of the tests that TestNG skipped.
+   *
+   * @return a copy of the list.
+   */
   public List<ITestResult> getSkippedTests() {
     return new ArrayList<>(m_skippedTests);
   }
 
-  /** @return Returns the tests that failed due to a timeout */
+  /**
+   * Returns the results of the tests that failed because they timed out.
+   *
+   * @return a copy of the list.
+   */
   public Collection<ITestResult> getTimedoutTests() {
     return new ArrayList<>(m_timedOutTests);
   }
 
-  /** @param allTestMethods The allTestMethods to set. */
+  /**
+   * Replaces the list of test methods. This listener adds new test methods to the list you pass.
+   *
+   * @param allTestMethods the new list.
+   */
   public void setAllTestMethods(List<ITestNGMethod> allTestMethods) {
     m_allTestMethods = allTestMethods;
   }
   /**
-   * @param failedButWithinSuccessPercentageTests The failedButWithinSuccessPercentageTests to set.
+   * Replaces the list of tests that failed within their success percentage. This listener adds new
+   * results to the list you pass.
+   *
+   * @param failedButWithinSuccessPercentageTests the new list.
    */
   public void setFailedButWithinSuccessPercentageTests(
       List<ITestResult> failedButWithinSuccessPercentageTests) {
     m_failedButWSPerTests = failedButWithinSuccessPercentageTests;
   }
-  /** @param failedTests The failedTests to set. */
+  /**
+   * Replaces the list of failed tests. This listener adds new results to the list you pass.
+   *
+   * @param failedTests the new list.
+   */
   public void setFailedTests(List<ITestResult> failedTests) {
     m_failedTests = failedTests;
   }
-  /** @param passedTests The passedTests to set. */
+  /**
+   * Replaces the list of passed tests. This listener adds new results to the list you pass.
+   *
+   * @param passedTests the new list.
+   */
   public void setPassedTests(List<ITestResult> passedTests) {
     m_passedTests = passedTests;
   }
-  /** @param skippedTests The skippedTests to set. */
+  /**
+   * Replaces the list of skipped tests. This listener adds new results to the list you pass.
+   *
+   * @param skippedTests the new list.
+   */
   public void setSkippedTests(List<ITestResult> skippedTests) {
     m_skippedTests = skippedTests;
   }
 
+  /**
+   * Returns the contexts of the {@code <test>} tags that started.
+   *
+   * @return a copy of the list.
+   */
   public List<ITestContext> getTestContexts() {
     return new ArrayList<>(m_testContexts);
   }
 
+  /**
+   * Returns the results of the configuration methods that failed.
+   *
+   * @return a copy of the list.
+   */
   public List<ITestResult> getConfigurationFailures() {
     return new ArrayList<>(m_failedConfs);
   }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult) */
+  /** Records the result of a configuration method that failed. */
   @Override
   public void onConfigurationFailure(ITestResult itr) {
     m_failedConfs.add(itr);
   }
 
+  /**
+   * Returns the results of the configuration methods that TestNG skipped.
+   *
+   * @return a copy of the list.
+   */
   public List<ITestResult> getConfigurationSkips() {
     return new ArrayList<>(m_skippedConfs);
   }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult) */
+  /** Records the result of a configuration method that TestNG skipped. */
   @Override
   public void onConfigurationSkip(ITestResult itr) {
     m_skippedConfs.add(itr);
   }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult) */
+  /** Records the result of a configuration method that passed. */
   @Override
   public void onConfigurationSuccess(ITestResult itr) {
     m_passedConfs.add(itr);

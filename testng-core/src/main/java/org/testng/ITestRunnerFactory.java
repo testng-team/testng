@@ -5,9 +5,22 @@ import java.util.List;
 import java.util.Map;
 import org.testng.xml.XmlTest;
 
-/** A factory for TestRunners to be used by SuiteRunners. */
+/**
+ * Creates the {@link TestRunner} for each {@code <test>} of a suite.
+ *
+ * <p>{@link SuiteRunner} calls the factory once for each {@code <test>}.
+ */
 public interface ITestRunnerFactory {
 
+  /**
+   * Creates a new {@link TestRunner}.
+   *
+   * @param suite the {@link ISuite} that stands for a {@code <suite>}.
+   * @param test the {@link XmlTest} that stands for a {@code <test>}.
+   * @param listeners the {@link IInvokedMethodListener} listeners.
+   * @param classListeners the {@link IClassListener} listeners.
+   * @return the new {@link TestRunner}.
+   */
   TestRunner newTestRunner(
       ISuite suite,
       XmlTest test,
@@ -15,14 +28,17 @@ public interface ITestRunnerFactory {
       List<IClassListener> classListeners);
 
   /**
-   * Produces a new {@link TestRunner}
+   * Creates a new {@link TestRunner} that also has data provider listeners.
    *
-   * @param suite - The {@link ISuite} object that represents a particular &lt;suite&gt;.
-   * @param test - The {@link XmlTest} object that represents a particular &lt;test&gt;.
-   * @param listeners - A list of {@link IInvokedMethodListener} listeners.
-   * @param classListeners - A list of {@link IClassListener} listeners.
-   * @param dataProviderListeners - A Map of {@link IDataProviderListener} listeners.
-   * @return - A {@link TestRunner} object.
+   * <p>The default implementation ignores {@code dataProviderListeners}. It calls {@link
+   * #newTestRunner(ISuite, XmlTest, Collection, List)}.
+   *
+   * @param suite the {@link ISuite} that stands for a {@code <suite>}.
+   * @param test the {@link XmlTest} that stands for a {@code <test>}.
+   * @param listeners the {@link IInvokedMethodListener} listeners.
+   * @param classListeners the {@link IClassListener} listeners.
+   * @param dataProviderListeners the {@link IDataProviderListener} listeners, by class.
+   * @return the new {@link TestRunner}.
    */
   default TestRunner newTestRunner(
       ISuite suite,
@@ -34,14 +50,17 @@ public interface ITestRunnerFactory {
   }
 
   /**
-   * Produces a new {@link TestRunner}
+   * Creates a new {@link TestRunner} that also has data provider listeners and interceptors.
    *
-   * @param suite - The {@link ISuite} object that represents a particular &lt;suite&gt;.
-   * @param test - The {@link XmlTest} object that represents a particular &lt;test&gt;.
-   * @param listeners - A list of {@link IInvokedMethodListener} listeners.
-   * @param classListeners - A list of {@link IClassListener} listeners.
-   * @param holder - A {@link DataProviderHolder} holder object.
-   * @return - A {@link TestRunner} object.
+   * <p>{@link SuiteRunner} calls this method. The default implementation ignores {@code holder}. It
+   * calls {@link #newTestRunner(ISuite, XmlTest, Collection, List)}.
+   *
+   * @param suite the {@link ISuite} that stands for a {@code <suite>}.
+   * @param test the {@link XmlTest} that stands for a {@code <test>}.
+   * @param listeners the {@link IInvokedMethodListener} listeners.
+   * @param classListeners the {@link IClassListener} listeners.
+   * @param holder the data provider listeners and interceptors.
+   * @return the new {@link TestRunner}.
    */
   default TestRunner newTestRunner(
       ISuite suite,
