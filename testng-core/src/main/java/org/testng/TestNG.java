@@ -73,77 +73,72 @@ import org.testng.xml.internal.TestNamesMatcher;
 import org.testng.xml.internal.XmlSuiteUtils;
 
 /**
- * This class is the main entry point for running tests in the TestNG framework. Users can create
- * their own TestNG object and invoke it in many different ways:
+ * The main entry point for running TestNG.
+ *
+ * <p>You can create a {@code TestNG} object and run tests in several ways:
  *
  * <ul>
- *   <li>On an existing testng.xml
- *   <li>On a synthetic testng.xml, created entirely from Java
- *   <li>By directly setting the test classes
+ *   <li>From suite files, with {@link #setTestSuites(List)}.
+ *   <li>From suites that you build in Java, with {@link #setXmlSuites(List)}.
+ *   <li>From test classes, with {@link #setTestClasses(Class[])}.
  * </ul>
  *
- * You can also define which groups to include or exclude, assign parameters, etc...
+ * <p>You can also choose the groups to include or exclude, set parameters, and add listeners. Then
+ * call {@link #run()}, and read the result with {@link #getStatus()}.
  *
- * <p>The command line parameters are:
+ * <p>The {@code testng-cli} module defines the command line options. See the TestNG documentation
+ * for more details.
  *
- * <UL>
- *   <LI>-d <code>outputdir</code>: specify the output directory
- *   <LI>-testclass <code>class_name</code>: specifies one or several class names
- *   <LI>-testjar <code>jar_name</code>: specifies the jar containing the tests
- *   <LI>-sourcedir <code>src1;src2</code>: ; separated list of source directories (used only when
- *       javadoc annotations are used)
- *   <LI>-target
- *   <LI>-groups
- *   <LI>-testrunfactory
- *   <LI>-listener
- * </UL>
- *
- * <p>Please consult documentation for more details.
- *
- * <p>FIXME: should support more than simple paths for suite xmls
- *
- * @see #usage()
  * @author <a href = "mailto:cedric&#64;beust.com">Cedric Beust</a>
  */
+// FIXME: should support more than simple paths for suite xmls
 @SuppressWarnings({"unused", "unchecked", "rawtypes"})
 public class TestNG {
 
-  /** This class' log4testng Logger. */
+  /** The logger of this class. */
   private static final Logger LOGGER = Logger.getLogger(TestNG.class);
 
-  /** The default name for a suite launched from the command line */
+  /** The default name of a suite that TestNG builds from command line options. */
   public static final String DEFAULT_COMMAND_LINE_SUITE_NAME = "Command line suite";
 
-  /** The default name for a test launched from the command line */
+  /** The default name of a test that TestNG builds from command line options. */
   public static final String DEFAULT_COMMAND_LINE_TEST_NAME = "Command line test";
 
   private static final String DEFAULT_THREADPOOL_FACTORY =
       "org.testng.internal.thread.DefaultThreadPoolExecutorFactory";
 
-  /** The default name of the result's output directory (keep public, used by Eclipse). */
+  /** The default directory for the reports. Keep it public, because the Eclipse plugin uses it. */
   public static final String DEFAULT_OUTPUTDIR = "test-output";
 
-  /** The suite file looked up inside a jar when none was named. */
+  /** The suite file that TestNG looks for in a jar when no path is given. */
   private static final String DEFAULT_XML_PATH_IN_JAR = "testng.xml";
 
-  /** How many suites run at once when none was asked for: one, so suites run sequentially. */
+  /**
+   * The number of suites that run at the same time when no number is given. One means that the
+   * suites run one after another.
+   */
   private static final Integer DEFAULT_SUITE_THREAD_POOL_SIZE = 1;
 
   private static @Nullable TestNG m_instance;
 
   private @Nullable List<String> m_commandLineMethods;
+  /** The suites to run. */
   protected List<XmlSuite> m_suites = new ArrayList<>();
+
   private @Nullable List<XmlSuite> m_cmdlineSuites;
   private String m_outputDir = DEFAULT_OUTPUTDIR;
   private String @Nullable [] m_includedGroups;
   private String @Nullable [] m_excludedGroups;
+  /** Whether TestNG adds its default listeners, such as the default reporters. */
   protected boolean m_useDefaultListeners = true;
+
   private boolean m_failIfAllTestsSkipped = false;
   private final List<String> m_listenersToSkipFromBeingWiredIn = new ArrayList<>();
 
   private @Nullable ITestRunnerFactory m_testRunnerFactory;
 
-  // These listeners can be overridden from the command line
+  // The listeners of the run, one for each class. TestNG ignores a second listener of the same
+  // class, and logs a warning.
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners =
       new LinkedHashMap<>();
   private final Map<Class<? extends ITestListener>, ITestListener> m_testListeners =
@@ -158,9 +153,13 @@ public class TestNG {
   private final Map<Class<? extends IParameterResolver>, IParameterResolver> m_parameterResolvers =
       new LinkedHashMap<>();
 
+  /**
+   * A verbose level of 1. This is the default level when the {@code testng.default.verbose} system
+   * property is not set.
+   */
   public static final Integer DEFAULT_VERBOSE = 1;
 
-  // Command line suite parameters
+  // Settings for the suites that TestNG builds from command line options
   private int m_threadCount = -1;
   private XmlSuite.@Nullable ParallelMode m_parallelMode = null;
   private XmlSuite.@Nullable FailurePolicy m_configFailurePolicy;
@@ -182,7 +181,7 @@ public class TestNG {
   private @Nullable Integer m_dataProviderThreadCount = null;
 
   private @Nullable String m_jarPath;
-  /** The path of the testng.xml file inside the jar file */
+  /** The path of the suite file inside the jar. */
   private String m_xmlPathInJar = DEFAULT_XML_PATH_IN_JAR;
 
   private List<String> m_stringSuites = new ArrayList<>();
@@ -191,7 +190,10 @@ public class TestNG {
   private @Nullable IHookable m_hookable;
   private @Nullable IConfigurable m_configurable;
 
+  /** The time when the run ended, in milliseconds. */
   protected long m_end;
+
+  /** The time when the run started, in milliseconds. */
   protected long m_start;
 
   private final Map<Class<? extends IAlterSuiteListener>, IAlterSuiteListener>
@@ -205,7 +207,7 @@ public class TestNG {
   private final Map<Class<? extends IExecutionVisualiser>, IExecutionVisualiser>
       m_executionVisualisers = new LinkedHashMap<>();
 
-  /** Default constructor. Setting also usage of default listeners/reporters. */
+  /** Creates a TestNG object that uses the default listeners and reporters. */
   public TestNG() {
     init(true);
     if (RuntimeBehavior.isMemoryFriendlyMode()) {
@@ -214,9 +216,11 @@ public class TestNG {
   }
 
   /**
-   * Used by maven2 to have 0 output of any kind come out of testng.
+   * Creates a TestNG object, with or without the default listeners and reporters.
    *
-   * @param useDefaultListeners Whether or not any default reports should be added to tests.
+   * <p>Maven 2 passes {@code false}, so that TestNG writes no output of its own.
+   *
+   * @param useDefaultListeners whether TestNG adds its default listeners and reporters.
    */
   public TestNG(boolean useDefaultListeners) {
     init(useDefaultListeners);
@@ -230,22 +234,49 @@ public class TestNG {
   }
 
   /**
-   * @param failIfAllTestsSkipped - Whether TestNG should enable/disable failing when all the tests
-   *     were skipped and nothing was run (Mostly when a test is powered by a data provider and when
-   *     the data provider itself fails causing all tests to skip).
+   * Sets whether the run fails when TestNG skips every test and runs nothing.
+   *
+   * <p>This happens, for example, when every test throws a {@link SkipException}. With this setting
+   * on, {@link #run()} then throws a {@link TestNGException}. The command line catches it, and
+   * reports the run as failed.
+   *
+   * @param failIfAllTestsSkipped whether the run fails when TestNG skips every test.
    */
   public void toggleFailureIfAllTestsWereSkipped(boolean failIfAllTestsSkipped) {
     this.m_failIfAllTestsSkipped = failIfAllTestsSkipped;
   }
 
   /**
-   * @param listeners - An array of fully qualified class names that should be skipped from being
-   *     wired in via service loaders.
+   * Names the listeners that TestNG must not load through {@link ServiceLoader}.
+   *
+   * @param listeners the full class names of the listeners.
    */
   public void setListenersToSkipFromBeingWiredInViaServiceLoaders(String... listeners) {
     m_listenersToSkipFromBeingWiredIn.addAll(Arrays.asList(listeners));
   }
 
+  /**
+   * Returns the exit status of the run.
+   *
+   * <p>The status is 8 when the run has no test results, not even skipped ones. This method checks
+   * that first, so 8 hides every other value. It hides even a failure that {@link
+   * #reportRunFailure(TestNGException)} recorded (GITHUB-3566).
+   *
+   * <p>Otherwise, the status is the sum of these values:
+   *
+   * <ul>
+   *   <li>1 when a test or a configuration method failed, or when {@link
+   *       #reportRunFailure(TestNGException)} recorded a failure.
+   *   <li>2 when a test or a configuration method was skipped.
+   *   <li>4 when a test failed within its success percentage.
+   * </ul>
+   *
+   * <p>The status is 0 when none of these happened.
+   *
+   * @return the exit status.
+   * @throws NullPointerException when the run has test results, but {@link #run()} threw before it
+   *     finished.
+   */
   public int getStatus() {
     if (exitCodeListener.noTestsFound()) {
       return ExitCode.HAS_NO_TEST;
@@ -254,9 +285,9 @@ public class TestNG {
   }
 
   /**
-   * Sets the output directory where the reports will be created.
+   * Sets the directory where TestNG writes the reports. An empty value changes nothing.
    *
-   * @param outputdir The directory.
+   * @param outputdir the directory.
    */
   public void setOutputDirectory(final String outputdir) {
     if (isStringNotEmpty(outputdir)) {
@@ -265,48 +296,69 @@ public class TestNG {
   }
 
   /**
-   * @param useDefaultListeners If true before run(), the default listeners will not be used.
-   *     <ul>
-   *       <li>org.testng.reporters.TestHTMLReporter
-   *       <li>org.testng.reporters.JUnitXMLReporter
-   *       <li>org.testng.reporters.XMLReporter
-   *     </ul>
+   * Sets whether TestNG adds its default listeners. Call it before {@link #run()}.
    *
-   * @see org.testng.reporters.TestHTMLReporter
-   * @see org.testng.reporters.JUnitXMLReporter
-   * @see org.testng.reporters.XMLReporter
+   * <p>The default listeners include reporters such as these:
+   *
+   * <ul>
+   *   <li>{@link org.testng.reporters.TestHTMLReporter}
+   *   <li>{@link org.testng.reporters.JUnitXMLReporter}
+   *   <li>{@link org.testng.reporters.XMLReporter}
+   * </ul>
+   *
+   * @param useDefaultListeners whether to add the default listeners.
    */
   public void setUseDefaultListeners(boolean useDefaultListeners) {
     m_useDefaultListeners = useDefaultListeners;
   }
 
+  /**
+   * Sets the comparator that orders the listeners.
+   *
+   * @param listenerComparator the comparator.
+   */
   public void setListenerComparator(ListenerComparator listenerComparator) {
     this.m_configuration.setListenerComparator(listenerComparator);
   }
 
   /**
-   * @param listenerComparatorClass a {@link ListenerComparator} implementation, instantiated with
-   *     the object factory currently in use.
+   * Sets the comparator that orders the listeners, by class.
+   *
+   * <p>TestNG creates the comparator with the object factory that it uses at the time of the call.
+   *
+   * @param listenerComparatorClass the class of the comparator.
    */
   public void setListenerComparatorClass(
       Class<? extends ListenerComparator> listenerComparatorClass) {
     setListenerComparator(m_objectFactory.newInstance(listenerComparatorClass));
   }
 
+  /**
+   * Returns the comparator that orders the listeners.
+   *
+   * @return the comparator, or {@code null} when there is none.
+   */
   public @Nullable ListenerComparator getListenerComparator() {
     return m_configuration.getListenerComparator();
   }
 
   /**
-   * Sets a jar containing a testng.xml file.
+   * Sets the jar that holds the tests.
    *
-   * @param jarPath - Path of the jar
+   * <p>TestNG runs the suite file in the jar. When the jar has no suite file, TestNG runs the
+   * classes in the jar.
+   *
+   * @param jarPath the path of the jar, or {@code null}.
    */
   public void setTestJar(@Nullable String jarPath) {
     m_jarPath = jarPath;
   }
 
-  /** @param xmlPathInJar Sets the path to the XML file in the test jar file. */
+  /**
+   * Sets the path of the suite file inside the test jar.
+   *
+   * @param xmlPathInJar the path.
+   */
   public void setXmlPathInJar(String xmlPathInJar) {
     m_xmlPathInJar = xmlPathInJar;
   }
@@ -348,7 +400,7 @@ public class TestNG {
     } catch (IOException e) {
       throw new TestNGException("Failed to parse suite: " + suitePath, e);
     } catch (Exception ex) {
-      // Probably a Yaml exception, unnest it
+      // The parser can wrap the real error, for example a YAML error. Find the deepest cause.
       Throwable t = ex;
       while (t.getCause() != null) {
         t = t.getCause();
@@ -368,7 +420,7 @@ public class TestNG {
         result.add(s);
         continue;
       }
-      // If test names were specified, only run these test names
+      // When test names are given, keep only the tests with those names
       TestNamesMatcher testNamesMatcher =
           new TestNamesMatcher(s, m_testNames, m_ignoreMissedTestNames);
       testNamesMatcher.validateMissMatchedTestNames();
@@ -390,20 +442,27 @@ public class TestNG {
     }
   }
 
+  /**
+   * Builds the list of suites to run. Only the first call does the work.
+   *
+   * <p>When suites are already set, this method parses their {@code <suite-file>} tags. Otherwise,
+   * it parses the suite files given by path, or it reads the suites from the test jar. The suite
+   * files given by path win over the suite file inside the jar.
+   */
   public void initializeSuitesAndJarFile() {
-    // The IntelliJ plug-in might have invoked this method already so don't initialize suites twice.
+    // The IntelliJ plugin can call this method before run(). Do not build the suites twice.
     if (isSuiteInitialized) {
       return;
     }
     isSuiteInitialized = true;
 
     if (!m_suites.isEmpty()) {
-      parseSuiteFiles(); // to parse the suite files (<suite-file>), if any
+      parseSuiteFiles(); // parse the <suite-file> tags, if any
       return;
     }
 
     //
-    // Parse the suites that were passed on the command line
+    // Parse the suite files that were given by path
     //
     for (String suitePath : m_stringSuites) {
       Collection<XmlSuite> allSuites = parseSuite(suitePath);
@@ -411,10 +470,9 @@ public class TestNG {
     }
 
     //
-    // jar path
+    // The jar
     //
-    // If suites were passed on the command line, they take precedence over the suite file
-    // inside that jar path
+    // Suite files given by path win over the suite file inside the jar
     if (m_jarPath != null && !m_stringSuites.isEmpty()) {
       StringBuilder suites = new StringBuilder();
       for (String s : m_stringSuites) {
@@ -430,7 +488,7 @@ public class TestNG {
       return;
     }
 
-    // We have a jar file and no XML file was specified: try to find an XML file inside the jar
+    // There is a jar, and no suite file was given. Look for a suite file inside the jar.
     File jarFile =
         new File(
             Objects.requireNonNull(m_jarPath, "a jar suite is only read once -testjar was given"));
@@ -444,11 +502,16 @@ public class TestNG {
     m_suites.addAll(allSuites);
   }
 
-  /** @param threadCount Define the number of threads in the thread pool. */
+  /**
+   * Sets the number of threads that run tests in parallel.
+   *
+   * @param threadCount the number of threads, at least 1.
+   * @throws TestNGException when {@code threadCount} is less than 1.
+   */
   public void setThreadCount(int threadCount) {
     if (threadCount < 1) {
-      // Reported rather than fatal: killing the JVM from a setter breaks every embedder, and
-      // TestNG#main is the one place allowed to turn a bad value into an exit code.
+      // Throw, and do not stop the JVM. A setter that stops the JVM breaks every program that
+      // embeds TestNG. Only TestNG#main may turn a bad value into an exit code.
       throw new TestNGException(
           "Cannot use a threadCount parameter less than 1; 1 > " + threadCount);
     }
@@ -457,19 +520,34 @@ public class TestNG {
   }
 
   /**
-   * @param parallel Define whether this run will be run in parallel mode.
-   * @deprecated Use #setParallel(XmlSuite.ParallelMode) instead
+   * Sets the parallel mode, by name.
+   *
+   * @param parallel the name of the mode, such as {@code methods} or {@code classes}.
+   * @deprecated Use {@link #setParallel(XmlSuite.ParallelMode)} instead.
    */
   @Deprecated
-  // TODO: krmahadevan: This method is being used by Gradle. Removal causes build failures.
+  // TODO: krmahadevan: Gradle uses this method. Removing it breaks the Gradle build.
   public void setParallel(String parallel) {
     setParallel(XmlSuite.ParallelMode.getValidParallel(parallel));
   }
 
+  /**
+   * Sets the parallel mode. It overrides the mode in the suite files.
+   *
+   * @param parallel the mode.
+   */
   public void setParallel(XmlSuite.ParallelMode parallel) {
     m_parallelMode = parallel;
   }
 
+  /**
+   * Adds a suite, and treats it as a suite built from command line options.
+   *
+   * <p>TestNG applies the thread count, the parallel mode, the configuration failure policy and the
+   * groups of this object to it.
+   *
+   * @param suite the suite.
+   */
   public void setCommandLineSuite(XmlSuite suite) {
     m_cmdlineSuites = new ArrayList<>();
     m_cmdlineSuites.add(suite);
@@ -477,13 +555,15 @@ public class TestNG {
   }
 
   /**
-   * Set the test classes to be run by this TestNG object. This method will create a dummy suite
-   * that will wrap these classes called "Command Line Test".
+   * Sets the test classes to run.
    *
-   * <p>If used together with threadCount, parallel, groups, excludedGroups than this one must be
-   * set first.
+   * <p>When the run starts, TestNG builds a suite around these classes. The suite and the test get
+   * the default names, unless a class gives its own names in {@code @Test(suiteName, testName)}.
+   * This method removes the suites that you set before as {@link XmlSuite} objects, for example
+   * with {@link #setXmlSuites(List)}. It keeps the paths that you set with {@link
+   * #setTestSuites(List)}, so TestNG runs those suite files too.
    *
-   * @param classes An array of classes that contain TestNG annotations.
+   * @param classes the classes that hold TestNG annotations.
    */
   public void setTestClasses(Class[] classes) {
     m_suites.clear();
@@ -491,8 +571,10 @@ public class TestNG {
   }
 
   /**
-   * Given a string com.example.Foo.f1, return an array where [0] is the class and [1] is the
-   * method.
+   * Splits a full method name, such as {@code com.example.Foo.f1}, into the class name and the
+   * method name. A {@code *} in the method name becomes the regular expression {@code .*}.
+   *
+   * @throws TestNGException when the name has no dot.
    */
   private String[] splitMethod(String m) {
     int index = m.lastIndexOf(".");
@@ -505,13 +587,15 @@ public class TestNG {
   }
 
   /**
-   * @return a list of XmlSuite objects that represent the list of classes and methods passed in
-   *     parameter.
-   * @param commandLineMethods a string with the form "com.example.Foo.f1,com.example.Bar.f2"
+   * Builds the suites for a list of methods. Each class gets an {@code <include>} for each of its
+   * methods in the list.
+   *
+   * @param commandLineMethods full method names, such as {@code com.example.Foo.f1}.
+   * @return the suites.
    */
   private List<XmlSuite> createCommandLineSuitesForMethods(List<String> commandLineMethods) {
     //
-    // Create the <classes> tag
+    // Collect the classes of the methods
     //
     Set<Class> classes = new HashSet<>();
     for (String m : commandLineMethods) {
@@ -524,7 +608,7 @@ public class TestNG {
     List<XmlSuite> result = createCommandLineSuitesForClasses(classes.toArray(new Class[0]));
 
     //
-    // Add the method tags
+    // Add an <include> for each method
     //
     List<XmlClass> xmlClasses = new ArrayList<>();
     for (XmlSuite s : result) {
@@ -549,9 +633,8 @@ public class TestNG {
 
   private List<XmlSuite> createCommandLineSuitesForClasses(Class[] classes) {
     //
-    // See if any of the classes has an xmlSuite or xmlTest attribute.
-    // If it does, create the appropriate XmlSuite, otherwise, create
-    // the default one
+    // A class can name its suite and its test in @Test(suiteName, testName). Put each class in the
+    // suite and the test that it names, or in the default ones.
     //
 
     XmlClass[] xmlClasses =
@@ -597,77 +680,146 @@ public class TestNG {
     return new ArrayList<>(suites.values());
   }
 
+  /**
+   * Adds a method selector, by class name.
+   *
+   * @param className the class name of an {@link IMethodSelector}. A {@code null} or empty name
+   *     changes nothing.
+   * @param priority the priority of the selector. TestNG asks the selectors in order of priority,
+   *     lowest first.
+   */
   public void addMethodSelector(@Nullable String className, int priority) {
     if (Strings.isNotNullAndNotEmpty(className)) {
       m_methodDescriptors.put(className, priority);
     }
   }
 
+  /**
+   * Adds a method selector, as a {@code <method-selector>} tag of a suite file does.
+   *
+   * @param selector the method selector.
+   */
   public void addMethodSelector(XmlMethodSelector selector) {
     m_selectors.add(selector);
   }
 
+  /**
+   * Sets whether TestNG reports each data provider row of a test method as its own skip. This
+   * applies when TestNG skips the method because of its dependencies.
+   *
+   * @param reportAllDataDrivenTestsAsSkipped whether to report each row as its own skip.
+   */
   public void setReportAllDataDrivenTestsAsSkipped(boolean reportAllDataDrivenTestsAsSkipped) {
     this.m_configuration.setReportAllDataDrivenTestsAsSkipped(reportAllDataDrivenTestsAsSkipped);
   }
 
+  /**
+   * Tells if TestNG reports each data provider row of a skipped test method as its own skip.
+   *
+   * @return {@code true} when TestNG reports each row as its own skip.
+   */
   public boolean getReportAllDataDrivenTestsAsSkipped() {
     return this.m_configuration.getReportAllDataDrivenTestsAsSkipped();
   }
 
+  /** Makes TestNG report a data provider failure as a test failure. */
   public void propagateDataProviderFailureAsTestFailure() {
     this.m_configuration.propagateDataProviderFailureAsTestFailure();
   }
 
+  /**
+   * Tells if TestNG reports a data provider failure as a test failure.
+   *
+   * @return {@code true} when TestNG reports it as a test failure.
+   */
   public boolean isPropagateDataProviderFailureAsTestFailure() {
     return this.m_configuration.isPropagateDataProviderFailureAsTestFailure();
   }
 
+  /**
+   * Sets whether the data providers of a suite share one thread pool.
+   *
+   * @param flag whether to share one thread pool.
+   */
   public void shareThreadPoolForDataProviders(boolean flag) {
     this.m_configuration.shareThreadPoolForDataProviders(flag);
   }
 
+  /**
+   * Tells if the data providers of a suite share one thread pool.
+   *
+   * @return {@code true} when they share one thread pool.
+   */
   public boolean isShareThreadPoolForDataProviders() {
     return this.m_configuration.isShareThreadPoolForDataProviders();
   }
 
+  /**
+   * Tells if the tests of a suite, with or without a data provider, share one thread pool.
+   *
+   * @return {@code true} when they share one thread pool.
+   */
   public boolean useGlobalThreadPool() {
     return this.m_configuration.useGlobalThreadPool();
   }
 
+  /**
+   * Sets whether the tests of a suite, with or without a data provider, share one thread pool.
+   *
+   * @param flag whether to share one thread pool.
+   */
   public void shouldUseGlobalThreadPool(boolean flag) {
     this.m_configuration.shouldUseGlobalThreadPool(flag);
   }
 
   /**
-   * Enables (or disables) lazy, just-in-time instantiation of {@code @Factory} produced test class
-   * instances at the runner level. This is the broadest opt-in; it is overridden by the suite level
-   * {@code lazy-factory} attribute and by the {@code @Factory(lazy=...)} annotation. Honored only
-   * for constructor based factories.
+   * Sets whether TestNG creates the instances of a {@code @Factory} only when it needs them.
    *
-   * @param flag - {@code true} to instantiate factory instances lazily by default.
+   * <p>This setting covers the whole run. The {@code lazy-factory} attribute of a suite overrides
+   * it, and {@code @Factory(lazy = ...)} overrides both. It applies only to a {@code @Factory} on a
+   * constructor.
+   *
+   * @param flag {@code true} to create the instances late by default.
    */
   public void setLazyFactoryInstantiation(boolean flag) {
     this.m_configuration.setLazyFactoryInstantiation(flag);
   }
 
+  /**
+   * Tells if TestNG creates the instances of a {@code @Factory} only when it needs them, by
+   * default.
+   *
+   * @return {@code true} when TestNG creates the instances late by default.
+   */
   public boolean isLazyFactoryInstantiation() {
     return this.m_configuration.isLazyFactoryInstantiation();
   }
 
+  /**
+   * Returns what TestNG does with a test method whose data provider returns no rows.
+   *
+   * @return the behavior.
+   */
   public EmptyDataProviderBehavior getEmptyDataProviderBehavior() {
     return this.m_configuration.getEmptyDataProviderBehavior();
   }
 
+  /**
+   * Sets what TestNG does with a test method whose data provider returns no rows.
+   *
+   * @param emptyDataProviderBehavior the behavior.
+   */
   public void setEmptyDataProviderBehavior(EmptyDataProviderBehavior emptyDataProviderBehavior) {
     this.m_configuration.setEmptyDataProviderBehavior(emptyDataProviderBehavior);
   }
 
   /**
-   * Set the suites file names to be run by this TestNG object. This method tries to load and parse
-   * the specified TestNG suite xml files. If a file is missing, it is ignored.
+   * Sets the paths of the suite files to run.
    *
-   * @param suites A list of paths to one more XML files defining the tests. For example:
+   * <p>TestNG parses the files when the run starts. When a file is missing, {@link #run()} throws a
+   * {@link TestNGException}.
+   *
+   * @param suites the paths of one or more suite files. For example:
    *     <pre>
    * TestNG tng = new TestNG();
    * List&lt;String&gt; suites = new ArrayList&lt;&gt;();
@@ -682,62 +834,89 @@ public class TestNG {
   }
 
   /**
-   * Specifies the XmlSuite objects to run.
+   * Sets the suites to run, as {@link XmlSuite} objects.
    *
-   * @param suites - The list of {@link XmlSuite} objects.
-   * @see org.testng.xml.XmlSuite
+   * <p>TestNG uses the list that you pass, not a copy.
+   *
+   * @param suites the suites.
    */
   public void setXmlSuites(List<XmlSuite> suites) {
     m_suites = suites;
   }
 
   /**
-   * Define which groups will be excluded from this run.
+   * Sets the groups to leave out of the run. They override the groups in the suite files.
    *
-   * @param groups A list of group names separated by a comma.
+   * @param groups the group names, separated by commas.
    */
   public void setExcludedGroups(@Nullable String groups) {
     m_excludedGroups = Utils.split(groups, ",");
   }
 
   /**
-   * Define which groups will be included from this run.
+   * Sets the groups to run. They override the groups in the suite files.
    *
-   * @param groups A list of group names separated by a comma.
+   * @param groups the group names, separated by commas.
    */
   public void setGroups(@Nullable String groups) {
     m_includedGroups = Utils.split(groups, ",");
   }
 
+  /**
+   * Sets the factory that creates the {@link TestRunner} of each {@code <test>}, by class.
+   *
+   * <p>TestNG creates the factory with the object factory that it uses at the time of the call.
+   *
+   * @param testRunnerFactoryClass the class of the factory.
+   */
   public void setTestRunnerFactoryClass(
       Class<? extends ITestRunnerFactory> testRunnerFactoryClass) {
     setTestRunnerFactory(m_objectFactory.newInstance(testRunnerFactoryClass));
   }
 
+  /**
+   * Sets the factory that creates the {@link TestRunner} of each {@code <test>}.
+   *
+   * @param itrf the factory.
+   */
   protected void setTestRunnerFactory(ITestRunnerFactory itrf) {
     m_testRunnerFactory = itrf;
   }
 
+  /**
+   * Sets the object factory, by class.
+   *
+   * <p>TestNG creates the new factory with the object factory that it uses at the time of the call.
+   *
+   * @param c the class of the object factory.
+   */
   public void setObjectFactory(Class<? extends ITestObjectFactory> c) {
     setObjectFactory(m_objectFactory.newInstance(c));
   }
 
+  /**
+   * Sets the factory that TestNG uses to create objects, such as the instances of test classes.
+   *
+   * @param factory the object factory.
+   */
   public void setObjectFactory(ITestObjectFactory factory) {
     m_objectFactory = factory;
   }
 
   /**
-   * Define which listeners to user for this run.
+   * Sets the listener classes of the run.
    *
-   * @param classes A list of classes, which must be either ISuiteListener, ITestListener or
-   *     IReporter
+   * <p>With a listener factory, TestNG creates the listeners at once. Without one, TestNG creates
+   * them when it has a suite, so that a listener can use the Guice parent module of that suite.
+   *
+   * @param classes the listener classes. Each one implements {@link ITestNGListener}.
    */
   public void setListenerClasses(List<Class<? extends ITestNGListener>> classes) {
     ITestNGListenerFactory factory = m_configuration.getListenerFactory();
     if (factory == null) {
-      // CLI configure() calls this before setTestSuites(), so m_suites is still
-      // empty. Remember the classes and instantiate them once the suite exists,
-      // so a -listener can inherit that suite's Guice parent-module.
+      // The command line configure() calls this before setTestSuites(), so m_suites is still
+      // empty. Keep the classes, and create the listeners when a suite exists. Then a -listener
+      // can use the Guice parent module of that suite.
       m_listenerClasses.addAll(classes);
       if (!m_suites.isEmpty()) {
         instantiatePendingListenerClasses();
@@ -771,10 +950,15 @@ public class TestNG {
   }
 
   /**
-   * @param listener The listener to add
-   * @deprecated Use addListener(ITestNGListener) instead
+   * Adds a listener of any type.
+   *
+   * <p>When the object is not an {@link ITestNGListener}, this method prints an error and stops the
+   * JVM.
+   *
+   * @param listener the listener to add.
+   * @deprecated Use {@link #addListener(ITestNGListener)} instead.
    */
-  // TODO remove later /!\ Caution: IntelliJ is using it. Check with @akozlova before removing it
+  // TODO: remove this method later. Caution: IntelliJ uses it. Check with @akozlova first.
   @Deprecated
   public void addListener(Object listener) {
     if (!(listener instanceof ITestNGListener)) {
@@ -798,6 +982,19 @@ public class TestNG {
     }
   }
 
+  /**
+   * Adds a listener to the run.
+   *
+   * <p>A listener can implement several listener interfaces. TestNG adds it for each of them. For
+   * most interfaces, TestNG keeps one listener of each class. It ignores a second listener of the
+   * same class, and logs a warning. An {@link IAnnotationTransformer} replaces the transformer that
+   * TestNG had before.
+   *
+   * <p>TestNG ignores a {@code null} listener, and a listener whose {@link
+   * ITestNGListener#isEnabled()} returns {@code false}.
+   *
+   * @param listener the listener to add.
+   */
   public void addListener(ITestNGListener listener) {
     if (listener == null) {
       return;
@@ -865,23 +1062,35 @@ public class TestNG {
     }
   }
 
+  /**
+   * Returns the reporters of the run.
+   *
+   * @return a copy, in no set order.
+   */
   public Set<IReporter> getReporters() {
-    // This will now cause a different behavior for consumers of this method because unlike before
-    // they are no longer
-    // going to be getting the original set but only a copy of it (since we internally moved from
-    // Sets to Maps)
+    // Return a copy. TestNG keeps the reporters in a map, by class, so there is no set to share.
     return new HashSet<>(m_reporters.values());
   }
 
+  /**
+   * Returns the test listeners of the run.
+   *
+   * @return a copy, in the order in which they were added.
+   */
   public List<ITestListener> getTestListeners() {
     return new ArrayList<>(m_testListeners.values());
   }
 
+  /**
+   * Returns the suite listeners of the run.
+   *
+   * @return a copy, in the order in which they were added.
+   */
   public List<ISuiteListener> getSuiteListeners() {
     return new ArrayList<>(m_suiteListeners.values());
   }
 
-  /** If m_verbose gets set, it will override the verbose setting in testng.xml */
+  /** The verbose level. When it is set, it overrides the verbose level of the suite files. */
   private @Nullable Integer m_verbose = null;
 
   private final IAnnotationTransformer m_defaultAnnoProcessor = new DefaultAnnotationTransformer();
@@ -891,7 +1100,7 @@ public class TestNG {
 
   private final List<IMethodInterceptor> m_methodInterceptors = new ArrayList<>();
 
-  /** The list of test names to run from the given suite */
+  /** The names of the {@code <test>} tags to run from the suites. */
   private @Nullable List<String> m_testNames;
 
   private boolean m_ignoreMissedTestNames;
@@ -909,42 +1118,63 @@ public class TestNG {
   private IConfiguration m_configuration;
 
   /**
-   * Sets the level of verbosity. This value will override the value specified in the test suites.
+   * Sets the verbose level. It overrides the level in the suite files.
    *
-   * @param verbose the verbosity level (0 to 10 where 10 is most detailed) Actually, this is a lie:
-   *     you can specify -1 and this will put TestNG in debug mode (no longer slicing off stack
-   *     traces and all).
+   * @param verbose the level, from 0 to 10, where 10 prints the most detail. The value -1 puts
+   *     TestNG in debug mode, which prints full stack traces.
    */
   public void setVerbose(int verbose) {
     m_verbose = verbose;
   }
 
+  /**
+   * Sets the factory that creates the thread pools of TestNG.
+   *
+   * @param factory the factory.
+   * @throws NullPointerException when {@code factory} is {@code null}.
+   */
   public void setExecutorServiceFactory(IExecutorServiceFactory factory) {
     m_configuration.setExecutorServiceFactory(
         Objects.requireNonNull(factory, "ExecutorServiceFactory cannot be null"));
   }
 
   /**
-   * @param factoryClass an {@link IExecutorServiceFactory} implementation, instantiated with the
-   *     object factory currently in use.
+   * Sets the factory that creates the thread pools of TestNG, by class.
+   *
+   * <p>TestNG creates the factory with the object factory that it uses at the time of the call.
+   *
+   * @param factoryClass the class of the factory.
    */
   public void setExecutorServiceFactoryClass(
       Class<? extends IExecutorServiceFactory> factoryClass) {
     setExecutorServiceFactory(m_objectFactory.newInstance(factoryClass));
   }
 
+  /**
+   * Sets the factory that creates the listeners of {@link #setListenerClasses(List)}.
+   *
+   * @param factory the listener factory.
+   */
   public void setListenerFactory(ITestNGListenerFactory factory) {
     this.m_configuration.setListenerFactory(factory);
   }
 
   /**
-   * @param factoryClass an {@link ITestNGListenerFactory} implementation, instantiated with the
-   *     object factory currently in use.
+   * Sets the factory that creates the listeners, by class.
+   *
+   * <p>TestNG creates the factory with the object factory that it uses at the time of the call.
+   *
+   * @param factoryClass the class of the factory.
    */
   public void setListenerFactoryClass(Class<? extends ITestNGListenerFactory> factoryClass) {
     setListenerFactory(m_objectFactory.newInstance(factoryClass));
   }
 
+  /**
+   * Sets whether TestNG writes the results of each suite to its own directory.
+   *
+   * @param generateResultsPerSuite whether to use one directory for each suite.
+   */
   public void setGenerateResultsPerSuite(boolean generateResultsPerSuite) {
     this.m_generateResultsPerSuite = generateResultsPerSuite;
   }
@@ -990,8 +1220,7 @@ public class TestNG {
   }
 
   private void initializeCommandLineSuitesGroups() {
-    // If groups were specified on the command line, they should override groups
-    // specified in the XML file
+    // Groups given to this object override the groups in the suite files
     List<XmlSuite> suites = m_cmdlineSuites != null ? m_cmdlineSuites : m_suites;
     for (XmlSuite s : suites) {
       initializeCommandLineSuitesGroups(s, m_includedGroups, m_excludedGroups);
@@ -1039,27 +1268,26 @@ public class TestNG {
     }
   }
 
-  // Identity on purpose, for the one comparison below that is not a null test.
-  // DEFAULT_OBJECT_FACTORY is a sentinel meaning "no suite has named a factory yet", and a suite
-  // that names one replaces it with an instance of a user class whose equals TestNG does not own.
+  // Compare with == on purpose, in the one check that is not a null check. DEFAULT_OBJECT_FACTORY
+  // is a marker that means "no suite has named a factory yet". A suite that names one replaces it
+  // with an object of a user class, and TestNG does not own the equals() of that class.
   @SuppressWarnings("ReferenceEquality")
   private void initializeConfiguration() {
     ITestObjectFactory factory = m_objectFactory;
     //
-    // Install the listeners found in ServiceLoader (or use the class
-    // loader for tests, if specified).
+    // Add the listeners that ServiceLoader finds. Use the class loader for tests, when one is set.
     //
     addServiceLoaderListeners();
     instantiatePendingListenerClasses();
 
     //
-    // Install the listeners found in the suites
+    // Add the listeners that the suites name
     //
     for (XmlSuite s : m_suites) {
       addListeners(s);
 
       //
-      // Install the method selectors
+      // Add the method selectors of the suite
       //
       for (XmlMethodSelector methodSelector : s.getMethodSelectors()) {
         addMethodSelector(methodSelector.getClassName(), methodSelector.getPriority());
@@ -1067,7 +1295,7 @@ public class TestNG {
       }
 
       //
-      // Find if we have an object factory
+      // Use the object factory that a suite names, if any. Only one suite may name one.
       //
       if (s.getObjectFactoryClass() != null) {
         if (factory != DEFAULT_OBJECT_FACTORY) {
@@ -1090,7 +1318,7 @@ public class TestNG {
     for (String listenerName : s.getListeners()) {
       Class<?> listenerClass = ClassHelper.forName(listenerName);
 
-      // If specified listener does not exist, a TestNGException will be thrown
+      // Fail when the listener class is not on the class path
       if (listenerClass == null) {
         throw new TestNGException(
             "Listener " + listenerName + " was not found in project's classpath");
@@ -1104,14 +1332,14 @@ public class TestNG {
       }
     }
 
-    // Add the child suite listeners
+    // Add the listeners of the child suites
     List<XmlSuite> childSuites = s.getChildSuites();
     for (XmlSuite c : childSuites) {
       addListeners(c);
     }
   }
 
-  /** Using reflection to remain Java 5 compliant. */
+  /** Adds the listeners that {@link ServiceLoader} finds, except the ones to skip. */
   private void addServiceLoaderListeners() {
     Iterable<ITestNGListener> loader =
         m_serviceLoaderClassLoader != null
@@ -1129,20 +1357,27 @@ public class TestNG {
   }
 
   /**
-   * Before suites are executed, do a sanity check to ensure all required conditions are met. If
-   * not, throw an exception to stop test execution
+   * Checks the suites before they run.
    *
-   * @throws TestNGException if the sanity check fails
+   * <p>It fails when a suite has two tests with the same name. It also renames suites, so that each
+   * suite name is unique.
+   *
+   * @throws TestNGException when a check fails.
    */
   private void sanityCheck() {
     XmlSuiteUtils.validateIfSuitesContainDuplicateTests(m_suites);
     XmlSuiteUtils.adjustSuiteNamesToEnsureUniqueness(m_suites);
   }
 
-  /** Invoked by the remote runner. */
+  /**
+   * Prepares the suites, the configuration, the default listeners and the command line suites of
+   * the run. Only the first call does the work.
+   *
+   * <p>{@link #run()} calls this method. The remote runner of the Eclipse plugin can call it before
+   * that.
+   */
   public void initializeEverything() {
-    // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
-    // so don't initialize suites twice.
+    // The Eclipse plugin (RemoteTestNG) can call this method before run(). Do not prepare twice.
     if (m_isInitialized) {
       return;
     }
@@ -1157,7 +1392,13 @@ public class TestNG {
     m_isInitialized = true;
   }
 
-  /** Run TestNG. */
+  /**
+   * Runs the suites and writes the reports.
+   *
+   * <p>It calls the {@link IExecutionListener} listeners before and after the run. It calls the
+   * {@link IAlterSuiteListener} listeners before the suites run. After this method returns, {@link
+   * #getStatus()} gives the result.
+   */
   public void run() {
     initializeEverything();
     sanityCheck();
@@ -1176,7 +1417,7 @@ public class TestNG {
       try {
         generateReports(suiteRunners);
       } finally {
-        // The reporters are the last thing that can read a reporting snapshot.
+        // The reporters are the last readers of the parameter snapshots.
         suiteRunners.forEach(ParameterSnapshots::detachFrom);
       }
     }
@@ -1195,13 +1436,12 @@ public class TestNG {
   }
 
   /**
-   * Run the test suites.
+   * Runs the suites.
    *
-   * <p>This method can be overridden by subclass. <br>
-   * For example, DistributedTestNG to run in master/slave mode according to commandline args.
+   * <p>A subclass can override this method, for example to run the suites on other machines.
    *
-   * @return - List of suites that were run as {@link ISuite} objects.
-   * @since 6.9.11 when moving distributed/remote classes out into separate project
+   * @return the suites that ran.
+   * @since 6.9.11
    */
   protected List<ISuite> runSuites() {
     return runSuitesLocally();
@@ -1223,7 +1463,7 @@ public class TestNG {
       for (IExecutionListener l : executionListeners) {
         l.onExecutionStart();
       }
-      // Invoke our exit code listener after all the user's listeners have run.
+      // Call the exit code listener of TestNG after all the user listeners.
       exitCodeListener.onExecutionStart();
     } else {
       List<IExecutionListener> executionListenersReversed =
@@ -1232,24 +1472,24 @@ public class TestNG {
       for (IExecutionListener l : executionListenersReversed) {
         l.onExecutionFinish();
       }
-      // Invoke our exit code listener after all the user's listeners have run.
+      // Call the exit code listener of TestNG after all the user listeners.
       exitCodeListener.onExecutionFinish();
     }
   }
 
   private static void usage() {
-    // find() rather than required(): printing usage must never be the thing that fails.
+    // Use find(), not required(). Printing the usage text must never fail.
     ITestNGCliRunner runner = CliRunners.find();
     if (runner != null) {
       try {
         runner.usage();
         return;
       } catch (RuntimeException ignored) {
-        // A third party runner must not break the callers of usage(), which include plain Java API
-        // paths such as runSuitesLocally(). Fall through to the built-in banner.
+        // A runner from another vendor must not break the callers of usage(). Those include plain
+        // Java API paths, such as runSuitesLocally(). Print the built-in text instead.
       }
     }
-    // Written to stdout, like the banner a command line runner produces.
+    // Print to standard output, as a command line runner does.
     System.out.println(
         "Usage: java "
             + TestNG.class.getName()
@@ -1261,8 +1501,8 @@ public class TestNG {
 
   private void generateReports(List<ISuite> suiteRunners) {
     List<IReporter> reporters = new ArrayList<>(m_reporters.values());
-    // Add our Exit code listener as the last of the reporter so that we can still accommodate
-    // whatever changes were done by a user's reporting listener
+    // Add the exit code listener as the last reporter. Then it sees any change that a user
+    // reporter made.
     reporters.add(exitCodeListener);
     for (IReporter reporter : reporters) {
       try {
@@ -1280,9 +1520,12 @@ public class TestNG {
   }
 
   /**
-   * This needs to be public for maven2, for now..At least until an alternative mechanism is found.
+   * Runs the suites in this JVM, in sequence or in parallel.
    *
-   * @return The locally run suites
+   * <p>This method is public because Maven 2 calls it.
+   *
+   * @return the suites that ran. When there is no suite, TestNG logs an error, prints the usage
+   *     text, and returns an empty list.
    */
   public List<ISuite> runSuitesLocally() {
     if (m_suites.isEmpty()) {
@@ -1297,8 +1540,8 @@ public class TestNG {
       Version.displayBanner();
     }
 
-    // First initialize the suite runners to ensure there are no configuration issues.
-    // Create a map with XmlSuite as key and corresponding SuiteRunner as value
+    // Create all the suite runners first, so that TestNG finds a configuration problem before any
+    // suite runs. The map gives the runner of each suite.
     for (XmlSuite xmlSuite : m_suites) {
       if (m_configuration.isShareThreadPoolForDataProviders()) {
         xmlSuite.setShareThreadPoolForDataProviders(true);
@@ -1309,29 +1552,27 @@ public class TestNG {
       createSuiteRunners(suiteRunnerMap, xmlSuite);
     }
 
-    // Every reporter of the run is known by now -- the ones a suite declared arrived with it, and
-    // createSuiteRunner() folded them in -- and no suite has started, which is what a reporting
-    // snapshot has to be requested before. The reporters registered on a TestRunner instead ask for
-    // themselves; see ParameterSnapshotReader.
+    // TestNG knows every reporter of the run by now, including the ones that the suites named. No
+    // suite has started yet, and a reporter must ask for parameter snapshots before that. The
+    // reporters of a TestRunner ask for snapshots themselves. See ParameterSnapshotReader.
     ParameterSnapshotReader.requestCaptureIfAnyReads(m_reporters.values(), suiteRunnerMap.values());
 
     //
-    // Run suites
+    // Run the suites
     //
     if (m_suiteThreadPoolSize == 1 && !m_randomizeSuites) {
-      // Single threaded and not randomized: run the suites in order
+      // With one thread and no random order, run the suites in order
       for (XmlSuite xmlSuite : m_suites) {
         runSuitesSequentially(
             xmlSuite, suiteRunnerMap, getVerbose(xmlSuite), getDefaultSuiteName());
       }
       //
-      // Generate the suites report
+      // Return the suite runners. run() writes the reports.
       //
       return new ArrayList<>(suiteRunnerMap.values());
     }
-    // Multithreaded: generate a dynamic graph that stores the suite hierarchy. This is then
-    // used to run related suites in specific order. Parent suites are run only
-    // once all the child suites have completed execution
+    // With more than one thread, or with random order, build a graph of the suites. A parent suite
+    // runs only after all its child suites finish.
     IDynamicGraph<ISuite> suiteGraph = new DynamicGraph<>();
     for (XmlSuite xmlSuite : m_suites) {
       populateSuiteGraph(suiteGraph, suiteRunnerMap, xmlSuite);
@@ -1351,7 +1592,7 @@ public class TestNG {
     taskExecutor.awaitCompletion();
 
     //
-    // Generate the suites report
+    // Return the suite runners. run() writes the reports.
     //
     return new ArrayList<>(suiteRunnerMap.values());
   }
@@ -1361,8 +1602,12 @@ public class TestNG {
   }
 
   /**
-   * @return the verbose level, checking in order: the verbose level on the suite, the verbose level
-   *     on the TestNG object, or 1.
+   * Returns the verbose level for a suite.
+   *
+   * <p>It takes the level of the suite, then the level of this object, then the default level. The
+   * {@code testng.default.verbose} system property sets the default level, which is 1 without it.
+   *
+   * @return the verbose level.
    */
   private int getVerbose(XmlSuite xmlSuite) {
     return xmlSuite.getVerbose() != null
@@ -1371,13 +1616,14 @@ public class TestNG {
   }
 
   /**
-   * Recursively runs suites. Runs the children suites before running the parent suite. This is done
-   * so that the results for parent suite can reflect the combined results of the children suites.
+   * Runs a suite after its child suites.
    *
-   * @param xmlSuite XML Suite to be executed
-   * @param suiteRunnerMap Maps {@code XmlSuite}s to respective {@code ISuite}
-   * @param verbose verbose level
-   * @param defaultSuiteName default suite name
+   * <p>The child suites run first, so that the results of the parent suite can include theirs.
+   *
+   * @param xmlSuite the suite to run.
+   * @param suiteRunnerMap the map that gives the runner of each suite.
+   * @param verbose the verbose level.
+   * @param defaultSuiteName the name to print for a suite with no file.
    */
   private void runSuitesSequentially(
       XmlSuite xmlSuite, SuiteRunnerMap suiteRunnerMap, int verbose, String defaultSuiteName) {
@@ -1391,13 +1637,13 @@ public class TestNG {
   }
 
   /**
-   * Populates the dynamic graph with the reverse hierarchy of suites. Edges are added pointing from
-   * child suite runners to parent suite runners, hence making parent suite runners dependent on all
-   * the child suite runners
+   * Adds a suite and its child suites to the graph.
    *
-   * @param suiteGraph dynamic graph representing the reverse hierarchy of SuiteRunners
-   * @param suiteRunnerMap Map with XMLSuite as key and its respective SuiteRunner as value
-   * @param xmlSuite XML Suite
+   * <p>In the graph, each parent suite depends on its child suites, so the child suites run first.
+   *
+   * @param suiteGraph the graph to fill.
+   * @param suiteRunnerMap the map that gives the runner of each suite.
+   * @param xmlSuite the suite to add.
    */
   private void populateSuiteGraph(
       IDynamicGraph<ISuite> suiteGraph /* OUT */,
@@ -1414,20 +1660,21 @@ public class TestNG {
   }
 
   /**
-   * Creates the {@code SuiteRunner}s and populates the suite runner map with this information
+   * Creates the runners of a suite and of its child suites, and adds them to the map.
    *
-   * @param suiteRunnerMap Map with XMLSuite as key and it's respective SuiteRunner as value. This
-   *     is updated as part of this method call
-   * @param xmlSuite Xml Suite (and its children) for which {@code SuiteRunner}s are created
+   * <p>First, this method copies settings of this object into the suite, such as the verbose level.
+   *
+   * @param suiteRunnerMap the map that gives the runner of each suite. This method adds to it.
+   * @param xmlSuite the suite.
    */
   private void createSuiteRunners(SuiteRunnerMap suiteRunnerMap /* OUT */, XmlSuite xmlSuite) {
-    // If the skip flag was invoked on the command line, it
-    // takes precedence
+    // A skip setting on this object overrides the setting of the suite. Note: the default value,
+    // false, is not null, so it overrides the suite too.
     if (null != m_skipFailedInvocationCounts) {
       xmlSuite.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
     }
 
-    // Override the XmlSuite verbose value with the one from TestNG
+    // Override the verbose level of the suite with the one of this object
     if (m_verbose != null) {
       xmlSuite.setVerbose(m_verbose);
     }
@@ -1459,7 +1706,7 @@ public class TestNG {
     }
   }
 
-  /** Creates a suite runner and configures its initial state */
+  /** Creates the runner of a suite, with the listeners of this object. */
   private SuiteRunner createSuiteRunner(XmlSuite xmlSuite) {
     DataProviderHolder holder = new DataProviderHolder(m_configuration);
     holder.addListeners(m_dataProviderListeners.values());
@@ -1499,20 +1746,25 @@ public class TestNG {
     return result;
   }
 
+  /**
+   * Returns the configuration of the run.
+   *
+   * @return the configuration.
+   */
   protected IConfiguration getConfiguration() {
     return m_configuration;
   }
 
   /**
-   * The TestNG entry point for command line execution.
+   * Runs TestNG from the command line, then stops the JVM with the exit status of the run.
    *
-   * <p>Kept working so that {@code java -cp testng.jar org.testng.TestNG suite.xml} keeps behaving
-   * as before: it hands {@code argv} over to the {@link ITestNGCliRunner} found on the classpath.
+   * <p>It passes {@code argv} to the {@link ITestNGCliRunner} on the class path. So {@code java -cp
+   * testng.jar org.testng.TestNG suite.xml} still works.
    *
-   * @param argv the TestNG command line parameters.
-   * @deprecated since 7.13. The command line front end now lives in its own modules; invoke {@code
-   *     org.testng.cli.jcommander.JCommanderCliRunner} (or any other {@link ITestNGCliRunner})
-   *     directly, or drive TestNG through its Java API. Scheduled for removal in 8.0.
+   * @param argv the TestNG command line arguments.
+   * @deprecated since 7.13. The command line code is in its own modules. Call {@code
+   *     org.testng.cli.jcommander.JCommanderCliRunner}, or another {@link ITestNGCliRunner},
+   *     directly. Or use the Java API of TestNG. TestNG 8.0 will remove this method.
    */
   @Deprecated
   public static void main(String[] argv) {
@@ -1520,8 +1772,8 @@ public class TestNG {
     try {
       testng = privateMain(argv, null);
     } catch (TestNGException ex) {
-      // Typically no ITestNGCliRunner on the classpath. Report it the way any other command line
-      // error is reported rather than as an uncaught stack trace.
+      // Usually there is no ITestNGCliRunner on the class path. Report it as any other command
+      // line error, not as an uncaught stack trace.
       exitWithError(ex.getMessage());
       return;
     }
@@ -1529,16 +1781,18 @@ public class TestNG {
   }
 
   /**
-   * <B>Note</B>: this method is not part of the public API and is meant for internal usage only.
+   * Runs TestNG for a command line, without stopping the JVM.
    *
-   * @param argv The param arguments
-   * @param listener The listener
-   * @return The TestNG instance
-   * @throws TestNGException when no {@link ITestNGCliRunner} implementation is on the classpath, or
-   *     when {@code argv} cannot be honoured. Unlike before 7.13, an unusable command line no
-   *     longer terminates the JVM here; only {@link #main(String[])} does that.
+   * <p><b>Note</b>: This method is for the use of TestNG only. It is not part of the public API.
+   *
+   * @param argv the TestNG command line arguments.
+   * @param listener a listener that TestNG adds before the run, or {@code null}.
+   * @return the TestNG object that ran.
+   * @throws TestNGException when no {@link ITestNGCliRunner} is on the class path, or when the
+   *     runner cannot use {@code argv}. Since 7.13, a bad command line does not stop the JVM here.
+   *     Only {@link #main(String[])} does that.
    * @deprecated since 7.13. Use {@link ITestNGCliRunner#run(String[], ITestListener)} on the runner
-   *     of your choice. Scheduled for removal in 8.0.
+   *     of your choice. TestNG 8.0 will remove this method.
    */
   @Deprecated
   public static TestNG privateMain(String[] argv, @Nullable ITestListener listener) {
@@ -1546,13 +1800,13 @@ public class TestNG {
   }
 
   /**
-   * Configure the TestNG instance based on the command line parameters.
+   * Sets up this object from command line values.
    *
-   * @param cla The command line parameters
-   * @deprecated since 7.13. The command line front end lives in the {@code testng-cli} module; use
-   *     {@code org.testng.cli.CliConfigurer#configure(TestNG, org.testng.cli.CliOptions)}. This
-   *     method is frozen for the benefit of subclasses such as {@code RemoteTestNG} and will be
-   *     removed in 8.0.
+   * @param cla the command line values.
+   * @deprecated since 7.13. The command line code is in the {@code testng-cli} module. Use {@code
+   *     org.testng.cli.CliConfigurer#configure(TestNG, org.testng.cli.CliOptions)}. This method no
+   *     longer changes, so that subclasses such as {@code RemoteTestNG} keep working. TestNG 8.0
+   *     will remove it.
    */
   @Deprecated
   protected void configure(CommandLineArgs cla) {
@@ -1617,8 +1871,8 @@ public class TestNG {
       setIgnoreMissedTestNames(cla.ignoreMissedTestNames);
     }
 
-    // Note: can't use a Boolean field here because we are allowing a boolean
-    // parameter with an arity of 1 ("-usedefaultlisteners false")
+    // Note: the field is a String, not a Boolean, because the option takes a value, as in
+    // "-usedefaultlisteners false".
     if (cla.useDefaultListeners != null) {
       setUseDefaultListeners("true".equalsIgnoreCase(cla.useDefaultListeners));
     }
@@ -1713,37 +1967,58 @@ public class TestNG {
     alwaysRunListeners(cla.alwaysRunListeners);
   }
 
+  /**
+   * Sets whether TestNG ignores a test name that matches no test, and runs the tests that match.
+   *
+   * @param ignoreMissedTestNames whether to ignore the names that match no test.
+   */
   public void setIgnoreMissedTestNames(boolean ignoreMissedTestNames) {
     m_ignoreMissedTestNames = ignoreMissedTestNames;
   }
 
   /**
-   * Restricts this run to the given fully qualified method names.
+   * Limits the run to the given methods.
    *
-   * <p>A {@code null} or empty list clears the restriction. An empty list must not be stored as is:
-   * {@code initializeCommandLineSuites} branches on the field being non-null, so an empty one would
-   * build a suite with no class and silently suppress {@link #setTestClasses(Class[])}.
+   * <p>A {@code null} or empty list removes the limit. This method stores an empty list as {@code
+   * null}. An empty list would build a suite with no class, and {@link #setTestClasses(Class[])}
+   * would then have no effect.
    *
-   * @param methods a list of fully qualified method names, as accepted by the {@code -methods}
-   *     command line option.
+   * @param methods full method names, as the {@code -methods} command line option takes them.
    */
   public void setCommandLineMethods(List<String> methods) {
     m_commandLineMethods = methods == null || methods.isEmpty() ? null : new ArrayList<>(methods);
   }
 
+  /**
+   * Sets whether the command line methods replace the methods that the suite files include.
+   *
+   * @param overrideIncludedMethods whether to replace the included methods.
+   */
   public void setOverrideIncludedMethods(boolean overrideIncludedMethods) {
     m_configuration.setOverrideIncludedMethods(overrideIncludedMethods);
   }
 
   /**
-   * Reports a failure raised by {@link #run()} itself and records it, so that {@link #getStatus()}
-   * says the run failed even though no test result does.
+   * Reports a failure that {@link #run()} itself threw, and records it.
    *
-   * <p>A front end that would rather report a broken run as an exit status than let the exception
-   * propagate catches it and calls this. How much of the failure is printed depends on the current
-   * verbosity, which is why this lives here rather than in the caller.
+   * <p>The record replaces the result of the run with a single failure. After this call:
    *
-   * @param cause the failure raised by the run.
+   * <ul>
+   *   <li>{@link #hasFailure()} returns {@code true}.
+   *   <li>{@link #hasSkip()} and {@link #hasFailureWithinSuccessPercentage()} return {@code false}.
+   *   <li>{@link #getStatus()} returns 1, but only when the run has test results. Without them, it
+   *       returns 8, and the failure does not show (GITHUB-3566).
+   * </ul>
+   *
+   * <p>At a verbose level above 1, this method prints the stack trace to standard output.
+   * Otherwise, it logs the message. The logged message appears only when an SLF4J provider is on
+   * the class path.
+   *
+   * <p>A front end that wants an exit status, not an exception, catches the failure and calls this
+   * method. This method is here, and not in the caller, because the verbose level of the run
+   * decides what it prints.
+   *
+   * @param cause the failure that the run threw.
    */
   public void reportRunFailure(TestNGException cause) {
     if (TestRunner.getVerbose() > 1) {
@@ -1754,32 +2029,51 @@ public class TestNG {
     this.exitCode = ExitCode.newExitCodeRepresentingFailure();
   }
 
+  /**
+   * Sets the number of suites that run at the same time.
+   *
+   * @param suiteThreadPoolSize the number of suites.
+   */
   public void setSuiteThreadPoolSize(Integer suiteThreadPoolSize) {
     m_suiteThreadPoolSize = suiteThreadPoolSize;
   }
 
+  /**
+   * Returns the number of suites that run at the same time.
+   *
+   * @return the number of suites.
+   */
   public Integer getSuiteThreadPoolSize() {
     return m_suiteThreadPoolSize;
   }
 
+  /**
+   * Sets whether TestNG runs the suites in random order, instead of the order in the XML.
+   *
+   * @param randomizeSuites whether to use random order.
+   */
   public void setRandomizeSuites(boolean randomizeSuites) {
     m_randomizeSuites = randomizeSuites;
   }
 
+  /**
+   * Sets whether TestNG runs the {@link IInvokedMethodListener} listeners for skipped methods too.
+   *
+   * @param alwaysRun whether to run the listeners for skipped methods.
+   */
   public void alwaysRunListeners(boolean alwaysRun) {
     m_alwaysRun = alwaysRun;
   }
 
   /**
-   * This method is invoked by Maven's Surefire, only remove it once Surefire has been modified to
-   * no longer call it.
+   * Does nothing. Maven Surefire calls this method, so keep it until Surefire stops calling it.
    *
-   * @param path The path
-   * @deprecated
+   * @param path not used.
+   * @deprecated This method does nothing.
    */
   @Deprecated
   public void setSourcePath(String path) {
-    // nop
+    // Nothing to do
   }
 
   private static int parseInt(@Nullable Object value) {
@@ -1796,11 +2090,14 @@ public class TestNG {
   }
 
   /**
-   * This method is invoked by Maven's Surefire to configure the runner, do not remove unless you
-   * know for sure that Surefire has been updated to use the new configure(CommandLineArgs) method.
+   * Sets up this object from a map of command line values.
    *
-   * @param cmdLineArgs The command line
-   * @deprecated use new configure(CommandLineArgs) method
+   * <p>Maven Surefire calls this method. Do not remove it unless you know that Surefire no longer
+   * calls it.
+   *
+   * @param cmdLineArgs the values, keyed by option name, such as {@code -groups}.
+   * @deprecated The command line code is in the {@code testng-cli} module. Use {@code
+   *     org.testng.cli.CliConfigurer#configure(TestNG, org.testng.cli.CliOptions)}.
    */
   @SuppressWarnings({"unchecked"})
   @Deprecated
@@ -1865,7 +2162,7 @@ public class TestNG {
       result.threadCount = value;
     }
 
-    // Not supported by Surefire yet
+    // Surefire does not pass this value yet
     value = parseInt(cmdLineArgs.get(CommandLineArgs.DATA_PROVIDER_THREAD_COUNT));
     if (value != -1) {
       result.dataProviderThreadCount = value;
@@ -1938,25 +2235,43 @@ public class TestNG {
     configure(result);
   }
 
-  /** @param testNames Only run the specified tests from the suite. */
+  /**
+   * Limits the run to the {@code <test>} tags with these names.
+   *
+   * @param testNames the names of the tests to run.
+   */
   public void setTestNames(List<String> testNames) {
     m_testNames = testNames;
   }
 
+  /**
+   * Sets whether TestNG skips the remaining invocations of a test method after one invocation
+   * fails.
+   *
+   * <p>A value that is not {@code null} overrides the setting of every suite. The default value is
+   * {@code false}, so by default this object turns the setting off in every suite. Pass {@code
+   * null} to keep the setting of each suite.
+   *
+   * @param skip whether to skip the remaining invocations, or {@code null}.
+   */
   public void setSkipFailedInvocationCounts(@Nullable Boolean skip) {
     m_skipFailedInvocationCounts = skip;
   }
 
   /**
-   * Adds a reporter described the way the {@code -reporter} command line option does, for instance
-   * {@code com.acme.MyReporter:fileName=out.html}.
+   * Adds a reporter, written in the form of the {@code -reporter} command line option. An example
+   * is {@code com.acme.MyReporter:fileName=out.html}.
    *
-   * <p>The class is resolved and instantiated synchronously. A {@code null} or empty value is
-   * silently ignored; a class that cannot be found is reported as a warning and skipped; a class
-   * that is found but does not implement {@link IReporter} raises a {@link TestNGException}.
+   * <p>This method loads and creates the class at once:
    *
-   * @param reporterConfigString the serialized reporter configuration.
-   * @throws TestNGException if the named class is not an {@link IReporter}.
+   * <ul>
+   *   <li>It ignores a {@code null} or empty value.
+   *   <li>It logs a warning and skips a class that it cannot find.
+   *   <li>It throws when the class is not an {@link IReporter}.
+   * </ul>
+   *
+   * @param reporterConfigString the reporter and its settings.
+   * @throws TestNGException when the class is not an {@link IReporter}.
    */
   public void addReporter(@Nullable String reporterConfigString) {
     ReporterConfig reporterConfig = ReporterConfig.deserialize(reporterConfigString);
@@ -1974,7 +2289,12 @@ public class TestNG {
     }
   }
 
-  /** Creates a reporter based on the configuration */
+  /**
+   * Creates a reporter from its settings.
+   *
+   * @return the reporter, or {@code null} when TestNG cannot find the class.
+   * @throws TestNGException when the class is not an {@link IReporter}.
+   */
   private @Nullable IReporter newReporterInstance(ReporterConfig config) {
 
     Class<?> reporterClass = ClassHelper.forName(config.getClassName());
@@ -1993,18 +2313,22 @@ public class TestNG {
   }
 
   /**
-   * Double check that the command line parameters are valid.
+   * Checks that the command line values select something to run.
    *
-   * @param args The command line to check
+   * <p>It fails when no suite file, class, method or jar is given. It also fails when groups are
+   * given without classes, suite files or a jar.
+   *
+   * @param args the command line values to check.
+   * @throws TestNGException when a check fails. Since 7.13, this method throws {@link
+   *     TestNGException}, not the {@code ParameterException} of JCommander.
    * @deprecated since 7.13. Use {@code org.testng.cli.CliConfigurer#validate} from the {@code
-   *     testng-cli} module. Note that failures are now reported as {@link TestNGException} instead
-   *     of JCommander's {@code ParameterException}.
+   *     testng-cli} module.
    */
   @Deprecated
   protected static void validateCommandLineParameters(CommandLineArgs args) {
-    // What configure() will make of it, not the raw text: -testclass "" and -testclass " , ,"
-    // name no class at all, and selecting nothing has to be rejected here rather than produce a
-    // run with no classes and no complaint.
+    // Check what configure() makes of the value, not the raw text. -testclass "" and
+    // -testclass " , ," name no class at all. Reject that here. Otherwise the run has no classes
+    // and reports no error.
     String testClasses = args.testClass;
     if (testClasses != null && Utils.splitCommaSeparated(testClasses).isEmpty()) {
       testClasses = null;
@@ -2032,97 +2356,149 @@ public class TestNG {
     }
   }
 
-  /** The outcome of the run; absent until {@link #run()} has produced one. */
+  /** Returns the outcome of the run. It fails when {@link #run()} has not produced one yet. */
   private ExitCode requireExitCode() {
     return Objects.requireNonNull(this.exitCode, "the run has not produced an exit code yet");
   }
 
-  /** @return true if at least one test failed. */
+  /**
+   * Tells if a test or a configuration method failed, or if {@link
+   * #reportRunFailure(TestNGException)} recorded a failure. Call it after {@link #run()}.
+   *
+   * <p>This method does not check whether the run has test results, as {@link #getStatus()} does.
+   *
+   * @return {@code true} when there was such a failure.
+   * @throws NullPointerException when the run has not produced a result yet.
+   */
   public boolean hasFailure() {
     return requireExitCode().hasFailure();
   }
 
-  /** @return true if at least one test failed within success percentage. */
+  /**
+   * Tells if at least one test failed, but stayed within the success percentage of its method. Call
+   * it after {@link #run()}.
+   *
+   * @return {@code true} when at least one such test failed.
+   * @throws NullPointerException when the run has not produced a result yet.
+   */
   public boolean hasFailureWithinSuccessPercentage() {
     return requireExitCode().hasFailureWithinSuccessPercentage();
   }
 
-  /** @return true if at least one test was skipped. */
+  /**
+   * Tells if TestNG skipped a test or a configuration method. Call it after {@link #run()}.
+   *
+   * @return {@code true} when TestNG skipped at least one test or configuration method.
+   * @throws NullPointerException when the run has not produced a result yet.
+   */
   public boolean hasSkip() {
     return requireExitCode().hasSkip();
   }
 
   static void exitWithError(@Nullable String msg) {
-    // Trimmed because TestNGException prefixes every message with a newline, which would show up
-    // as a stray blank line ahead of the error.
+    // Trim the message. TestNGException puts a newline in front of every message, which would print
+    // an empty line before the error.
     System.err.println(msg == null ? "" : msg.trim());
     usage();
     System.exit(1);
   }
 
+  /**
+   * Returns the directory where TestNG writes the reports.
+   *
+   * @return the directory.
+   */
   public String getOutputDirectory() {
     return m_outputDir;
   }
 
+  /**
+   * Returns the annotation transformer of the run.
+   *
+   * <p>Without a transformer of your own, it is the default one. The default transformer turns off
+   * the tests marked {@code @Ignore}.
+   *
+   * @return the annotation transformer.
+   */
   public IAnnotationTransformer getAnnotationTransformer() {
     return m_annotationTransformer;
   }
 
   @SuppressWarnings("ReferenceEquality")
   private void setAnnotationTransformer(IAnnotationTransformer t) {
-    // Identity on purpose: what is being reported is a second, different transformer replacing one
-    // the caller already installed. Re-installing the same instance is not a conflict, and a user
-    // type is free to declare two distinct transformers equal, which would hide a real one.
+    // Compare with != on purpose. The warning is for a second, different transformer that replaces
+    // one the caller already set. Setting the same object again is not a conflict. A user class can
+    // declare two different transformers equal, and equals() would then hide a real conflict.
     if (m_annotationTransformer != m_defaultAnnoProcessor && m_annotationTransformer != t) {
       LOGGER.warn("AnnotationTransformer already set");
     }
     m_annotationTransformer = t;
   }
 
-  /** @return the defaultSuiteName */
+  /**
+   * Returns the default suite name, for a suite that TestNG builds from command line options.
+   *
+   * @return the name.
+   */
   public String getDefaultSuiteName() {
     return m_defaultSuiteName;
   }
 
-  /** @param defaultSuiteName the defaultSuiteName to set */
+  /**
+   * Sets the default suite name, for a suite that TestNG builds from command line options.
+   *
+   * @param defaultSuiteName the name.
+   */
   public void setDefaultSuiteName(String defaultSuiteName) {
     m_defaultSuiteName = defaultSuiteName;
   }
 
-  /** @return the defaultTestName */
+  /**
+   * Returns the default test name, for a test that TestNG builds from command line options.
+   *
+   * @return the name.
+   */
   public String getDefaultTestName() {
     return m_defaultTestName;
   }
 
-  /** @param defaultTestName the defaultTestName to set */
+  /**
+   * Sets the default test name, for a test that TestNG builds from command line options.
+   *
+   * @param defaultTestName the name.
+   */
   public void setDefaultTestName(String defaultTestName) {
     m_defaultTestName = defaultTestName;
   }
 
   /**
-   * Sets the policy for whether or not to ever invoke a configuration method again after it has
-   * failed once. See {@link org.testng.xml.XmlSuite.FailurePolicy} for what each value invalidates.
-   * The default value is {@link org.testng.xml.XmlSuite.FailurePolicy#SKIP}
+   * Sets what TestNG does after a configuration method fails.
    *
-   * @param failurePolicy the configuration failure policy
+   * <p>See {@link org.testng.xml.XmlSuite.FailurePolicy} for what each value does. The default
+   * value is {@link org.testng.xml.XmlSuite.FailurePolicy#SKIP}.
+   *
+   * @param failurePolicy the policy, or {@code null} to keep the policy of each suite.
    */
   public void setConfigFailurePolicy(XmlSuite.@Nullable FailurePolicy failurePolicy) {
     m_configFailurePolicy = failurePolicy;
   }
 
   /**
-   * Returns the configuration failure policy.
+   * Returns what TestNG does after a configuration method fails.
    *
-   * @return config failure policy
+   * @return the policy, or {@code null} when none was set.
    */
   public XmlSuite.@Nullable FailurePolicy getConfigFailurePolicy() {
     return m_configFailurePolicy;
   }
 
-  // DEPRECATED: to be removed after a major version change
+  // Deprecated: remove it in the next major version.
   /**
-   * @return The default instance
-   * @deprecated since 5.1
+   * Returns the TestNG object that was created last. After {@link #run()} ends, it returns {@code
+   * null}.
+   *
+   * @return the TestNG object, or {@code null}.
+   * @deprecated since 5.1.
    */
   @Deprecated
   public static @Nullable TestNG getDefault() {
@@ -2131,7 +2507,7 @@ public class TestNG {
 
   @SuppressWarnings("ReferenceEquality")
   private void setConfigurable(IConfigurable c) {
-    // Identity on purpose, for the reason given on setAnnotationTransformer.
+    // Compare with != on purpose, for the reason given in setAnnotationTransformer.
     if (m_configurable != null && m_configurable != c) {
       LOGGER.warn("Configurable already set");
     }
@@ -2140,25 +2516,40 @@ public class TestNG {
 
   @SuppressWarnings("ReferenceEquality")
   private void setHookable(IHookable h) {
-    // Identity on purpose, for the reason given on setAnnotationTransformer.
+    // Compare with != on purpose, for the reason given in setAnnotationTransformer.
     if (m_hookable != null && m_hookable != h) {
       LOGGER.warn("Hookable already set");
     }
     m_hookable = h;
   }
 
+  /**
+   * Adds a method interceptor. Despite its name, this method adds to the interceptors. It does not
+   * replace them.
+   *
+   * @param methodInterceptor the method interceptor.
+   */
   public void setMethodInterceptor(IMethodInterceptor methodInterceptor) {
     m_methodInterceptors.add(methodInterceptor);
   }
 
+  /**
+   * Sets the number of threads that run data providers in parallel. It overrides the value in the
+   * suite files.
+   *
+   * @param count the number of threads.
+   */
   public void setDataProviderThreadCount(int count) {
     m_dataProviderThreadCount = count;
   }
 
   /**
-   * Add a class loader to the searchable loaders.
+   * Adds a class loader that TestNG searches when it loads a class by name.
    *
-   * @param loader The class loader to add
+   * <p>The class loader applies to every TestNG object in this JVM. A {@code null} loader changes
+   * nothing.
+   *
+   * @param loader the class loader.
    */
   public void addClassLoader(final ClassLoader loader) {
     if (loader != null) {
@@ -2166,39 +2557,62 @@ public class TestNG {
     }
   }
 
+  /**
+   * Sets {@code preserve-order} for the tests that TestNG builds from command line options.
+   *
+   * @param b whether the tests keep the order of their classes and methods.
+   */
   public void setPreserveOrder(boolean b) {
     m_preserveOrder = b;
   }
 
+  /**
+   * Returns the time when the run started.
+   *
+   * @return the time, in milliseconds.
+   */
   protected long getStart() {
     return m_start;
   }
 
+  /**
+   * Returns the time when the run ended.
+   *
+   * @return the time, in milliseconds.
+   */
   protected long getEnd() {
     return m_end;
   }
 
+  /**
+   * Sets {@code group-by-instances} for the suites that TestNG builds from command line options.
+   *
+   * @param b whether to run the methods of one instance together.
+   */
   public void setGroupByInstances(boolean b) {
     m_groupByInstances = b;
   }
 
   /////
-  // ServiceLoader testing
+  // For the tests of the ServiceLoader support
   //
 
   private @Nullable URLClassLoader m_serviceLoaderClassLoader;
   private final Map<Class<? extends ITestNGListener>, ITestNGListener> serviceLoaderListeners =
       new HashMap<>();
 
-  /*
-   * Used to test ServiceClassLoader
+  /**
+   * Sets the class loader in which TestNG looks for listeners through {@link ServiceLoader}. Tests
+   * use it.
+   *
+   * @param ucl the class loader.
    */
   public void setServiceLoaderClassLoader(URLClassLoader ucl) {
     m_serviceLoaderClassLoader = ucl;
   }
 
   /*
-   * Used to test ServiceClassLoader
+   * Records a listener that ServiceLoader found, so that tests can read it.
    */
   private void addServiceLoaderListener(ITestNGListener l) {
     if (!serviceLoaderListeners.containsKey(l.getClass())) {
@@ -2206,20 +2620,30 @@ public class TestNG {
     }
   }
 
-  /*
-   * Used to test ServiceClassLoader
+  /**
+   * Returns the listeners that TestNG loaded through {@link ServiceLoader}. Tests use it.
+   *
+   * @return a copy of the listeners.
    */
   public List<ITestNGListener> getServiceLoaderListeners() {
     return new ArrayList<>(serviceLoaderListeners.values());
   }
 
+  /**
+   * Sets the factory that creates the dependency injector.
+   *
+   * @param factory the injector factory.
+   */
   public void setInjectorFactory(IInjectorFactory factory) {
     this.m_configuration.setInjectorFactory(factory);
   }
 
   /**
-   * @param factoryClass an {@link IInjectorFactory} implementation, instantiated with the object
-   *     factory currently in use.
+   * Sets the factory that creates the dependency injector, by class.
+   *
+   * <p>TestNG creates the factory with the object factory that it uses at the time of the call.
+   *
+   * @param factoryClass the class of the factory.
    */
   public void setInjectorFactoryClass(Class<? extends IInjectorFactory> factoryClass) {
     setInjectorFactory(m_objectFactory.newInstance(factoryClass));

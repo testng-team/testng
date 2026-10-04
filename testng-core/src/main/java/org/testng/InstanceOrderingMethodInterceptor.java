@@ -6,7 +6,11 @@ import java.util.List;
 import java.util.Map;
 import org.testng.internal.IInstanceIdentity;
 
-/** A method interceptor that sorts its methods per instances (i.e. per class). */
+/**
+ * A method interceptor that puts the test methods of each test instance next to each other.
+ *
+ * <p>{@link TestRunner} uses it when {@code preserve-order} is off.
+ */
 class InstanceOrderingMethodInterceptor implements IMethodInterceptor {
 
   @Override
@@ -14,13 +18,16 @@ class InstanceOrderingMethodInterceptor implements IMethodInterceptor {
     return groupMethodsByInstance(methods);
   }
 
-  /** The default method interceptor which sorts methods by instances (i.e. by class). */
+  /**
+   * Orders the methods so that the methods of each test instance come together. The instances keep
+   * the order in which they first appear. The methods of one instance keep their order too.
+   */
   private List<IMethodInstance> groupMethodsByInstance(List<IMethodInstance> methods) {
     List<Object> instanceList = new ArrayList<>();
     Map<Object, List<IMethodInstance>> map = new LinkedHashMap<>();
     for (IMethodInstance mi : methods) {
-      // Group by the per-instance id rather than the instantiated instance so that ordering does
-      // not force a lazy @Factory instance to be created before its test is due to run.
+      // Key by the instance id, not by the instance. Reading the instance would make a lazy
+      // @Factory create it before its tests run.
       Object instance = IInstanceIdentity.getInstanceId(mi.getMethod());
       if (!instanceList.contains(instance)) {
         instanceList.add(instance);

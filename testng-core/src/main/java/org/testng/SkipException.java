@@ -4,9 +4,11 @@ import org.jspecify.annotations.Nullable;
 import org.testng.internal.AutoCloseableLock;
 
 /**
- * The root exception for special skip handling. In case a @Test or @Configuration throws this
- * exception the method will be considered a skip or a failure according to the return of {@link
- * #isSkip()}. Users may provide extensions to this mechanism by extending this class.
+ * An exception that makes TestNG report a method as skipped.
+ *
+ * <p>When a test method or a configuration method throws this exception, the answer of {@link
+ * #isSkip()} decides the result. TestNG reports the method as skipped or as failed. You can extend
+ * this class to change that decision.
  *
  * @since 5.6
  */
@@ -17,21 +19,33 @@ public class SkipException extends RuntimeException {
   private StackTraceElement @Nullable [] m_stackTrace;
   private volatile boolean m_stackReduced;
 
+  /**
+   * Creates the exception with a message.
+   *
+   * @param skipMessage the reason for the skip.
+   */
   public SkipException(String skipMessage) {
     super(skipMessage);
   }
 
+  /**
+   * Creates the exception with a message and a cause.
+   *
+   * @param skipMessage the reason for the skip.
+   * @param cause the exception that caused the skip.
+   */
   public SkipException(String skipMessage, Throwable cause) {
     super(skipMessage, cause);
   }
 
   /**
-   * Flag if the current exception marks a skipped method (<code>true</code>) or a failure (<code>
-   * false</code>). By default Subclasses should override this method in order to provide smarter
-   * behavior.
+   * Tells TestNG if the method that threw this exception is skipped or failed.
    *
-   * @return <code>true</code> if the method should be considered a skip, <code>false</code> if the
-   *     method should be considered failed. If not overwritten it returns <code>true</code>
+   * <p>This implementation returns {@code true}. A subclass can override it to decide in a
+   * different way.
+   *
+   * @return {@code true} when TestNG must report the method as skipped. {@code false} when TestNG
+   *     must report it as failed.
    */
   public boolean isSkip() {
     return true;
@@ -40,9 +54,10 @@ public class SkipException extends RuntimeException {
   private final AutoCloseableLock internalLock = new AutoCloseableLock();
 
   /**
-   * Subclasses may use this method to reduce the printed stack trace. This method keeps only the
-   * last frame. <b>Important</b>: after calling this method the preserved internally and can be
-   * restored called {@link #restoreStackTrace}.
+   * Cuts the stack trace down to its top frame, the place where the exception was created.
+   *
+   * <p>A subclass can call this method to print a shorter stack trace. This exception keeps the
+   * full stack trace, so {@link #restoreStackTrace()} can bring it back.
    */
   protected void reduceStackTrace() {
     if (!m_stackReduced) {
@@ -59,10 +74,7 @@ public class SkipException extends RuntimeException {
     }
   }
 
-  /**
-   * Restores the original exception stack trace after a previous call to {@link
-   * #reduceStackTrace()}.
-   */
+  /** Brings back the full stack trace after a call to {@link #reduceStackTrace()}. */
   protected void restoreStackTrace() {
     if (m_stackReduced && null != m_stackTrace) {
       try (AutoCloseableLock ignore = internalLock.lock()) {

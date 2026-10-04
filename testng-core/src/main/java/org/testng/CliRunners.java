@@ -7,9 +7,9 @@ import org.jspecify.annotations.Nullable;
 import org.testng.log4testng.Logger;
 
 /**
- * Resolves the {@link ITestNGCliRunner} service.
+ * Finds the {@link ITestNGCliRunner} that runs TestNG from the command line.
  *
- * <p><b>Note</b>: this class is not part of the public API and is meant for internal usage only.
+ * <p><b>Note</b>: This class is for the use of TestNG only. It is not part of the public API.
  */
 final class CliRunners {
 
@@ -27,48 +27,60 @@ final class CliRunners {
   private static volatile @Nullable ITestNGCliRunner cached;
 
   /**
-   * Why the last lookup came back empty. A provider that is present but fails to load reports the
-   * very same "nothing found" outcome as a provider that is simply absent, so the cause has to be
-   * carried along or the diagnostic tells people to install what they already installed.
+   * The error from the last search that found no runner, or {@code null}.
+   *
+   * <p>A runner that fails to load gives the same empty result as a missing runner. Without this
+   * error, the message would tell the user to add a runner that is already there.
    */
   private static volatile @Nullable Throwable lastFailure;
 
   private CliRunners() {}
 
-  /** @return the installed runner, or {@code null} when none is available. */
-  // Identity on purpose: the fallback exists for a deployment where the context classloader is a
-  // different loader from the one that owns the SPI, and a loader is only ever the same loader as
-  // itself.
+  /**
+   * Finds the installed runner.
+   *
+   * <p>This method first searches the class loader that loaded {@link ITestNGCliRunner}. If that
+   * class loader has no runner, it searches the context class loader of the current thread. It
+   * keeps the first runner that it finds, and returns it on later calls.
+   *
+   * @return the runner, or {@code null} when there is none.
+   */
+  // Compare the class loaders with == on purpose. The second search is useful only when the context
+  // class loader is a different object from the first one.
   @SuppressWarnings("ReferenceEquality")
   static @Nullable ITestNGCliRunner find() {
     ITestNGCliRunner local = cached;
     if (local != null) {
       return local;
     }
-    // The classloader that owns the SPI. On a plain classpath this is the application classloader.
-    // Inside the merged testng.jar OSGi bundle this is the bundle classloader, which also owns the
-    // provider class and its META-INF/services entry, so no SPI-Fly weaving is required.
+    // Search the class loader that loaded ITestNGCliRunner first. On a plain class path, this is
+    // the application class loader. In OSGi, it is the class loader of the testng.jar bundle. That
+    // bundle also holds the runner and its META-INF/services entry, so it works without SPI-Fly.
     lastFailure = null;
     ClassLoader owner = ITestNGCliRunner.class.getClassLoader();
     local = load(owner);
     if (local == null) {
-      // Fallback for parent/child deployments where only the child sees the provider.
+      // Then search the context class loader. This helps when a parent class loader loaded TestNG,
+      // but only a child class loader can see the runner.
       ClassLoader context = Thread.currentThread().getContextClassLoader();
       if (context != null && context != owner) {
         local = load(context);
       }
     }
     if (local != null) {
-      // A null result is deliberately not cached: the provider may show up on a later lookup, and
-      // caching it would also let a provider-less lookup clobber a concurrent successful one.
+      // Keep a runner that was found, but do not keep a null. A runner can appear on a later call.
+      // Also, a null from one thread must not replace a runner that another thread found.
       cached = local;
     }
     return local;
   }
 
   /**
-   * @return the installed runner.
-   * @throws TestNGException when no runner is available.
+   * Returns the installed runner, or throws when there is none.
+   *
+   * @return the runner.
+   * @throws TestNGException when there is no runner. When a runner failed to load, the exception
+   *     carries that error as its cause.
    */
   static ITestNGCliRunner required() {
     ITestNGCliRunner runner = find();
@@ -95,8 +107,10 @@ final class CliRunners {
   }
 
   /**
-   * Peeks at the next provider only to report an ambiguity. A failure here says nothing about the
-   * runner already in hand, so it must not cost us that runner.
+   * Logs a warning when the class loader has more than one runner.
+   *
+   * <p>This method looks at the next runner only to warn about it. If that look fails, the method
+   * ignores the failure. The failure says nothing about the runner that was already found.
    */
   private static void warnIfAnotherProviderFollows(
       Iterator<ITestNGCliRunner> it, ITestNGCliRunner chosen) {

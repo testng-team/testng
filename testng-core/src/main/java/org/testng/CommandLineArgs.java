@@ -6,16 +6,26 @@ import org.jspecify.annotations.Nullable;
 import org.testng.xml.XmlSuite;
 
 /**
- * The values the TestNG command line used to be parsed into.
+ * The values of the TestNG command line options.
  *
- * <p>Since 7.13 the command line front end lives in the {@code testng-cli} and {@code
- * testng-jcommander} modules, so that {@code testng-core} no longer depends on a command line
- * parsing library. This class is kept, without its JCommander annotations, only so that {@link
- * TestNG#configure(CommandLineArgs)}, {@link TestNG#configure(java.util.Map)} and subclasses such
- * as {@code RemoteTestNG} keep working. It is no longer populated by TestNG itself.
+ * <p>Since 7.13, the {@code testng-cli} and {@code testng-jcommander} modules hold the command line
+ * code. This keeps a command line parsing library out of {@code testng-core}. This class stays,
+ * without its JCommander annotations, so that these still work:
+ *
+ * <ul>
+ *   <li>{@link TestNG#configure(CommandLineArgs)}.
+ *   <li>{@link TestNG#configure(java.util.Map)}, which fills a {@code CommandLineArgs} from a map.
+ *   <li>Subclasses of {@link TestNG}, such as {@code RemoteTestNG}.
+ * </ul>
+ *
+ * <p>The TestNG command line does not fill this class.
+ *
+ * <p>The constants that end in {@code _DEFAULT} hold default values. Every other constant is the
+ * name of a command line option, such as {@code -verbose}. {@link TestNG#configure(java.util.Map)}
+ * also uses some of these names as map keys.
  *
  * @deprecated since 7.13. Use {@code org.testng.cli.CliOptions} from the {@code testng-cli} module.
- *     Scheduled for removal in 8.0.
+ *     TestNG 8.0 will remove this class.
  */
 @Deprecated
 public class CommandLineArgs {
@@ -26,109 +36,129 @@ public class CommandLineArgs {
   public static final String LOG = "-log";
   public static final String VERBOSE = "-verbose";
 
-  /** Level of verbosity. */
+  /** How much detail TestNG prints. With a higher number, TestNG prints more. */
   public @Nullable Integer verbose;
 
   public static final String GROUPS = "-groups";
 
-  /** Comma-separated list of group names to be run. */
+  /** The names of the groups to run, separated by commas. */
   public @Nullable String groups;
 
   public static final String EXCLUDED_GROUPS = "-excludegroups";
 
-  /** Comma-separated list of group names to exclude. */
+  /** The names of the groups to leave out, separated by commas. */
   public @Nullable String excludedGroups;
 
   public static final String OUTPUT_DIRECTORY = "-d";
 
-  /** Output directory. */
+  /** The directory where TestNG writes its reports. */
   public @Nullable String outputDirectory;
 
   public static final String MIXED = "-mixed";
 
   /**
-   * No-op since JUnit execution support was removed in 7.10.0. Kept for command line backward
-   * compatibility.
+   * Does nothing. TestNG 7.10.0 removed its support for running JUnit tests. The field stays so
+   * that code that sets it keeps working.
    */
   public Boolean mixed = Boolean.FALSE;
 
   public static final String LISTENER = "-listener";
 
-  /** List of .class files or list of class names implementing ITestListener or ISuiteListener. */
+  /**
+   * The listeners to add, as class names or {@code .class} files. Separate them with commas or
+   * semicolons. TestNG skips a class that is not an {@link ITestNGListener}.
+   */
   public @Nullable String listener;
 
   public static final String LISTENER_COMPARATOR = "-listenercomparator";
 
-  /** An implementation of ListenerComparator that determines order of execution for listeners. */
+  /**
+   * The class name of a {@link ListenerComparator}. It sets the order in which TestNG runs the
+   * listeners.
+   */
   public @Nullable String listenerComparator;
 
   public static final String METHOD_SELECTORS = "-methodselectors";
 
-  /** List of .class files or list of class names implementing IMethodSelector. */
+  /**
+   * The method selectors to add, separated by commas. Each one has the form {@code
+   * className:priority}, for example {@code org.example.Selector:4}. Each class implements {@link
+   * IMethodSelector}.
+   */
   public @Nullable String methodSelectors;
 
   public static final String OBJECT_FACTORY = "-objectfactory";
 
-  /** Fully qualified class name that implements org.testng.ITestObjectFactory. */
+  /**
+   * The full class name of the {@link ITestObjectFactory} that creates the instances of the test
+   * classes.
+   */
   public @Nullable String objectFactory;
 
   public static final String PARALLEL = "-parallel";
 
-  /** Parallel mode (methods, tests or classes). */
+  /** How TestNG runs the tests in parallel. See {@link XmlSuite.ParallelMode}. */
   public XmlSuite.@Nullable ParallelMode parallelMode;
 
   public static final String CONFIG_FAILURE_POLICY = "-configfailurepolicy";
 
-  /** Configuration failure policy (skip or continue). */
+  /** What TestNG does after a configuration method fails: {@code skip} or {@code continue}. */
   public @Nullable String configFailurePolicy;
 
   public static final String THREAD_COUNT = "-threadcount";
 
-  /** Number of threads to use when running tests in parallel. */
+  /** The number of threads that run tests in parallel. */
   public @Nullable Integer threadCount;
 
   public static final String DATA_PROVIDER_THREAD_COUNT = "-dataproviderthreadcount";
 
-  /** Number of threads to use when running data providers. */
+  /** The number of threads that run data providers in parallel. */
   public @Nullable Integer dataProviderThreadCount;
 
   public static final String SUITE_NAME = "-suitename";
 
-  /** Default name of test suite, if not specified in suite definition file or source code. */
+  /** The suite name to use when neither the suite file nor the code gives one. */
   public @Nullable String suiteName;
 
   public static final String TEST_NAME = "-testname";
 
-  /** Default name of test, if not specified in suite definition file or source code. */
+  /** The test name to use when neither the suite file nor the code gives one. */
   public @Nullable String testName;
 
   public static final String REPORTER = "-reporter";
 
-  /** Extended configuration for custom report listener. */
+  /** A custom reporter and its settings, in the form {@code className:name=value,name=value}. */
   public @Nullable String reporter;
 
   public static final String USE_DEFAULT_LISTENERS = "-usedefaultlisteners";
 
-  /** Whether to use the default listeners. */
+  /**
+   * Whether TestNG adds its default listeners. The value {@code "true"} means yes, and any other
+   * value means no. The letter case does not matter.
+   */
   public String useDefaultListeners = "true";
 
   public static final String SKIP_FAILED_INVOCATION_COUNTS = "-skipfailedinvocationcounts";
 
+  /** Whether TestNG skips the remaining invocations of a test method after one invocation fails. */
   public @Nullable Boolean skipFailedInvocationCounts;
 
   public static final String TEST_CLASS = "-testclass";
 
-  /** The list of test classes. */
+  /** The test classes to run, as class names or {@code .class} files, separated by commas. */
   public @Nullable String testClass;
 
   public static final String TEST_NAMES = "-testnames";
 
-  /** The list of test names to run. */
+  /** The names of the {@code <test>} tags to run, separated by commas. */
   public @Nullable String testNames;
 
   public static final String IGNORE_MISSED_TEST_NAMES = "-ignoreMissedTestNames";
 
-  /** Ignore missed test names given by '-testnames' and continue to run existing tests, if any. */
+  /**
+   * Whether TestNG ignores a name in {@code -testnames} that matches no test, and runs the tests
+   * that match.
+   */
   public boolean ignoreMissedTestNames = false;
 
   public static final String TEST_JAR = "-testjar";
@@ -139,66 +169,76 @@ public class CommandLineArgs {
   public static final String XML_PATH_IN_JAR = "-xmlpathinjar";
   public static final String XML_PATH_IN_JAR_DEFAULT = "testng.xml";
 
-  /** The full path to the xml file inside the jar file, only valid with -testjar. */
+  /** The path of the suite file inside the jar. TestNG uses it only with {@code -testjar}. */
   public String xmlPathInJar = XML_PATH_IN_JAR_DEFAULT;
 
   public static final String TEST_RUNNER_FACTORY = "-testrunfactory";
 
-  /** The factory used to create tests. */
+  /**
+   * The class name of the {@link ITestRunnerFactory} that creates a {@link TestRunner} for each
+   * {@code <test>}.
+   */
   public @Nullable String testRunnerFactory;
 
   public static final String LISTENER_FACTORY = "-listenerfactory";
 
-  /** The factory used to create TestNG listeners. */
+  /** The class name of the {@link ITestNGListenerFactory} that creates TestNG listeners. */
   public @Nullable String listenerFactory;
 
   public static final String METHODS = "-methods";
 
-  /** Comma separated list of test methods. */
+  /**
+   * The test methods to run. Each one is a full method name, such as {@code
+   * com.example.MyTest.myMethod}.
+   */
   public List<String> commandLineMethods = new ArrayList<>();
 
   public static final String SUITE_THREAD_POOL_SIZE = "-suitethreadpoolsize";
   public static final Integer SUITE_THREAD_POOL_SIZE_DEFAULT = 1;
 
-  /** Size of the thread pool to use to run suites. */
+  /** The number of threads that run suites in parallel. */
   public Integer suiteThreadPoolSize = SUITE_THREAD_POOL_SIZE_DEFAULT;
 
   public static final String RANDOMIZE_SUITES = "-randomizesuites";
 
-  /** Whether to run suites in same order as specified in XML or not. */
+  /** Whether TestNG runs the suites in random order, instead of the order in the XML. */
   public Boolean randomizeSuites = Boolean.FALSE;
 
   public static final String ALWAYS_RUN_LISTENERS = "-alwaysrunlisteners";
 
-  /** Should MethodInvocation Listeners be run even for skipped methods. */
+  /** Whether TestNG runs the {@link IInvokedMethodListener} listeners for skipped methods too. */
   public Boolean alwaysRunListeners = Boolean.TRUE;
 
   public static final String THREAD_POOL_FACTORY_CLASS = "-threadpoolfactoryclass";
 
-  /** The threadpool executor factory implementation that TestNG should use. */
+  /**
+   * The class name of the {@link IExecutorServiceFactory} that creates the thread pools of TestNG.
+   */
   public @Nullable String threadPoolFactoryClass;
 
   public static final String DEPENDENCY_INJECTOR_FACTORY = "-dependencyinjectorfactory";
 
-  /** The dependency injector factory implementation that TestNG should use. */
+  /** The class name of the {@link IInjectorFactory} that creates the dependency injector. */
   public @Nullable String dependencyInjectorFactoryClass;
 
   public static final String FAIL_IF_ALL_TESTS_SKIPPED = "-failwheneverythingskipped";
 
-  /** Should TestNG fail execution if all tests were skipped and nothing was run. */
+  /** Whether TestNG reports the run as failed when it skips every test and runs nothing. */
   public Boolean failIfAllTestsSkipped = false;
 
   public static final String LISTENERS_TO_SKIP_VIA_SPI = "-spilistenerstoskip";
 
   /**
-   * Comma separated fully qualified class names of listeners that should be skipped from being
-   * wired in via Service Loaders.
+   * The full class names of the listeners that TestNG must not load through {@link
+   * java.util.ServiceLoader}, separated by commas.
    */
   public String spiListenersToSkip = "";
 
   public static final String OVERRIDE_INCLUDED_METHODS = "-overrideincludedmethods";
 
-  /** Whether command line method inclusions override the ones declared in the suite XML. */
+  /**
+   * Whether the methods given on the command line replace the methods that the suite XML includes.
+   */
   public Boolean overrideIncludedMethods = false;
 
   public static final String INCLUDE_ALL_DATA_DRIVEN_TESTS_WHEN_SKIPPING =
@@ -207,36 +247,41 @@ public class CommandLineArgs {
   public static final String EMPTY_DATA_PROVIDER_BEHAVIOR = "-emptydataproviderbehavior";
 
   /**
-   * Should TestNG report all iterations of a data driven test as individual skips, in-case of
-   * upstream failures.
+   * Whether TestNG reports each data provider row of a test method as its own skip. This applies
+   * when TestNG skips the method because of its dependencies.
    */
   public Boolean includeAllDataDrivenTestsWhenSkipping = false;
 
   /**
-   * What TestNG does with a test method whose data provider hands out no row: report it as skipped
-   * ({@code SKIP}) or leave it out of the results entirely ({@code IGNORE}).
+   * What TestNG does with a test method whose data provider returns no rows. {@code SKIP} reports
+   * the method as skipped. {@code IGNORE} leaves it out of the results.
    */
   public @Nullable EmptyDataProviderBehavior emptyDataProviderBehavior;
 
   public static final String PROPAGATE_DATA_PROVIDER_FAILURES_AS_TEST_FAILURE =
       "-propagateDataProviderFailureAsTestFailure";
 
-  /** Should TestNG consider failures in Data Providers as test failures. */
+  /**
+   * Whether TestNG reports a data provider failure as a test failure.
+   *
+   * <p>{@link TestNG#configure(CommandLineArgs)} turns this setting on whenever this field is not
+   * {@code null}. So the default value, {@code false}, also turns it on.
+   */
   public Boolean propagateDataProviderFailureAsTestFailure = false;
 
   public static final String GENERATE_RESULTS_PER_SUITE = "-generateResultsPerSuite";
 
-  /** Should TestNG generate results in a sub directory per suite. */
+  /** Whether TestNG writes the results of each suite to its own directory. */
   public Boolean generateResultsPerSuite = false;
 
   public static final String SHARE_THREAD_POOL_FOR_DATA_PROVIDERS =
       "-shareThreadPoolForDataProviders";
 
-  /** Should TestNG use a global shared thread pool for running data providers. */
+  /** Whether the data providers of a suite share one thread pool. */
   public Boolean shareThreadPoolForDataProviders = false;
 
   public static final String USE_GLOBAL_THREAD_POOL = "-useGlobalThreadPool";
 
-  /** Should TestNG use a global shared thread pool for regular and data driven tests. */
+  /** Whether the tests of a suite, with or without a data provider, share one thread pool. */
   public Boolean useGlobalThreadPool = false;
 }

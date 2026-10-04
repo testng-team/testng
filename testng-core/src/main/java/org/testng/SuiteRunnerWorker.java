@@ -12,7 +12,11 @@ import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;
 
 /**
- * An {@code IWorker} that is used to encapsulate and run Suite Runners
+ * An {@link IWorker} that runs one suite.
+ *
+ * <p>TestNG runs each suite through one of these workers, in sequence or in parallel. After the
+ * suite runs, the worker prints the result counts of the suite and of its child suites. It prints
+ * them only when the verbose level of the suite is above 0.
  *
  * @author cbeust, nullin
  */
@@ -24,6 +28,15 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
   private final String m_defaultSuiteName;
   private final SuiteRunnerMap m_suiteRunnerMap;
 
+  /**
+   * Creates a worker for one suite.
+   *
+   * @param suiteRunner the suite to run. It must be a {@link SuiteRunner}.
+   * @param suiteRunnerMap the map that gives the runner of each suite. The runners hold the
+   *     results.
+   * @param verbose the verbose level. Above 0, the worker prints the suite file before the run.
+   * @param defaultSuiteName the name to print when the suite has no file.
+   */
   public SuiteRunnerWorker(
       ISuite suiteRunner, SuiteRunnerMap suiteRunnerMap, int verbose, String defaultSuiteName) {
     m_suiteRunnerMap = suiteRunnerMap;
@@ -33,10 +46,11 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
   }
 
   /**
-   * Runs a suite
+   * Runs one suite, then prints its result counts.
    *
-   * @param suiteRunnerMap map of suiteRunners that are updated with test results
-   * @param xmlSuite XML suites to run
+   * @param suiteRunnerMap the map that gives the runner of each suite. The runners hold the
+   *     results.
+   * @param xmlSuite the suite to run.
    */
   private void runSuite(SuiteRunnerMap suiteRunnerMap /* OUT */, XmlSuite xmlSuite) {
     if (m_verbose > 0) {
@@ -58,7 +72,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
     // PoolService.getInstance().shutdown();
 
     //
-    // Display the final statistics
+    // Print the result counts of the suite
     //
     if (xmlSuite.getVerbose() > 0) {
       SuiteResultCounts counts = new SuiteResultCounts();
@@ -97,10 +111,9 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
   @Override
   public int compareTo(IWorker<ISuite> arg0) {
     /*
-     * Dummy Implementation
+     * Suite workers have no order among themselves, so this always returns 0.
      *
-     * Used by IWorkers to prioritize execution in parallel. Not required by
-     * this Worker in current implementation
+     * Other workers use this method to set the order in which they run in parallel.
      */
     return 0;
   }
@@ -124,14 +137,12 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
 
   @Override
   public int getPriority() {
-    // this class doesnt support priorities yet
+    // This class does not support priorities.
     return 0;
   }
 }
 
-/**
- * Class to help calculate result counts for tests run as part of a suite and its children suites
- */
+/** Adds up the results of a suite and of its child suites. */
 class SuiteResultCounts {
 
   int m_total = 0;
@@ -144,6 +155,14 @@ class SuiteResultCounts {
   private static final String SKIPPED = "skipped";
   private static final String RETRIED = "retried";
 
+  /**
+   * Adds the results of a suite, and of its child suites, to these counts.
+   *
+   * <p>A skipped test that TestNG retried counts as a retry, not as a skip.
+   *
+   * @param xmlSuite the suite.
+   * @param suiteRunnerMap the map that gives the runner of each suite.
+   */
   public void calculateResultCounts(XmlSuite xmlSuite, SuiteRunnerMap suiteRunnerMap) {
     ISuite iSuite = suiteRunnerMap.get(xmlSuite);
     if (iSuite == null) {

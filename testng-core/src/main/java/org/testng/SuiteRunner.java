@@ -26,8 +26,11 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 /**
- * <CODE>SuiteRunner</CODE> is responsible for running all the tests included in one suite. The test
- * start is triggered by {@link #run()} method.
+ * Runs the {@code <test>} tags of one suite.
+ *
+ * <p>The constructor creates a {@link TestRunner} for each {@code <test>}. {@link #run()} runs the
+ * {@code @BeforeSuite} methods, then the tests, then the {@code @AfterSuite} methods. TestNG calls
+ * the suite listeners before all of that, and again after it.
  */
 public class SuiteRunner implements ISuite, ISuiteRunnerListener {
 
@@ -51,11 +54,12 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
 
   private boolean useDefaultListeners = true;
 
-  // The remote host where this suite was run, or null if run locally
+  // The remote host that ran this suite, or null when the suite ran locally.
   private @Nullable String remoteHost;
 
-  // The configuration
-  // Note: adjust test.multiplelisteners.SimpleReporter#generateReport test if renaming the field
+  // The configuration of the run.
+  // Note: test.multiplelisteners.SimpleReporter#generateReport reads this field by its name. Change
+  // that test if you rename the field.
   private final IConfiguration configuration;
 
   private @Nullable ITestObjectFactory objectFactory;
@@ -70,6 +74,18 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   private final Set<IExecutionVisualiser> visualisers = new HashSet<>();
   private final ITestListener exitCodeListener;
 
+  /**
+   * Creates a runner for a suite, with the default listeners off.
+   *
+   * <p>TestNG still adds a {@code TextReporter} to each {@link TestRunner} that {@code
+   * runnerFactory} creates.
+   *
+   * @param configuration the configuration of the run.
+   * @param suite the suite to run.
+   * @param outputDir the directory for the reports.
+   * @param runnerFactory the factory that creates the {@link TestRunner} of each {@code <test>}.
+   * @param comparator the comparator that orders the test methods.
+   */
   public SuiteRunner(
       IConfiguration configuration,
       XmlSuite suite,
@@ -79,6 +95,20 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     this(configuration, suite, outputDir, runnerFactory, false, comparator);
   }
 
+  /**
+   * Creates a runner for a suite.
+   *
+   * @param configuration the configuration of the run.
+   * @param suite the suite to run.
+   * @param outputDir the directory for the reports.
+   * @param runnerFactory the factory that creates the {@link TestRunner} of each {@code <test>}, or
+   *     {@code null} for the default factory.
+   * @param useDefaultListeners whether TestNG adds its default reporters to each {@link
+   *     TestRunner}. This applies only when {@code runnerFactory} is {@code null}. With a factory
+   *     of your own, TestNG adds a {@code TextReporter} to each {@link TestRunner}, whatever this
+   *     value is.
+   * @param comparator the comparator that orders the test methods.
+   */
   public SuiteRunner(
       IConfiguration configuration,
       XmlSuite suite,
@@ -100,6 +130,26 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
         comparator);
   }
 
+  /**
+   * Creates a runner for a suite, with the listeners of the run.
+   *
+   * @param configuration the configuration of the run.
+   * @param suite the suite to run.
+   * @param outputDir the directory for the reports.
+   * @param runnerFactory the factory that creates the {@link TestRunner} of each {@code <test>}, or
+   *     {@code null} for the default factory.
+   * @param useDefaultListeners whether TestNG adds its default reporters to each {@link
+   *     TestRunner}. This applies only when {@code runnerFactory} is {@code null}. With a factory
+   *     of your own, TestNG adds a {@code TextReporter} to each {@link TestRunner}, whatever this
+   *     value is.
+   * @param methodInterceptors the method interceptors to add to each {@link TestRunner}.
+   * @param invokedMethodListener the {@link IInvokedMethodListener} listeners, or {@code null}.
+   * @param container the test listeners and the exit code listener.
+   * @param classListeners the {@link IClassListener} listeners, or {@code null}.
+   * @param holder the data provider listeners and interceptors.
+   * @param comparator the comparator that orders the test methods.
+   * @throws IllegalArgumentException when {@code comparator} is {@code null}.
+   */
   protected SuiteRunner(
       IConfiguration configuration,
       XmlSuite suite,
@@ -130,7 +180,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       declaredFactory = new ObjectFactoryImpl();
       configuration.setObjectFactory(declaredFactory);
     }
-    // The anonymous factory below closes over it, so it has to be effectively final.
+    // The anonymous factory uses this variable, so it must be effectively final.
     final ITestObjectFactory configuredFactory = declaredFactory;
     if (suite.getObjectFactoryClass() == null) {
       objectFactory = configuredFactory;
@@ -176,7 +226,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
             }
           };
     }
-    // Add our own IInvokedMethodListener
+    // Keep the invoked method listeners that were passed in, one for each class.
     invokedMethodListeners = Collections.synchronizedMap(new LinkedHashMap<>());
     for (IInvokedMethodListener listener :
         Optional.ofNullable(invokedMethodListener).orElse(Collections.emptyList())) {
@@ -189,13 +239,14 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
         Optional.ofNullable(classListeners).orElse(Collections.emptyList())) {
       this.classListeners.put(classListener.getClass(), classListener);
     }
-    // The suite owns the reporting snapshots of everything it runs; see ParameterSnapshots.
+    // The suite keeps the parameter snapshots of everything it runs, for the reporters. See
+    // ParameterSnapshots.
     ParameterSnapshotRecorder parameterSnapshotRecorder =
         new ParameterSnapshotRecorder(ParameterSnapshots.attachTo(this));
 
     ITestRunnerFactory iTestRunnerFactory = buildRunnerFactory(comparator);
 
-    // Order the <test> tags based on their order of appearance in testng.xml
+    // Sort the <test> tags in the order in which they appear in the suite file.
     List<XmlTest> xmlTests = xmlSuite.getTests();
     xmlTests.sort(Comparator.comparingInt(XmlTest::getIndex));
 
@@ -208,14 +259,14 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
               new ArrayList<>(this.classListeners.values()),
               this.holder);
 
-      // One recorder for the whole suite, on every runner. Registered through the narrow methods
-      // rather than addListener(), which would fan it back out over the suite, and ahead of the
-      // listeners the runner was given: they are the ones that read what it records.
+      // Use one recorder for the whole suite, and add it to every runner. Add it through the
+      // internal methods, not addListener(), because addListener() also adds it to the suite. Add
+      // it before the other listeners of the runner, because they read what it records.
       tr.addInternalTestListener(parameterSnapshotRecorder);
       tr.addInternalConfigurationListener(parameterSnapshotRecorder);
 
       //
-      // Install the method interceptor, if any was passed
+      // Add the method interceptors that were passed in
       //
       for (IMethodInterceptor methodInterceptor : localMethodInterceptors) {
         tr.addMethodInterceptor(methodInterceptor);
@@ -235,10 +286,23 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     return xmlSuite.getName();
   }
 
+  /**
+   * Replaces the object factory of this suite.
+   *
+   * @param objectFactory the factory that creates objects, such as test class instances.
+   */
   public void setObjectFactory(ITestObjectFactory objectFactory) {
     this.objectFactory = objectFactory;
   }
 
+  /**
+   * Sets whether TestNG adds its default reporters.
+   *
+   * <p>This method has no effect on the test runners. The constructor already created them, and
+   * read the value at that time.
+   *
+   * @param reportResults whether to add the default reporters.
+   */
   public void setReportResults(boolean reportResults) {
     useDefaultListeners = reportResults;
   }
@@ -328,20 +392,20 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
 
   private void privateRun() {
 
-    // Map for unicity, Linked for guaranteed order
+    // A map keeps each method once, and a linked map keeps the order.
     Map<Method, ITestNGMethod> beforeSuiteMethods = new LinkedHashMap<>();
     Map<Method, ITestNGMethod> afterSuiteMethods = new LinkedHashMap<>();
 
     IInvoker invoker = null;
 
-    // Get the invoker and find all the suite level methods
+    // Take the invoker, and collect the @BeforeSuite and @AfterSuite methods of every test runner.
     for (TestRunner tr : testRunners) {
-      // TODO: Code smell.  Invoker should belong to SuiteRunner, not TestRunner
+      // TODO: The invoker should belong to SuiteRunner, not to TestRunner.
       // -- cbeust
       invoker = tr.getInvoker();
 
-      // Add back the configuration listeners that may have gotten altered after
-      // our suite level listeners were invoked.
+      // Add the configuration listeners again. The suite listeners can change them when they
+      // run.
       this.configuration.getConfigurationListeners().forEach(tr::addConfigurationListener);
 
       for (ITestNGMethod m : tr.getBeforeSuiteMethods()) {
@@ -354,9 +418,8 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     }
 
     //
-    // Invoke beforeSuite methods (the invoker can be null
-    // if the suite we are currently running only contains
-    // a <file-suite> tag and no real tests)
+    // Run the @BeforeSuite methods. The invoker is null when the suite has no <test> tags of its
+    // own, for example when it has only <suite-files>.
     //
     if (invoker != null) {
       if (!beforeSuiteMethods.values().isEmpty()) {
@@ -372,7 +435,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       Utils.log("SuiteRunner", 3, "Created " + testRunners.size() + " TestRunners");
 
       //
-      // Run all the test runners
+      // Run the test runners, in parallel or one after another
       //
       boolean testsInParallel = XmlSuite.ParallelMode.TESTS.equals(xmlSuite.getParallel());
       if (RuntimeBehavior.strictParallelism()) {
@@ -385,7 +448,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       }
 
       //
-      // Invoke afterSuite methods
+      // Run the @AfterSuite methods
       //
       if (!afterSuiteMethods.values().isEmpty()) {
         ConfigMethodArguments arguments =
@@ -411,20 +474,31 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     configuration.addConfigurationListener(listener);
   }
 
+  /**
+   * Returns the reporters of this suite.
+   *
+   * @return the list that this suite uses, not a copy.
+   */
   public List<IReporter> getReporters() {
     return reporters;
   }
 
+  /**
+   * Returns the data provider listeners of this suite.
+   *
+   * @return the listeners, in the order of the listener comparator when there is one. You cannot
+   *     change the returned collection.
+   */
   public Collection<IDataProviderListener> getDataProviderListeners() {
     return this.holder.getListeners();
   }
 
   /**
-   * The {@link IParameterResolver}s of this suite.
+   * Returns the holder of the {@link IParameterResolver} resolvers of this suite.
    *
-   * <p>The holder itself is shared with the {@code TestRunner}s rather than copied, so a resolver
-   * registered after they were built -- by {@code @Listeners} on a test class, for instance -- is
-   * seen by all of them. This mirrors what {@link DataProviderHolder} already does.
+   * <p>The test runners share this holder. They do not copy it. So every runner sees a resolver
+   * that someone adds later, for example through {@code @Listeners} on a test class. {@link
+   * DataProviderHolder} works the same way.
    */
   ParameterResolverHolder getParameterResolverHolder() {
     return this.parameterResolverHolder;
@@ -453,11 +527,11 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   /**
-   * Implement <suite parallel="tests">. Since this kind of parallelism happens at the suite level,
-   * we need a special code path to execute it. All the other parallelism strategies are implemented
-   * at the test level in TestRunner#createParallelWorkers (but since this method deals with just
-   * one &lt;test&gt; tag, it can't implement <suite parallel="tests">, which is why we're doing it
-   * here).
+   * Runs the {@code <test>} tags of this suite in parallel, for {@code parallel="tests"}.
+   *
+   * <p>This mode works at the suite level, so it needs its own code. {@code
+   * TestRunner#createWorkers} handles the other parallel modes. It cannot handle this one, because
+   * it sees only one {@code <test>} tag.
    */
   private void runInParallelTestMode() {
     List<Runnable> tasks = new ArrayList<>(testRunners.size());
@@ -476,8 +550,10 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   /**
-   * {@code invokeAll} cancels a {@code <test>} worker when the suite time-out fires. A method that
-   * stops when interrupted still records its failure a moment later. A method that ignores
+   * Records a result for each {@code <test>} that the suite time-out stopped.
+   *
+   * <p>{@code invokeAll} cancels a {@code <test>} worker when the suite time-out fires. A method
+   * that stops when interrupted still records its failure a moment later. A method that ignores
    * interruption never returns, so {@link #runTest} never stores a result. The reports and the exit
    * code then omit that {@code <test>}, and the run exits 0.
    *
@@ -502,9 +578,11 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   /**
-   * A cancelled worker that respects interruption records its result shortly after {@code
-   * invokeAll} returns. 250 ms is long enough for that path and short enough that a worker that
-   * ignores interruption does not stall the suite.
+   * Waits up to 250 ms for the cancelled workers to record their results.
+   *
+   * <p>A cancelled worker that stops when interrupted, records its result shortly after {@code
+   * invokeAll} returns. 250 ms is long enough for that. It is also short enough that a worker that
+   * ignores the interrupt does not delay the suite for long.
    */
   private void waitForStragglingParallelTests() {
     long deadline = System.currentTimeMillis() + 250;
@@ -555,7 +633,11 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     }
   }
 
-  /** @param reporter The ISuiteListener interested in reporting the result of the current suite. */
+  /**
+   * Adds a suite listener, unless this suite already has a listener of the same class.
+   *
+   * @param reporter the suite listener to add.
+   */
   protected void addListener(ISuiteListener reporter) {
     listeners.putIfAbsent(reporter.getClass(), reporter);
   }
@@ -607,22 +689,18 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
 
   @Override
   public Map<String, ISuiteResult> getResults() {
-    // Just to ensure that we guard the internals of the suite results we now wrap it
-    // around with an unmodifiable map.
+    // Return a read-only view, so that callers cannot change the results.
     return Collections.unmodifiableMap(suiteResults);
   }
 
-  /**
-   * FIXME: should be removed?
-   *
-   * @see org.testng.ISuite#getParameter(java.lang.String)
-   */
+  /** Returns the value of a parameter of this suite, or {@code null} when there is none. */
+  // FIXME: should this method be removed?
   @Override
   public @Nullable String getParameter(String parameterName) {
     return xmlSuite.getParameter(parameterName);
   }
 
-  /** @see org.testng.ISuite#getMethodsByGroups() */
+  /** Returns the test methods of every {@code <test>} of this suite, by group name. */
   @Override
   public Map<String, Collection<ITestNGMethod>> getMethodsByGroups() {
     Map<String, Collection<ITestNGMethod>> result = new HashMap<>();
@@ -642,7 +720,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     return result;
   }
 
-  /** @see org.testng.ISuite#getExcludedMethods() */
+  /** Returns the methods that the {@code <test>} tags of this suite left out. */
   @Override
   public Collection<ITestNGMethod> getExcludedMethods() {
     return testRunners.stream()
@@ -656,16 +734,20 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   /**
-   * Returns the annotation finder for the given annotation type.
+   * Returns the finder that reads the TestNG annotations.
    *
-   * @return the annotation finder for the given annotation type.
+   * @return the annotation finder of the configuration.
    */
   @Override
   public IAnnotationFinder getAnnotationFinder() {
     return configuration.getAnnotationFinder();
   }
 
-  /** The default implementation of {@link ITestRunnerFactory}. */
+  /**
+   * The {@link ITestRunnerFactory} that the suite uses when it gets no factory.
+   *
+   * <p>It adds the default reporters to each {@link TestRunner} when the default listeners are on.
+   */
   private static class DefaultTestRunnerFactory implements ITestRunnerFactory {
     private final ITestListener[] failureGenerators;
     private final boolean useDefaultListeners;
@@ -739,11 +821,9 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
         testRunner.addListener(new TestHTMLReporter());
         testRunner.addListener(new JUnitXMLReporter());
 
-        // TODO: Moved these here because maven2 has output reporters running
-        // already, the output from these causes directories to be created with
-        // files. This is not the desired behaviour of running tests in maven2.
-        // Don't know what to do about this though, are people relying on these
-        // to be added even with defaultListeners set to false?
+        // TODO: TestNG adds these reporters only when the default listeners are on. Maven 2 runs
+        // its own reporters, and these would also create directories and files there. Do users
+        // need these reporters even with the default listeners off? That is still open.
         testRunner.addListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
       }
 
@@ -809,6 +889,11 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     }
   }
 
+  /**
+   * Sets the remote host that runs this suite.
+   *
+   * @param host the name of the host.
+   */
   public void setHost(String host) {
     remoteHost = host;
   }
@@ -818,12 +903,24 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     return remoteHost;
   }
 
-  /** @see org.testng.ISuite#getSuiteState() */
+  /**
+   * Returns the run state of this suite. It records if a {@code @BeforeSuite} or
+   * {@code @AfterSuite} method failed.
+   */
   @Override
   public SuiteRunState getSuiteState() {
     return suiteState;
   }
 
+  /**
+   * Sets whether TestNG skips the remaining invocations of a test method after one invocation
+   * fails.
+   *
+   * <p>This method has no effect on the test runners. The constructor already created them, and
+   * read the value at that time. A {@code null} value changes nothing.
+   *
+   * @param skipFailedInvocationCounts whether to skip the remaining invocations.
+   */
   public void setSkipFailedInvocationCounts(Boolean skipFailedInvocationCounts) {
     if (skipFailedInvocationCounts != null) {
       this.skipFailedInvocationCounts = skipFailedInvocationCounts;
@@ -851,12 +948,12 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   /////
-  // implements IInvokedMethodListener
+  // implements ISuiteRunnerListener
   //
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-    // Empty implementation.
+    // Nothing to do after a method runs.
   }
 
   @Override
@@ -870,7 +967,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   //
-  // implements IInvokedMethodListener
+  // implements ISuiteRunnerListener
   /////
 
   @Override
