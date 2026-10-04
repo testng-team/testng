@@ -512,25 +512,70 @@ method, and each issue asks for what the method asserts:
 `TESTNG-400` stays as prose in `ListenerTest`. It is a JIRA item, and `jira.opensymphony.com` is
 dead, so the number points at nothing a reader can open.
 
+## Verified for the numbered packages
+
+GitHub issue #3551 covers the ten packages under `test.*` that are named after a tracker number.
+No phase owned them, because the eight phases moved tests by feature.
+
+<!-- vale off -->
+
+| Ref | Issue title on GitHub | Provenance | Timeline |
+| --- | --- | --- | --- |
+| `GITHUB-565` | Deadlock when using group dependency (plus other factors) | "Add test for #565 (cherry picked from commit fddb95d)" | links commit |
+| `GITHUB-111` | @BeforeClass method not executed if in parent class | pull request #112 names it in its title: "bug fixed #111" | **no link** |
+| `GITHUB-1231` | Swap invocation order between IExecutionListener implementation and report generation. | "Make IExecutionListener implementation be the last reporter call before JVM exits Fixes #1231" | links commit |
+| `GITHUB-1232` | Prevent TestNG from adding duplicate instances of the same listener | "Ensure unique listener injection in TestNG Fixes #1232" | links commit |
+| `GITHUB-1490` | Add a listener for data provider interception | "Add a listener for data provider interception Closes #1490" | links commit |
+
+<!-- vale on -->
+
+Five references, and they divide into two kinds.
+
+**Four were already proved and waiting.** `GITHUB-565`, `GITHUB-1231`, `GITHUB-1232` and
+`GITHUB-1490` were proved by phase 1 and sat in the list below, because no phase owned their
+packages. This move writes them, so their rows come out of that list. `GITHUB-1490` goes on all
+twelve methods of `github1490.VerifyDataProviderListener`, which is the executable test in that
+package despite its name.
+
+**One is new.** `GITHUB-111` appears nowhere in this document before now. The package is called
+`test111`, not `testng111`, and the three JIRA-era packages beside it make a package number look
+like weak evidence. The tool settles it: pull request
+#112 is titled "bug fixed #111", and #111 is "@BeforeClass method not executed if in parent class",
+which is what `test111.Test1` asserts. `test.testng195`, `test.testng249` and `test.testng285` get
+no reference, for the reasons the "No reference" section gives. `test.bug90` and `test.bug92` get
+none either, because the tool refuses their commits. GitHub issue #3555 covers that refusal.
+
+`GITHUB-565` sits on `issue565.Issue565Test`, which had never run. `testng.xml` named it inside an
+XML comment that read `TODO fix the random issue`, so no guard saw it: `verifyTestExecution` fails
+on a class the suite names, and a commented line names nothing.
+
+The random failure was the test's own guard. It gave every method in the inner suite 1000
+milliseconds and called that "prevent real deadlock", which also made a slow run look like one. The
+scenario does stall: over 1000 runs on an idle machine it took about 0.05 seconds most times, 6.6
+seconds once in roughly 300, and 18.4 seconds once. The guard is now a wall clock on the whole run,
+the inner suite carries no timeout, and a failure reports the threads the JVM finds blocked.
+
 ## Verified, description not yet written
 
-A row above is a claim that the code carries that description. The rows below are the exception.
-Phase 1 proved them by sweeping every class in reach. Their classes still sit in top-level `test.*`
-packages that no phase has moved. The description goes in when the owning feature moves.
+A row above is a claim that the code carries that description. This list held the exception:
+a reference phase 1 had proved, on a class in a top-level `test.*` package that no phase owned, so
+the description waited for the owning feature to move.
+
+**The list is empty.** GitHub issue #3551 moved the last of those packages and wrote the four
+references that were waiting: `GITHUB-565`, `GITHUB-1231`, `GITHUB-1232` and `GITHUB-1490`.
+`GITHUB-111` was never in this list. That move proved it from scratch, so it is a fifth reference
+rather than a fourth one coming out of here.
 
 <!-- vale off -->
 
 | Ref | Class still at |
 | --- | --- |
-| `GITHUB-565` | `test.issue565` |
-| `GITHUB-1231` | `test.testng1231` |
-| `GITHUB-1232` | `test.testng1232` |
-| `GITHUB-1490` | `test.github1490` |
 
 <!-- vale on -->
 
-`scripts/refs-in-sync.sh` reads this list. Move a reference out of it when the
-description is written, and the check starts requiring it.
+`scripts/refs-in-sync.sh` reads this list. Add a row only to record a reference that is proved and
+whose description cannot go in yet. Take the row out when the description is written, and the check
+starts requiring it.
 
 `GITHUB-521` is the one worth reading twice. The test was written in 2015 and was in no suite file,
 so it had never run. Phase 2 registers it.

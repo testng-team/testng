@@ -1,0 +1,70 @@
+package org.testng.listeners.testng1231;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.testng.IAlterSuiteListener;
+import org.testng.IExecutionListener;
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.ISuiteListener;
+import org.testng.ITestNGListener;
+import org.testng.TestNG;
+import org.testng.annotations.Test;
+import org.testng.listeners.samples.testng1231.ListenerOrderTestSample;
+import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
+import test.SimpleBaseTest;
+
+public class TestExecutionListenerInvocationOrder extends SimpleBaseTest {
+  @Test(description = "GITHUB-1231")
+  public void testListenerOrder() {
+    XmlSuite xmlSuite = createXmlSuite("Suite");
+    XmlTest xmlTest = createXmlTest(xmlSuite, "Test");
+    createXmlClass(xmlTest, ListenerOrderTestSample.class);
+    TestNG tng = create(xmlSuite);
+    TestListenerFor1231 listener = new TestListenerFor1231();
+    tng.addListener((ITestNGListener) listener);
+    tng.run();
+    List<Integer> expected = Arrays.asList(1, 2, 3, 4, 5, 6);
+    assertThat(TestListenerFor1231.order).isEqualTo(expected);
+  }
+
+  public static class TestListenerFor1231
+      implements IExecutionListener, IAlterSuiteListener, IReporter, ISuiteListener {
+    public static List<Integer> order = new ArrayList<>();
+
+    @Override
+    public void onExecutionStart() {
+      order.add(1);
+    }
+
+    @Override
+    public void onExecutionFinish() {
+      order.add(6);
+    }
+
+    @Override
+    public void generateReport(
+        List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+      order.add(5);
+    }
+
+    @Override
+    public void alter(List<XmlSuite> suites) {
+      order.add(2);
+    }
+
+    @Override
+    public void onStart(ISuite suite) {
+      order.add(3);
+    }
+
+    @Override
+    public void onFinish(ISuite suite) {
+      order.add(4);
+    }
+  }
+}

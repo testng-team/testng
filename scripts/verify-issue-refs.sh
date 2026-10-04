@@ -422,10 +422,19 @@ without_pr_number() {
 
 # Provenance must name the number being checked. Any issue marker is not enough: a commit that says
 # "#123" does not prove anything about issue 765.
-# A commit message must name the issue outright: "#765", "TESTNG-765" or "issues/765".
+# A commit message must name the issue outright: "#765" or "issues/765".
 # Anything looser accepts text that proves nothing, such as "src/765/data.txt" or "release-765".
+#
+# "TESTNG-765" is NOT one of the forms. TestNG used jira.opensymphony.com before GitHub, and that
+# tracker has its own number space, as GitHub Discussions do. The two disagree, three times over in
+# this repository alone: TESTNG-195 is "@AfterMethod has no way of knowing if the current test
+# failed" while GitHub #195 is a pull request about ant resource collections; TESTNG-249 is about
+# overridden methods shadowing each other while GitHub #249 adds RetryAnalyzerCount.getCount; and
+# TESTNG-285 is about @Test(sequential=true) with inheritance while GitHub #285 is about log4testng
+# log levels. Reading the JIRA id as an issue number proved GITHUB-285 for a test that has nothing
+# to do with it.
 names_num() {
-  printf '%s' "$(without_pr_number "$1")" | grep -qE "(TESTNG-|#|issues/)${num}([^0-9]|$)"
+  printf '%s' "$(without_pr_number "$1")" | grep -qE "(#|issues/)${num}([^0-9]|$)"
 }
 
 # Last source: the body of the pull request that carried the commit. GitHub closes an issue when a
@@ -503,9 +512,10 @@ ref_names_num() {
 # rules did, never the raw message, or it would print a pull request number as the evidence.
 matched_text() {
   # The same alternation names_num applies. A looser one printed "release-765" as the evidence for
-  # a commit that was proven by "fix #765", which tells the reader the opposite of the truth.
+  # a commit that was proven by "fix #765", which tells the reader the opposite of the truth. The
+  # JIRA form is out of both, so a message holding "TESTNG-765 was refiled as #765" reports "#765".
   printf '%s' "$(without_pr_number "$1")" \
-    | grep -oE "(TESTNG-|#|issues/)${num}([^0-9]|$)" | head -1
+    | grep -oE "(#|issues/)${num}([^0-9]|$)" | head -1
 }
 # The sources that may prove the reference, strongest first: the commit's own message, then for each
 # pull request GitHub lists, its branch, its title and its body. The first that answers wins.

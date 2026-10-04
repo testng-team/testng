@@ -266,15 +266,17 @@ Follow the order.
    whether it still passes before filing it anywhere. Phase 4 found two, and both passed once
    their assertions were brought up to date.
 
-   Four more are commented out today. Each belongs to a later phase or to none, and each needs the
-   same question asked:
+   More are commented out today. Each belongs to a later phase or to none, and each needs the
+   same question asked. To list them, strip the comments as above and compare with what is left:
 
    | Class | Owner |
    | --- | --- |
    | `test.distributed.DistributedTest` | no phase owns it |
-   | `test.issue565.Issue565Test` | no phase owns it, and `GITHUB-565` is already verified |
    | `test.jar.JarTest` | no phase owns it |
    | `test.timeout.TimeOutThreadLocalSampleTest` | no phase owns it |
+
+   `test.issue565.Issue565Test` was in this table. GitHub issue #3551 took it out: the class is
+   registered, it runs, and it carries `GITHUB-565`.
 
    Also check `<package name="..."/>` in `testng.xml`. A class selected that way is executable
    without being named, and the rule above would file it under `samples`. Three such tags exist
@@ -490,9 +492,9 @@ Neither of these belongs to a phase, and both are easy to forget once the migrat
    behavior for them. Either the file keeps those two
    forever, or `verifyTestExecution` learns to read group filters and the file goes entirely. The
    second is better and is not hard; it was left out here to keep this PR to one subject.
-2. **Decide what happens to `test.test111`.** It is the same shape as the packages this work
-   removed, but it does not match `testng<number>` so it was never in scope. Nothing else in the
-   tree is named that way now.
+2. **~~Decide what happens to `test.test111`.~~** Done by GitHub issue #3551, which also found
+   that the claim here was wrong. Ten packages at the top level of `test.*` were named after a
+   tracker number, not one. All ten are moved.
 
 **The 452 `GITHUB-*` descriptions elsewhere in the tree are deliberately not audited.** Every
 description checked so far that someone else wrote was correct -- 165, 182, 990, 1834, 1880, 2152

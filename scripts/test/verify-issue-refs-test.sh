@@ -191,8 +191,9 @@ verdict() {
 }
 
 # --- the commit message names the issue ------------------------------------------------------
-# These three forms are the only ones a commit message may use as proof.
-for form in '#765' 'TESTNG-765' 'issues/765'; do
+# These two forms are the only ones a commit message may use as proof. "TESTNG-765" is not one of
+# them: see the JIRA block below.
+for form in '#765' 'issues/765'; do
   r=$(new_repo)
   add "$r" src/foo/AlphaTest.java "Fix $form: something was broken"
   check "commit says $form" PROVEN "$(verdict "$r" src/foo/AlphaTest.java 765)"
@@ -212,6 +213,46 @@ check "a version is not provenance" "NOT PROVEN" "$(verdict "$r" src/foo/AlphaTe
 # A different issue number is not proof either.
 r=$(new_repo); add "$r" src/foo/AlphaTest.java "Fix #173"
 check "another issue is not provenance" "NOT PROVEN" "$(verdict "$r" src/foo/AlphaTest.java 765)"
+
+# --- the old JIRA tracker is a different number space ----------------------------------------
+# TestNG used jira.opensymphony.com before GitHub, and its ids read "TESTNG-<n>". That <n> is not
+# a GitHub issue number. Three cases in this repository prove the two spaces disagree:
+#
+#   TESTNG-195 is "@AfterMethod has no way of knowing if the current test failed".
+#              GitHub #195 is a pull request about ant resource collections.
+#   TESTNG-249 is "Overridden test methods were shadowing each other with <include>".
+#              GitHub #249 is a pull request adding RetryAnalyzerCount.getCount.
+#   TESTNG-285 is "@Test(sequential=true) works incorrectly for classes with inheritance".
+#              GitHub #285 is "Regression: log4testng.Logger fails to parse log levels".
+#
+# The matcher used to read "TESTNG-285" as naming issue 285, so it proved GITHUB-285 for a test
+# about inheritance. GitHub Discussions get their own number space in this script already; the
+# JIRA tracker needs the same treatment.
+r=$(new_repo); add "$r" src/foo/AlphaTest.java "Fixed: TESTNG-765: the parser was broken"
+check "a JIRA id is not provenance" "NOT PROVEN" "$(verdict "$r" src/foo/AlphaTest.java 765)"
+
+# The real shape from this repository's own history.
+r=$(new_repo)
+add "$r" src/foo/AlphaTest.java \
+  "Fixed: TESTNG-285: @Test(sequential=true) works incorrectly for classes with inheritance"
+check "the TESTNG-285 commit does not prove GITHUB-285" "NOT PROVEN" \
+  "$(verdict "$r" src/foo/AlphaTest.java 285)"
+
+# A JIRA id beside the real issue number must not stop the real one proving it.
+r=$(new_repo); add "$r" src/foo/AlphaTest.java "Port TESTNG-999 forward. Fixes #765"
+check "a JIRA id does not block the issue number" PROVEN \
+  "$(verdict "$r" src/foo/AlphaTest.java 765)"
+
+# And the same number in both forms still proves it, through the "#" form.
+r=$(new_repo); add "$r" src/foo/AlphaTest.java "TESTNG-765 was refiled as #765"
+check "the issue number proves it beside its own JIRA id" PROVEN \
+  "$(verdict "$r" src/foo/AlphaTest.java 765)"
+
+# The evidence line must print the text that proved it, never the JIRA id beside it.
+r=$(new_repo); add "$r" src/foo/AlphaTest.java "TESTNG-765 was refiled as #765"
+out=$(cd "$r" && PROVENANCE_ONLY=1 bash "$SCRIPT" src/foo/AlphaTest.java 765 2>&1)
+check "the evidence is not the JIRA id" "#765" \
+  "$(printf '%s' "$out" | sed -n 's/^provenance  the introducing commit names it: //p' | tr -d ' ')"
 
 # A pull request number is not an issue number. Pull requests and issues share one number space.
 # GitHub writes the pull request number at the end of a squash commit's subject. The body of a squash
@@ -578,7 +619,9 @@ done
 
 check "a title proves it" PROVEN \
   "$(title_verdict 'Fix issue #1009: Iterator<Object[]> DataProvider: indices not working' 1009)"
-check "a TESTNG title proves it" PROVEN "$(title_verdict 'TESTNG-765 reject the empty name' 765)"
+# A pull request title is held to the commit-message rule, so the JIRA id is refused there too.
+check "a TESTNG title is not provenance" "NOT PROVEN" \
+  "$(title_verdict 'TESTNG-765 reject the empty name' 765)"
 
 # A body that could not be read is not a body that says nothing. When no source proves the reference
 # and some body was not read, the answer is CANNOT CHECK with exit 3, never NOT PROVEN. A NOT PROVEN
