@@ -529,13 +529,17 @@ No phase owned them, because the eight phases moved tests by feature.
 
 <!-- vale on -->
 
-`GITHUB-1231`, `GITHUB-1232` and `GITHUB-1490` were proved by phase 1 and waited in the list
-below, because no phase owned their packages. This move writes them, so their rows come out of that
-list. `GITHUB-1490` goes on all twelve methods of `github1490.VerifyDataProviderListener`, which is
-the executable test in that package despite its name.
+Five references, and they divide into two kinds.
 
-`GITHUB-111` is new. The package is called `test111`, not `testng111`, and the three JIRA-era
-packages beside it make a package number look like weak evidence. The tool settles it: pull request
+**Four were already proved and waiting.** `GITHUB-565`, `GITHUB-1231`, `GITHUB-1232` and
+`GITHUB-1490` were proved by phase 1 and sat in the list below, because no phase owned their
+packages. This move writes them, so their rows come out of that list. `GITHUB-1490` goes on all
+twelve methods of `github1490.VerifyDataProviderListener`, which is the executable test in that
+package despite its name.
+
+**One is new.** `GITHUB-111` appears nowhere in this document before now. The package is called
+`test111`, not `testng111`, and the three JIRA-era packages beside it make a package number look
+like weak evidence. The tool settles it: pull request
 #112 is titled "bug fixed #111", and #111 is "@BeforeClass method not executed if in parent class",
 which is what `test111.Test1` asserts. `test.testng195`, `test.testng249` and `test.testng285` get
 no reference, for the reasons the "No reference" section gives. `test.bug90` and `test.bug92` get
@@ -558,7 +562,9 @@ a reference phase 1 had proved, on a class in a top-level `test.*` package that 
 the description waited for the owning feature to move.
 
 **The list is empty.** GitHub issue #3551 moved the last of those packages and wrote the four
-references that were waiting: `GITHUB-111`, `GITHUB-1231`, `GITHUB-1232` and `GITHUB-1490`.
+references that were waiting: `GITHUB-565`, `GITHUB-1231`, `GITHUB-1232` and `GITHUB-1490`.
+`GITHUB-111` was never in this list. That move proved it from scratch, so it is a fifth reference
+rather than a fourth one coming out of here.
 
 <!-- vale off -->
 
