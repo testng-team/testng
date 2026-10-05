@@ -4,24 +4,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
  * Two rows on two threads. Row 2's setup fails and marks the class while row 1's first attempt is
- * inside its test method; row 1 then fails and is retried. That mark was recorded before the retry
+ * inside its test method. Row 1 then fails and is retried. That mark was recorded before the retry
  * started, but by another row, so the retry must honor it.
  *
- * <p>Two latches fix the order. Row 2's setup waits for row 1's test method to have started, so the
- * mark cannot land between row 1's setup and its own failure check, which would skip row 1 outright
- * and leave nothing to retry. Row 1's test method then waits for row 2's setup to have failed
- * before it fails itself.
+ * <p>Two latches fix the order of the records, not only of the throws. Row 2's setup waits for row
+ * 1's test method to have started. The mark cannot land between row 1's setup and its own failure
+ * check. Row 2's alwaysRun teardown then signals that the setup failure has been recorded. Row 1's
+ * test method waits for that signal before it fails itself.
  */
 public class ParallelRowsSample {
 
   private final CountDownLatch row1Started = new CountDownLatch(1);
-  private final CountDownLatch row2SetupFailed = new CountDownLatch(1);
+  private final CountDownLatch row2FailureRecorded = new CountDownLatch(1);
   private volatile boolean row1Failed;
 
   @DataProvider(parallel = true)
@@ -35,8 +36,14 @@ public class ParallelRowsSample {
       assertThat(row1Started.await(10, TimeUnit.SECONDS))
           .withFailMessage("row 1 did not start within 10s")
           .isTrue();
-      row2SetupFailed.countDown();
       throw new IllegalStateException("setup fails for row 2");
+    }
+  }
+
+  @AfterMethod(alwaysRun = true)
+  public void teardown(Object[] params) {
+    if ((Integer) params[0] == 2) {
+      row2FailureRecorded.countDown();
     }
   }
 
@@ -45,8 +52,8 @@ public class ParallelRowsSample {
     if (row == 1 && !row1Failed) {
       row1Failed = true;
       row1Started.countDown();
-      assertThat(row2SetupFailed.await(10, TimeUnit.SECONDS))
-          .withFailMessage("row 2's setup did not fail within 10s")
+      assertThat(row2FailureRecorded.await(10, TimeUnit.SECONDS))
+          .withFailMessage("row 2's setup failure was not recorded within 10s")
           .isTrue();
       throw new AssertionError("row 1 fails on its first attempt only");
     }
