@@ -280,6 +280,7 @@
       <class name="org.testng.listeners.github1465.IssueTest"/>
       <class name="org.testng.listeners.github2385.IssueTest"/>
       <class name="org.testng.listeners.github2522.IssueTest"/>
+      <class name="org.testng.listeners.issue3563.AddListenerObjectTest"/>
     </classes>
   </test>
 

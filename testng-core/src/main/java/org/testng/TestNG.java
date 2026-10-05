@@ -952,17 +952,19 @@ public class TestNG {
   /**
    * Adds a listener of any type.
    *
-   * <p>When the object is not an {@link ITestNGListener}, this method prints an error and stops the
-   * JVM.
+   * <p>When the object is not an {@link ITestNGListener}, this method throws a
+   * {@link TestNGException}.
    *
    * @param listener the listener to add.
+   * @throws TestNGException if {@code listener} is not an {@link ITestNGListener}.
    * @deprecated Use {@link #addListener(ITestNGListener)} instead.
    */
   // TODO: remove this method later. Caution: IntelliJ uses it. Check with @akozlova first.
   @Deprecated
   public void addListener(Object listener) {
     if (!(listener instanceof ITestNGListener)) {
-      exitWithError(
+      // A setter throws. Only TestNG#main turns a bad value into an exit code.
+      throw new TestNGException(
           "Listener "
               + listener
               + " must be one of ITestListener, ISuiteListener, IReporter, "
