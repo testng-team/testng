@@ -6,6 +6,7 @@ on:
     # workflow file is listed too, so a pull request that changes a check still runs it.
     paths:
       - 'scripts/**'
+      - 'CHANGELOG.md'
       - 'docs/test-issue-references.md'
       - 'testng-core/src/test/java/**'
       - '.github/workflows/scripts.yml'
@@ -23,6 +24,11 @@ jobs:
           # The tests build their own git repositories in a temporary directory. They never push,
           # so the token does not need to stay in .git/config.
           persist-credentials: false
+          # changelog-convert-test.sh runs changelog-convert.py, which reads CHANGES.txt out
+          # of history and checks every comparison link against a real tag. A default
+          # checkout carries neither. The script refuses to run without them rather than
+          # reporting a clean file it never checked, so the job would fail on a shallow one.
+          fetch-depth: 0
       # Discovery, not a list. Naming each suite here let a new script ship with no test at all,
       # which is how both of these did. run-all.sh fails when scripts/x.sh has no
       # scripts/test/x-test.sh, and runs every suite it finds.
