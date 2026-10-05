@@ -952,8 +952,8 @@ public class TestNG {
   /**
    * Adds a listener of any type.
    *
-   * <p>When the object is not an {@link ITestNGListener}, this method throws a
-   * {@link TestNGException}.
+   * <p>When the object is not an {@link ITestNGListener}, this method throws a {@link
+   * TestNGException}.
    *
    * @param listener the listener to add.
    * @throws TestNGException if {@code listener} is not an {@link ITestNGListener}.
