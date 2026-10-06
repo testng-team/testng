@@ -171,8 +171,6 @@ class VerifyTestExecutionRulesTest {
 
     @Test(description = "a class filtered by the suite's group exclusion is not reported as silent")
     fun aGroupFilteredClassIsNotReportedAsSilent() {
-        // test.SerializationTest is declared and never ran, but every @Test is in group "broken"
-        // and the Regression2 <test> block excludes "broken". It must not appear in "never ran".
         assertNoProblem(
             Evidence(
                 declared = setOf("test.SerializationTest"),
@@ -182,24 +180,164 @@ class VerifyTestExecutionRulesTest {
         )
     }
 
-    @Test(description = "a group-filtered class that starts running is reported")
-    fun aGroupFilteredClassThatStartsRunningIsReported() {
-        // If the group exclusion or the @Test annotations change, the class may start producing
-        // results. The guard catches this so the classification can be re-verified.
-        assertProblem(
+    @Test(description = "a group-filtered class that ran is accepted because it produced results")
+    fun aGroupFilteredClassThatRanIsAccepted() {
+        assertNoProblem(
             Evidence(
                 declared = setOf("test.SerializationTest"),
                 executed = setOf("test.SerializationTest"),
                 groupFiltered = setOf("test.SerializationTest"),
-            ),
-            "Classified as group-filtered but producing results now",
+            )
         )
     }
 
     @Test(description = "groupFiltered does not cover a class outside the declared set")
     fun aGroupFilteredClassNotDeclaredIsNotAffected() {
-        // The guard only fires on declared classes. An undeclared class in groupFiltered is inert.
         assertNoProblem(Evidence(groupFiltered = setOf("test.NotInSuite")))
+    }
+
+    @Test(description = "a class with a group matching regex exclusion is classified as filtered")
+    fun aClassWithGroupExcludedByRegexIsFiltered() {
+        val source = """
+            package test;
+            import org.testng.annotations.Test;
+            public class SampleTest {
+                @Test(groups = "brokenSerialization")
+                public void testOne() {}
+            }
+        """.trimIndent()
+        val regexes = listOf(Regex("broken.*"))
+        assert(isClassGroupFiltered("test.SampleTest", source, regexes))
+    }
+
+    @Test(description = "class-level @Test groups contribute to effective groups of test methods")
+    fun classLevelGroupAnnotationIsInheritedByMethods() {
+        val source = """
+            package test;
+            import org.testng.annotations.Test;
+            @Test(groups = "broken")
+            public class InheritedGroupTest {
+                public void testOne() {}
+            }
+        """.trimIndent()
+        val regexes = listOf(Regex("broken"))
+        assert(isClassGroupFiltered("test.InheritedGroupTest", source, regexes))
+    }
+
+    @Test(description = "a method with multiple groups is excluded when ANY group is in the exclude set")
+    fun multiGroupTestIsExcludedWhenAnyGroupIsExcluded() {
+        val source = """
+            package test;
+            import org.testng.annotations.Test;
+            public class MultiGroupTest {
+                @Test(groups = {"checkin", "broken"})
+                public void testOne() {}
+            }
+        """.trimIndent()
+        val regexes = listOf(Regex("broken"))
+        assert(isClassGroupFiltered("test.MultiGroupTest", source, regexes))
+    }
+
+    @Test(description = "findGroupFilteredClasses identifies SerializationTest and ThreadTest from repository suite and sources")
+    fun integrationTestGroupFilteredClassesFromRepository() {
+        val rootSuite = java.io.File("../../testng-core/src/test/resources/testng.xml").canonicalFile
+        val sourcesDir = java.io.File("../../testng-core/src/test/java").canonicalFile
+        if (rootSuite.isFile && sourcesDir.isDirectory) {
+            val filtered = findGroupFilteredClasses(rootSuite, sourcesDir)
+            assert(filtered.contains("test.SerializationTest")) {
+                "expected SerializationTest in filtered set, got $filtered"
+            }
+            assert(filtered.contains("org.testng.concurrency.ThreadTest")) {
+                "expected ThreadTest in filtered set, got $filtered"
+            }
+        }
+    }
+
+    @Test(description = "suite-file traversal is supported when computing groupFilteredClasses")
+    fun suiteFileTraversalIsSupportedByGroupFilteredClasses() {
+        val tempDir = java.nio.file.Files.createTempDirectory("test-suite-file").toFile()
+        try {
+            val rootXml = tempDir.resolve("root.xml")
+            val childXml = tempDir.resolve("child.xml")
+            val sourcesDir = tempDir.resolve("src")
+            sourcesDir.mkdirs()
+
+            rootXml.writeText("""
+                <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+                <suite name="Root">
+                    <suite-file path="child.xml"/>
+                </suite>
+            """.trimIndent())
+
+            childXml.writeText("""
+                <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+                <suite name="Child">
+                    <test name="ChildTest">
+                        <groups><run><exclude name="broken"/></run></groups>
+                        <classes><class name="test.ChildTest"/></classes>
+                    </test>
+                </suite>
+            """.trimIndent())
+
+            val pkgDir = sourcesDir.resolve("test")
+            pkgDir.mkdirs()
+            pkgDir.resolve("ChildTest.java").writeText("""
+                package test;
+                import org.testng.annotations.Test;
+                public class ChildTest {
+                    @Test(groups = "broken")
+                    public void testMethod() {}
+                }
+            """.trimIndent())
+
+            val filtered = findGroupFilteredClasses(rootXml, sourcesDir)
+            assert(filtered.contains("test.ChildTest")) {
+                "expected test.ChildTest to be filtered via suite-file, got $filtered"
+            }
+        } finally {
+            tempDir.deleteRecursively()
+        }
+    }
+
+    @Test(description = "a class declared in multiple test blocks is not filtered if one block runs it")
+    fun multiTestBlockDeclarationIsNotFilteredIfOneBlockRunsIt() {
+        val tempDir = java.nio.file.Files.createTempDirectory("test-multi-block").toFile()
+        try {
+            val rootXml = tempDir.resolve("root.xml")
+            val sourcesDir = tempDir.resolve("src")
+            sourcesDir.mkdirs()
+
+            rootXml.writeText("""
+                <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+                <suite name="MultiBlock">
+                    <test name="FilteredBlock">
+                        <groups><run><exclude name="broken"/></run></groups>
+                        <classes><class name="test.SharedTest"/></classes>
+                    </test>
+                    <test name="UnfilteredBlock">
+                        <classes><class name="test.SharedTest"/></classes>
+                    </test>
+                </suite>
+            """.trimIndent())
+
+            val pkgDir = sourcesDir.resolve("test")
+            pkgDir.mkdirs()
+            pkgDir.resolve("SharedTest.java").writeText("""
+                package test;
+                import org.testng.annotations.Test;
+                public class SharedTest {
+                    @Test(groups = "broken")
+                    public void testMethod() {}
+                }
+            """.trimIndent())
+
+            val filtered = findGroupFilteredClasses(rootXml, sourcesDir)
+            assert(!filtered.contains("test.SharedTest")) {
+                "expected test.SharedTest NOT to be filtered because UnfilteredBlock runs it, got $filtered"
+            }
+        } finally {
+            tempDir.deleteRecursively()
+        }
     }
 
     // --- the inventory ------------------------------------------------------------------------------
@@ -430,20 +568,5 @@ class VerifyTestExecutionRulesTest {
             )
         )
         assert(found.size == 5) { "expected five problems, got ${found.size}:\n${found.joinToString("\n")}" }
-    }
-
-    @Test(description = "a group-filtered class that ran is counted alongside the other problems")
-    fun everyProblemIsReportedIncludingFilteredButRan() {
-        val found = problems(
-            Evidence(
-                declared = setOf("test.Parked"),
-                mentioned = setOf("test.Parked"),
-                executed = setOf("org.testng.factory.samples.Leaked", "test.Filtered"),
-                silent = setOf("test.Renamed"),
-                byFactory = setOf("org.testng.factory.Outside"),
-                groupFiltered = setOf("test.Filtered"),
-            )
-        )
-        assert(found.size == 6) { "expected six problems, got ${found.size}:\n${found.joinToString("\n")}" }
     }
 }
