@@ -303,6 +303,21 @@ class VerifyTestExecutionRulesTest {
         assert(isClassGroupFiltered("test.SampleTest", source, filter))
     }
 
+    @Test(description = "an ungrouped test method is not excluded by an exclude-only group filter")
+    fun ungroupedMethodIsNotExcludedByExcludeFilter() {
+        val source = """
+            package test;
+            import org.testng.annotations.Test;
+            public class UngroupedClass {
+                @Test
+                public void plainTest() {}
+            }
+        """.trimIndent()
+        val filter = GroupFilter(excludePatterns = listOf(Regex(asRegexp("broken"))))
+        // Plain @Test has no groups, so exclude filter on "broken" does NOT exclude it.
+        assert(!isClassGroupFiltered("test.UngroupedClass", source, filter))
+    }
+
     @Test(description = "method with inheritGroups = false opts out of class-level excluded group")
     fun methodWithInheritGroupsFalseOptOutFromClassLevelGroup() {
         val source = """

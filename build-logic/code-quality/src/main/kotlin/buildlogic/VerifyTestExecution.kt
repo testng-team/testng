@@ -334,7 +334,7 @@ internal data class GroupFilter(
 
     fun isMethodExcluded(effectiveGroups: Set<String>): Boolean {
         if (effectiveGroups.isEmpty()) {
-            return includePatterns.isNotEmpty() || excludePatterns.isNotEmpty()
+            return includePatterns.isNotEmpty()
         }
         if (excludePatterns.any { pattern -> effectiveGroups.any { pattern.matches(it) } }) {
             return true
