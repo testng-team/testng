@@ -206,8 +206,8 @@ class VerifyTestExecutionRulesTest {
                 public void testOne() {}
             }
         """.trimIndent()
-        val regexes = listOf(Regex("broken.*"))
-        assert(isClassGroupFiltered("test.SampleTest", source, regexes))
+        val filter = GroupFilter(excludePatterns = listOf(Regex("broken.*")))
+        assert(isClassGroupFiltered("test.SampleTest", source, filter))
     }
 
     @Test(description = "class-level @Test groups contribute to effective groups of test methods")
@@ -220,8 +220,8 @@ class VerifyTestExecutionRulesTest {
                 public void testOne() {}
             }
         """.trimIndent()
-        val regexes = listOf(Regex("broken"))
-        assert(isClassGroupFiltered("test.InheritedGroupTest", source, regexes))
+        val filter = GroupFilter(excludePatterns = listOf(Regex("broken")))
+        assert(isClassGroupFiltered("test.InheritedGroupTest", source, filter))
     }
 
     @Test(description = "a method with multiple groups is excluded when ANY group is in the exclude set")
@@ -234,8 +234,8 @@ class VerifyTestExecutionRulesTest {
                 public void testOne() {}
             }
         """.trimIndent()
-        val regexes = listOf(Regex(asRegexp("broken")))
-        assert(isClassGroupFiltered("test.MultiGroupTest", source, regexes))
+        val filter = GroupFilter(excludePatterns = listOf(Regex(asRegexp("broken"))))
+        assert(isClassGroupFiltered("test.MultiGroupTest", source, filter))
     }
 
     @Test(description = "outer class with no test methods is not classified as filtered even if nested class has tests")
@@ -250,11 +250,11 @@ class VerifyTestExecutionRulesTest {
                 }
             }
         """.trimIndent()
-        val regexes = listOf(Regex(asRegexp("broken")))
+        val filter = GroupFilter(excludePatterns = listOf(Regex(asRegexp("broken"))))
         // OuterClass has no test methods of its own, so it MUST NOT be classified as group-filtered.
-        assert(!isClassGroupFiltered("test.OuterClass", source, regexes))
+        assert(!isClassGroupFiltered("test.OuterClass", source, filter))
         // NestedClass has a test method with group "broken", so it IS classified as group-filtered.
-        assert(isClassGroupFiltered("test.OuterClass${'$'}NestedClass", source, regexes))
+        assert(isClassGroupFiltered("test.OuterClass${'$'}NestedClass", source, filter))
     }
 
     @Test(description = "unescaped dollar in exclude pattern is treated as literal dollar sign")
@@ -278,13 +278,87 @@ class VerifyTestExecutionRulesTest {
         """.trimIndent()
 
         // TestNG asRegexp("broken$") converts "broken$" -> "broken\$"
-        val regexes = listOf(Regex(asRegexp("broken$")))
+        val filter = GroupFilter(excludePatterns = listOf(Regex(asRegexp("broken$"))))
 
         // "broken$" regex must NOT match group "broken"
-        assert(!isClassGroupFiltered("test.SampleTest", sourceWithBroken, regexes))
+        assert(!isClassGroupFiltered("test.SampleTest", sourceWithBroken, filter))
 
         // "broken$" regex MUST match group "broken$"
-        assert(isClassGroupFiltered("test.SampleTest", sourceWithDollar, regexes))
+        assert(isClassGroupFiltered("test.SampleTest", sourceWithDollar, filter))
+    }
+
+    @Test(description = "include-only group filter excludes methods matching no included group")
+    fun includeOnlyGroupFilterClassifiesClassWithNoMatchingGroupsAsFiltered() {
+        val source = """
+            package test;
+            import org.testng.annotations.Test;
+            public class SampleTest {
+                @Test(groups = "slow")
+                public void testOne() {}
+            }
+        """.trimIndent()
+        // Filter includes ONLY "fast"
+        val filter = GroupFilter(includePatterns = listOf(Regex(asRegexp("fast"))))
+        // SampleTest has group "slow" which matches no include pattern, so it is filtered out.
+        assert(isClassGroupFiltered("test.SampleTest", source, filter))
+    }
+
+    @Test(description = "method with inheritGroups = false opts out of class-level excluded group")
+    fun methodWithInheritGroupsFalseOptOutFromClassLevelGroup() {
+        val source = """
+            package test;
+            import org.testng.annotations.Test;
+            @Test(groups = "broken")
+            public class OptOutTest {
+                @Test(inheritGroups = false, groups = "checkin")
+                public void testOne() {}
+            }
+        """.trimIndent()
+        val filter = GroupFilter(excludePatterns = listOf(Regex(asRegexp("broken"))))
+        // The method opts out of "broken", so it belongs only to "checkin" and is NOT excluded.
+        assert(!isClassGroupFiltered("test.OptOutTest", source, filter))
+    }
+
+    @Test(description = "suite-level group filter applies to test block classes")
+    fun suiteLevelGroupFilterAppliesToTestBlockClasses() {
+        val tempDir = java.nio.file.Files.createTempDirectory("test-suite-groups").toFile()
+        try {
+            val rootXml = tempDir.resolve("root.xml")
+            val sourcesDir = tempDir.resolve("src")
+            sourcesDir.mkdirs()
+
+            rootXml.writeText("""
+                <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+                <suite name="SuiteWithGroups">
+                    <groups>
+                        <run>
+                            <exclude name="broken"/>
+                        </run>
+                    </groups>
+                    <test name="TestWithoutGroups">
+                        <classes><class name="test.SuiteExcludedTest"/></classes>
+                    </test>
+                </suite>
+            """.trimIndent())
+
+            val pkgDir = sourcesDir.resolve("test")
+            pkgDir.mkdirs()
+            pkgDir.resolve("SuiteExcludedTest.java").writeText("""
+                package test;
+                import org.testng.annotations.Test;
+                public class SuiteExcludedTest {
+                    @Test(groups = "broken")
+                    public void testMethod() {}
+                }
+            """.trimIndent())
+
+            val filtered = findGroupFilteredClasses(rootXml, sourcesDir)
+            assert(filtered.contains("test.SuiteExcludedTest")) {
+                "expected test.SuiteExcludedTest to be filtered via suite-level group exclusion, got $filtered"
+            }
+        } finally {
+            tempDir.deleteRecursively()
+        }
     }
 
     @Test(description = "findGroupFilteredClasses identifies SerializationTest and ThreadTest from repository suite and sources")

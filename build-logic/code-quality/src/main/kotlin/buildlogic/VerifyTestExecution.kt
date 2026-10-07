@@ -297,17 +297,13 @@ internal fun findGroupFilteredClasses(rootSuiteFile: java.io.File, sourcesDir: j
             visitSuite(canonical.parentFile.resolve(childPath))
         }
 
+        val suiteHeaderAndFooter = TEST_BLOCK.replace(suiteText, "")
+        val suiteGroupFilter = parseGroupFilter(suiteHeaderAndFooter)
+
         TEST_BLOCK.findAll(suiteText).forEach { testMatch ->
             val blockText = testMatch.value
-            val groupsBlock = GROUPS_BLOCK.find(blockText)?.groupValues?.get(1)
-            val excludePatterns = if (groupsBlock != null) {
-                EXCLUDE_NAME.findAll(groupsBlock)
-                    .map { it.groupValues[1] }
-                    .map { Regex(asRegexp(it)) }
-                    .toList()
-            } else {
-                emptyList()
-            }
+            val testGroupFilter = parseGroupFilter(blockText)
+            val combinedFilter = suiteGroupFilter + testGroupFilter
 
             val classesInBlock = CLASS_ENTRY.findAll(blockText).map { it.groupValues[1] }.toSet()
             classesInBlock.forEach { className ->
@@ -315,8 +311,8 @@ internal fun findGroupFilteredClasses(rootSuiteFile: java.io.File, sourcesDir: j
                 val sourcePath = outerName.replace('.', '/') + ".java"
                 val sourceFile = sourcesDir.resolve(sourcePath)
                 if (!sourceFile.isFile) return@forEach
-                val isFiltered = if (excludePatterns.isNotEmpty()) {
-                    isClassGroupFiltered(className, sourceFile.readText(), excludePatterns)
+                val isFiltered = if (!combinedFilter.isEmpty) {
+                    isClassGroupFiltered(className, sourceFile.readText(), combinedFilter)
                 } else {
                     false
                 }
@@ -330,6 +326,39 @@ internal fun findGroupFilteredClasses(rootSuiteFile: java.io.File, sourcesDir: j
     return blockResults.filter { (_, results) -> results.isNotEmpty() && results.all { it } }.keys.toSortedSet()
 }
 
+internal data class GroupFilter(
+    val includePatterns: List<Regex> = emptyList(),
+    val excludePatterns: List<Regex> = emptyList()
+) {
+    val isEmpty: Boolean get() = includePatterns.isEmpty() && excludePatterns.isEmpty()
+
+    fun isMethodExcluded(effectiveGroups: Set<String>): Boolean {
+        if (effectiveGroups.isEmpty()) {
+            return includePatterns.isNotEmpty() || excludePatterns.isNotEmpty()
+        }
+        if (excludePatterns.any { pattern -> effectiveGroups.any { pattern.matches(it) } }) {
+            return true
+        }
+        if (includePatterns.isNotEmpty() && !includePatterns.any { pattern -> effectiveGroups.any { pattern.matches(it) } }) {
+            return true
+        }
+        return false
+    }
+
+    operator fun plus(other: GroupFilter): GroupFilter =
+        GroupFilter(
+            includePatterns = this.includePatterns + other.includePatterns,
+            excludePatterns = this.excludePatterns + other.excludePatterns
+        )
+}
+
+internal fun parseGroupFilter(xmlText: String): GroupFilter {
+    val groupsBlock = GROUPS_BLOCK.find(xmlText)?.groupValues?.get(1) ?: return GroupFilter()
+    val includes = INCLUDE_NAME.findAll(groupsBlock).map { Regex(asRegexp(it.groupValues[1])) }.toList()
+    val excludes = EXCLUDE_NAME.findAll(groupsBlock).map { Regex(asRegexp(it.groupValues[1])) }.toList()
+    return GroupFilter(includes, excludes)
+}
+
 internal fun asRegexp(xmlName: String): String {
     if (xmlName.contains("\\$")) {
         return xmlName
@@ -340,7 +369,7 @@ internal fun asRegexp(xmlName: String): String {
 internal fun isClassGroupFiltered(
     className: String,
     sourceText: String,
-    excludePatterns: List<Regex>
+    filter: GroupFilter
 ): Boolean {
     val cleanSource: String = sourceText
         .replace(Regex("""//.*$""", RegexOption.MULTILINE), "")
@@ -371,15 +400,16 @@ internal fun isClassGroupFiltered(
     val methodMatches = TEST_ANNOTATION.findAll(directBody).toList()
     if (methodMatches.isEmpty()) {
         if (classGroups.isNotEmpty()) {
-            return classGroups.any { g -> excludePatterns.any { it.matches(g) } }
+            return filter.isMethodExcluded(classGroups)
         }
         return false
     }
 
     return methodMatches.all { match ->
+        val inheritGroups = !INHERIT_GROUPS_FALSE.containsMatchIn(match.value)
         val methodGroups = extractGroups(match.value)
-        val effectiveGroups = classGroups + methodGroups
-        effectiveGroups.isNotEmpty() && effectiveGroups.any { g -> excludePatterns.any { it.matches(g) } }
+        val effectiveGroups = if (inheritGroups) classGroups + methodGroups else methodGroups
+        filter.isMethodExcluded(effectiveGroups)
     }
 }
 
@@ -425,10 +455,12 @@ private val SUITE_FILE = Regex("""<suite-file\s+path="([^"]+)"""")
 private val CLASS_ENTRY = Regex("""<class\s+name="([^"]+)"""")
 private val TEST_BLOCK = Regex("""<test\b[^>]*>.*?</test>""", RegexOption.DOT_MATCHES_ALL)
 private val GROUPS_BLOCK = Regex("""<groups\b[^>]*>(.*?)</groups>""", RegexOption.DOT_MATCHES_ALL)
+private val INCLUDE_NAME = Regex("""<include\s+name="([^"]+)"""")
 private val EXCLUDE_NAME = Regex("""<exclude\s+name="([^"]+)"""")
 private val TEST_ANNOTATION = Regex("""@Test\b\s*(?:\(([^)]*)\))?""", RegexOption.DOT_MATCHES_ALL)
 private val GROUPS_VALUE = Regex("""groups\s*=\s*(\{[^}]*\}|"[^"]*")""", RegexOption.DOT_MATCHES_ALL)
 private val QUOTED_STRING = Regex(""""([^"]+)"""")
+private val INHERIT_GROUPS_FALSE = Regex("""inheritGroups\s*=\s*false""")
 
 
 /**
