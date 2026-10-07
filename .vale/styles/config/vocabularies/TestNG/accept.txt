@@ -477,3 +477,4 @@ xy
 yaml
 parameterResolvers
 resolvedParameters
+jvmArgs

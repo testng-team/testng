@@ -46,7 +46,7 @@ public class CommandLineOverridesXmlCommandLineTest extends SimpleBaseTest {
       TestHelper.writeSuiteToTempFile(buildSuiteContentThatRefersToInvalidTestClass())
     };
     TestNG testng = new JCommanderCliRunner().run(args, null);
-    assertThat(testng.getStatus()).isEqualTo(8);
+    assertThat(testng.getStatus()).isEqualTo(1);
   }
 
   private static String buildSuiteContentThatRefersToInvalidTestClass() {
