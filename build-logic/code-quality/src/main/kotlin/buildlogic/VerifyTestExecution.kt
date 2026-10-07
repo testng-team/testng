@@ -303,7 +303,7 @@ internal fun findGroupFilteredClasses(rootSuiteFile: java.io.File, sourcesDir: j
             val excludePatterns = if (groupsBlock != null) {
                 EXCLUDE_NAME.findAll(groupsBlock)
                     .map { it.groupValues[1] }
-                    .map { Regex(it.replace("\$", "\\$")) }
+                    .map { Regex(asRegexp(it)) }
                     .toList()
             } else {
                 emptyList()
@@ -328,6 +328,13 @@ internal fun findGroupFilteredClasses(rootSuiteFile: java.io.File, sourcesDir: j
     visitSuite(rootSuiteFile)
 
     return blockResults.filter { (_, results) -> results.isNotEmpty() && results.all { it } }.keys.toSortedSet()
+}
+
+internal fun asRegexp(xmlName: String): String {
+    if (xmlName.contains("\\$")) {
+        return xmlName
+    }
+    return xmlName.replace("$", "\\$")
 }
 
 internal fun isClassGroupFiltered(
@@ -359,8 +366,9 @@ internal fun isClassGroupFiltered(
         curr++
     }
     val classBody = cleanSource.substring(openBrace + 1, if (braceCount == 0) curr - 1 else len)
+    val directBody = stripNestedClasses(classBody)
 
-    val methodMatches = TEST_ANNOTATION.findAll(classBody).toList()
+    val methodMatches = TEST_ANNOTATION.findAll(directBody).toList()
     if (methodMatches.isEmpty()) {
         if (classGroups.isNotEmpty()) {
             return classGroups.any { g -> excludePatterns.any { it.matches(g) } }
@@ -373,6 +381,38 @@ internal fun isClassGroupFiltered(
         val effectiveGroups = classGroups + methodGroups
         effectiveGroups.isNotEmpty() && effectiveGroups.any { g -> excludePatterns.any { it.matches(g) } }
     }
+}
+
+private fun stripNestedClasses(body: String): String {
+    val result = StringBuilder()
+    var i = 0
+    val len = body.length
+    val classDeclRegex = Regex("""\b(?:class|enum|interface)\s+\w+""")
+
+    while (i < len) {
+        val match = classDeclRegex.find(body, i)
+        if (match == null) {
+            result.append(body.substring(i))
+            break
+        }
+        result.append(body.substring(i, match.range.first))
+
+        val openBrace = body.indexOf('{', match.range.last)
+        if (openBrace == -1) {
+            result.append(body.substring(match.range.first))
+            break
+        }
+        var braceCount = 1
+        var curr = openBrace + 1
+        while (curr < len && braceCount > 0) {
+            val c = body[curr]
+            if (c == '{') braceCount++
+            else if (c == '}') braceCount--
+            curr++
+        }
+        i = curr
+    }
+    return result.toString()
 }
 
 private fun extractGroups(annotationStr: String?): Set<String> {

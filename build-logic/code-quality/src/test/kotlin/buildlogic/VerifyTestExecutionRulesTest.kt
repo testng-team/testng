@@ -234,22 +234,72 @@ class VerifyTestExecutionRulesTest {
                 public void testOne() {}
             }
         """.trimIndent()
-        val regexes = listOf(Regex("broken"))
+        val regexes = listOf(Regex(asRegexp("broken")))
         assert(isClassGroupFiltered("test.MultiGroupTest", source, regexes))
+    }
+
+    @Test(description = "outer class with no test methods is not classified as filtered even if nested class has tests")
+    fun outerClassWithNoTestsAndNestedClassWithTestsIsNotFiltered() {
+        val source = """
+            package test;
+            import org.testng.annotations.Test;
+            public class OuterClass {
+                public static class NestedClass {
+                    @Test(groups = "broken")
+                    public void testNested() {}
+                }
+            }
+        """.trimIndent()
+        val regexes = listOf(Regex(asRegexp("broken")))
+        // OuterClass has no test methods of its own, so it MUST NOT be classified as group-filtered.
+        assert(!isClassGroupFiltered("test.OuterClass", source, regexes))
+        // NestedClass has a test method with group "broken", so it IS classified as group-filtered.
+        assert(isClassGroupFiltered("test.OuterClass${'$'}NestedClass", source, regexes))
+    }
+
+    @Test(description = "unescaped dollar in exclude pattern is treated as literal dollar sign")
+    fun unescapedDollarInExcludePatternIsTreatedAsLiteralDollar() {
+        val sourceWithBroken = """
+            package test;
+            import org.testng.annotations.Test;
+            public class SampleTest {
+                @Test(groups = "broken")
+                public void testOne() {}
+            }
+        """.trimIndent()
+
+        val sourceWithDollar = """
+            package test;
+            import org.testng.annotations.Test;
+            public class SampleTest {
+                @Test(groups = "broken$")
+                public void testOne() {}
+            }
+        """.trimIndent()
+
+        // TestNG asRegexp("broken$") converts "broken$" -> "broken\$"
+        val regexes = listOf(Regex(asRegexp("broken$")))
+
+        // "broken$" regex must NOT match group "broken"
+        assert(!isClassGroupFiltered("test.SampleTest", sourceWithBroken, regexes))
+
+        // "broken$" regex MUST match group "broken$"
+        assert(isClassGroupFiltered("test.SampleTest", sourceWithDollar, regexes))
     }
 
     @Test(description = "findGroupFilteredClasses identifies SerializationTest and ThreadTest from repository suite and sources")
     fun integrationTestGroupFilteredClassesFromRepository() {
         val rootSuite = java.io.File("../../testng-core/src/test/resources/testng.xml").canonicalFile
         val sourcesDir = java.io.File("../../testng-core/src/test/java").canonicalFile
-        if (rootSuite.isFile && sourcesDir.isDirectory) {
-            val filtered = findGroupFilteredClasses(rootSuite, sourcesDir)
-            assert(filtered.contains("test.SerializationTest")) {
-                "expected SerializationTest in filtered set, got $filtered"
-            }
-            assert(filtered.contains("org.testng.concurrency.ThreadTest")) {
-                "expected ThreadTest in filtered set, got $filtered"
-            }
+        assert(rootSuite.isFile) { "expected root suite at ${rootSuite.absolutePath}" }
+        assert(sourcesDir.isDirectory) { "expected sources dir at ${sourcesDir.absolutePath}" }
+
+        val filtered = findGroupFilteredClasses(rootSuite, sourcesDir)
+        assert(filtered.contains("test.SerializationTest")) {
+            "expected SerializationTest in filtered set, got $filtered"
+        }
+        assert(filtered.contains("org.testng.concurrency.ThreadTest")) {
+            "expected ThreadTest in filtered set, got $filtered"
         }
     }
 
