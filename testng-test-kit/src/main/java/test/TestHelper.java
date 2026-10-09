@@ -2,13 +2,18 @@ package test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.testng.ITestResult;
+import org.testng.Reporter;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.xml.XmlClass;
@@ -16,6 +21,75 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 public class TestHelper {
+
+  /**
+   * Runs the TestNG command line in a child process and captures its output.
+   *
+   * <p>The child uses UTF-8 for its default charset and captured output. These options override
+   * encoding options in {@code jvmArgs}. The captured streams use UTF-8 decoding.
+   *
+   * @param jvmArgs the child JVM options.
+   * @param args the TestNG command line arguments.
+   * @return the exit status and captured output.
+   */
+  public static ForkResult runTestNG(List<String> jvmArgs, List<String> args)
+      throws IOException, InterruptedException {
+    Path directory = createRandomDirectory();
+    Path stdout = directory.resolve("stdout.txt");
+    Path stderr = directory.resolve("stderr.txt");
+    List<String> command = new ArrayList<>();
+    command.add(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
+    command.addAll(jvmArgs);
+    command.addAll(
+        Arrays.asList(
+            "-Dfile.encoding=UTF-8",
+            "-Dstdout.encoding=UTF-8",
+            "-Dsun.stdout.encoding=UTF-8",
+            "-Dstderr.encoding=UTF-8",
+            "-Dsun.stderr.encoding=UTF-8",
+            "-Djava.io.tmpdir=" + System.getProperty("java.io.tmpdir"),
+            "-cp",
+            System.getProperty("java.class.path"),
+            TestNG.class.getName()));
+    command.addAll(args);
+    Reporter.log("Executing the command " + command, 2, true);
+    Process process = null;
+    try {
+      process =
+          new ProcessBuilder(command)
+              .redirectOutput(stdout.toFile())
+              .redirectError(stderr.toFile())
+              .start();
+      if (!process.waitFor(5, TimeUnit.MINUTES)) {
+        throw new AssertionError(
+            "The forked TestNG run did not finish within 5 minutes. stdout: "
+                + Files.readString(stdout)
+                + " stderr: "
+                + Files.readString(stderr));
+      }
+      return new ForkResult(
+          process.exitValue(), Files.readString(stdout), Files.readString(stderr));
+    } finally {
+      if (process != null) {
+        process.destroyForcibly().waitFor();
+      }
+      Files.deleteIfExists(stdout);
+      Files.deleteIfExists(stderr);
+      Files.delete(directory);
+    }
+  }
+
+  public static class ForkResult {
+    public final int exitStatus;
+    public final String stdout;
+    public final String stderr;
+
+    private ForkResult(int exitStatus, String stdout, String stderr) {
+      this.exitStatus = exitStatus;
+      this.stdout = stdout;
+      this.stderr = stderr;
+    }
+  }
 
   /**
    * Writes a suite to a temporary file and returns its path, the way a command line test needs it.

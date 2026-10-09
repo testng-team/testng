@@ -11,8 +11,10 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -204,6 +206,7 @@ public class TestNG {
   private final org.testng.internal.ExitCodeListener exitCodeListener =
       new org.testng.internal.ExitCodeListener();
   private @Nullable ExitCode exitCode;
+  private boolean runFailed;
   private final Map<Class<? extends IExecutionVisualiser>, IExecutionVisualiser>
       m_executionVisualisers = new LinkedHashMap<>();
 
@@ -258,15 +261,16 @@ public class TestNG {
   /**
    * Returns the exit status of the run.
    *
-   * <p>The status is 8 when the run has no test results, not even skipped ones. This method checks
-   * that first, so 8 hides every other value. It hides even a failure that {@link
-   * #reportRunFailure(TestNGException)} recorded (GITHUB-3566).
+   * <p>The status is 1 when {@link #run()} threw a {@link TestNGException}, whatever else the run
+   * did.
+   *
+   * <p>Otherwise, the status is 8 when the run has no test results, not even skipped ones. This
+   * method checks that before the values below, so 8 hides all of them.
    *
    * <p>Otherwise, the status is the sum of these values:
    *
    * <ul>
-   *   <li>1 when a test or a configuration method failed, or when {@link
-   *       #reportRunFailure(TestNGException)} recorded a failure.
+   *   <li>1 when a test or a configuration method failed.
    *   <li>2 when a test or a configuration method was skipped.
    *   <li>4 when a test failed within its success percentage.
    * </ul>
@@ -275,9 +279,12 @@ public class TestNG {
    *
    * @return the exit status.
    * @throws NullPointerException when the run has test results, but {@link #run()} threw before it
-   *     finished.
+   *     finished and did not record a failure.
    */
   public int getStatus() {
+    if (runFailed) {
+      return ExitCode.FAILED;
+    }
     if (exitCodeListener.noTestsFound()) {
       return ExitCode.HAS_NO_TEST;
     }
@@ -408,7 +415,7 @@ public class TestNG {
       if (t instanceof TestNGException) {
         throw (TestNGException) t;
       }
-      throw new TestNGException(t);
+      throw new TestNGException("Failed to parse suite: " + suitePath, t);
     }
   }
 
@@ -1402,39 +1409,46 @@ public class TestNG {
    * #getStatus()} gives the result.
    */
   public void run() {
-    initializeEverything();
-    sanityCheck();
+    runFailed = false;
+    try {
+      initializeEverything();
+      sanityCheck();
 
-    runExecutionListeners(true /* start */);
+      runExecutionListeners(true /* start */);
 
-    runSuiteAlterationListeners();
+      runSuiteAlterationListeners();
 
-    m_start = System.currentTimeMillis();
-    List<ISuite> suiteRunners = runSuites();
+      m_start = System.currentTimeMillis();
+      List<ISuite> suiteRunners = runSuites();
 
-    m_end = System.currentTimeMillis();
+      m_end = System.currentTimeMillis();
 
-    if (null != suiteRunners) {
-      suiteRunners.forEach(ObjectBag::cleanup);
-      try {
-        generateReports(suiteRunners);
-      } finally {
-        // The reporters are the last readers of the parameter snapshots.
-        suiteRunners.forEach(ParameterSnapshots::detachFrom);
+      if (null != suiteRunners) {
+        suiteRunners.forEach(ObjectBag::cleanup);
+        try {
+          generateReports(suiteRunners);
+        } finally {
+          // The reporters are the last readers of the parameter snapshots.
+          suiteRunners.forEach(ParameterSnapshots::detachFrom);
+        }
       }
-    }
 
-    runExecutionListeners(false /* finish */);
-    exitCode = this.exitCodeListener.getStatus();
+      runExecutionListeners(false /* finish */);
+      exitCode = this.exitCodeListener.getStatus();
 
-    if (exitCodeListener.noTestsFound()) {
-      if (TestRunner.getVerbose() > 1) {
-        System.err.println("[TestNG] No tests found. Nothing was run");
-        usage();
+      if (exitCodeListener.noTestsFound()) {
+        if (TestRunner.getVerbose() > 1) {
+          System.err.println("[TestNG] No tests found. Nothing was run");
+          usage();
+        }
       }
-    }
 
-    m_instance = null;
+      m_instance = null;
+    } catch (TestNGException cause) {
+      runFailed = true;
+      exitCode = ExitCode.newExitCodeRepresentingFailure();
+      throw cause;
+    }
   }
 
   /**
@@ -2001,20 +2015,16 @@ public class TestNG {
   }
 
   /**
-   * Reports a failure that {@link #run()} itself threw, and records it.
+   * Prints a failure that {@link #run()} threw.
    *
-   * <p>The record replaces the result of the run with a single failure. After this call:
+   * <p>{@link #run()} records a {@link TestNGException} before it throws it. After that, {@link
+   * #getStatus()} returns 1, and {@link #hasFailure()} returns {@code true}. {@link #hasSkip()} and
+   * {@link #hasFailureWithinSuccessPercentage()} return {@code false}. This method does not change
+   * the status.
    *
-   * <ul>
-   *   <li>{@link #hasFailure()} returns {@code true}.
-   *   <li>{@link #hasSkip()} and {@link #hasFailureWithinSuccessPercentage()} return {@code false}.
-   *   <li>{@link #getStatus()} returns 1, but only when the run has test results. Without them, it
-   *       returns 8, and the failure does not show (GITHUB-3566).
-   * </ul>
-   *
-   * <p>At a verbose level above 1, this method prints the stack trace to standard output.
-   * Otherwise, it logs the message. The logged message appears only when an SLF4J provider is on
-   * the class path.
+   * <p>This method logs the message. The logged message appears only when an SLF4J provider is on
+   * the class path. It also prints to standard error. At a verbose level above 1, it prints the
+   * stack trace. Otherwise, it prints the message and the cause chain.
    *
    * <p>A front end that wants an exit status, not an exception, catches the failure and calls this
    * method. This method is here, and not in the caller, because the verbose level of the run
@@ -2023,12 +2033,17 @@ public class TestNG {
    * @param cause the failure that the run threw.
    */
   public void reportRunFailure(TestNGException cause) {
+    error(cause.getMessage());
     if (TestRunner.getVerbose() > 1) {
-      cause.printStackTrace(System.out);
+      cause.printStackTrace(System.err);
     } else {
-      error(cause.getMessage());
+      printError(cause.getMessage());
+      Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+      seen.add(cause);
+      for (Throwable t = cause.getCause(); t != null && seen.add(t); t = t.getCause()) {
+        System.err.println("Caused by: " + t);
+      }
     }
-    this.exitCode = ExitCode.newExitCodeRepresentingFailure();
   }
 
   /**
@@ -2364,8 +2379,8 @@ public class TestNG {
   }
 
   /**
-   * Tells if a test or a configuration method failed, or if {@link
-   * #reportRunFailure(TestNGException)} recorded a failure. Call it after {@link #run()}.
+   * Tells if a test or a configuration method failed, or if {@link #run()} threw a {@link
+   * TestNGException}. Call it after {@link #run()}.
    *
    * <p>This method does not check whether the run has test results, as {@link #getStatus()} does.
    *
@@ -2397,10 +2412,14 @@ public class TestNG {
     return requireExitCode().hasSkip();
   }
 
-  static void exitWithError(@Nullable String msg) {
+  private static void printError(@Nullable String message) {
     // Trim the message. TestNGException puts a newline in front of every message, which would print
     // an empty line before the error.
-    System.err.println(msg == null ? "" : msg.trim());
+    System.err.println(message == null ? "" : message.trim());
+  }
+
+  static void exitWithError(@Nullable String msg) {
+    printError(msg);
     usage();
     System.exit(1);
   }
