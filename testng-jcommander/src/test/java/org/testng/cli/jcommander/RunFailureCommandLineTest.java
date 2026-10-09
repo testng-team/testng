@@ -38,7 +38,8 @@ public class RunFailureCommandLineTest {
     return new Object[][] {
       {missing.toString(), missing.toString()},
       {malformed, malformed},
-      {child, missing.toString()},
+      // The parser canonicalizes child suite paths before opening them
+      {child, missing.toFile().getCanonicalPath()},
       {TestHelper.writeSuiteToTempFile(suiteContent("no.such.Klass")), "no.such.Klass"},
       {
         TestHelper.writeSuiteToTempFile(
