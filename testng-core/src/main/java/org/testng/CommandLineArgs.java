@@ -236,9 +236,7 @@ public class CommandLineArgs {
 
   public static final String OVERRIDE_INCLUDED_METHODS = "-overrideincludedmethods";
 
-  /**
-   * Whether the methods given on the command line replace the methods that the suite XML includes.
-   */
+  /** Whether the group rules also apply to a test method that an {@code <include>} tag names. */
   public Boolean overrideIncludedMethods = false;
 
   public static final String INCLUDE_ALL_DATA_DRIVEN_TESTS_WHEN_SKIPPING =

@@ -17,6 +17,12 @@ import org.testng.log4testng.Logger;
 import org.testng.thread.IThreadWorkerFactory;
 import org.testng.xml.XmlTest;
 
+/**
+ * Runs the test methods of one {@code <test>} in parallel, in the order that a graph of the methods
+ * allows.
+ *
+ * <p>{@link TestRunner} uses this class when the {@code <test>} runs its methods in parallel.
+ */
 class TestTaskExecutor {
   private final BlockingQueue<Runnable> queue;
   private final @Nullable Comparator<ITestNGMethod> comparator;
@@ -32,6 +38,16 @@ class TestTaskExecutor {
 
   private static final Logger LOGGER = Logger.getLogger(TestTaskExecutor.class);
 
+  /**
+   * Creates an executor. Call {@link #execute()} to start it.
+   *
+   * @param configuration the configuration that gives the factory for the thread pool.
+   * @param xmlTest the {@code <test>} that gives the thread count and the time-out.
+   * @param factory the factory that creates the workers for the test methods.
+   * @param queue the queue for the tasks of the thread pool.
+   * @param graph the test methods, and the order in which they can run.
+   * @param comparator sorts the methods that are free to run, or {@code null} to keep their order.
+   */
   public TestTaskExecutor(
       IConfiguration configuration,
       XmlTest xmlTest,
@@ -48,16 +64,24 @@ class TestTaskExecutor {
     this.timeOut = xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
   }
 
+  /**
+   * Starts the thread pool, and starts the test methods that can run first. This method does not
+   * wait.
+   *
+   * <p>When the suite uses the global thread pool, the {@code <test>} tags of the suite share one
+   * pool. Otherwise, this method creates a pool for this {@code <test>}.
+   */
   public void execute() {
     String name = "test-" + xmlTest.getName();
     int threadCount = Math.max(xmlTest.getThreadCount(), 1);
     this.reUse = xmlTest.getSuite().useGlobalThreadPool();
     if (this.reUse) {
-      // A single, common pool is shared between regular test methods and their (parallel)
-      // data-driven invocations. It is created via IExecutorServiceFactory#createGlobalThreadPool,
-      // which by default returns a ForkJoinPool so that a data-driven method worker waiting for its
-      // data-row tasks (submitted back into this same pool) helps run them itself (work-stealing)
-      // instead of throttling throughput or dead-locking the suite. See GITHUB-3242.
+      // One shared pool runs the test methods and the parallel invocations of their data
+      // providers. IExecutorServiceFactory#createGlobalThreadPool creates it, and by default it is
+      // a ForkJoinPool. The worker of a data-driven method puts the tasks for its data rows into
+      // this same pool, and then waits for them. In a ForkJoinPool, the waiting worker runs those
+      // tasks itself (work-stealing). In another pool, the run could slow down or stop in a
+      // deadlock. See GITHUB-3242.
       String threadNamePrefix = ThreadUtil.THREAD_NAME + "-" + name;
       Supplier<Object> supplier =
           () ->
@@ -78,12 +102,19 @@ class TestTaskExecutor {
                   queue,
                   new TestNGThreadFactory(name));
     }
-    // A shared global pool (reUse) must not be shut down when this test's graph finishes - other
-    // <test> graphs may still be using it. See GITHUB-3242.
+    // Do not shut down the shared global pool (reUse) when the graph of this <test> finishes. The
+    // graphs of other <test> tags can still use it. See GITHUB-3242.
     orchestrator = new GraphOrchestrator<>(service, factory, graph, comparator, !reUse);
     orchestrator.run();
   }
 
+  /**
+   * Waits until every test method finishes, or until the time-out of the {@code <test>} ends. Then
+   * logs the error of each worker that ended on an exception.
+   *
+   * <p>A pool of this {@code <test>} shuts down after the wait. The shared global pool keeps
+   * running for the other {@code <test>} tags.
+   */
   public void awaitCompletion() {
     String msg =
         String.format(
@@ -91,8 +122,9 @@ class TestTaskExecutor {
     Utils.log("TestTaskExecutor", 2, msg);
     try {
       if (reUse) {
-        // Shared global pool: wait for this test's graph to finish, but leave the pool running for
-        // the other <test>s. It is disposed once, at the end of the run, via ObjectBag cleanup.
+        // With the shared global pool, wait for the graph of this <test> only. Keep the pool
+        // running for the other <test> tags. ObjectBag.cleanup() shuts it down once, at the end of
+        // the run.
         boolean ignored =
             Objects.requireNonNull(orchestrator, "execute() has started the graph")
                 .awaitCompletion(timeOut, TimeUnit.MILLISECONDS);
@@ -109,9 +141,11 @@ class TestTaskExecutor {
   }
 
   /**
-   * A worker that ended on an exception -- typically because a listener threw -- is still marked
-   * finished so the graph can move on, so nothing downstream of the orchestrator can tell it apart
-   * from a clean one. Saying so here is what keeps the cause out of a debugger. See GITHUB-3243.
+   * Logs the error of each worker that ended on an exception.
+   *
+   * <p>The orchestrator marks such a worker as finished, so that the graph can go on. After that,
+   * nothing can tell it from a worker that ended cleanly. Without this log, you would need a
+   * debugger to find the cause. A listener that throws is the usual cause. See GITHUB-3243.
    */
   private void reportWorkerFailures() {
     if (orchestrator == null) {

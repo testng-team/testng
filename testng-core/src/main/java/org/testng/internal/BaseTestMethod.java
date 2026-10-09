@@ -40,24 +40,27 @@ import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-/** Superclass to represent both &#64;Test and &#64;Configuration methods. */
+/**
+ * The base class of the methods that TestNG runs. Its subclasses stand for test methods,
+ * configuration methods and {@code @Factory} methods.
+ */
 public abstract class BaseTestMethod
     implements ITestNGMethod, IInvocationStatus, IInstanceIdentity {
 
   private static final Pattern SPACE_SEPARATOR_PATTERN = Pattern.compile(" +");
 
   /**
-   * Shared stand-in for the group arrays below when they are empty, which is the common case. A
-   * {@code String[] x = {}} field initializer allocates a fresh array per instance; a big
-   * &#64;Factory suite builds one method object per instance, so those add up to five throwaway
-   * arrays per method. A zero-length array cannot be mutated, so handing the same one to every
-   * method is safe even though the getters return it directly.
+   * An empty array that every method shares for its empty group arrays. Most methods have empty
+   * group arrays. A field initializer such as {@code String[] x = {}} creates a new array for each
+   * object. A large &#64;Factory suite creates one method object for each instance, and each method
+   * object has several group arrays. So new empty arrays would add up. Nobody can change an empty
+   * array, so all the methods can share this one, even though the getters return it as it is.
    */
   static final String[] EMPTY_STRING_ARRAY = new String[0];
 
   /**
-   * The test class on which the test method was found. Note that this is not necessarily the
-   * declaring class.
+   * The test class where TestNG found this method. It can be a subclass of the class that declares
+   * the method.
    */
   protected @Nullable ITestClass m_testClass;
 
@@ -76,15 +79,15 @@ public abstract class BaseTestMethod
   private boolean m_enabled;
 
   private final String m_methodName;
-  // If a depends on group is not found
+  // A group that this method depends on, but that no method belongs to.
   private @Nullable String m_missingGroup;
   private @Nullable String m_description = null;
   protected AtomicInteger m_currentInvocationCount = new AtomicInteger(0);
   private int m_parameterInvocationCount = 1;
-  // Set on the per-invocation clones created for a parallel (threadPoolSize > 1)
-  // invocationCount. For those clones the firstTimeOnly @BeforeMethod and the
-  // lastTimeOnly @AfterMethod are run once - as a barrier - around the whole pool
-  // instead of inside each parallel invocation, so the clones must not run them.
+  // True for the copies that TestNG makes of a method, one for each invocation, when its
+  // invocationCount runs in parallel (threadPoolSize > 1). TestNG runs the firstTimeOnly
+  // @BeforeMethod once before the whole pool, and the lastTimeOnly @AfterMethod once after it. So
+  // the copies must not run them.
   private boolean m_skipFirstAndLastTimeOnlyConfigs;
   private volatile boolean m_emptyDataProviderSeen;
   private @Nullable Callable<Boolean> m_moreInvocationChecker;
@@ -93,23 +96,25 @@ public abstract class BaseTestMethod
   private boolean m_skipFailedInvocations = true;
   private long m_invocationTimeOut = 0L;
 
-  // Non-empty only for the <include invocation-numbers="..."> case. Starts out as the shared empty
-  // list rather than a fresh one per method; setInvocationNumbers replaces it wholesale, and
-  // nothing writes through the reference, so sharing an immutable list is safe.
+  // Has values only when an <include invocation-numbers="..."> names this method. It starts as the
+  // shared empty list, not as a new list for each method. setInvocationNumbers() replaces the whole
+  // list, and TestNG does not change the list through this field. So the methods can share one
+  // empty list that nobody can change.
   private List<Integer> m_invocationNumbers = Collections.emptyList();
-  // Left null until the method actually has dependencies, which most methods never do. An empty
-  // HashSet costs the set plus its backing HashMap, and a big @Factory suite holds two of them per
-  // method per instance. Published to the worker threads by the volatile write in the setters.
+  // Null until the method has dependencies, and most methods have none. An empty HashSet still
+  // costs the set and the HashMap inside it. A large @Factory suite would hold two of them for each
+  // method of each instance. The volatile write in the setters makes the value visible to the
+  // worker threads.
   private volatile @Nullable Set<ITestNGMethod> downstreamDependencies;
   private volatile @Nullable Set<ITestNGMethod> upstreamDependencies;
-  // Written only when an invocation fails. An empty ConcurrentLinkedQueue still costs the queue
-  // plus the dummy node it starts with, so hold off until there is a failure to record.
+  // Set only when an invocation fails. An empty ConcurrentLinkedQueue still costs the queue and its
+  // first empty node. So create it only when there is a failure to record.
   @SuppressWarnings("rawtypes")
   private volatile @Nullable Collection m_failedInvocationNumbers;
 
-  // The @Nullable on the value type is what lets the compareAndSet below name null as the value it
-  // expects to replace. Without it the package being @NullMarked makes the updater's value type
-  // non-null, and NullAway rejects the call.
+  // The @Nullable on the value type lets compareAndSet() in addFailedInvocationNumber() pass null
+  // as the value that it expects to replace. The package is @NullMarked, so without it the value
+  // type is non-null, and NullAway rejects the call.
   @SuppressWarnings("rawtypes")
   private static final AtomicReferenceFieldUpdater<BaseTestMethod, @Nullable Collection>
       FAILED_INVOCATIONS =
@@ -123,26 +128,28 @@ public abstract class BaseTestMethod
   private int m_interceptedPriority;
 
   private @Nullable XmlTest m_xmlTest;
-  // The <class> and <include> tags this method was scheduled for. Both tags may be repeated, and
-  // each occurrence carries its own parameters, so the tag -- not its name -- is what answers
-  // findMethodParameters. Null when no tag named the method: a @Factory produced class, a method
-  // pulled in by the group transitive closure, a suite built without <methods>.
+  // The <class> and <include> tags that scheduled this method. A suite can repeat both tags, and
+  // each copy has its own parameters. So findMethodParameters() reads the tag object, not the tag
+  // name. The field for the <include> is null when no <include> names the method, for example in a
+  // <class> without <methods>. The field for the <class> is null when no <class> tag names the
+  // class, for example a class that only a @Factory creates.
   private @Nullable XmlClass m_xmlClass;
   private @Nullable XmlInclude m_xmlInclude;
-  // Which of those occurrences this is, counted within this method and instance. Folded into
-  // equals/hashCode so that two repeats of the same tag stay distinct nodes of the method graph;
-  // XmlClass#getIndex and XmlInclude#getIndex cannot serve, being left at zero by every suite the
-  // XML content handler did not parse.
+  // Which copy of those tags this is, counted for this method and instance. equals() and
+  // hashCode() use it, so that two copies of the same tag stay separate nodes in the method graph.
+  // XmlClass#getIndex and XmlInclude#getIndex cannot do this, because many suites leave them at
+  // zero. For example, a suite from the Java API leaves both at zero, and a YAML suite leaves the
+  // index of each <include> at zero.
   private int m_xmlOccurrenceIndex;
   private final IObject.@Nullable IdentifiableObject m_instance;
 
-  // Only ever populated for a parameterised test that has a retry analyzer, so it stays null for
-  // almost every method. Installed with a CAS through the updater below rather than under a lock:
-  // a per-instance lock object would give back a quarter of what leaving the map out saves.
+  // Set only for a test with parameters and a retry analyzer, so it stays null for almost every
+  // method. retryAnalyzers() sets it with a compare-and-set through RETRY_ANALYZERS, not under a
+  // lock. A lock object for each method would cost a quarter of what leaving out the map saves.
   @SuppressWarnings("rawtypes")
   private volatile @Nullable ConcurrentHashMap m_testMethodToRetryAnalyzer;
 
-  // @Nullable value type for the same reason as FAILED_INVOCATIONS above.
+  // The value type is @Nullable for the same reason as in FAILED_INVOCATIONS.
   @SuppressWarnings("rawtypes")
   private static final AtomicReferenceFieldUpdater<BaseTestMethod, @Nullable ConcurrentHashMap>
       RETRY_ANALYZERS =
@@ -151,6 +158,16 @@ public abstract class BaseTestMethod
 
   protected final ITestObjectFactory m_objectFactory;
 
+  /**
+   * Creates a method for {@code com}.
+   *
+   * @param objectFactory the factory that creates the objects that this method needs, for example
+   *     its retry analyzers.
+   * @param methodName the name of the method.
+   * @param com the Java method or constructor.
+   * @param annotationFinder the finder that reads the annotations of the method.
+   * @param instance the test instance of the method, or {@code null} when it has none.
+   */
   public BaseTestMethod(
       ITestObjectFactory objectFactory,
       String methodName,
@@ -171,6 +188,11 @@ public abstract class BaseTestMethod
     return m_isAlwaysRun;
   }
 
+  /**
+   * Sets the value that {@link #isAlwaysRun()} returns.
+   *
+   * @param alwaysRun the {@code alwaysRun} value of the annotation.
+   */
   protected void setAlwaysRun(boolean alwaysRun) {
     m_isAlwaysRun = alwaysRun;
   }
@@ -213,10 +235,9 @@ public abstract class BaseTestMethod
 
   @Override
   public @Nullable Object getInstance() {
-    // Hot path (called per invocation via TestNgMethodUtils.isSameInstance): a plain null-guarded
-    // chain instead of Optional.ofNullable(...).map(...).map(...), which allocated three throwaway
-    // Optionals on every call. embeddedInstance passes null straight through, so the result is
-    // unchanged.
+    // TestNG calls this method often, for example through TestNgMethodUtils.isSameInstance(). So
+    // use plain null checks. A chain of Optional calls would create three Optional objects on each
+    // call.
     if (m_instance == null) {
       return null;
     }
@@ -224,10 +245,14 @@ public abstract class BaseTestMethod
   }
 
   /**
-   * @return - {@code true} unless this method is bound to a lazy {@code @Factory} instance that has
-   *     not been created yet. Callers use this to avoid instantiating a lazy instance (e.g. to
-   *     build a diagnostic message) before its test is due to run. Reading this never triggers
-   *     creation.
+   * Tells if the test instance of this method exists.
+   *
+   * <p>The answer is {@code false} only for a lazy {@code @Factory} instance that TestNG has not
+   * created yet. Callers check this so that they do not create a lazy instance too early, for
+   * example to build a message. This method never creates the instance.
+   *
+   * @return {@code false} when this method has a lazy {@code @Factory} instance that does not exist
+   *     yet, otherwise {@code true}.
    */
   public boolean isInstanceInstantiated() {
     IParameterInfo info = getFactoryParameterInfo();
@@ -246,8 +271,14 @@ public abstract class BaseTestMethod
   }
 
   /**
-   * The instance wrapper a clone of this method should carry: the same identity, or {@code null}
-   * when this method carries no instance at all.
+   * Returns the instance wrapper for a copy of this method. The wrapper holds the same test
+   * instance and the same instance id.
+   *
+   * <p>This method reads the test instance. So it creates a lazy {@code @Factory} instance that
+   * does not exist yet. The wrapper does not keep the {@code @Factory} data of the instance, so
+   * {@link #getFactoryParameterInfo()} of the copy returns {@code null} (GITHUB-3576).
+   *
+   * @return the new wrapper, or {@code null} when this method has no test instance.
    */
   protected IObject.@Nullable IdentifiableObject cloneInstance() {
     Object instance = getInstance();
@@ -261,7 +292,7 @@ public abstract class BaseTestMethod
   /**
    * {@inheritDoc}
    *
-   * @return the addition of groups defined on the class and on this method.
+   * @return the groups of this method, together with the groups of its class.
    */
   @Override
   public String[] getGroups() {
@@ -283,12 +314,10 @@ public abstract class BaseTestMethod
   /**
    * {@inheritDoc}
    *
-   * <p>A snapshot, not a live view: {@link #setDownstreamDependencies(Set)} swaps in a new set
-   * rather than clearing and refilling the one already handed out, so a set taken before a
-   * replacement keeps what it held. The old behaviour tracked the replacement. Nothing in TestNG
-   * reads these across a replacement -- they are filled once while the graph is built and read
-   * while it runs -- and holding no set at all is what keeps a method with no dependencies from
-   * carrying an empty one.
+   * <p>The set does not follow later changes. {@link #setDownstreamDependencies(Set)} puts in a new
+   * set, and does not refill the old one. So a set that you got before a change keeps the old
+   * methods. TestNG itself does not keep one of these sets across a change. A method without
+   * dependencies holds no set at all, so that it does not carry an empty set.
    */
   @Override
   public Set<ITestNGMethod> downstreamDependencies() {
@@ -298,20 +327,29 @@ public abstract class BaseTestMethod
   /**
    * {@inheritDoc}
    *
-   * <p>A snapshot rather than a live view, for the reason given on {@link
-   * #downstreamDependencies()}.
+   * <p>The set does not follow later changes, as {@link #downstreamDependencies()} explains.
    */
   @Override
   public Set<ITestNGMethod> upstreamDependencies() {
     return readOnlyView(upstreamDependencies);
   }
 
-  /** Replaces the downstream dependencies. Sets already handed out keep what they held. */
+  /**
+   * Replaces the downstream dependencies, which are the methods that depend on this method. A set
+   * that {@link #downstreamDependencies()} returned before keeps the old methods.
+   *
+   * @param methods the methods that depend on this method.
+   */
   public void setDownstreamDependencies(Set<ITestNGMethod> methods) {
     downstreamDependencies = setupDependencies(methods);
   }
 
-  /** Replaces the upstream dependencies. Sets already handed out keep what they held. */
+  /**
+   * Replaces the upstream dependencies, which are the methods that this method depends on. A set
+   * that {@link #upstreamDependencies()} returned before keeps the old methods.
+   *
+   * @param methods the methods that this method depends on.
+   */
   public void setUpstreamDependencies(Set<ITestNGMethod> methods) {
     upstreamDependencies = setupDependencies(methods);
   }
@@ -323,8 +361,11 @@ public abstract class BaseTestMethod
   }
 
   /**
-   * @return a set holding {@code methods}, or {@code null} when there are none. Returning null
-   *     rather than an empty set is what keeps a dependency-free method from carrying one.
+   * Copies {@code methods} into a new set. In memory-friendly mode, the set holds light copies of
+   * the methods.
+   *
+   * @return the new set, or {@code null} when {@code methods} is empty. So a method without
+   *     dependencies holds no set at all.
    */
   private static @Nullable Set<ITestNGMethod> setupDependencies(Set<ITestNGMethod> methods) {
     if (methods.isEmpty()) {
@@ -418,23 +459,30 @@ public abstract class BaseTestMethod
   }
 
   /**
-   * Whether the time-out this method would inherit from the XML is already enforced on the whole
-   * {@code <test>}, so that inheriting it here as well would bound the method a second time.
+   * Tells if TestNG already applies the XML time-out to the whole {@code <test>}. In that case, the
+   * method must not get the same time-out a second time.
    *
-   * <p>The DTD gives the time-out of {@code <suite>} and {@code <test>} one meaning per parallel
-   * mode: it aborts "the method (if parallel=methods) or the test (if parallel=tests)". Only one
-   * place implements the second reading: {@code SuiteRunner.runInParallelTestMode()}, which bounds
-   * each {@code <test>} worker with the <em>suite's</em> time-out. It is selected from the suite's
-   * parallel mode, and {@code TestTaskExecutor}, which would bound a {@code <test>} by its own
-   * value, is not used in that mode since {@code ParallelMode.TESTS} is not parallel at test level.
+   * <p>The DTD gives the time-out of {@code <suite>} and {@code <test>} a meaning for each parallel
+   * mode. With {@code parallel="methods"}, it stops a method. With {@code parallel="tests"}, it
+   * stops a whole {@code <test>}. Only {@code SuiteRunner.runInParallelTestMode()} stops a whole
+   * {@code <test>}. It gives each {@code <test>} worker the time-out of the <em>suite</em>. The
+   * parallel mode of the suite selects that code. {@code TestTaskExecutor} would apply the time-out
+   * of the {@code <test>} itself, but that mode does not use it, because {@code ParallelMode.TESTS}
+   * is not parallel inside a {@code <test>}.
    *
-   * <p>So the inheritance is skipped exactly when that worker bound applies and carries the same
-   * value: the suite runs {@code parallel="tests"}, and the {@code <test>} declares no time-out of
-   * its own -- or the same one. A time-out declared on the {@code <test>} alone, or a {@code
-   * parallel="tests"} declared on the {@code <test>} alone, is enforced nowhere else and keeps
-   * reaching the method as it always has; otherwise it would be dropped without a word. Inheriting
-   * the suite value per method is what used to put every method of a {@code <test>} on a timed
-   * path, and so on a thread of its own.
+   * <p>So the method does not get the time-out when both of these are true:
+   *
+   * <ul>
+   *   <li>The suite has {@code parallel="tests"}.
+   *   <li>The {@code <test>} has no time-out of its own, or the same time-out as the suite.
+   * </ul>
+   *
+   * <p>In the other cases, nothing else applies the time-out, so the method keeps it. Two examples
+   * are a time-out only on the {@code <test>}, and {@code parallel="tests"} only on the {@code
+   * <test>}. If the method did not keep it, TestNG would drop the time-out with no warning.
+   *
+   * <p>Without this check, each method of the {@code <test>} would get the time-out of the suite. A
+   * method with a time-out runs on a thread of its own.
    */
   private static boolean isBoundedAtTestScope(XmlTest xmlTest) {
     XmlSuite suite = xmlTest.getSuite();
@@ -454,11 +502,18 @@ public abstract class BaseTestMethod
   }
 
   /**
-   * Returns the internal factory metadata this method is bound to.
+   * Returns what TestNG knows about the {@code @Factory} call that created the test instance of
+   * this method.
    *
-   * @return - The metadata, or {@code null}. Unlike the deprecated {@link
-   *     #getFactoryMethodParamsInfo()} this is not part of {@link ITestNGMethod}, so the
-   *     lazy-instantiation details stay available to TestNG without being published.
+   * <p>{@link ITestNGMethod} does not have this method, unlike the deprecated {@link
+   * #getFactoryMethodParamsInfo()}. So TestNG can use the details of lazy instances without making
+   * them public.
+   *
+   * <p>Note: a copy that {@code clone()} makes returns {@code null}, even when a {@code @Factory}
+   * created the instance. So the results of a parallel {@code invocationCount} have no factory
+   * parameters (GITHUB-3576).
+   *
+   * @return the factory data, or {@code null} when no {@code @Factory} created the test instance.
    */
   public @Nullable IParameterInfo getFactoryParameterInfo() {
     Object instance = m_instance == null ? null : m_instance.getInstance();
@@ -475,11 +530,11 @@ public abstract class BaseTestMethod
     return 1;
   }
 
-  /** No-op. */
+  /** Does nothing. */
   @Override
   public void setInvocationCount(int counter) {}
 
-  /** {@inheritDoc} Default value for successPercentage. */
+  /** {@inheritDoc} This class returns 100, the default value. */
   @Override
   public int getSuccessPercentage() {
     return 100;
@@ -500,7 +555,7 @@ public abstract class BaseTestMethod
   /**
    * {@inheritDoc}
    *
-   * @return Returns the date.
+   * @return the date.
    */
   @Override
   public long getDate() {
@@ -510,7 +565,7 @@ public abstract class BaseTestMethod
   /**
    * {@inheritDoc}
    *
-   * @param date The date to set.
+   * @param date the date to set.
    */
   @Override
   public void setDate(long date) {
@@ -524,15 +579,25 @@ public abstract class BaseTestMethod
   }
 
   /**
-   * {@inheritDoc} Compares two BaseTestMethod using the test class then the associated Java Method.
+   * {@inheritDoc}
+   *
+   * <p>Two methods are equal when all of these match:
+   *
+   * <ul>
+   *   <li>the class of the method object, for example {@link TestNGMethod}.
+   *   <li>the Java class of the test class, and the id of the test instance. When neither method
+   *       has a test class yet, only that fact must match.
+   *   <li>the copy of the XML tags that scheduled the method.
+   *   <li>the Java method or constructor.
+   * </ul>
    */
   @Override
-  // getClass() on purpose: none of ConfigurationMethod, FactoryMethod and TestNGMethod overrides
-  // equals, so this comparison is the only thing that tells them apart when they wrap the same
-  // method, the same class and the same instance id -- and they are HashSet members and HashMap
-  // keys in a dozen places. Nothing in the suite fails if it is changed to instanceof, which is
-  // why this is a decision rather than a bug. The class cannot be sealed either: those three
-  // extend it here and org.testng.internal is Export-Package'd.
+  // getClass() on purpose. ConfigurationMethod, FactoryMethod and TestNGMethod do not override
+  // equals(). When two of them wrap the same method, the same class and the same instance id, only
+  // this check tells them apart. Many HashSet and HashMap objects hold them. No test fails if this
+  // check uses instanceof instead, so this is a choice, not a fix. The class cannot be sealed
+  // either. Those three classes extend it, and the bundle exports org.testng.internal
+  // (Export-Package).
   @SuppressWarnings("EqualsGetClass")
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -552,9 +617,9 @@ public abstract class BaseTestMethod
             ? other.m_testClass == null
             : other.m_testClass != null
                 && m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
-                // Compare by per-instance id rather than the instantiated instance, so equality
-                // checks (heavily used while building the method graph) never force a lazy
-                // @Factory instance to be created.
+                // Compare the instance ids, not the instances. TestNG compares methods often while
+                // it builds the method graph, and comparing the instances would create the lazy
+                // @Factory instances.
                 && Objects.equals(getInstanceId(), other.getInstanceId());
 
     return isEqual
@@ -563,16 +628,17 @@ public abstract class BaseTestMethod
   }
 
   /**
-   * {@inheritDoc} This implementation returns the associated Java Method's hash code.
+   * {@inheritDoc}
    *
-   * @return the associated Java Method's hash code.
+   * <p>The hash code uses the Java method, the instance id, and the copy of the XML tags.
    */
   @Override
   public int hashCode() {
     int hash = m_method.hashCode();
-    // Fold in the per-instance id rather than the instantiated instance's identity hash. This keeps
-    // hashCode consistent with equals (which compares instance ids) and, crucially, never forces a
-    // lazy @Factory instance to be created while methods sit in hash-based collections.
+    // Use the instance id, not the hash code of the instance itself. So a method in a hash-based
+    // collection never creates its lazy @Factory instance.
+    // Note: equals() skips the instance id when neither method has a test class. Two such methods
+    // can then be equal and still have different hash codes.
     UUID instanceId = getInstanceId();
     if (instanceId != null) {
       hash = hash * 31 + instanceId.hashCode();
@@ -580,6 +646,12 @@ public abstract class BaseTestMethod
     return hash * 31 + m_xmlOccurrenceIndex;
   }
 
+  /**
+   * Reads the groups of this method from its annotation, and from the same annotation on its class.
+   * Then reads the groups and the methods that this method depends on.
+   *
+   * @param annotationClass the type of the annotation to read, for example {@code ITestAnnotation}.
+   */
   protected void initGroups(Class<? extends ITestOrConfiguration> annotationClass) {
     ITestOrConfiguration annotation =
         getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
@@ -590,8 +662,9 @@ public abstract class BaseTestMethod
         clazz = object.getClass();
       }
     }
-    // else: a lazy @Factory instance is not created yet; a constructor factory produces exactly its
-    // declaring class, which is already the default above — so don't instantiate to read the class.
+    // When the lazy @Factory instance does not exist yet, keep the declaring class. Only a
+    // constructor factory makes lazy instances, and it creates exactly that class. So there is no
+    // need to create the instance to read its class.
     ITestOrConfiguration classAnnotation =
         getAnnotationFinder().findAnnotation(clazz, annotationClass);
 
@@ -603,11 +676,19 @@ public abstract class BaseTestMethod
     initRestOfGroupDependencies(annotationClass);
   }
 
+  /**
+   * Reads the groups of a {@code @BeforeGroups} or {@code @AfterGroups} method. Then reads the
+   * groups and the methods that this method depends on.
+   *
+   * @param annotationClass the type of the annotation to read.
+   * @param groups the groups that the method runs before or after. When this is empty, this method
+   *     reads the {@code groups} of the annotation instead.
+   */
   protected void initBeforeAfterGroups(
       Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
     String @Nullable [] groupsAtMethodLevel =
         calculateGroupsToUseConsideringValuesAndGroupValues(annotationClass, groups);
-    // @BeforeGroups and @AfterGroups annotation cannot be used at Class level. So its always null
+    // @BeforeGroups and @AfterGroups cannot go on a class, so there are no class groups.
     setGroups(getStringArray(groupsAtMethodLevel, null));
     initRestOfGroupDependencies(annotationClass);
   }
@@ -624,7 +705,7 @@ public abstract class BaseTestMethod
 
   private void initRestOfGroupDependencies(Class<? extends ITestOrConfiguration> annotationClass) {
     //
-    // Init groups depended upon
+    // Find the groups that this method depends on
     //
     ITestOrConfiguration annotation =
         getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
@@ -650,7 +731,7 @@ public abstract class BaseTestMethod
         getStringArray(
             null != annotation ? annotation.getDependsOnMethods() : null,
             null != classAnnotation ? classAnnotation.getDependsOnMethods() : null);
-    // Qualify these methods if they don't have a package
+    // Add the class name to each method name that has no dot
     for (int i = 0; i < methodsDependedUpon.length; i++) {
       String m = methodsDependedUpon[i];
       if (!m.contains(".")) {
@@ -677,6 +758,11 @@ public abstract class BaseTestMethod
     return result;
   }
 
+  /**
+   * Returns the finder that reads the annotations of this method.
+   *
+   * @return the annotation finder.
+   */
   protected IAnnotationFinder getAnnotationFinder() {
     return m_annotationFinder;
   }
@@ -694,8 +780,8 @@ public abstract class BaseTestMethod
         .append("[pri:")
         .append(getPriority())
         .append(", instance:")
-        // Don't instantiate a lazy @Factory instance just to render a signature; the factory
-        // parameters appended below already identify the instance.
+        // Do not create a lazy @Factory instance only to show it in the signature. The factory
+        // parameters, which instanceParameters() adds, already identify the instance.
         .append(isInstanceInstantiated() ? String.valueOf(getInstance()) : "<uninstantiated>")
         .append(instanceParameters())
         .append(customAttributes())
@@ -721,6 +807,12 @@ public abstract class BaseTestMethod
             .collect(Collectors.joining(", "));
   }
 
+  /**
+   * Returns the simple name of the declaring class and the name of the method, for example {@code
+   * LoginTest.testLogin}.
+   *
+   * @return the short name of this method.
+   */
   public String getSimpleName() {
     return m_method.getDeclaringClass().getSimpleName() + "." + m_method.getName();
   }
@@ -731,11 +823,18 @@ public abstract class BaseTestMethod
         .orElse("");
   }
 
+  /**
+   * Returns the signature of this method, for messages. It holds the class, the method, the types
+   * of the parameters, the priority and the instance. It also holds the factory parameters and the
+   * custom attributes, when the method has them.
+   *
+   * @return the signature.
+   */
   protected String getSignature() {
     if (m_signature == null) {
       String signature = computeSignature();
-      // Only memoize once the instance is stable; a signature computed while a lazy @Factory
-      // instance is still uninstantiated would otherwise be cached and become stale after creation.
+      // Keep the signature only when the instance exists. A signature that TestNG makes before it
+      // creates a lazy @Factory instance would be wrong after that.
       if (isInstanceInstantiated()) {
         m_signature = signature;
       }
@@ -750,10 +849,17 @@ public abstract class BaseTestMethod
     return getSignature();
   }
 
+  /**
+   * Returns the values of both arrays together, without duplicates.
+   *
+   * @param methodArray the values from the annotation of the method, or {@code null}.
+   * @param classArray the values from the annotation of the class, or {@code null}.
+   * @return the values of both arrays, in no fixed order.
+   */
   protected String[] getStringArray(
       String @Nullable [] methodArray, String @Nullable [] classArray) {
     if (isEmpty(methodArray) && isEmpty(classArray)) {
-      // The common case. Bail out before allocating the set and the result array.
+      // This is the usual case. Return before creating the set and the result array.
       return EMPTY_STRING_ARRAY;
     }
     final Set<String> vResult = new HashSet<>();
@@ -770,10 +876,22 @@ public abstract class BaseTestMethod
     return array == null || array.length == 0;
   }
 
+  /**
+   * Sets the groups of this method.
+   *
+   * @param groups the groups.
+   */
   protected void setGroups(String[] groups) {
     m_groups = groups;
   }
 
+  /**
+   * Sets the groups that this method depends on.
+   *
+   * @param groups the groups from the annotations.
+   * @param xmlGroupDependencies the groups from the {@code <dependencies>} tag of the {@code
+   *     <test>}.
+   */
   protected void setGroupsDependedUpon(String[] groups, Collection<String> xmlGroupDependencies) {
     if (isEmpty(groups) && xmlGroupDependencies.isEmpty()) {
       m_groupsDependedUpon = EMPTY_STRING_ARRAY;
@@ -785,6 +903,11 @@ public abstract class BaseTestMethod
     m_groupsDependedUpon = l.toArray(EMPTY_STRING_ARRAY);
   }
 
+  /**
+   * Sets the methods that this method depends on.
+   *
+   * @param methods the names of the methods.
+   */
   protected void setMethodsDependedUpon(String[] methods) {
     m_methodsDependedUpon = methods;
   }
@@ -816,7 +939,7 @@ public abstract class BaseTestMethod
     return 0;
   }
 
-  /** No-op. */
+  /** Does nothing. */
   @Override
   public void setThreadPoolSize(int threadPoolSize) {}
 
@@ -831,6 +954,11 @@ public abstract class BaseTestMethod
     return m_description;
   }
 
+  /**
+   * Sets whether this method is enabled. TestNG does not run a disabled method.
+   *
+   * @param enabled {@code true} to enable this method.
+   */
   public void setEnabled(boolean enabled) {
     m_enabled = enabled;
   }
@@ -863,27 +991,44 @@ public abstract class BaseTestMethod
   }
 
   /**
-   * @return {@code true} when this (cloned) method represents a single invocation of a parallel
-   *     {@code invocationCount}, for which the firstTimeOnly/lastTimeOnly configuration methods are
-   *     run around the thread pool rather than inside the invocation.
+   * Tells if this method is a copy for one invocation of a parallel {@code invocationCount}.
+   *
+   * <p>For such a copy, TestNG runs the {@code firstTimeOnly} and {@code lastTimeOnly}
+   * configuration methods around the thread pool, not inside the invocation.
+   *
+   * @return {@code true} for such a copy.
    */
   public boolean skipFirstAndLastTimeOnlyConfigs() {
     return m_skipFirstAndLastTimeOnlyConfigs;
   }
 
+  /**
+   * Marks this method as a copy for one invocation of a parallel {@code invocationCount}.
+   *
+   * @param skip {@code true} for such a copy.
+   */
   public void setSkipFirstAndLastTimeOnlyConfigs(boolean skip) {
     m_skipFirstAndLastTimeOnlyConfigs = skip;
   }
 
   /**
-   * @return {@code true} when this (cloned) invocation of a parallel {@code invocationCount} found
-   *     its data provider empty. The invocations stay silent about it so that the thread pool can
-   *     report a single skipped result for the method they all stand for.
+   * Tells if this copy, for one invocation of a parallel {@code invocationCount}, found its data
+   * provider empty.
+   *
+   * <p>The copies do not report the empty data provider. The thread pool reports one skipped result
+   * for the method instead.
+   *
+   * @return {@code true} when this copy found its data provider empty.
    */
   public boolean emptyDataProviderSeen() {
     return m_emptyDataProviderSeen;
   }
 
+  /**
+   * Records whether this copy found its data provider empty.
+   *
+   * @param seen {@code true} when the data provider was empty.
+   */
   public void setEmptyDataProviderSeen(boolean seen) {
     m_emptyDataProviderSeen = seen;
   }
@@ -909,7 +1054,7 @@ public abstract class BaseTestMethod
       try {
         return m_moreInvocationChecker.call();
       } catch (Exception e) {
-        // Should never append
+        // This should never happen.
         throw new RuntimeException(e);
       }
     }
@@ -930,8 +1075,10 @@ public abstract class BaseTestMethod
   }
 
   /**
-   * @return the retry analyzer class, never null: it is {@link DisabledRetryAnalyzer} until a retry
-   *     analyzer is set, and the setter normalises null back to it.
+   * {@inheritDoc}
+   *
+   * @return the retry analyzer class, never {@code null}. It is {@link DisabledRetryAnalyzer} until
+   *     you set a class. The setter also turns {@code null} into {@link DisabledRetryAnalyzer}.
    */
   @Override
   public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
@@ -948,6 +1095,11 @@ public abstract class BaseTestMethod
     m_skipFailedInvocations = s;
   }
 
+  /**
+   * Sets the time-out for all the invocations of this method together.
+   *
+   * @param timeOut the time-out, in milliseconds.
+   */
   public void setInvocationTimeOut(long timeOut) {
     m_invocationTimeOut = timeOut;
   }
@@ -988,10 +1140,11 @@ public abstract class BaseTestMethod
     Collection<Integer> failed = failedInvocations();
     if (failed == null) {
       failed = new ConcurrentLinkedQueue<>();
-      // Losing the race means another thread already installed a queue; record into theirs, or the
-      // failure numbers would be split across two queues and one of them thrown away.
+      // When the compare-and-set fails, another thread set a queue first. Use that queue. Otherwise
+      // the numbers would go into two queues, and one of the queues would be lost.
       if (!FAILED_INVOCATIONS.compareAndSet(this, null, failed)) {
-        // The winner's queue is never replaced, so the re-read hands back that one.
+        // No code replaces the queue after it is set, so this read returns the queue of the other
+        // thread.
         failed = Objects.requireNonNull(failedInvocations());
       }
     }
@@ -1028,20 +1181,26 @@ public abstract class BaseTestMethod
     return m_xmlTest;
   }
 
+  /**
+   * Sets the {@code <test>} of this method.
+   *
+   * @param xmlTest the {@code <test>}, or {@code null}.
+   */
   public void setXmlTest(@Nullable XmlTest xmlTest) {
     m_xmlTest = xmlTest;
   }
 
   /**
-   * Binds this method to the {@code <class>} and {@code <include>} tags it was scheduled for.
+   * Links this method to the {@code <class>} and {@code <include>} tags that scheduled it.
    *
-   * <p>Only test methods are bound. A configuration method still resolves its parameters by name,
-   * through {@link XmlTestUtils}, which cannot tell two repeats of a tag apart.
+   * <p>TestNG links only test methods. A configuration method still finds its parameters by name,
+   * through {@link XmlTestUtils}. That cannot tell two copies of a tag apart.
    *
-   * @param xmlClass - the {@code <class>} occurrence, null when no tag named this method.
-   * @param xmlInclude - the {@code <include>} occurrence inside it, null when none names it.
-   * @param occurrenceIndex - which occurrence this is, counting from zero within this method and
-   *     instance.
+   * @param xmlClass the copy of the {@code <class>} tag, or {@code null} when no tag names this
+   *     method.
+   * @param xmlInclude the copy of the {@code <include>} tag inside it, or {@code null} when no
+   *     {@code <include>} names this method.
+   * @param occurrenceIndex which copy this is, counted from zero for this method and instance.
    */
   public void setXmlOccurrence(
       @Nullable XmlClass xmlClass, @Nullable XmlInclude xmlInclude, int occurrenceIndex) {
@@ -1076,12 +1235,12 @@ public abstract class BaseTestMethod
 
   @Override
   public Map<String, String> findMethodParameters(XmlTest test) {
-    // The bound tags are the ones that were scheduled, which is the only thing that tells two
-    // repeats of them apart. Read downwards from the <class>, whose getAllParameters walks up to
-    // the <test> and the <suite>, then overlay the <include>'s own: an XmlInclude may be shared
-    // between two XmlClass occurrences -- XmlClass.clone() hands its list straight over -- so its
-    // parent pointer cannot say which occurrence is asking, and only the local parameters can be
-    // read from it.
+    // Read the parameters from the linked tags. Only those tags tell two copies of a tag apart.
+    // Start with the <class>. Its getAllParameters() also reads the <test> and the <suite>. Then
+    // add the parameters of the <include> itself. Two XmlClass copies can share one XmlInclude,
+    // because XmlClass.clone() passes on its list as it is. So the link from the <include> to its
+    // parent cannot say which copy asks. Only the local parameters of the <include> are safe to
+    // read.
     XmlClass xmlClass = m_xmlClass;
     XmlInclude xmlInclude = m_xmlInclude;
     if (xmlClass != null) {
@@ -1094,8 +1253,8 @@ public abstract class BaseTestMethod
     if (xmlInclude != null) {
       return xmlInclude.getAllParameters();
     }
-    // No test class bound yet means no <class> tag can match, which XmlTestUtils answers with
-    // the suite and <test> parameters on their own.
+    // Without a test class, no <class> tag can match. XmlTestUtils then returns only the
+    // parameters of the suite and the <test>.
     ITestClass testClass = getTestClass();
     return XmlTestUtils.findMethodParameters(
         test, testClass == null ? null : testClass.getName(), getMethodName());
@@ -1145,9 +1304,14 @@ public abstract class BaseTestMethod
   }
 
   /**
-   * @return the per-parameter retry analyzer cache, creating it on the first call. The CAS matters:
-   *     two threads settling on different maps would each build their own analyzer for the same
-   *     key, and a retry analyzer that loses its count lets a test retry more often than it should.
+   * Returns the retry analyzers of this method, one for each parameter index. The first call
+   * creates the map.
+   *
+   * <p>The first call uses a compare-and-set, because two threads must not end up with two
+   * different maps. Each thread would then create its own analyzer for the same key. An analyzer
+   * that loses its count lets a test retry more often than it should.
+   *
+   * @return the map from a key for the parameters to the retry analyzer.
    */
   @SuppressWarnings("unchecked")
   private ConcurrentHashMap<String, IRetryAnalyzer> retryAnalyzers() {
@@ -1155,7 +1319,7 @@ public abstract class BaseTestMethod
     if (analyzers == null) {
       analyzers = new ConcurrentHashMap<>();
       if (!RETRY_ANALYZERS.compareAndSet(this, null, analyzers)) {
-        // As above: the map the winning thread installed stays put.
+        // As in addFailedInvocationNumber(), no code replaces the map after it is set.
         analyzers = Objects.requireNonNull(m_testMethodToRetryAnalyzer);
       }
     }
@@ -1167,8 +1331,8 @@ public abstract class BaseTestMethod
   }
 
   private static boolean isNotParameterisedTest(ITestResult tr) {
-    // orElse evaluates its argument whether or not it is used, so the Optional form built an empty
-    // array on every call, including the calls that had parameters to look at.
+    // Do not use Optional.orElse(new Object[0]) here. orElse() evaluates its argument on every
+    // call, so it would create an empty array each time.
     Object[] parameters = tr.getParameters();
     return parameters == null || parameters.length == 0;
   }

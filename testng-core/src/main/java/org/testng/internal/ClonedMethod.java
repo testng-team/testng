@@ -16,6 +16,17 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.xml.XmlTest;
 
+/**
+ * A test method that runs another Java method on the test instance of an existing test method.
+ *
+ * <p>{@link org.testng.TestNGUtils#createITestNGMethod} creates it. The cloned method reads many
+ * values from the existing method, for example the test class, the instance, the groups, the
+ * time-outs and the priority. Many other values are fixed. For example, the cloned method is
+ * enabled, runs one time and has no dependencies.
+ *
+ * <p>Some setters change the existing method, for example {@code setTimeOut}. Others do nothing,
+ * for example {@code setPriority}.
+ */
 public class ClonedMethod implements ITestNGMethod {
 
   private final ITestNGMethod m_method;
@@ -26,6 +37,12 @@ public class ClonedMethod implements ITestNGMethod {
   private List<Integer> m_invocationNumbers = new ArrayList<>();
   private final List<Integer> m_failedInvocationNumbers = new ArrayList<>();
 
+  /**
+   * Creates a test method that runs {@code javaMethod} on the test instance of {@code method}.
+   *
+   * @param method the existing test method.
+   * @param javaMethod the Java method to run.
+   */
   public ClonedMethod(ITestNGMethod method, Method javaMethod) {
     m_method = method;
     m_constructorOrMethod = new ConstructorOrMethod(javaMethod);
@@ -33,7 +50,7 @@ public class ClonedMethod implements ITestNGMethod {
 
   @Override
   public void addMethodDependedUpon(String methodName) {
-    // nop
+    // A cloned method has no dependencies.
   }
 
   @Override
@@ -334,7 +351,7 @@ public class ClonedMethod implements ITestNGMethod {
 
   @Override
   public void setPriority(int priority) {
-    // ignored
+    // A cloned method takes its priority from the existing method.
   }
 
   @Override
@@ -344,7 +361,7 @@ public class ClonedMethod implements ITestNGMethod {
 
   @Override
   public void setInterceptedPriority(int priority) {
-    // ignored
+    // A cloned method takes its intercepted priority from the existing method.
   }
 
   @Override

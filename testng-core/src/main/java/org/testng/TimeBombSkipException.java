@@ -10,12 +10,19 @@ import java.util.Date;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A {@link SkipException} extension that transforms a skipped method into a failed method based on
- * a time trigger.
+ * Skips a test until a date, and fails it after that date.
  *
- * <p>By default the time format is yyyy/MM/dd (according to {@code SimpleDateFormat}). You can
- * customize this by using the specialized constructors. Supported date formats are according to the
- * {@code SimpleDateFormat}.
+ * <p>Throw this exception from a test to skip it for a time. Up to the expiration date, TestNG
+ * reports the test as skipped. After that date, TestNG reports it as failed. The message then adds
+ * the date by which the test should have been enabled. The printed stack trace holds only the place
+ * where the exception was created.
+ *
+ * <p>The default date format is {@code yyyy/MM/dd}. Some constructors take a format of your own.
+ * Each format follows the rules of {@code SimpleDateFormat}.
+ *
+ * <p>The format that reads the date also sets how exactly TestNG compares the dates. TestNG cuts
+ * the current time down to that format before it compares. For example, with {@code yyyy/MM/dd},
+ * the test stays skipped for the whole expiration day.
  *
  * @since 5.6
  */
@@ -30,23 +37,21 @@ public class TimeBombSkipException extends SkipException {
   private DateFormat m_outFormat = sdf;
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The format
-   * used for date comparison is <code>yyyy/MM/dd</code>
+   * Creates the exception with an expiration date. The date format is {@code yyyy/MM/dd}.
    *
-   * @param msg exception message
-   * @param expirationDate time limit after which the SKIP becomes a FAILURE
+   * @param msg the reason for the skip.
+   * @param expirationDate the date after which the skip becomes a failure.
    */
   public TimeBombSkipException(String msg, Date expirationDate) {
     this(msg, expirationDate, FORMAT);
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The <code>
-   * format</code> parameter will be used for performing the time comparison.
+   * Creates the exception with an expiration date and a date format.
    *
-   * @param msg exception message
-   * @param expirationDate time limit after which the SKIP becomes a FAILURE
-   * @param format format for the time comparison
+   * @param msg the reason for the skip.
+   * @param expirationDate the date after which the skip becomes a failure.
+   * @param format the format that TestNG uses to compare the dates and to show the date.
    */
   public TimeBombSkipException(String msg, Date expirationDate, String format) {
     super(msg);
@@ -56,11 +61,11 @@ public class TimeBombSkipException extends SkipException {
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>date</code> in the format <code>
-   * yyyy/MM/dd</code>.
+   * Creates the exception with an expiration date in the format {@code yyyy/MM/dd}.
    *
-   * @param msg exception message
-   * @param date time limit after which the SKIP becomes a FAILURE
+   * @param msg the reason for the skip.
+   * @param date the date after which the skip becomes a failure.
+   * @throws TestNGException when {@code date} does not match the format.
    */
   public TimeBombSkipException(String msg, String date) {
     super(msg);
@@ -68,26 +73,27 @@ public class TimeBombSkipException extends SkipException {
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>date</code> in the specified format
-   * <code>format</code>. The same format is used when performing the time comparison.
+   * Creates the exception with an expiration date in the given format.
    *
-   * @param msg exception message
-   * @param date time limit after which the SKIP becomes a FAILURE
-   * @param format format of the passed in <code>date</code> and of the time comparison
+   * @param msg the reason for the skip.
+   * @param date the date after which the skip becomes a failure.
+   * @param format the format of {@code date}. TestNG also uses it to compare the dates and to show
+   *     the date.
+   * @throws TestNGException when {@code date} does not match {@code format}.
    */
   public TimeBombSkipException(String msg, String date, String format) {
     this(msg, date, format, format);
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>date</code> in the specified format
-   * <code>inFormat</code>. The <code>outFormat</code> will be used to perform the time comparison
-   * and display.
+   * Creates the exception with an expiration date, and separate formats to read and to show the
+   * date.
    *
-   * @param msg exception message
-   * @param date time limit after which the SKIP becomes a FAILURE
-   * @param inFormat format of the passed in <code>date</code>
-   * @param outFormat format of the time comparison
+   * @param msg the reason for the skip.
+   * @param date the date after which the skip becomes a failure.
+   * @param inFormat the format of {@code date}. TestNG also uses it to compare the dates.
+   * @param outFormat the format that the message uses to show the date.
+   * @throws TestNGException when {@code date} does not match {@code inFormat}.
    */
   public TimeBombSkipException(String msg, String date, String inFormat, String outFormat) {
     super(msg);
@@ -97,14 +103,12 @@ public class TimeBombSkipException extends SkipException {
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The format
-   * used for date comparison is <code>yyyy/MM/dd</code>
+   * Creates the exception with an expiration date and a cause. The date format is {@code
+   * yyyy/MM/dd}.
    *
-   * @param msg exception message
-   * @param expirationDate time limit after which the SKIP becomes a FAILURE
-   * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method).
-   *     (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
-   *     unknown.)
+   * @param msg the reason for the skip.
+   * @param expirationDate the date after which the skip becomes a failure.
+   * @param cause the exception that caused the skip.
    */
   public TimeBombSkipException(String msg, Date expirationDate, Throwable cause) {
     super(msg, cause);
@@ -112,15 +116,12 @@ public class TimeBombSkipException extends SkipException {
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The <code>
-   * format</code> parameter will be used for performing the time comparison.
+   * Creates the exception with an expiration date, a date format and a cause.
    *
-   * @param msg exception message
-   * @param expirationDate time limit after which the SKIP becomes a FAILURE
-   * @param format format for the time comparison
-   * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method).
-   *     (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
-   *     unknown.)
+   * @param msg the reason for the skip.
+   * @param expirationDate the date after which the skip becomes a failure.
+   * @param format the format that TestNG uses to compare the dates and to show the date.
+   * @param cause the exception that caused the skip.
    */
   public TimeBombSkipException(String msg, Date expirationDate, String format, Throwable cause) {
     super(msg, cause);
@@ -130,14 +131,12 @@ public class TimeBombSkipException extends SkipException {
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>date</code> in the format <code>
-   * yyyy/MM/dd</code>.
+   * Creates the exception with an expiration date in the format {@code yyyy/MM/dd}, and a cause.
    *
-   * @param msg exception message
-   * @param date time limit after which the SKIP becomes a FAILURE
-   * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method).
-   *     (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
-   *     unknown.)
+   * @param msg the reason for the skip.
+   * @param date the date after which the skip becomes a failure.
+   * @param cause the exception that caused the skip.
+   * @throws TestNGException when {@code date} does not match the format.
    */
   public TimeBombSkipException(String msg, String date, Throwable cause) {
     super(msg, cause);
@@ -145,32 +144,29 @@ public class TimeBombSkipException extends SkipException {
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>date</code> in the specified format
-   * <code>format</code>. The same format is used when performing the time comparison.
+   * Creates the exception with an expiration date in the given format, and a cause.
    *
-   * @param msg exception message
-   * @param date time limit after which the SKIP becomes a FAILURE
-   * @param format format of the passed in <code>date</code> and of the time comparison
-   * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method).
-   *     (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
-   *     unknown.)
+   * @param msg the reason for the skip.
+   * @param date the date after which the skip becomes a failure.
+   * @param format the format of {@code date}. TestNG also uses it to compare the dates and to show
+   *     the date.
+   * @param cause the exception that caused the skip.
+   * @throws TestNGException when {@code date} does not match {@code format}.
    */
   public TimeBombSkipException(String msg, String date, String format, Throwable cause) {
     this(msg, date, format, format, cause);
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>date</code> in the specified format
-   * <code>inFormat</code>. The <code>outFormat</code> will be used to perform the time comparison
-   * and display.
+   * Creates the exception with an expiration date, separate formats to read and to show the date,
+   * and a cause.
    *
-   * @param msg exception message
-   * @param date time limit after which the SKIP becomes a FAILURE
-   * @param inFormat format of the passed in <code>date</code>
-   * @param outFormat format of the time comparison
-   * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method).
-   *     (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
-   *     unknown.)
+   * @param msg the reason for the skip.
+   * @param date the date after which the skip becomes a failure.
+   * @param inFormat the format of {@code date}. TestNG also uses it to compare the dates.
+   * @param outFormat the format that the message uses to show the date.
+   * @param cause the exception that caused the skip.
+   * @throws TestNGException when {@code date} does not match {@code inFormat}.
    */
   public TimeBombSkipException(
       String msg, String date, String inFormat, String outFormat, Throwable cause) {
