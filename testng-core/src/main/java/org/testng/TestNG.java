@@ -2004,9 +2004,13 @@ public class TestNG {
   }
 
   /**
-   * Sets whether the command line methods replace the methods that the suite files include.
+   * Sets whether the group rules also apply to a test method that an {@code <include>} tag names.
    *
-   * @param overrideIncludedMethods whether to replace the included methods.
+   * <p>By default, TestNG runs a method that an {@code <include>} tag names, whatever its groups.
+   * With this setting on, the method must also match the groups that the suite includes and
+   * excludes.
+   *
+   * @param overrideIncludedMethods {@code true} to apply the group rules to such a method too.
    */
   public void setOverrideIncludedMethods(boolean overrideIncludedMethods) {
     m_configuration.setOverrideIncludedMethods(overrideIncludedMethods);

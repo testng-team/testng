@@ -23,7 +23,15 @@ import org.testng.internal.objects.pojo.DetailedAttributes;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-/** Implementation of an IClass. */
+/**
+ * Holds what TestNG knows about one test class. This includes the Java class, the {@code <class>}
+ * tag and the test instances.
+ *
+ * <p>When nobody adds a test instance, {@link #getObjects} uses a default instance. That is the
+ * instance that the constructor received. Without one, TestNG creates the default instance with the
+ * object factory. When that factory is the default one, TestNG uses the factory of the suite
+ * instead.
+ */
 public class ClassImpl implements IClass, IObject {
 
   private final Class<?> m_class;
@@ -38,6 +46,21 @@ public class ClassImpl implements IClass, IObject {
   private final @Nullable XmlClass m_xmlClass;
   private final ITestContext m_testContext;
 
+  /**
+   * Creates the data for the test class {@code cls}.
+   *
+   * <p>The test name comes from {@link ITest#getTestName()} of {@code instance}. Without it, the
+   * test name comes from the {@code testName} of a {@code @Test} annotation on the class.
+   *
+   * @param context the context of the {@code <test>}.
+   * @param cls the Java class.
+   * @param xmlClass the {@code <class>} tag of {@code cls}, or {@code null} when no tag names it.
+   * @param instance the test instance, or {@code null} to let TestNG create one when it needs it.
+   * @param classes the test classes that the class finder keeps. TestNG passes them on when it
+   *     creates the instance.
+   * @param annotationFinder the finder that reads the annotations.
+   * @param objectFactory the factory that creates the test instance.
+   */
   public ClassImpl(
       ITestContext context,
       Class<?> cls,
@@ -181,8 +204,8 @@ public class ClassImpl implements IClass, IObject {
     Object instance = identifiable.getInstance();
     if (instance instanceof IParameterInfo
         && !((IParameterInfo) instance).isInstanceInstantiated()) {
-      // Don't instantiate a lazy @Factory instance just to compute a (reporting-only) hash code;
-      // derive a stable one from its unique instance id instead.
+      // Do not create a lazy @Factory instance only to get a hash code. Use the hash code of its
+      // instance id instead, which is unique and does not change.
       return identifiable.getInstanceId().hashCode();
     }
     return requireNonNull(

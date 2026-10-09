@@ -126,6 +126,7 @@ cbeust
 cedric
 charset
 cla
+classArray
 classListeners
 classloader
 className
@@ -182,6 +183,7 @@ excludedMethods
 existingMethod
 expectedExceptions
 expirationDate
+extraListeners
 factoryClass
 failedTests
 failMessage
@@ -223,6 +225,7 @@ ie
 include
 includedGroups
 includedMethods
+includeNested
 independentNode
 inFormat
 initializer
@@ -249,6 +252,7 @@ jarPath
 javac
 javadoc
 javadocs
+javaMethod
 jq
 juherr
 junitreport
@@ -282,6 +286,7 @@ memoize
 memoized
 memoizing
 metaGroups
+methodArray
 methodClass
 methodDeclaration
 methodInterceptors?
@@ -317,6 +322,7 @@ onStart
 onwards
 optionalValues
 osgi
+otherHolder
 outDir
 outFormat
 outMethod
