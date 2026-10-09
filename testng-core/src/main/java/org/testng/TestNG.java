@@ -1103,7 +1103,7 @@ public class TestNG {
   private final IAnnotationTransformer m_defaultAnnoProcessor = new DefaultAnnotationTransformer();
   private IAnnotationTransformer m_annotationTransformer = m_defaultAnnoProcessor;
 
-  private @Nullable Boolean m_skipFailedInvocationCounts = false;
+  private @Nullable Boolean m_skipFailedInvocationCounts;
 
   private final List<IMethodInterceptor> m_methodInterceptors = new ArrayList<>();
 
@@ -1682,8 +1682,8 @@ public class TestNG {
    * @param xmlSuite the suite.
    */
   private void createSuiteRunners(SuiteRunnerMap suiteRunnerMap /* OUT */, XmlSuite xmlSuite) {
-    // A skip setting on this object overrides the setting of the suite. Note: the default value,
-    // false, is not null, so it overrides the suite too.
+    // A skip setting on this object overrides the setting of the suite. The default value is null,
+    // so the suite keeps its own setting unless the caller sets one.
     if (null != m_skipFailedInvocationCounts) {
       xmlSuite.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
     }
@@ -2264,8 +2264,7 @@ public class TestNG {
    * fails.
    *
    * <p>A value that is not {@code null} overrides the setting of every suite. The default value is
-   * {@code false}, so by default this object turns the setting off in every suite. Pass {@code
-   * null} to keep the setting of each suite.
+   * {@code null}, so by default each suite keeps its own setting.
    *
    * @param skip whether to skip the remaining invocations, or {@code null}.
    */
