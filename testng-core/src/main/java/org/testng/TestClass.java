@@ -28,33 +28,34 @@ import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 /**
- * This class represents a test class: - The test methods - The configuration methods (test and
- * method) - The class file
+ * Holds what TestNG knows about one test class in one {@code <test>}.
+ *
+ * <p>It holds the test methods and the configuration methods of each instance of the class. It also
+ * holds the {@code <class>} tags that name the class.
  */
 class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInfo, IObject {
 
   private IAnnotationFinder annotationFinder;
-  // The Strategy used to locate test methods (TestNG, JUnit, etc...)
+  // Finds the test methods and the configuration methods of the class.
   private ITestMethodFinder testMethodFinder;
 
   private IClass iClass;
   private @Nullable String testName;
   private XmlTest xmlTest;
-  // Every <class> tag naming this class, in XML order. The tag may be repeated, and each repeat is
-  // a separate run of the class's methods with its own parameters.
+  // Every <class> tag that names this class, in XML order. A suite can repeat the tag. Each repeat
+  // runs the methods of the class again, with its own parameters.
   private List<XmlClass> xmlClasses = Collections.emptyList();
   private final ITestObjectFactory objectFactory;
   private final @Nullable String m_errorMsgPrefix;
 
-  // Keyed by the per-instance id (UUID) rather than the instantiated instance so that binding
-  // per-instance @BeforeClass/@AfterClass methods never forces a lazy @Factory instance to be
-  // created during collection.
+  // Keyed by the instance id, not by the instance. Reading the instance would make a lazy @Factory
+  // create it while TestNG collects the methods.
   private final Map<UUID, List<ITestNGMethod>> beforeClassConfig = new LinkedHashMap<>();
 
   private final Map<UUID, List<ITestNGMethod>> afterClassConfig = new LinkedHashMap<>();
 
-  // Same key as the class-level maps. A per-invocation scan of the flat
-  // @BeforeMethod/@AfterMethod lists is quadratic in the @Factory size.
+  // Keyed by the instance id too. Each test method call looks up its own list here. A scan of the
+  // full @BeforeMethod and @AfterMethod lists on each call would be slow for a large @Factory.
   private final Map<UUID, List<ITestNGMethod>> beforeMethodConfig = new LinkedHashMap<>();
 
   private final Map<UUID, List<ITestNGMethod>> afterMethodConfig = new LinkedHashMap<>();
@@ -103,6 +104,19 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
 
   private static final Logger LOG = Logger.getLogger(TestClass.class);
 
+  /**
+   * Creates the test class, its instances and its test methods.
+   *
+   * @param objectFactory the factory that TestNG uses to create objects.
+   * @param cls the class and its instances.
+   * @param testMethodFinder finds the test methods and the configuration methods of the class.
+   * @param annotationFinder reads the TestNG annotations of the class.
+   * @param xmlTest the {@code <test>} that runs the class.
+   * @param xmlClasses the {@code <class>} tags that name the class, in XML order. The list is empty
+   *     when no tag names the class.
+   * @param errorMsgPrefix text that TestNG puts in front of the error when it cannot create an
+   *     instance, or {@code null}.
+   */
   protected TestClass(
       ITestObjectFactory objectFactory,
       IClass cls,
@@ -128,10 +142,15 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
 
   @Override
   public @Nullable XmlClass getXmlClass() {
-    // Cannot express more than one occurrence, so it answers the last tag, as ClassInfoMap does.
+    // This method can return one tag only, so it returns the last one, as ClassInfoMap does.
     return xmlClasses.isEmpty() ? null : xmlClasses.get(xmlClasses.size() - 1);
   }
 
+  /**
+   * Returns the finder that reads the TestNG annotations of the class.
+   *
+   * @return the annotation finder.
+   */
   public IAnnotationFinder getAnnotationFinder() {
     return annotationFinder;
   }
@@ -155,13 +174,13 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
 
   private void initTestClassesAndInstances() {
     //
-    // TestClasses and instances
+    // Get the instances, and take the test name from the first one that implements ITest
     //
     IObject.IdentifiableObject[] instances = getObjects(true, this.m_errorMsgPrefix);
     Arrays.stream(instances)
         .map(IdentifiableObject::getInstance)
-        // Only inspect instances that already exist; a lazy @Factory instance must not be created
-        // just to look up an ITest name. Such instances fall back to the class/xml test name below.
+        // Look only at instances that exist. Do not create a lazy @Factory instance just to read
+        // its ITest name. When no instance gives a name, the test name of the class applies.
         .filter(TestClass::isInstantiated)
         .map(IParameterInfo::embeddedInstance)
         .filter(it -> it instanceof ITest)
@@ -213,8 +232,11 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   }
 
   /**
-   * Configuration filtering consults {@link IMethodSelector#includeMethod}, so it runs after {@link
-   * IMethodSelector#setTestMethods} has received the known test methods.
+   * Creates the configuration methods of each instance of the class.
+   *
+   * <p>TestNG filters configuration methods with {@link IMethodSelector#includeMethod}. A selector
+   * can answer only after {@link IMethodSelector#setTestMethods} gives it the test methods. So call
+   * this method after that.
    */
   void initConfigurationMethods() {
     IdentifiableObject[] instances = IObject.objects(iClass, false);
@@ -223,10 +245,8 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     }
 
     Class<?> realClass = getRealClass();
-    // Every one of these lookups rescans the whole class hierarchy and none of them depends on the
-    // instance, so look each configuration category up once for the test class and bind the
-    // templates it answers to each instance in turn. A @Factory used to pay for all ten of them
-    // once per instance it produced.
+    // Each lookup scans the whole class hierarchy, and none depends on the instance. So look up
+    // each kind of configuration method once, then bind the result to each instance.
     ITestNGMethod[] beforeSuiteTemplates = testMethodFinder.getBeforeSuiteMethods(realClass);
     ITestNGMethod[] afterSuiteTemplates = testMethodFinder.getAfterSuiteMethods(realClass);
     ITestNGMethod[] beforeTestTemplates =
@@ -327,8 +347,10 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   }
 
   /**
-   * Create the test methods that belong to this class (rejects all those that belong to a different
-   * class).
+   * Creates the test methods of this class, for each instance and each XML occurrence.
+   *
+   * <p>It skips a method when the class that declares the method is not this class or a parent of
+   * it.
    */
   private ITestNGMethod[] createTestMethods(
       ITestNGMethod[] methods, IdentifiableObject[] instances) {
@@ -340,7 +362,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
         if (instances.length == 0) {
           continue;
         }
-        // Depends on the method alone, so it is not rebuilt for each @Factory instance.
+        // This list depends on the method only, so build it once, not once for each instance.
         List<Pair<@Nullable XmlClass, @Nullable XmlInclude>> occurrences =
             xmlOccurrencesOf(tm.getMethodName());
         TestNGMethod prototype = null;
@@ -369,17 +391,24 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   }
 
   /**
-   * The XML tags that schedule this method, one entry per run of it.
+   * Returns the XML tags that schedule a method, with one entry for each run of the method.
    *
-   * <p>An occurrence contributes one entry per {@code <include>} naming the method exactly -- that
-   * is the tag whose parameters apply, and repeating it is a request to run the method again. An
-   * occurrence whose {@code <methods>} could still select it by regexp, or that lists no {@code
-   * <include>} at all, contributes one entry without a tag.
+   * <p>Each {@code <class>} tag of this class gives entries this way:
    *
-   * <p>A method no occurrence can select is still scheduled once, against the last of them: whether
-   * it runs is {@code XmlMethodSelector}'s call, and a method that never reaches the selector is
-   * never reported as excluded either. That is also the empty case -- a {@code @Factory} produced
-   * class, or a suite that names none -- which falls out as a single entry carrying no tag.
+   * <ul>
+   *   <li>Each {@code <include>} with the exact name of the method gives one entry. The parameters
+   *       of that {@code <include>} apply to that run. A repeated {@code <include>} runs the method
+   *       again.
+   *   <li>With no exact {@code <include>}, the tag gives one entry without an {@code <include>}.
+   *       This happens when the tag has no {@code <include>} at all, or when an {@code <include>}
+   *       selects the method by a regular expression.
+   * </ul>
+   *
+   * <p>When no tag selects the method, the method still gets one entry, with the last {@code
+   * <class>} tag. The method must reach {@code XmlMethodSelector}, which decides if it runs. A
+   * method that never reaches the selector is not reported as excluded. The same rule covers a
+   * class with no {@code <class>} tag, such as a class that a {@code @Factory} made. It gets one
+   * entry with no tags.
    */
   private List<Pair<@Nullable XmlClass, @Nullable XmlInclude>> xmlOccurrencesOf(String methodName) {
     List<Pair<@Nullable XmlClass, @Nullable XmlInclude>> result = new ArrayList<>();
@@ -402,7 +431,10 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     return result;
   }
 
-  /** Whether any of these {@code <include>} tags selects the method, as the selector reads them. */
+  /**
+   * Tells if one of the {@code <include>} tags selects the method, the same way that {@code
+   * XmlMethodSelector} reads them.
+   */
   private static boolean selects(List<XmlInclude> includes, String methodName) {
     for (XmlInclude include : includes) {
       try {
@@ -412,12 +444,18 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
           return true;
         }
       } catch (PatternSyntaxException e) {
-        // Not our error to report: XmlMethodSelector compiles the same name and warns about it.
+        // Do not report the bad pattern here. XmlMethodSelector compiles the same name and warns
+        // about it.
       }
     }
     return false;
   }
 
+  /**
+   * Returns the finder of the test methods and the configuration methods of the class.
+   *
+   * @return the test method finder.
+   */
   public ITestMethodFinder getTestMethodFinder() {
     return testMethodFinder;
   }
@@ -426,6 +464,10 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     Utils.log("TestClass", level, s);
   }
 
+  /**
+   * Logs the {@code @BeforeClass}, {@code @BeforeMethod}, {@code @Test}, {@code @AfterMethod} and
+   * {@code @AfterClass} methods of this class, for debugging.
+   */
   protected void dump() {
     LOG.info("===== Test class\n" + getRealClass().getName());
     for (ITestNGMethod m : m_beforeClassMethods) {
@@ -451,6 +493,11 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     return Objects.toStringHelper(getClass()).add("name", getRealClass()).toString();
   }
 
+  /**
+   * Returns the {@link IClass} that holds the class and its instances.
+   *
+   * @return the class.
+   */
   public IClass getIClass() {
     return iClass;
   }

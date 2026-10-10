@@ -8,8 +8,8 @@ import org.testng.cli.CliOptions;
 import org.testng.cli.jcommander.JCommanderCliRunner;
 
 /**
- * The command line half of {@code test.listeners.factory.TestNGFactoryTest}, which stays in {@code
- * testng-core} for the case that drives the Java API.
+ * The command line half of {@code org.testng.listeners.factory.TestNGFactoryTest}, which stays in
+ * {@code testng-core} for the case that drives the Java API.
  */
 public class TestNGFactoryCommandLineTest {
 

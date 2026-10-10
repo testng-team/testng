@@ -21,7 +21,13 @@ import org.testng.xml.internal.Parser;
 import org.testng.xml.internal.TestNamesMatcher;
 import org.testng.xml.internal.XmlSuiteUtils;
 
-/** A Utility for extracting {@link XmlSuite} from a jar. */
+/**
+ * Reads the suites to run from a jar file.
+ *
+ * <p>This class parses the suite file at {@code xmlPathInJar} in the jar. When test names are
+ * given, it keeps only the {@code <test>} tags with those names. When the jar has no suite file,
+ * this class builds one suite from the classes in the jar.
+ */
 class JarFileUtils {
   private final IPostProcessor processor;
   private final String xmlPathInJar;
@@ -157,9 +163,10 @@ class JarFileUtils {
     if (je.isDirectory() || !name.endsWith(".class")) {
       return false;
     }
-    // module-info.class is a module descriptor (ACC_MODULE), not a loadable class.
-    // META-INF/versions/** is multi-release layout; naive discovery would turn those
-    // paths into invalid class names such as META-INF.versions.9.module-info.
+    // Skip module-info.class. It describes a module, and TestNG cannot load it as a class.
+    // Skip everything under META-INF/ too. A multi-release jar keeps classes for other Java
+    // versions in META-INF/versions/. Their paths would turn into bad class names, such as
+    // META-INF.versions.9.module-info.
     return !name.startsWith("META-INF/") && !name.endsWith("module-info.class");
   }
 

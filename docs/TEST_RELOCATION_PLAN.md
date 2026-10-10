@@ -183,9 +183,9 @@ verified descriptions, the #1362 merge — is redistributed into the phase that 
 | 3 ([#3493](https://github.com/testng-team/testng/issues/3493)) — **done** | `invocationcount`, `parameters`, `inheritance` |
 | 4 ([#3494](https://github.com/testng-team/testng/issues/3494)) — **done** | `dependent` |
 | 5 ([#3495](https://github.com/testng-team/testng/issues/3495)) — **done** | `factory` |
-| 6 ([#3496](https://github.com/testng-team/testng/issues/3496)) | `thread` → `org.testng.concurrency` |
-| 7 ([#3497](https://github.com/testng-team/testng/issues/3497)) | `configuration` |
-| 8 ([#3498](https://github.com/testng-team/testng/issues/3498)) | `listeners` |
+| 6 ([#3496](https://github.com/testng-team/testng/issues/3496)) — **done** | `thread` → `org.testng.concurrency` |
+| 7 ([#3497](https://github.com/testng-team/testng/issues/3497)) — **done** | `configuration` |
+| 8 ([#3498](https://github.com/testng-team/testng/issues/3498)) — **done** | `listeners` |
 
 To size a phase, count its tree rather than trusting a table. For a feature already moved:
 
@@ -266,15 +266,17 @@ Follow the order.
    whether it still passes before filing it anywhere. Phase 4 found two, and both passed once
    their assertions were brought up to date.
 
-   Four more are commented out today. Each belongs to a later phase or to none, and each needs the
-   same question asked:
+   More are commented out today. Each belongs to a later phase or to none, and each needs the
+   same question asked. To list them, strip the comments as above and compare with what is left:
 
    | Class | Owner |
    | --- | --- |
    | `test.distributed.DistributedTest` | no phase owns it |
-   | `test.issue565.Issue565Test` | no phase owns it, and `GITHUB-565` is already verified |
    | `test.jar.JarTest` | no phase owns it |
    | `test.timeout.TimeOutThreadLocalSampleTest` | no phase owns it |
+
+   `test.issue565.Issue565Test` was in this table. GitHub issue #3551 took it out: the class is
+   registered, it runs, and it carries `GITHUB-565`.
 
    Also check `<package name="..."/>` in `testng.xml`. A class selected that way is executable
    without being named, and the rule above would file it under `samples`. Three such tags exist
@@ -320,6 +322,23 @@ Follow the order.
    ```
 
    Read that diff. It is the review's evidence that the phase moved tests without losing any.
+
+   Each phase issue asks for a diff of renames only. A phase that wakes a test which never ran
+   breaks that on purpose, and the diff then holds one added line per woken test. Say which lines
+   those are, in the commit message and in the pull request. A reviewer cannot otherwise tell an
+   intended line from a lost one.
+
+   To separate the two, map every package the phase moved onto one name and compare the sides:
+
+   ```bash
+   # One rule per package this phase moves. Phase 8 moved two: test.listeners and test.issue107.
+   norm() { sed -E 's/^.//; s/^(org\.testng|test)\.listeners\./F./; s/^test\.issue107\./F.issue107./'; }
+   git diff master...HEAD -- testng-core/execution-inventory.txt > /tmp/inv.diff
+   grep -E '^\+[^+]' /tmp/inv.diff | norm | sort > /tmp/after.txt
+   grep -E '^-[^-]'  /tmp/inv.diff | norm | sort > /tmp/before.txt
+   comm -23 /tmp/after.txt /tmp/before.txt   # added: each line must be a test the phase woke
+   comm -13 /tmp/after.txt /tmp/before.txt   # lost: must be empty
+   ```
 
 ## The execution guard
 
@@ -384,9 +403,14 @@ on master, and opens a pull request if it moved.
   | `methodinterceptors` | 2 |
   | each of the rest | 1 |
 
-- **`testng-core/src/test/resources/test/listeners/` mirrors the package path** and holds four
-  suite files. Phase 8 has to decide whether that directory moves with the package or stays put;
-  the answer depends on how each file is loaded. No other feature has such a directory.
+- **`testng-core/src/test/resources/test/listeners/` mirrors the package path.** So do
+  `resources/test/timeout` and `resources/test/issue2724`, whose features no phase owns. To list
+  them, run `find testng-core/src/test/resources/test -type d`. `TestListeners` loads each file in
+  the listeners one with
+  `getPathToResource("test/listeners/github1284/…")`, a plain resource path, so the directory name is
+  free. Phase 8 moves it to `resources/listeners/github1284/` and changes every such string in that
+  class. That matches the other features: `resources/concurrency` and `resources/methodinterceptors`
+  carry no `test/` segment.
 - **Other modules hold the same package names.** `test.groups.issue2232` exists in
   `testng-test-kit` (the shared suite builder) and `testng-jcommander` (a forked-process twin).
   Phase 1 moved only the `testng-core` half. Grep every module, not just `testng-core`.
@@ -468,9 +492,9 @@ Neither of these belongs to a phase, and both are easy to forget once the migrat
    behavior for them. Either the file keeps those two
    forever, or `verifyTestExecution` learns to read group filters and the file goes entirely. The
    second is better and is not hard; it was left out here to keep this PR to one subject.
-2. **Decide what happens to `test.test111`.** It is the same shape as the packages this work
-   removed, but it does not match `testng<number>` so it was never in scope. Nothing else in the
-   tree is named that way now.
+2. **~~Decide what happens to `test.test111`.~~** Done by GitHub issue #3551, which also found
+   that the claim here was wrong. Ten packages at the top level of `test.*` were named after a
+   tracker number, not one. All ten are moved.
 
 **The 452 `GITHUB-*` descriptions elsewhere in the tree are deliberately not audited.** Every
 description checked so far that someone else wrote was correct -- 165, 182, 990, 1834, 1880, 2152

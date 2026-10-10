@@ -1,0 +1,36 @@
+package org.testng.listeners.samples.github1284;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.testng.listeners.samples.github1284.Listener1284.getInstance;
+
+import java.util.Arrays;
+import java.util.List;
+import org.testng.annotations.Test;
+
+public class Sample1284 {
+  @Test
+  public void testWithNoListener() {
+    assertThat(getInstance()).isNull();
+    assertThat(Listener1284.testList.size()).isEqualTo(0);
+  }
+
+  @Test
+  public void testWithListener() {
+    assertThat(getInstance()).isNotNull();
+    assertThat(Listener1284.testList.size()).isEqualTo(1);
+    assertThat(Listener1284.testList.get(0))
+        .isEqualTo(Sample1284.class.getName() + " - Before Invocation");
+  }
+
+  @Test
+  public void testWithChildListener() {
+    assertThat(getInstance()).isNotNull();
+    assertThat(Listener1284.testList.size()).isEqualTo(3);
+
+    String beforeInvocation = Sample1284.class.getName() + " - Before Invocation";
+    String afterInvocation = Sample1284.class.getName() + " - After Invocation";
+    List<String> expectedList = Arrays.asList(beforeInvocation, afterInvocation, beforeInvocation);
+
+    assertThat(Listener1284.testList).isEqualTo(expectedList);
+  }
+}

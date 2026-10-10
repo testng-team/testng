@@ -27,6 +27,8 @@ import org.testng.internal.ExitCode;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.thread.ThreadTimeoutException;
 import org.testng.internal.thread.ThreadUtil;
+import org.testng.listeners.samples.SetStatusListener;
+import org.testng.listeners.samples.SetStatusSample;
 import org.testng.reporters.FailedReporter;
 import org.testng.reporters.RuntimeBehavior;
 import org.testng.timeout.samples.issue3513.AfterMethodBlockedSample;
@@ -39,8 +41,6 @@ import org.testng.timeout.samples.issue3513.ParallelMixedDataProviderSample;
 import org.testng.timeout.samples.issue3513.StubbornSample;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
-import test.listeners.SetStatusListener;
-import test.listeners.SetStatusSample;
 
 /**
  * Under {@code parallel="tests"}, {@code SuiteRunner} bounds each {@code <test>} with the suite

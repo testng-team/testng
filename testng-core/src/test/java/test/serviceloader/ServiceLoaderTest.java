@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 import org.testng.CommandLineArgs;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.listeners.samples.ListenerAssert;
 import test.SimpleBaseTest;
-import test.listeners.ListenerAssert;
 
 public class ServiceLoaderTest extends SimpleBaseTest {
 

@@ -107,6 +107,7 @@
       <class name="org.testng.conffailure.RetriedInvocationTest" />
       <class name="org.testng.conffailure.issue1622.IssueTest" />
       <class name="org.testng.conffailure.issue3522.Issue3522Test" />
+      <class name="org.testng.conffailure.issue3533.Issue3533Test" />
       <class name="test.superclass.MainTest" />
       <class name="test.superclass.Test3" />
       <class name="test.failures.FailuresTest" />
@@ -144,14 +145,14 @@
       <class name="test.xml.issue2231.IssueTest"/>
       <class name="test.xml.XMLStringBufferTest"/>
       <class name="test.invokedmethodlistener.InvokedMethodListenerTest" />
-      <class name="test.testng249.VerifyTest"/>
-      <class name="test.testng195.AfterMethodTest" />
+      <class name="org.testng.inheritance.testng249.VerifyTest"/>
+      <class name="org.testng.configuration.testng195.AfterMethodTest" />
       <class name="test.regression.BeforeTestFailingTest"/>
-      <class name="test.configuration.github1700.RunTest"/>
-      <class name="test.configuration.issue2432.IssueTest"/>
-      <class name="test.configuration.issue2426.IssueTest"/>
+      <class name="org.testng.configuration.github1700.RunTest"/>
+      <class name="org.testng.configuration.issue2432.IssueTest"/>
+      <class name="org.testng.configuration.issue2426.IssueTest"/>
       <class name="org.testng.aftergroups.AfterGroupsBehaviorTest"/>
-      <class name="test.testng285.TestNG285Test" />
+      <class name="org.testng.concurrency.testng285.TestNG285Test" />
       <class name="test.failedreporter.FailedReporterTest" />
       <class name="test.failedreporter.issue2517.DataProviderWithFactoryFailedReporterTest" />
       <class name="test.failedreporter.issue2521.DataProviderWithFactoryMultiFailedReporterTest" />
@@ -172,14 +173,14 @@
       <class name="test.override.OverrideTest" />
       <class name="org.testng.priority.PriorityTest" />
       <class name="test.NestedStaticTest" />
-      <class name="test.configuration.ConfigurationListenerTest" />
+      <class name="org.testng.configuration.ConfigurationListenerTest" />
       <class name="test.groupinvocation.GroupSuiteTest" />
       <class name="test.StaticTest" />
       <class name="test.serviceloader.ServiceLoaderTest" />
       <class name="test.commandline.CommandLineOverridesXml" />
       <class name="test.jason.MainTest" />
-      <class name="test.bug90.Bug90Test" />
-      <class name="test.bug92.Bug92Test" />
+      <class name="org.testng.configuration.bug90.Bug90Test" />
+      <class name="org.testng.configuration.bug92.Bug92Test" />
       <class name="test.ReturnValueTest" />
       <class name="test.groupbug.GroupBugTest" />
       <class name="org.testng.groups.issue1834.IssueTest"/>
@@ -197,33 +198,33 @@
       <class name="test.failedreporter.FailedReporterParametersTest"/>
       <class name="test.reports.ReporterLogTest" />
       <class name="org.testng.invocationcount.testng387.TestNG387"/>
-      <class name="test.testng1231.TestExecutionListenerInvocationOrder"/>
-      <class name="test.testng1232.TestListenerInstances"/>
+      <class name="org.testng.listeners.testng1231.TestExecutionListenerInvocationOrder"/>
+      <class name="org.testng.listeners.testng1232.TestListenerInstances"/>
       <class name="org.testng.skip.BeforeClassSkipExceptionTest"/>
       <class name="org.testng.conffailure.TestNG106"/>
-      <class name="test.issue107.Issue107Test"/>
-      <class name="test.test111.Test1" />
+      <class name="org.testng.listeners.issue107.Issue107Test"/>
+      <class name="org.testng.configuration.test111.Test1" />
       <class name="org.testng.preserveorder.TestNG173Test" />
-      <class name="test.listeners.ordering.ListenerInvocationDefaultBehaviorTest"/>
-      <class name="test.listeners.ordering.ListenerInvocationListenerInvocationDisabledBehaviorTest"/>
-      <class name="test.listeners.github551.Test551"/>
-      <class name="test.listeners.github1284.TestListeners"/>
-      <class name="test.listeners.github1735.ExecutionListenerTest"/>
-      <class name="test.listeners.github1602.IssueTest"/>
-      <class name="test.listeners.issue1777.IssueTest"/>
-      <class name="test.listeners.ListenersTest"/>
+      <class name="org.testng.listeners.ordering.ListenerInvocationDefaultBehaviorTest"/>
+      <class name="org.testng.listeners.ordering.ListenerInvocationListenerInvocationDisabledBehaviorTest"/>
+      <class name="org.testng.listeners.github551.Test551"/>
+      <class name="org.testng.listeners.github1284.TestListeners"/>
+      <class name="org.testng.listeners.github1735.ExecutionListenerTest"/>
+      <class name="org.testng.listeners.github1602.IssueTest"/>
+      <class name="org.testng.listeners.issue1777.IssueTest"/>
+      <class name="org.testng.listeners.ListenersTest"/>
       <class name="org.testng.skip.github1632.IssueTest"/>
-      <class name="test.listeners.issue2220.IssueTest"/>
-      <class name="test.listeners.issue2328.IssueTest"/>
-      <class name="test.listeners.factory.TestNGFactoryTest"/>
+      <class name="org.testng.listeners.issue2220.IssueTest"/>
+      <class name="org.testng.listeners.issue2328.IssueTest"/>
+      <class name="org.testng.listeners.factory.TestNGFactoryTest"/>
       <class name="test_result.ResultStatusTest"/>
       <class name="test_result.TestResultTest"/>
-      <class name="test.listeners.github1319.TestResultInstanceCheckTest"/>
+      <class name="org.testng.listeners.github1319.TestResultInstanceCheckTest"/>
       <class name="org.testng.methodinterceptors.ParallelByInstancesInterceptorTest"/>
       <class name="org.testng.parameters.github1417.TestParamsInjectionInBeforeClass"/>
       <class name="test.order.OrderTest" />
       <class name="org.testng.memory.MemoryLeakTestNg" />
-      <!-- TODO fix the random issue <class name="test.issue565.Issue565Test"/>-->
+      <class name="org.testng.concurrency.issue565.Issue565Test"/>
       <class name="test.failedreporter.issue3111.FactoryInstanceFailedReporterTest"/>
       <class name="test.failedreporter.skippedposition.SkippedPositionRerunTest"/>
       <class name="org.testng.factory.issue3111.FactoryInstanceTest"/>
@@ -240,8 +241,8 @@
       <class name="org.testng.factory.lazy.LazyFactoryMethodInterceptorTest"/>
       <class name="org.testng.factory.lazy.LazyFactoryParallelTest"/>
       <class name="test.objectfactory.ObjectFactoryTest"/>
-      <class name="test.github1490.VerifyDataProviderListener"/>
-      <class name="test.listeners.issue2456.IssueTest"/>
+      <class name="org.testng.listeners.github1490.VerifyDataProviderListener"/>
+      <class name="org.testng.listeners.issue2456.IssueTest"/>
       <class name="org.testng.methodselection.MethodSelectionTest"/>
       <class name="test.beforegroups.BeforeGroupsTest"/>
       <class name="org.testng.invocationcount.issue1719.IssueTest"/>
@@ -264,21 +265,22 @@
 
   <test name="Listeners">
     <classes>
-      <class name="test.listeners.EndMillisShouldNotBeZeroTest" />
-      <class name="test.listeners.ResultEndMillisTest" />
-      <class name="test.listeners.ListenerTest"/>
-      <class name="test.listeners.SuiteAndInvokedMethodListenerTest" />
-      <class name="test.listeners.SuiteAndConfigurationListenerTest" />
-      <class name="test.listeners.ListenerInXmlTest" />
-      <class name="test.listeners.ExecutionListenerTest" />
-      <class name="test.listeners.ExecutionListenerAndSuiteListenerTest" />
-      <class name="test.listeners.ConfigurationListenerTest" />
+      <class name="org.testng.listeners.EndMillisShouldNotBeZeroTest" />
+      <class name="org.testng.listeners.ResultEndMillisTest" />
+      <class name="org.testng.listeners.ResultContextTest" />
+      <class name="org.testng.listeners.ListenerTest"/>
+      <class name="org.testng.listeners.SuiteAndInvokedMethodListenerTest" />
+      <class name="org.testng.listeners.SuiteAndConfigurationListenerTest" />
+      <class name="org.testng.listeners.ListenerInXmlTest" />
+      <class name="org.testng.listeners.ExecutionListenerTest" />
+      <class name="org.testng.listeners.ExecutionListenerAndSuiteListenerTest" />
+      <class name="org.testng.listeners.ConfigurationListenerTest" />
       <class name="test.multiplelisteners.TestMaker" />
-      <class name="test.listeners.github1130.GitHub1130Test"/>
-      <class name="test.listeners.github1296.GitHub1296Test"/>
-      <class name="test.listeners.github1465.IssueTest"/>
-      <class name="test.listeners.github2385.IssueTest"/>
-      <class name="test.listeners.github2522.IssueTest"/>
+      <class name="org.testng.listeners.github1130.GitHub1130Test"/>
+      <class name="org.testng.listeners.github1296.GitHub1296Test"/>
+      <class name="org.testng.listeners.github1465.IssueTest"/>
+      <class name="org.testng.listeners.github2385.IssueTest"/>
+      <class name="org.testng.listeners.github2522.IssueTest"/>
     </classes>
   </test>
 
@@ -312,7 +314,7 @@
   <!--  Keep this in its own <test> tag -->
   <test name="BeforeMethod">
     <classes>
-      <class name="test.configuration.BeforeMethodTest" />
+      <class name="org.testng.configuration.BeforeMethodTest" />
     </classes>
   </test>
 
@@ -589,14 +591,14 @@
   <test name="Parameters in init 1">
     <parameter name="param" value="value1"/>
     <classes>
-      <class name="test.configuration.ConfigurationWithParameters"/>
+      <class name="org.testng.configuration.ConfigurationWithParameters"/>
     </classes>
   </test>
 
   <test name="Parameters in init 2">
   <parameter name="param" value="value2"/>
     <classes>
-      <class name="test.configuration.ConfigurationWithParameters"/>
+      <class name="org.testng.configuration.ConfigurationWithParameters"/>
     </classes>
   </test>
 
@@ -668,7 +670,7 @@
       </run>
     </groups>
     <classes>
-      <class name="test.configuration.ConfigurationInheritGroupsSampleTest" />
+      <class name="org.testng.configuration.ConfigurationInheritGroupsSampleTest" />
     </classes>
   </test>
 
@@ -703,7 +705,7 @@
 
   <test name="BeforeGroups-AfterGroups-1" >
     <classes>
-      <class name="test.configuration.ConfigurationGroupsTest" />
+      <class name="org.testng.configuration.ConfigurationGroupsTest" />
     </classes>
   </test>
 
@@ -715,7 +717,7 @@
       </run>
     </groups>
     <classes>
-      <class name="test.configuration.ConfigurationGroups8SampleTest" />
+      <class name="org.testng.configuration.ConfigurationGroups8SampleTest" />
     </classes>
   </test>
 
@@ -899,26 +901,26 @@
 
   <test name="Configuration">
     <classes>
-      <class name="test.configuration.BaseGroupsTest" />
-      <class name="test.configuration.BeforeTestOrderingTest" />
-      <class name="test.configuration.ConfigurationTest"/>
-      <class name="test.configuration.GroupsTest"/>
-      <class name="test.configuration.BeforeMethodWithGroupFiltersTest" />
-      <class name="test.configuration.AfterMethodWithGroupFiltersTest" />
-      <class name="test.configuration.ReflectMethodParametrizedConfigurationMethodTest" />
-      <class name="test.configuration.SuiteFactoryOnceTest" />
-      <class name="test.configuration.SingleConfigurationTest" />
-      <class name="test.configuration.github1625.TestRunnerIssue1625"/>
-      <class name="test.configuration.issue1346.IssueTest"/>
-      <class name="test.configuration.issue1753.IssueTest"/>
-      <class name="test.configuration.issue2400.IssueTest"/>
-      <class name="test.configuration.BeforeClassTest"/>
-      <class name="test.configuration.issue2209.IssueTest"/>
-      <class name="test.configuration.issue2254.IssueTest"/>
-      <class name="test.configuration.issue2663.IssueTest"/>
-      <class name="test.configuration.issue3239.IssueTest"/>
-      <class name="test.configuration.issue3435.IssueTest"/>
-      <class name="test.configuration.issue3539.IssueTest"/>
+      <class name="org.testng.configuration.BaseGroupsTest" />
+      <class name="org.testng.configuration.BeforeTestOrderingTest" />
+      <class name="org.testng.configuration.ConfigurationTest"/>
+      <class name="org.testng.configuration.GroupsTest"/>
+      <class name="org.testng.configuration.BeforeMethodWithGroupFiltersTest" />
+      <class name="org.testng.configuration.AfterMethodWithGroupFiltersTest" />
+      <class name="org.testng.configuration.ReflectMethodParametrizedConfigurationMethodTest" />
+      <class name="org.testng.configuration.SuiteFactoryOnceTest" />
+      <class name="org.testng.configuration.SingleConfigurationTest" />
+      <class name="org.testng.configuration.github1625.TestRunnerIssue1625"/>
+      <class name="org.testng.configuration.issue1346.IssueTest"/>
+      <class name="org.testng.configuration.issue1753.IssueTest"/>
+      <class name="org.testng.configuration.issue2400.IssueTest"/>
+      <class name="org.testng.configuration.BeforeClassTest"/>
+      <class name="org.testng.configuration.issue2209.IssueTest"/>
+      <class name="org.testng.configuration.issue2254.IssueTest"/>
+      <class name="org.testng.configuration.issue2663.IssueTest"/>
+      <class name="org.testng.configuration.issue3239.IssueTest"/>
+      <class name="org.testng.configuration.issue3435.IssueTest"/>
+      <class name="org.testng.configuration.issue3539.IssueTest"/>
     </classes>
   </test>
 
@@ -1054,7 +1056,7 @@
 
   <test name="GITHUB-2469">
     <classes>
-      <class name="test.listeners.AlterSuiteListenerTest"/>
+      <class name="org.testng.listeners.AlterSuiteListenerTest"/>
     </classes>
   </test>
 

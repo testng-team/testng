@@ -65,12 +65,12 @@ public class RetriedInvocationTest extends SimpleBaseTest {
             "TEST SKIP t(3)");
   }
 
-  @Test
+  @Test(description = "GITHUB-3558")
   public void aRetryHonorsWhatAnotherRowRecordedBeforeItStarted() {
     // Row 2's setup fails on another thread while row 1's first attempt is running, and marks the
     // class. Row 1's retry starts after that mark exists, but the mark is not its own attempt's
-    // doing, so the retry honors it: its setup is skipped, and so is its test method, which would
-    // otherwise run without setup. The rows report in whatever order the threads give.
+    // doing, so the retry honors it: its setup is skipped, and so is its test method. The
+    // alwaysRun teardown runs after that mark is recorded, so each attempt reports it.
     assertThat(outcomesOf(ParallelRowsSample.class))
         .containsExactlyInAnyOrder(
             "CONFIG PASS setup",
@@ -78,7 +78,10 @@ public class RetriedInvocationTest extends SimpleBaseTest {
             "CONFIG FAIL setup",
             "TEST SKIP t(2)",
             "CONFIG SKIP setup",
-            "TEST SKIP t(1)");
+            "TEST SKIP t(1)",
+            "CONFIG PASS teardown",
+            "CONFIG PASS teardown",
+            "CONFIG PASS teardown");
   }
 
   @Test(description = "GITHUB-3530")

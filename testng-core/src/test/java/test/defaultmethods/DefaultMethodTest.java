@@ -7,8 +7,8 @@ import org.testng.ITestNGMethod;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.listeners.samples.TestAndClassListener;
 import test.SimpleBaseTest;
-import test.listeners.TestAndClassListener;
 
 public class DefaultMethodTest extends SimpleBaseTest {
 

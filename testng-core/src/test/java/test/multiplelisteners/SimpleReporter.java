@@ -7,8 +7,8 @@ import org.testng.ISuite;
 import org.testng.SuiteRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.internal.IConfiguration;
+import org.testng.listeners.samples.ListenerAssert;
 import org.testng.xml.XmlSuite;
-import test.listeners.ListenerAssert;
 
 public class SimpleReporter implements IReporter {
   @Override

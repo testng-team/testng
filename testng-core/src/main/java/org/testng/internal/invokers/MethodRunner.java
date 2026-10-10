@@ -20,11 +20,13 @@ import org.jspecify.annotations.Nullable;
 import org.testng.IParameterResolver;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
+import org.testng.TestNGException;
 import org.testng.collections.CollectionUtils;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ObjectBag;
 import org.testng.internal.Parameters;
 import org.testng.internal.invokers.ITestInvoker.FailureContext;
+import org.testng.internal.reflect.MethodMatcherException;
 import org.testng.internal.thread.Async;
 import org.testng.internal.thread.TestNGThreadFactory;
 import org.testng.internal.thread.ThreadUtil;
@@ -51,8 +53,21 @@ public class MethodRunner implements IMethodRunner {
         parametersIndex++;
         continue;
       }
-      Object[] parameterValues =
-          Parameters.injectParameters(next, arguments.getTestMethod(), context, resolvers);
+      Object[] row = next;
+      Object[] parameterValues;
+      try {
+        parameterValues =
+            Parameters.injectParameters(row, arguments.getTestMethod(), context, resolvers);
+      } catch (MethodMatcherException mismatch) {
+        // A sequential provider still stops at the first row that does not fit.
+        throw mismatch;
+      } catch (TestNGException resolverFailed) {
+        // A resolver that throws fails this row and the later rows still run.
+        result.add(
+            testInvoker.failRowThatDoesNotFit(arguments.getTestMethod(), row, resolverFailed));
+        parametersIndex++;
+        continue;
+      }
 
       List<ITestResult> tmpResults = new ArrayList<>();
       int tmpResultsIndex = -1;

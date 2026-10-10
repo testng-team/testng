@@ -1,0 +1,58 @@
+package org.testng.listeners.testng1232;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.testng.ITestNGListener;
+import org.testng.TestNG;
+import org.testng.annotations.Test;
+import org.testng.listeners.samples.testng1232.TestClassContainer;
+import org.testng.listeners.samples.testng1232.TestListenerFor1232;
+import org.testng.listeners.samples.testng1232.TestListenerFor1232.CounterTypes;
+import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
+import test.SimpleBaseTest;
+
+public class TestListenerInstances extends SimpleBaseTest {
+
+  @Test(description = "GITHUB-1232")
+  public void testIfOnlyOneListenerInstanceExists() {
+    runTestForTestClass(TestClassContainer.SimpleTestClass.class);
+  }
+
+  @Test(description = "GITHUB-1232")
+  public void testIfOnlyOneListenerInstanceExistsUsingAnnotations() {
+    runTestForTestClass(TestClassContainer.SimpleTestClassWithListener.class);
+  }
+
+  @Test(description = "GITHUB-1232")
+  public void testIfOnlyOneListenerInstanceExistsUsingListenerTag() {
+    runTestForTestClass(TestClassContainer.SimpleTestClass.class, true);
+  }
+
+  private static void runTestForTestClass(Class<?> clazz) {
+    runTestForTestClass(clazz, false);
+  }
+
+  private static void runTestForTestClass(Class<?> clazz, boolean injectListenerViaTag) {
+    TestNG tng = createTestNGInstanceFor(clazz, injectListenerViaTag);
+    TestListenerFor1232.resetCounters();
+    TestListenerFor1232 listener = new TestListenerFor1232();
+    tng.addListener((ITestNGListener) listener);
+    TestListenerFor1232 anotherListener = new TestListenerFor1232();
+    tng.addListener((ITestNGListener) anotherListener);
+    tng.run();
+    for (CounterTypes type : CounterTypes.values()) {
+      assertThat(TestListenerFor1232.counters.get(type).intValue()).isEqualTo(1);
+    }
+  }
+
+  private static TestNG createTestNGInstanceFor(Class<?> clazz, boolean addListenerTag) {
+    XmlSuite xmlSuite = createXmlSuite("Suite");
+    if (addListenerTag) {
+      xmlSuite.addListener(TestListenerFor1232.class.getName());
+    }
+    XmlTest xmlTest = createXmlTest(xmlSuite, "Test");
+    createXmlClass(xmlTest, clazz);
+    return create(xmlSuite);
+  }
+}
