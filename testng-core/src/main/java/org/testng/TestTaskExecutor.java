@@ -87,7 +87,8 @@ class TestTaskExecutor {
   public void awaitCompletion() {
     String msg =
         String.format(
-            "Starting executor test %d with time out: %d milliseconds.", timeOut, timeOut);
+            "Starting executor test %s with time out: %d milliseconds.",
+            xmlTest.getName(), timeOut);
     Utils.log("TestTaskExecutor", 2, msg);
     try {
       if (reUse) {

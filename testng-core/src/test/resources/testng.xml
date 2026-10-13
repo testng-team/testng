@@ -117,6 +117,7 @@
       <class name="org.testng.concurrency.CustomExecutorServiceFactoryTest"/>
       <class name="org.testng.concurrency.SharedThreadPoolTest"/>
       <class name="org.testng.concurrency.issue2361.IssueTest"/>
+      <class name="org.testng.concurrency.issue3577.IssueTest"/>
       <class name="org.testng.concurrency.SequentialTest" />
       <class name="org.testng.concurrency.SingleThreadForParallelMethodsTest"/>
       <class name="org.testng.concurrency.ThreadCountSuiteTest"/>
