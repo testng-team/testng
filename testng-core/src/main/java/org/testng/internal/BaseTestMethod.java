@@ -248,14 +248,16 @@ public abstract class BaseTestMethod
   /**
    * The instance wrapper a clone of this method should carry: the same identity, or {@code null}
    * when this method carries no instance at all.
+   *
+   * <p>The clone gets the wrapper of this method, not a new wrapper around the plain instance. For
+   * an instance from a {@code @Factory}, the wrapper holds the {@link IParameterInfo}, and {@link
+   * #getFactoryInstance()} reads the factory parameters from it.
    */
   protected IObject.@Nullable IdentifiableObject cloneInstance() {
-    Object instance = getInstance();
-    UUID instanceId = getInstanceId();
-    if (instance == null || instanceId == null) {
+    if (m_instance == null || getInstance() == null) {
       return null;
     }
-    return new IObject.IdentifiableObject(instance, instanceId);
+    return m_instance;
   }
 
   /**
