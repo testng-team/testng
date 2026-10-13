@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -98,6 +99,30 @@ public class XmlSuiteTest extends SimpleBaseTest {
     assertThatThrownBy(testNG::run)
         .isInstanceOf(TestNGException.class)
         .hasMessageContaining("Failed to parse suite: " + missingSuiteFile);
+    assertThat(testNG.getStatus()).isEqualTo(1);
+  }
+
+  @Test(description = "GITHUB-3571")
+  public void missingChildSuiteFileFailsRunWhenSetTestSuitesIsUsed() throws IOException {
+    Path parentSuite =
+        Path.of(
+            System.getProperty("java.io.tmpdir"),
+            "testng-parent-suite-" + UUID.randomUUID() + ".xml");
+    Path missingSuite =
+        parentSuite.resolveSibling("testng-missing-child-" + UUID.randomUUID() + ".xml");
+    Files.writeString(
+        parentSuite,
+        "<suite name=\"Parent\"><suite-files><suite-file path=\""
+            + missingSuite
+            + "\"/></suite-files></suite>");
+
+    TestNG testNG = create();
+    testNG.setTestSuites(List.of(parentSuite.toString()));
+
+    assertThatThrownBy(testNG::run)
+        .isInstanceOf(TestNGException.class)
+        .hasMessageContaining("Failed to parse suite: " + parentSuite)
+        .hasStackTraceContaining(missingSuite.toString());
     assertThat(testNG.getStatus()).isEqualTo(1);
   }
 
