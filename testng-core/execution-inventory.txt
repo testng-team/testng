@@ -80,6 +80,7 @@ org.testng.concurrency.ThreadPoolSizeWithTimeOutTest#verify	PASS 1
 org.testng.concurrency.TrueParallelTest#shouldRunInParallel	PASS 1
 org.testng.concurrency.issue188.IssueTest#testSuiteLevelParallelMode	PASS 1
 org.testng.concurrency.issue2361.IssueTest#ensureClassLevelSingleThreadedNatureGetsHonoured	PASS 2
+org.testng.concurrency.issue3577.IssueTest#theExecutorLogLineShowsTheNameOfTheTest	PASS 1
 org.testng.concurrency.issue565.Issue565Test#aGroupDependencyWithGroupByInstancesDoesNotDeadlock	PASS 1
 org.testng.concurrency.parallelization.ParallelByMethodsTestCase1Scenario1#sanityCheck	PASS 1
 org.testng.concurrency.parallelization.ParallelByMethodsTestCase1Scenario1#verifyOnlyOneInstanceOfTestClassForAllTestMethods	PASS 1
