@@ -971,11 +971,7 @@ public class TestNG {
   public void addListener(Object listener) {
     if (!(listener instanceof ITestNGListener)) {
       // A setter throws. Only TestNG#main turns a bad value into an exit code.
-      throw new TestNGException(
-          "Listener "
-              + listener
-              + " must be one of ITestListener, ISuiteListener, IReporter, "
-              + " IAnnotationTransformer, IMethodInterceptor or IInvokedMethodListener");
+      throw new TestNGException("Listener " + listener + " must implement ITestNGListener");
     }
     addListener((ITestNGListener) listener);
   }

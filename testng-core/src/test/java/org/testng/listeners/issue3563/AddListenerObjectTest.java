@@ -17,7 +17,7 @@ public class AddListenerObjectTest {
 
     assertThatThrownBy(() -> testng.addListener(new Object()))
         .isInstanceOf(TestNGException.class)
-        .hasMessageContaining("must be one of");
+        .hasMessageContaining("must implement ITestNGListener");
   }
 
   @Test
