@@ -388,7 +388,7 @@ public class TestNG {
             s.getChildSuites().add(cSuite);
           }
         } catch (IOException e) {
-          e.printStackTrace(System.out);
+          throw new TestNGException("Failed to parse suite: " + suiteFile, e);
         }
       }
     }

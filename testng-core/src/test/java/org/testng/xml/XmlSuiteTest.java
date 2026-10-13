@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.TestNGException;
@@ -77,6 +79,26 @@ public class XmlSuiteTest extends SimpleBaseTest {
     suite.setGroups(groups);
     assertThat(suite.getIncludedGroups()).containsExactly("foo");
     assertThat(suite.getExcludedGroups()).containsExactly("bar");
+  }
+
+  @Test(description = "GITHUB-3571")
+  public void missingChildSuiteFileFailsRun() {
+    XmlSuite suite = new XmlSuite();
+    suite.setName("Parent");
+    String missingSuiteFile =
+        Path.of(
+                System.getProperty("java.io.tmpdir"),
+                "testng-missing-suite-" + UUID.randomUUID() + ".xml")
+            .toString();
+    suite.setSuiteFiles(List.of(missingSuiteFile));
+
+    TestNG testNG = create();
+    testNG.setXmlSuites(List.of(suite));
+
+    assertThatThrownBy(testNG::run)
+        .isInstanceOf(TestNGException.class)
+        .hasMessageContaining("Failed to parse suite: " + missingSuiteFile);
+    assertThat(testNG.getStatus()).isEqualTo(1);
   }
 
   @Test(dataProvider = "dp", description = "GITHUB-778")
