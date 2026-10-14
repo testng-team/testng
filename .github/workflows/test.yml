@@ -85,7 +85,7 @@ jobs:
           echo "The full patch is attached as the 'rewrite-patch' artifact."
       - name: Upload the patch
         if: ${{ failure() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: rewrite-patch
           path: build/reports/rewrite/rewrite.patch
@@ -151,7 +151,7 @@ jobs:
             org.gradle.java.installations.auto-download=false
       - name: Upload build reports
         if: ${{ failure() && steps.run_test_cases.outcome == 'failure' }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: build-reports-${{ matrix.java_distribution }}-${{ matrix.java_version }}-${{ steps.build_id.outputs.unique_id }}
           path: testng-core/build/reports/tests/test/**
