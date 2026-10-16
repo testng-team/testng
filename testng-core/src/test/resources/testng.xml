@@ -231,6 +231,7 @@
       <class name="org.testng.factory.issue326.IssueTest"/>
       <class name="org.testng.factory.issue553.IssueTest"/>
       <class name="org.testng.factory.issue1041.IssueTest"/>
+      <class name="org.testng.factory.issue3576.IssueTest"/>
       <class name="org.testng.factory.issue1924.IssueTest"/>
       <class name="org.testng.factory.FactoryWithExcludedGroupTest" />
       <class name="org.testng.factory.issue1745.Github1745Test"/>
