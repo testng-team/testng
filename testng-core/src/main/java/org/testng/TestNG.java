@@ -1827,8 +1827,10 @@ public class TestNG {
     Optional.ofNullable(cla.useGlobalThreadPool).ifPresent(this::shouldUseGlobalThreadPool);
     Optional.ofNullable(cla.shareThreadPoolForDataProviders)
         .ifPresent(this::shareThreadPoolForDataProviders);
-    Optional.ofNullable(cla.propagateDataProviderFailureAsTestFailure)
-        .ifPresent(value -> propagateDataProviderFailureAsTestFailure());
+    // GITHUB-3565. The field defaults to FALSE, so only TRUE turns the setting on.
+    if (Boolean.TRUE.equals(cla.propagateDataProviderFailureAsTestFailure)) {
+      propagateDataProviderFailureAsTestFailure();
+    }
     setReportAllDataDrivenTestsAsSkipped(cla.includeAllDataDrivenTestsWhenSkipping);
     Optional.ofNullable(cla.emptyDataProviderBehavior)
         .ifPresent(this::setEmptyDataProviderBehavior);
@@ -2242,6 +2244,13 @@ public class TestNG {
     result.generateResultsPerSuite =
         Boolean.parseBoolean(
             cmdLineArgs.getOrDefault(CommandLineArgs.GENERATE_RESULTS_PER_SUITE, false).toString());
+
+    result.propagateDataProviderFailureAsTestFailure =
+        Boolean.parseBoolean(
+            cmdLineArgs
+                .getOrDefault(
+                    CommandLineArgs.PROPAGATE_DATA_PROVIDER_FAILURES_AS_TEST_FAILURE, false)
+                .toString());
 
     Optional.ofNullable(cmdLineArgs.get(CommandLineArgs.LISTENER_COMPARATOR))
         .map(Object::toString)
