@@ -2247,10 +2247,8 @@ public class TestNG {
 
     result.propagateDataProviderFailureAsTestFailure =
         Boolean.parseBoolean(
-            cmdLineArgs
-                .getOrDefault(
-                    CommandLineArgs.PROPAGATE_DATA_PROVIDER_FAILURES_AS_TEST_FAILURE, false)
-                .toString());
+            String.valueOf(
+                cmdLineArgs.get(CommandLineArgs.PROPAGATE_DATA_PROVIDER_FAILURES_AS_TEST_FAILURE)));
 
     Optional.ofNullable(cmdLineArgs.get(CommandLineArgs.LISTENER_COMPARATOR))
         .map(Object::toString)
