@@ -7,15 +7,20 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import org.testng.ITestNGListener;
+import org.testng.SkipException;
 import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.internal.ExitCode;
 import org.testng.xml.XmlSuite.ParallelMode;
 import org.testng.xml.github1533.SuiteCounter;
 import org.testng.xml.github1874.TestClassSample;
@@ -77,6 +82,119 @@ public class XmlSuiteTest extends SimpleBaseTest {
     suite.setGroups(groups);
     assertThat(suite.getIncludedGroups()).containsExactly("foo");
     assertThat(suite.getExcludedGroups()).containsExactly("bar");
+  }
+
+  @Test(description = "GITHUB-3571")
+  public void missingChildSuiteFileFailsRun() {
+    XmlSuite suite = new XmlSuite();
+    suite.setName("Parent");
+    String missingSuiteFile =
+        Path.of(
+                System.getProperty("java.io.tmpdir"),
+                "testng-missing-suite-" + UUID.randomUUID() + ".xml")
+            .toString();
+    suite.setSuiteFiles(List.of(missingSuiteFile));
+
+    TestNG testNG = create();
+    testNG.setXmlSuites(List.of(suite));
+
+    assertThatThrownBy(testNG::run)
+        .isInstanceOf(TestNGException.class)
+        .hasMessageContaining("Failed to parse suite: " + missingSuiteFile);
+    assertThat(testNG.getStatus()).isEqualTo(ExitCode.HAS_NO_TEST);
+  }
+
+  @Test(description = "GITHUB-3571")
+  public void missingChildSuiteFileFailsRunWhenSetTestSuitesIsUsed() throws IOException {
+    Path parentSuite =
+        Path.of(
+            System.getProperty("java.io.tmpdir"),
+            "testng-parent-suite-" + UUID.randomUUID() + ".xml");
+    Path missingSuite =
+        parentSuite.resolveSibling("testng-missing-child-" + UUID.randomUUID() + ".xml");
+    Files.writeString(
+        parentSuite,
+        "<suite name=\"Parent\"><suite-files><suite-file path=\""
+            + missingSuite
+            + "\"/></suite-files></suite>");
+
+    TestNG testNG = create();
+    testNG.setTestSuites(List.of(parentSuite.toString()));
+
+    assertThatThrownBy(testNG::run)
+        .isInstanceOf(TestNGException.class)
+        .hasMessageContaining("Failed to parse suite: " + parentSuite)
+        .hasStackTraceContaining(missingSuite.toString());
+    assertThat(testNG.getStatus()).isEqualTo(ExitCode.HAS_NO_TEST);
+  }
+
+  @Test(description = "GITHUB-3571")
+  public void failedSuiteInitializationFailsAgainOnRetry() throws IOException {
+    Path directory = Files.createTempDirectory("testng-suite-retry-");
+    Path childSuite = directory.resolve("child.xml");
+    Path missingSuite = directory.resolve("missing.xml");
+    Path parentSuite = directory.resolve("parent.xml");
+    Files.writeString(
+        childSuite,
+        "<suite name=\"Child\"><test name=\"child\"><classes><class name=\""
+            + "org.testng.xml.github1874.TestClassSample\"/></classes></test></suite>");
+    Files.writeString(
+        parentSuite,
+        "<suite name=\"Parent\"><suite-files><suite-file path=\""
+            + childSuite
+            + "\"/><suite-file path=\""
+            + missingSuite
+            + "\"/></suite-files></suite>");
+
+    TestNG testNG = create();
+    testNG.setTestSuites(List.of(parentSuite.toString()));
+
+    assertThatThrownBy(testNG::run).isInstanceOf(TestNGException.class);
+    assertThat(testNG.getStatus()).isEqualTo(ExitCode.HAS_NO_TEST);
+    assertThatThrownBy(testNG::run).isInstanceOf(TestNGException.class);
+    assertThat(testNG.getStatus()).isEqualTo(ExitCode.HAS_NO_TEST);
+  }
+
+  @Test(description = "GITHUB-3571")
+  public void wrappedIOExceptionParsingReadableSuiteHasNoTests() throws IOException {
+    Path directory = Files.createTempDirectory("testng-suite-dtd-");
+    Path suite = directory.resolve("parent.xml");
+    Path childSuite = directory.resolve("child.xml");
+    Path missingDtd = directory.resolve("missing.dtd");
+    Files.writeString(
+        suite,
+        "<suite name=\"Parent\"><suite-files><suite-file path=\""
+            + childSuite
+            + "\"/></suite-files></suite>");
+    Files.writeString(
+        childSuite,
+        "<!DOCTYPE suite SYSTEM \"" + missingDtd.toUri() + "\"><suite name=\"Child\"/>");
+    Files.writeString(missingDtd, "");
+    if (!Files.getFileStore(missingDtd).supportsFileAttributeView("posix")) {
+      throw new SkipException("The filesystem does not support POSIX file permissions");
+    }
+    Files.setPosixFilePermissions(missingDtd, Collections.emptySet());
+    if (Files.isReadable(missingDtd)) {
+      throw new SkipException("The test process can read a file with no POSIX permissions");
+    }
+
+    String previousValidationMode = System.getProperty("testng.xml.validation");
+    System.setProperty("testng.xml.validation", "strict");
+    try {
+      TestNG testNG = create();
+      testNG.setTestSuites(List.of(suite.toString()));
+
+      assertThatThrownBy(testNG::run)
+          .isInstanceOf(TestNGException.class)
+          .hasRootCauseInstanceOf(IOException.class);
+      assertThat(testNG.getStatus()).isEqualTo(ExitCode.HAS_NO_TEST);
+    } finally {
+      if (previousValidationMode == null) {
+        System.clearProperty("testng.xml.validation");
+      } else {
+        System.setProperty("testng.xml.validation", previousValidationMode);
+      }
+    }
   }
 
   @Test(dataProvider = "dp", description = "GITHUB-778")

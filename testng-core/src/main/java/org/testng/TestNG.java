@@ -207,6 +207,9 @@ public class TestNG {
       new org.testng.internal.ExitCodeListener();
   private @Nullable ExitCode exitCode;
   private boolean runFailed;
+  private boolean childSuiteParsingFailed;
+  private @Nullable RuntimeException suiteInitializationFailure;
+  private boolean childSuiteParsingFailedDuringInitialization;
   private final Map<Class<? extends IExecutionVisualiser>, IExecutionVisualiser>
       m_executionVisualisers = new LinkedHashMap<>();
 
@@ -261,8 +264,9 @@ public class TestNG {
   /**
    * Returns the exit status of the run.
    *
-   * <p>The status is 1 when {@link #run()} threw a {@link TestNGException}, whatever else the run
-   * did.
+   * <p>The status is 1 when {@link #run()} threw a {@link TestNGException}, except when the only
+   * requested suite has an unreadable child suite and the run has no test results. That case
+   * returns 8.
    *
    * <p>Otherwise, the status is 8 when the run has no test results, not even skipped ones. This
    * method checks that before the values below, so 8 hides all of them.
@@ -282,10 +286,11 @@ public class TestNG {
    *     finished and did not record a failure.
    */
   public int getStatus() {
-    if (runFailed) {
+    boolean noTestsFound = exitCodeListener.noTestsFound();
+    if (runFailed && !(childSuiteParsingFailed && noTestsFound)) {
       return ExitCode.FAILED;
     }
-    if (exitCodeListener.noTestsFound()) {
+    if (noTestsFound) {
       return ExitCode.HAS_NO_TEST;
     }
     return requireExitCode().getExitCode();
@@ -388,7 +393,8 @@ public class TestNG {
             s.getChildSuites().add(cSuite);
           }
         } catch (IOException e) {
-          e.printStackTrace(System.out);
+          childSuiteParsingFailed = m_suites.size() == 1;
+          throw new TestNGException("Failed to parse suite: " + suiteFile, e);
         }
       }
     }
@@ -404,13 +410,14 @@ public class TestNG {
     }
     try {
       return Parser.parse(suitePath, getProcessor());
-    } catch (IOException e) {
-      throw new TestNGException("Failed to parse suite: " + suitePath, e);
     } catch (Exception ex) {
       // The parser can wrap the real error, for example a YAML error. Find the deepest cause.
       Throwable t = ex;
       while (t.getCause() != null) {
         t = t.getCause();
+      }
+      if (m_stringSuites.size() == 1 && t instanceof IOException && new File(suitePath).canRead()) {
+        childSuiteParsingFailed = true;
       }
       if (t instanceof TestNGException) {
         throw (TestNGException) t;
@@ -459,10 +466,24 @@ public class TestNG {
   public void initializeSuitesAndJarFile() {
     // The IntelliJ plugin can call this method before run(). Do not build the suites twice.
     if (isSuiteInitialized) {
+      if (suiteInitializationFailure != null) {
+        childSuiteParsingFailed = childSuiteParsingFailedDuringInitialization;
+        throw suiteInitializationFailure;
+      }
       return;
     }
     isSuiteInitialized = true;
 
+    try {
+      initializeSuitesAndJarFileOnce();
+    } catch (RuntimeException e) {
+      suiteInitializationFailure = e;
+      childSuiteParsingFailedDuringInitialization = childSuiteParsingFailed;
+      throw e;
+    }
+  }
+
+  private void initializeSuitesAndJarFileOnce() {
     if (!m_suites.isEmpty()) {
       parseSuiteFiles(); // parse the <suite-file> tags, if any
       return;
@@ -1408,6 +1429,7 @@ public class TestNG {
    */
   public void run() {
     runFailed = false;
+    childSuiteParsingFailed = false;
     try {
       initializeEverything();
       sanityCheck();
@@ -2016,9 +2038,10 @@ public class TestNG {
    * Prints a failure that {@link #run()} threw.
    *
    * <p>{@link #run()} records a {@link TestNGException} before it throws it. After that, {@link
-   * #getStatus()} returns 1, and {@link #hasFailure()} returns {@code true}. {@link #hasSkip()} and
-   * {@link #hasFailureWithinSuccessPercentage()} return {@code false}. This method does not change
-   * the status.
+   * #getStatus()} returns 8 when the only requested suite has an unreadable child suite and no
+   * tests ran, or 1 otherwise. {@link #hasFailure()} returns {@code true}, while {@link #hasSkip()}
+   * and {@link #hasFailureWithinSuccessPercentage()} return {@code false}. This method does not
+   * change the status.
    *
    * <p>This method logs the message. The logged message appears only when an SLF4J provider is on
    * the class path. It also prints to standard error. At a verbose level above 1, it prints the
