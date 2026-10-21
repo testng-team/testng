@@ -19,6 +19,7 @@ import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.internal.ExitCode;
 import org.testng.xml.XmlSuite.ParallelMode;
 import org.testng.xml.github1533.SuiteCounter;
 import org.testng.xml.github1874.TestClassSample;
@@ -99,7 +100,7 @@ public class XmlSuiteTest extends SimpleBaseTest {
     assertThatThrownBy(testNG::run)
         .isInstanceOf(TestNGException.class)
         .hasMessageContaining("Failed to parse suite: " + missingSuiteFile);
-    assertThat(testNG.getStatus()).isEqualTo(1);
+    assertThat(testNG.getStatus()).isEqualTo(ExitCode.HAS_NO_TEST);
   }
 
   @Test(description = "GITHUB-3571")
@@ -123,7 +124,7 @@ public class XmlSuiteTest extends SimpleBaseTest {
         .isInstanceOf(TestNGException.class)
         .hasMessageContaining("Failed to parse suite: " + parentSuite)
         .hasStackTraceContaining(missingSuite.toString());
-    assertThat(testNG.getStatus()).isEqualTo(1);
+    assertThat(testNG.getStatus()).isEqualTo(ExitCode.HAS_NO_TEST);
   }
 
   @Test(dataProvider = "dp", description = "GITHUB-778")
