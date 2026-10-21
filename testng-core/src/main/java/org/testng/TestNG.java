@@ -6,7 +6,6 @@ import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -209,6 +208,8 @@ public class TestNG {
   private @Nullable ExitCode exitCode;
   private boolean runFailed;
   private boolean childSuiteParsingFailed;
+  private @Nullable RuntimeException suiteInitializationFailure;
+  private boolean childSuiteParsingFailedDuringInitialization;
   private final Map<Class<? extends IExecutionVisualiser>, IExecutionVisualiser>
       m_executionVisualisers = new LinkedHashMap<>();
 
@@ -409,18 +410,14 @@ public class TestNG {
     }
     try {
       return Parser.parse(suitePath, getProcessor());
-    } catch (IOException e) {
-      if (m_stringSuites.size() == 1
-          && e instanceof FileNotFoundException
-          && new File(suitePath).canRead()) {
-        childSuiteParsingFailed = true;
-      }
-      throw new TestNGException("Failed to parse suite: " + suitePath, e);
     } catch (Exception ex) {
       // The parser can wrap the real error, for example a YAML error. Find the deepest cause.
       Throwable t = ex;
       while (t.getCause() != null) {
         t = t.getCause();
+      }
+      if (m_stringSuites.size() == 1 && t instanceof IOException && new File(suitePath).canRead()) {
+        childSuiteParsingFailed = true;
       }
       if (t instanceof TestNGException) {
         throw (TestNGException) t;
@@ -469,10 +466,24 @@ public class TestNG {
   public void initializeSuitesAndJarFile() {
     // The IntelliJ plugin can call this method before run(). Do not build the suites twice.
     if (isSuiteInitialized) {
+      if (suiteInitializationFailure != null) {
+        childSuiteParsingFailed = childSuiteParsingFailedDuringInitialization;
+        throw suiteInitializationFailure;
+      }
       return;
     }
     isSuiteInitialized = true;
 
+    try {
+      initializeSuitesAndJarFileOnce();
+    } catch (RuntimeException e) {
+      suiteInitializationFailure = e;
+      childSuiteParsingFailedDuringInitialization = childSuiteParsingFailed;
+      throw e;
+    }
+  }
+
+  private void initializeSuitesAndJarFileOnce() {
     if (!m_suites.isEmpty()) {
       parseSuiteFiles(); // parse the <suite-file> tags, if any
       return;
