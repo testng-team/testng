@@ -77,6 +77,34 @@ public class CliConfigurerDataProviderFailureTest {
     assertThat(testng.propagates()).isFalse();
   }
 
+  @Test(description = "GITHUB-3565")
+  public void cliConfigurerLeavesTheSettingOffWhenFalse() {
+    Inspectable testng = new Inspectable();
+    CliOptions cli = new CliOptions();
+    cli.propagateDataProviderFailureAsTestFailure = Boolean.FALSE;
+    CliConfigurer.configure(testng, cli);
+    assertThat(testng.propagates()).isFalse();
+  }
+
+  @Test(description = "GITHUB-3565")
+  public void commandLineArgsLeaveTheSettingOffWhenFalse() {
+    Inspectable testng = new Inspectable();
+    CommandLineArgs args = new CommandLineArgs();
+    args.propagateDataProviderFailureAsTestFailure = Boolean.FALSE;
+    testng.apply(args);
+    assertThat(testng.propagates()).isFalse();
+  }
+
+  @Test(description = "GITHUB-3565")
+  @SuppressWarnings("deprecation")
+  public void configureMapLeavesTheSettingOffWhenFalse() {
+    Inspectable testng = new Inspectable();
+    Map<String, Object> values = new HashMap<>();
+    values.put(CommandLineArgs.PROPAGATE_DATA_PROVIDER_FAILURES_AS_TEST_FAILURE, "false");
+    testng.configure(values);
+    assertThat(testng.propagates()).isFalse();
+  }
+
   /** Exposes the protected configuration and the frozen command line path of {@link TestNG}. */
   private static final class Inspectable extends TestNG {
     boolean propagates() {
