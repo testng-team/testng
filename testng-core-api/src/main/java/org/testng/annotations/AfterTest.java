@@ -47,8 +47,9 @@ public @interface AfterTest {
    * For before methods (beforeSuite, beforeTest, beforeTestClass and beforeTestMethod, but not
    * beforeGroups): if set to true, this configuration method will be run regardless of what groups
    * it belongs to. <br>
-   * For after methods (afterSuite, afterClass, ...): if set to true, this configuration method will
-   * be run even if one or more methods invoked previously failed or was skipped.
+   * For after methods (afterSuite, afterClass, ...): if set to true, this configuration method runs
+   * even if an earlier configuration method failed or was skipped. A failed test method does not
+   * stop an after method from running.
    *
    * @return the value (default false)
    */
