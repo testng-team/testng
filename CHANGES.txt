@@ -101,7 +101,9 @@ Possible backward incompatible changes:
   command line, through TestNG.configure(Map) as Maven Surefire does, or through
   TestNG.configure(CommandLineArgs) as IDE runners do. Pass
   -propagateDataProviderFailureAsTestFailure, or put it in the map with the value true, to keep
-  reporting it as a failure. See GITHUB-3565 above.
+  reporting it as a failure. The exit status of such a run changes from 1 (failed) to 2
+  (skipped), and Maven Surefire, which fails a build on failures but not on skips, no longer
+  fails it. See GITHUB-3565 above.
 - alwaysRun on a @BeforeSuite, @BeforeTest, @BeforeClass, @BeforeMethod or @BeforeGroups method no
   longer runs it after a previous configuration failed: the method is reported as skipped. An
   alwaysRun @After method still runs, so an alwaysRun @AfterMethod paired with an alwaysRun

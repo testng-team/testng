@@ -17,16 +17,20 @@ public class IssueCommandLineTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-3565")
   public void commandLineReportsADataProviderFailureAsASkipByDefault() {
-    TestListenerAdapter results = runFromCommandLine();
+    TestListenerAdapter results = new TestListenerAdapter();
+    TestNG testng = runFromCommandLine(results);
     assertThat(results.getFailedTests()).isEmpty();
     assertThat(results.getSkippedTests()).hasSize(1);
+    assertThat(testng.getStatus()).as("exit status").isEqualTo(2);
   }
 
   @Test(description = "GITHUB-3565")
   public void commandLineReportsADataProviderFailureAsAFailureWhenAsked() {
-    TestListenerAdapter results = runFromCommandLine("-propagateDataProviderFailureAsTestFailure");
+    TestListenerAdapter results = new TestListenerAdapter();
+    TestNG testng = runFromCommandLine(results, "-propagateDataProviderFailureAsTestFailure");
     assertThat(results.getFailedTests()).hasSize(1);
     assertThat(results.getSkippedTests()).isEmpty();
+    assertThat(testng.getStatus()).as("exit status").isEqualTo(1);
   }
 
   @Test(description = "GITHUB-3565")
@@ -39,7 +43,7 @@ public class IssueCommandLineTest extends SimpleBaseTest {
     assertThat(results.getSkippedTests()).hasSize(1);
   }
 
-  private static TestListenerAdapter runFromCommandLine(String... extra) {
+  private static TestNG runFromCommandLine(TestListenerAdapter results, String... extra) {
     String[] base = {
       "-log",
       "0",
@@ -51,8 +55,6 @@ public class IssueCommandLineTest extends SimpleBaseTest {
     String[] argv = new String[base.length + extra.length];
     System.arraycopy(base, 0, argv, 0, base.length);
     System.arraycopy(extra, 0, argv, base.length, extra.length);
-    TestListenerAdapter results = new TestListenerAdapter();
-    new JCommanderCliRunner().run(argv, results);
-    return results;
+    return new JCommanderCliRunner().run(argv, results);
   }
 }

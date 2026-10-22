@@ -1818,9 +1818,9 @@ public class TestNG {
    *
    * @param cla the command line values.
    * @deprecated since 7.13. The command line code is in the {@code testng-cli} module. Use {@code
-   *     org.testng.cli.CliConfigurer#configure(TestNG, org.testng.cli.CliOptions)}. This method no
-   *     longer changes, so that subclasses such as {@code RemoteTestNG} keep working. TestNG 8.0
-   *     will remove it.
+   *     org.testng.cli.CliConfigurer#configure(TestNG, org.testng.cli.CliOptions)}. This method
+   *     only changes to stay in line with a bug fix in {@code CliConfigurer}, such as GITHUB-3565,
+   *     so that subclasses such as {@code RemoteTestNG} keep working. TestNG 8.0 will remove it.
    */
   @Deprecated
   protected void configure(CommandLineArgs cla) {
