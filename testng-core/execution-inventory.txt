@@ -460,6 +460,7 @@ org.testng.factory.issue3111.FactoryInstanceTest#readingTheMetadataOfALazyInstan
 org.testng.factory.issue3111.FactoryInstanceTest#theDeprecatedIndexKeepsMeaningTheInvocation	PASS 1
 org.testng.factory.issue3111.FactoryInstanceTest#theFactoryIsDescribedWithoutLeakingItsImplementation	PASS 1
 org.testng.factory.issue326.IssueTest#testToCheckParallelExecutionOfInstancesWithOneThreadPerInstance	PASS 1
+org.testng.factory.issue3576.IssueTest#pooledInvocationsKeepTheirFactoryParameters	PASS 2
 org.testng.factory.issue553.IssueTest#testMethod	PASS 1
 org.testng.factory.lazy.LazyFactoryConfigMethodTest#beforeSuiteOnLazyFactory	PASS 1
 org.testng.factory.lazy.LazyFactoryConfigMethodTest#beforeTestOnLazyFactory	PASS 1
@@ -804,6 +805,8 @@ org.testng.listeners.issue1777.IssueTest#testOnStartInvokedForSkippedTests	PASS 
 org.testng.listeners.issue2220.IssueTest#ensureAnnotatedListenersAreWiredInOnlyOnce	PASS 1
 org.testng.listeners.issue2328.IssueTest#testIfTestMethodInfoPassedToConfigListeners	PASS 1
 org.testng.listeners.issue2456.IssueTest#testEavesdroppingIntoDataProviderExceptions	PASS 1
+org.testng.listeners.issue3563.AddListenerObjectTest#addListenerKeepsAListener	PASS 1
+org.testng.listeners.issue3563.AddListenerObjectTest#addListenerThrowsWhenTheObjectIsNotAListener	PASS 1
 org.testng.listeners.ordering.ListenerInvocationDefaultBehaviorTest#testOrderForNonSymmetricOnAfterClass	PASS 1
 org.testng.listeners.ordering.ListenerInvocationDefaultBehaviorTest#testOrderForSymmetricOnAfterClass	PASS 1
 org.testng.listeners.ordering.ListenerInvocationDefaultBehaviorTest#testOrderHasOnlyDataDrivenMethodWithPassedAndFailedIteration	PASS 1
