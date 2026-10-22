@@ -76,6 +76,67 @@ public class IssueTest extends SimpleBaseTest {
             "zCreateDriver", "aOpenPages", "test", "zSaveScreenshot", "aUploadScreenshot");
   }
 
+  @Test(description = "GITHUB-2448")
+  public void alwaysRunTeardownIsSkippedWhenItsDependencyIsSkipped() {
+    SkippedDependencySample.invoked.clear();
+    RecordingConfigListener listener = run(SkippedDependencySample.class);
+
+    assertThat(SkippedDependencySample.invoked).containsExactly("test", "saveScreenshot");
+    assertThat(listener.skipped).containsExactly("saveScreenshot", "uploadScreenshot");
+  }
+
+  @Test(description = "GITHUB-2448")
+  public void aSkipPropagatesThroughAChainOfAlwaysRunTeardowns() {
+    TransitiveSample.invoked.clear();
+    RecordingConfigListener listener = run(TransitiveSample.class);
+
+    assertThat(TransitiveSample.invoked).containsExactly("test", "a");
+    assertThat(listener.failed).containsExactly("a");
+    assertThat(listener.skipped).containsExactly("b", "c");
+  }
+
+  @Test(description = "GITHUB-2448")
+  public void aFailedTeardownDoesNotSkipTheDependentOneOfTheNextInvocation() {
+    RepeatedInvocationSample.invoked.clear();
+    RepeatedInvocationSample.saves.set(0);
+    RecordingConfigListener listener = run(RepeatedInvocationSample.class);
+
+    // TestNG skips the second invocation of the test after the failed teardown, but still
+    // runs its alwaysRun teardowns: there saveScreenshot passes, so uploadScreenshot runs
+    assertThat(RepeatedInvocationSample.invoked)
+        .containsExactly("test", "saveScreenshot", "saveScreenshot", "uploadScreenshot");
+    assertThat(listener.failed).containsExactly("saveScreenshot");
+    assertThat(listener.skipped).containsExactly("uploadScreenshot");
+    assertThat(listener.passed).containsExactly("saveScreenshot", "uploadScreenshot");
+  }
+
+  @Test(description = "GITHUB-2448")
+  public void alwaysRunAfterClassIsSkippedWhenItsDependencyFails() {
+    AfterClassSample.invoked.clear();
+    RecordingConfigListener listener = run(AfterClassSample.class);
+
+    assertThat(AfterClassSample.invoked).containsExactly("test", "stopServer");
+    assertThat(listener.skipped).containsExactly("deleteServerData");
+  }
+
+  @Test(description = "GITHUB-2448")
+  public void alwaysRunAfterTestIsSkippedWhenItsDependencyFails() {
+    AfterTestSample.invoked.clear();
+    RecordingConfigListener listener = run(AfterTestSample.class);
+
+    assertThat(AfterTestSample.invoked).containsExactly("test", "closeDatabase");
+    assertThat(listener.skipped).containsExactly("dropDatabase");
+  }
+
+  @Test(description = "GITHUB-2448")
+  public void alwaysRunAfterSuiteIsSkippedWhenItsDependencyFails() {
+    AfterSuiteSample.invoked.clear();
+    RecordingConfigListener listener = run(AfterSuiteSample.class);
+
+    assertThat(AfterSuiteSample.invoked).containsExactly("test", "stopGrid");
+    assertThat(listener.skipped).containsExactly("archiveGridLogs");
+  }
+
   private static RecordingConfigListener run(Class<?> sample) {
     TestNG testng = create(sample);
     RecordingConfigListener listener = new RecordingConfigListener();
