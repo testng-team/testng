@@ -62,8 +62,8 @@ public @interface AfterMethod {
    * beforeGroups): if set to true, this configuration method will be run regardless of what groups
    * it belongs to. <br>
    * For after methods (afterSuite, afterClass, ...): if set to true, this configuration method runs
-   * even if an earlier configuration method fails or TestNG skips it. A failed test method does not
-   * stop an after method from running.
+   * even after a failure or a skip of an earlier configuration method. It still does not run if it
+   * has enabled = false. A failed test method does not stop an after method from running.
    *
    * @return the value (default false)
    */
