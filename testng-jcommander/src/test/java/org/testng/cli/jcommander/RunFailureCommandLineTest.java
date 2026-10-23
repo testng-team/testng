@@ -176,6 +176,35 @@ public class RunFailureCommandLineTest {
         .doesNotContain("Caused by: org.testng.TestNGException");
   }
 
+  @DataProvider
+  public Object[][] ignoredOptions() {
+    return new Object[][] {
+      {
+        new String[] {"-methodselectors", "com.example.Selector"},
+        "Method selector value was not in the format org.example.Selector:4"
+      },
+      {
+        new String[] {"-methodselectors", "com.example.Selector:high"},
+        "Method selector value was not in the format org.example.Selector:4"
+      },
+      {
+        new String[] {"-reporter", "com.example.NoSuchReporter"},
+        "Could not find reporter class : com.example.NoSuchReporter"
+      }
+    };
+  }
+
+  @Test(dataProvider = "ignoredOptions", description = "GITHUB-3568")
+  public void ignoredOptionIsReportedOnStderr(String[] option, String message) throws IOException {
+    String suite =
+        TestHelper.writeSuiteToTempFile(suiteContent(RunFailureSamples.SimpleTest.class.getName()));
+    String[] args = Arrays.copyOf(option, option.length + 1);
+    args[option.length] = suite;
+    Output output = capture(args);
+    assertThat(output.status).as("stderr:%n%s", output.stderr).isZero();
+    assertThat(output.stderr).contains(message);
+  }
+
   private static String suiteContent(String className) {
     return TestHelper.SUITE_XML_HEADER
         + "<suite name=\"Repro\"><test name=\"Test\"><classes><class name=\""
