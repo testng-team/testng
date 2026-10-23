@@ -437,6 +437,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         }
         if (!MethodHelper.isEnabled(configurationAnnotation)) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
+          // GITHUB-2448. A disabled configuration did not pass, so a method depending on it must
+          // not run either.
+          notPassed.add(tm);
           continue;
         }
         // GITHUB-1622. The guard is a field read, so it comes before the map walks.

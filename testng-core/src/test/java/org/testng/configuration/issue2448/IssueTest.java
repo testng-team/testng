@@ -137,6 +137,15 @@ public class IssueTest extends SimpleBaseTest {
     assertThat(listener.skipped).containsExactly("archiveGridLogs");
   }
 
+  @Test(description = "GITHUB-2448")
+  public void alwaysRunTeardownIsSkippedWhenItsDependencyIsDisabled() {
+    DisabledDependencySample.invoked.clear();
+    RecordingConfigListener listener = run(DisabledDependencySample.class);
+
+    assertThat(DisabledDependencySample.invoked).containsExactly("test");
+    assertThat(listener.skipped).containsExactly("uploadScreenshot");
+  }
+
   private static RecordingConfigListener run(Class<?> sample) {
     TestNG testng = create(sample);
     RecordingConfigListener listener = new RecordingConfigListener();
