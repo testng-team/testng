@@ -176,6 +176,29 @@ public class RunFailureCommandLineTest {
         .doesNotContain("Caused by: org.testng.TestNGException");
   }
 
+  @DataProvider
+  public Object[][] staticVerbose() {
+    return new Object[][] {{0, 10, true}, {10, 0, false}};
+  }
+
+  @Test(dataProvider = "staticVerbose", description = "GITHUB-3569")
+  public void runFailureUsesTheVerboseLevelOfTheRun(int earlierRun, int thisRun, boolean stackTrace)
+      throws IOException {
+    TestNGException failure = new TestNGException("boom");
+    TestNG testng = new TestNG(false);
+    testng.setVerbose(thisRun);
+    Output output =
+        capture(
+            () -> {
+              Utils.setVerbose(earlierRun);
+              testng.reportRunFailure(failure);
+              return 0;
+            });
+    assertThat(output.stderr.contains("	at " + RunFailureCommandLineTest.class.getName()))
+        .as("stderr:%n%s", output.stderr)
+        .isEqualTo(stackTrace);
+  }
+
   private static String suiteContent(String className) {
     return TestHelper.SUITE_XML_HEADER
         + "<suite name=\"Repro\"><test name=\"Test\"><classes><class name=\""

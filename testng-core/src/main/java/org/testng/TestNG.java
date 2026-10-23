@@ -2030,7 +2030,10 @@ public class TestNG {
    */
   public void reportRunFailure(TestNGException cause) {
     error(cause.getMessage());
-    if (TestRunner.getVerbose() > 1) {
+    // Read the level of this run. TestRunner.getVerbose() is the level of the last test runner that
+    // started in this JVM, and a run that failed before it created a test runner has none.
+    int verbose = m_verbose != null ? m_verbose : RuntimeBehavior.getDefaultVerboseLevel();
+    if (verbose > 1) {
       cause.printStackTrace(System.err);
     } else {
       printError(cause.getMessage());
