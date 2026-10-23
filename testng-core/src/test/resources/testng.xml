@@ -885,6 +885,7 @@
       <class name="org.testng.xml.XmlPrologueTest"/>
       <class name="org.testng.xml.XsdValidationTest"/>
       <class name="org.testng.xml.SchemaConsistencyTest"/>
+      <class name="org.testng.xml.XmlCatalogTest"/>
     </classes>
   </test>
 

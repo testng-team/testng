@@ -73,6 +73,10 @@ Read this documentation when you need to:
   - Customizing the test matrix
   - Troubleshooting CI failures
 
+- **[XML_CATALOG.md](XML_CATALOG.md)** - Validating `testng.xml` offline with the XML catalog in the jar
+  - Which DTD system ids the catalog maps
+  - Enabling it in `xmlresolver` and Saxon, the JDK, `xmllint`, and IDEs
+
 ## Quick Start
 
 ### Prerequisites
