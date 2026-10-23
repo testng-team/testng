@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.IntSupplier;
 import org.jspecify.annotations.Nullable;
 import org.testng.TestNG;
@@ -128,6 +130,41 @@ public class RunFailureCommandLineTest {
     assertThat(output.stdout).doesNotContain("\tat org.testng");
   }
 
+  @DataProvider
+  public Object[][] suiteVerbosity() {
+    return new Object[][] {
+      {new Integer[] {2}, true},
+      {new Integer[] {null}, false},
+      {new Integer[] {2, 0}, false}
+    };
+  }
+
+  @Test(dataProvider = "suiteVerbosity", description = "GITHUB-3569")
+  public void skippedRunReadsTheVerboseLevelOfTheSuites(Integer[] levels, boolean stackTrace)
+      throws IOException {
+    List<String> args = new ArrayList<>();
+    args.add("-failwheneverythingskipped");
+    for (int i = 0; i < levels.length; i++) {
+      String verbose = levels[i] == null ? "" : " verbose=\"" + levels[i] + "\"";
+      args.add(
+          TestHelper.writeSuiteToTempFile(
+              TestHelper.SUITE_XML_HEADER
+                  + "<suite name=\"Suite"
+                  + i
+                  + "\""
+                  + verbose
+                  + "><test name=\"Test\"><classes><class name=\""
+                  + RunFailureSamples.AllSkipped.class.getName()
+                  + "\"/></classes></test></suite>"));
+    }
+    Output output = capture(args.toArray(new String[0]));
+    assertThat(output.status).isEqualTo(1);
+    assertThat(output.stderr).contains("All tests were skipped. Nothing was run.");
+    assertThat(output.stderr.contains("	at org.testng"))
+        .as("stderr:%n%s", output.stderr)
+        .isEqualTo(stackTrace);
+  }
+
   @Test(description = "GITHUB-3566")
   public void mainExitsWithFailure() throws IOException, InterruptedException {
     String malformed = TestHelper.writeSuiteToTempFile("<suite");
@@ -174,6 +211,29 @@ public class RunFailureCommandLineTest {
     assertThat(output.stderr)
         .containsOnlyOnce("Caused by: java.lang.IllegalStateException: inner")
         .doesNotContain("Caused by: org.testng.TestNGException");
+  }
+
+  @DataProvider
+  public Object[][] staticVerbose() {
+    return new Object[][] {{0, 10, true}, {10, 0, false}};
+  }
+
+  @Test(dataProvider = "staticVerbose", description = "GITHUB-3569")
+  public void runFailureUsesTheVerboseLevelOfTheRun(int earlierRun, int thisRun, boolean stackTrace)
+      throws IOException {
+    TestNGException failure = new TestNGException("boom");
+    TestNG testng = new TestNG(false);
+    testng.setVerbose(thisRun);
+    Output output =
+        capture(
+            () -> {
+              Utils.setVerbose(earlierRun);
+              testng.reportRunFailure(failure);
+              return 0;
+            });
+    assertThat(output.stderr.contains("	at " + RunFailureCommandLineTest.class.getName()))
+        .as("stderr:%n%s", output.stderr)
+        .isEqualTo(stackTrace);
   }
 
   private static String suiteContent(String className) {
