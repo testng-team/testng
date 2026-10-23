@@ -74,9 +74,12 @@ public @interface BeforeGroups {
    * For before methods (beforeSuite, beforeTest, beforeTestClass and beforeTestMethod, but not
    * beforeGroups): If set to true, this configuration method will be run regardless of what groups
    * it belongs to. <br>
-   * For after methods (afterSuite, afterClass, ...): If set to true, this configuration method runs
-   * even after a failure or a skip of an earlier configuration method. It still does not run if it
-   * has enabled = false. A failed test method does not stop an after method from running.
+   * For after methods (afterSuite, afterTest, afterTestClass and afterTestMethod, but not
+   * afterGroups): If set to true, this configuration method runs regardless of what groups it
+   * belongs to. <br>
+   * For all after methods: If set to true, this configuration method runs even after a failure or a
+   * skip of an earlier configuration method. It still does not run if it has enabled = false. A
+   * failed test method does not stop an after method from running.
    *
    * @return the value (default false)
    */
