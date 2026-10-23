@@ -1786,7 +1786,7 @@ public class TestNG {
     } catch (TestNGException ex) {
       // Usually there is no ITestNGCliRunner on the class path. Report it as any other command
       // line error, not as an uncaught stack trace.
-      exitWithError(ex.getMessage());
+      exitWithError(ex.getMessage(), ex.getCause());
       return;
     }
     System.exit(testng.getStatus());
@@ -2415,7 +2415,16 @@ public class TestNG {
   }
 
   static void exitWithError(@Nullable String msg) {
+    exitWithError(msg, null);
+  }
+
+  // The cause tells the user what is wrong when a runner is on the class path but fails to load,
+  // for example when jcommander is missing.
+  private static void exitWithError(@Nullable String msg, @Nullable Throwable cause) {
     printError(msg);
+    for (Throwable t = cause; t != null; t = t.getCause()) {
+      System.err.println("Caused by: " + t);
+    }
     usage();
     System.exit(1);
   }
