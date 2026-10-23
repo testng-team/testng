@@ -39,6 +39,13 @@ public final class CliConfigurer {
 
   private CliConfigurer() {}
 
+  // SLF4J drops the message when no provider is on the class path, and org.testng:testng brings
+  // none. The user must still learn that the option had no effect.
+  private static void reportBadMethodSelector() {
+    LOGGER.error(BAD_METHOD_SELECTOR);
+    System.err.println(BAD_METHOD_SELECTOR);
+  }
+
   /**
    * Narrows a class loaded by name without checking it, so that an unsuitable {@code
    * -objectfactory} or {@code -testrunfactory} fails where it did before this logic left {@code
@@ -225,10 +232,10 @@ public final class CliConfigurer {
           if (sel.length == 2) {
             testng.addMethodSelector(sel[0], Integer.parseInt(sel[1]));
           } else {
-            LOGGER.error(BAD_METHOD_SELECTOR);
+            reportBadMethodSelector();
           }
         } catch (NumberFormatException nfe) {
-          LOGGER.error(BAD_METHOD_SELECTOR);
+          reportBadMethodSelector();
         }
       }
     }

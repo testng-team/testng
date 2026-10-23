@@ -2320,7 +2320,11 @@ public class TestNG {
     if (instance != null) {
       addListener(instance);
     } else {
-      LOGGER.warn("Could not find reporter class : " + reporterConfig.getClassName());
+      String message = "Could not find reporter class : " + reporterConfig.getClassName();
+      LOGGER.warn(message);
+      // SLF4J drops the message when no provider is on the class path. The user must still learn
+      // that the reporter will not run.
+      System.err.println(message);
     }
   }
 

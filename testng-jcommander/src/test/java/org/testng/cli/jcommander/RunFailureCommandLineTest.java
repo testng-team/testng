@@ -1,4 +1,4 @@
-package org.testng.cli.jcommander;
+﻿package org.testng.cli.jcommander;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -231,9 +231,38 @@ public class RunFailureCommandLineTest {
               testng.reportRunFailure(failure);
               return 0;
             });
-    assertThat(output.stderr.contains("	at " + RunFailureCommandLineTest.class.getName()))
+    assertThat(output.stderr.contains("\tat " + RunFailureCommandLineTest.class.getName()))
         .as("stderr:%n%s", output.stderr)
         .isEqualTo(stackTrace);
+  }
+
+  @DataProvider
+  public Object[][] ignoredOptions() {
+    return new Object[][] {
+      {
+        new String[] {"-methodselectors", "com.example.Selector"},
+        "Method selector value was not in the format org.example.Selector:4"
+      },
+      {
+        new String[] {"-methodselectors", "com.example.Selector:high"},
+        "Method selector value was not in the format org.example.Selector:4"
+      },
+      {
+        new String[] {"-reporter", "com.example.NoSuchReporter"},
+        "Could not find reporter class : com.example.NoSuchReporter"
+      }
+    };
+  }
+
+  @Test(dataProvider = "ignoredOptions", description = "GITHUB-3568")
+  public void ignoredOptionIsReportedOnStderr(String[] option, String message) throws IOException {
+    String suite =
+        TestHelper.writeSuiteToTempFile(suiteContent(RunFailureSamples.SimpleTest.class.getName()));
+    String[] args = Arrays.copyOf(option, option.length + 1);
+    args[option.length] = suite;
+    Output output = capture(args);
+    assertThat(output.status).as("stderr:%n%s", output.stderr).isZero();
+    assertThat(output.stderr).contains(message);
   }
 
   private static String suiteContent(String className) {
@@ -284,3 +313,4 @@ public class RunFailureCommandLineTest {
     }
   }
 }
+
