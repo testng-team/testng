@@ -28,18 +28,20 @@ public class MissingJCommanderTest {
     File outputDirectory = TestHelper.createRandomDirectory().toFile();
     File log = new File(outputDirectory, "forked-output.log");
 
-    run(log);
+    int exitCode = run(log);
     String output = new String(Files.readAllBytes(log.toPath()), StandardCharsets.UTF_8);
 
+    assertThat(exitCode).as("the exit code%s", tail(output)).isEqualTo(1);
     assertThat(output)
         .as("the forked output%s", tail(output))
         .doesNotContain("Exception in thread")
         .contains("Caused by:")
-        .contains("com.beust.jcommander");
+        .contains("NoClassDefFoundError")
+        .contains("com/beust/jcommander/ParameterException");
   }
 
   @SuppressWarnings("deprecation")
-  private static void run(File log) throws IOException, InterruptedException {
+  private static int run(File log) throws IOException, InterruptedException {
     List<String> classPath = new ArrayList<>();
     for (String entry : System.getProperty("java.class.path").split(File.pathSeparator, -1)) {
       if (!new File(entry).getName().toLowerCase(Locale.ROOT).startsWith("jcommander-")) {
@@ -60,6 +62,7 @@ public class MissingJCommanderTest {
       throw new AssertionError(
           "The forked run did not finish within " + TIMEOUT_MINUTES + " minutes");
     }
+    return process.exitValue();
   }
 
   private static String tail(String output) {

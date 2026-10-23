@@ -2034,11 +2034,16 @@ public class TestNG {
       cause.printStackTrace(System.err);
     } else {
       printError(cause.getMessage());
-      Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
-      seen.add(cause);
-      for (Throwable t = cause.getCause(); t != null && seen.add(t); t = t.getCause()) {
-        System.err.println("Caused by: " + t);
-      }
+      printCauses(cause);
+    }
+  }
+
+  /** Prints the chain of causes of {@code throwable}, and stops when a cause repeats. */
+  static void printCauses(Throwable throwable) {
+    Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+    seen.add(throwable);
+    for (Throwable t = throwable.getCause(); t != null && seen.add(t); t = t.getCause()) {
+      System.err.println("Caused by: " + t);
     }
   }
 
@@ -2422,8 +2427,9 @@ public class TestNG {
   // for example when jcommander is missing.
   private static void exitWithError(@Nullable String msg, @Nullable Throwable cause) {
     printError(msg);
-    for (Throwable t = cause; t != null; t = t.getCause()) {
-      System.err.println("Caused by: " + t);
+    if (cause != null) {
+      System.err.println("Caused by: " + cause);
+      printCauses(cause);
     }
     usage();
     System.exit(1);
