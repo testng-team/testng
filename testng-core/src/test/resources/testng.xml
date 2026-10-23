@@ -973,6 +973,7 @@
   <test name="Jar_Related_tests">
     <classes>
       <class name="org.testng.JarFileUtilsTest"/>
+      <class name="org.testng.CauseChainTest"/>
     </classes>
   </test>
 
