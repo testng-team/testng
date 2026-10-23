@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.InputStream;
 import java.io.StringReader;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -45,7 +44,7 @@ public class XmlCatalogTest {
   public void everyEntryPointsAtAResourceOnTheClasspath() throws Exception {
     URL catalog = catalogUrl();
     for (Map.Entry<String, String> entry : systemEntries().entrySet()) {
-      URL target = URI.create(catalog.toString()).resolve(entry.getValue()).toURL();
+      URL target = resolve(catalog, entry.getValue());
       try (InputStream stream = target.openStream()) {
         assertThat(stream.readAllBytes())
             .as("the resource %s maps to, %s", entry.getKey(), target)
@@ -76,7 +75,7 @@ public class XmlCatalogTest {
     URL catalog = catalogUrl();
     URL dtd = Objects.requireNonNull(getClass().getClassLoader().getResource(Parser.TESTNG_DTD));
     for (Map.Entry<String, String> entry : systemEntries().entrySet()) {
-      assertThat(URI.create(catalog.toString()).resolve(entry.getValue()).toString())
+      assertThat(resolve(catalog, entry.getValue()).toString())
           .as("the resource %s maps to", entry.getKey())
           .isEqualTo(dtd.toString());
     }
@@ -146,6 +145,16 @@ public class XmlCatalogTest {
         });
     reader.parse(new InputSource(new StringReader(suite)));
     return errors;
+  }
+
+  /**
+   * Resolves an entry against the catalog. {@code URL} rather than {@code URI} resolution, since a
+   * {@code jar:} URI is opaque and {@code URI.resolve} would leave the entry unresolved when the
+   * catalog is read from {@code testng.jar}.
+   */
+  @SuppressWarnings("deprecation")
+  private static URL resolve(URL catalog, String uri) throws Exception {
+    return new URL(catalog, uri);
   }
 
   private static URL catalogUrl() {
