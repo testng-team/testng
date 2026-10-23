@@ -2030,10 +2030,7 @@ public class TestNG {
    */
   public void reportRunFailure(TestNGException cause) {
     error(cause.getMessage());
-    // Read the level of this run. TestRunner.getVerbose() is the level of the last test runner that
-    // started in this JVM, and a run that failed before it created a test runner has none.
-    int verbose = m_verbose != null ? m_verbose : RuntimeBehavior.getDefaultVerboseLevel();
-    if (verbose > 1) {
+    if (verboseLevelOfRun() > 1) {
       cause.printStackTrace(System.err);
     } else {
       printError(cause.getMessage());
@@ -2043,6 +2040,23 @@ public class TestNG {
         System.err.println("Caused by: " + t);
       }
     }
+  }
+
+  // The level of this run. TestRunner.getVerbose() is the level of the last test runner that
+  // started in this JVM, and a run that failed before it created a test runner has none. The level
+  // from the command line wins. Without it, the suites decide when they all give the same level. A
+  // different level in each suite leaves no single level for the run, so the default applies.
+  private int verboseLevelOfRun() {
+    if (m_verbose != null) {
+      return m_verbose;
+    }
+    Set<Integer> levels = new HashSet<>();
+    for (XmlSuite suite : m_suites) {
+      if (suite.getVerbose() != null) {
+        levels.add(suite.getVerbose());
+      }
+    }
+    return levels.size() == 1 ? levels.iterator().next() : RuntimeBehavior.getDefaultVerboseLevel();
   }
 
   /**
