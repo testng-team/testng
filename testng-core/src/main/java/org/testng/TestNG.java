@@ -264,9 +264,8 @@ public class TestNG {
   /**
    * Returns the exit status of the run.
    *
-   * <p>The status is 1 when {@link #run()} threw a {@link TestNGException}, except when the only
-   * requested suite has an unreadable child suite and the run has no test results. That case
-   * returns 8.
+   * <p>The status is 1 when {@link #run()} threw a {@link TestNGException}, except when parsing a
+   * child suite of the only requested suite fails before any tests run. That case returns 8.
    *
    * <p>Otherwise, the status is 8 when the run has no test results, not even skipped ones. This
    * method checks that before the values below, so 8 hides all of them.
@@ -382,19 +381,27 @@ public class TestNG {
         continue;
       }
       for (String suiteFile : s.getSuiteFiles()) {
+        String fileNameToUse = s.getFileName();
+        if (fileNameToUse == null || fileNameToUse.trim().isEmpty()) {
+          fileNameToUse = suiteFile;
+        }
+        Parser parser = new Parser(fileNameToUse);
+        parser.setPostProcessor(processor);
         try {
-          String fileNameToUse = s.getFileName();
-          if (fileNameToUse == null || fileNameToUse.trim().isEmpty()) {
-            fileNameToUse = suiteFile;
-          }
-          Collection<XmlSuite> childSuites = Parser.parse(fileNameToUse, processor);
+          Collection<XmlSuite> childSuites = parser.parse();
           for (XmlSuite cSuite : childSuites) {
             cSuite.setParentSuite(s);
             s.getChildSuites().add(cSuite);
           }
-        } catch (IOException e) {
-          childSuiteParsingFailed = m_suites.size() == 1;
-          throw new TestNGException("Failed to parse suite: " + suiteFile, e);
+        } catch (Exception e) {
+          Throwable cause = e;
+          while (cause.getCause() != null) {
+            cause = cause.getCause();
+          }
+          childSuiteParsingFailed =
+              m_suites.size() == 1
+                  && (cause instanceof IOException || parser.lastParseFailedInChildSuite());
+          throw new TestNGException("Failed to parse suite: " + fileNameToUse, e);
         }
       }
     }
@@ -408,15 +415,17 @@ public class TestNG {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("suiteXmlPath: \"" + suitePath + "\"");
     }
+    Parser parser = new Parser(suitePath);
+    parser.setPostProcessor(getProcessor());
     try {
-      return Parser.parse(suitePath, getProcessor());
+      return parser.parse();
     } catch (Exception ex) {
       // The parser can wrap the real error, for example a YAML error. Find the deepest cause.
       Throwable t = ex;
       while (t.getCause() != null) {
         t = t.getCause();
       }
-      if (m_stringSuites.size() == 1 && t instanceof IOException && new File(suitePath).canRead()) {
+      if (m_stringSuites.size() == 1 && parser.lastParseFailedInChildSuite()) {
         childSuiteParsingFailed = true;
       }
       if (t instanceof TestNGException) {
