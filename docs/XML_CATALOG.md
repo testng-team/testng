@@ -16,13 +16,18 @@ without the network.
 
 ## What the catalog maps
 
-The catalog is the jar entry `org/xmlresolver/catalog.xml`. It maps the eight system ids TestNG
-itself accepts onto `testng-1.1.dtd` in the jar, the DTD TestNG uses for all of them:
+The catalog is the jar entry `org/xmlresolver/catalog.xml`. It maps the eight supported DTD
+identifiers onto `testng-1.1.dtd` in the jar, the DTD TestNG uses for all of them:
 
 | Host | Path | Schemes |
 | --- | --- | --- |
 | `testng.org` | `/testng-1.0.dtd`, `/testng-1.1.dtd` | `https`, `http` |
 | `beust.com` | `/testng/testng-1.0.dtd`, `/testng/testng-1.1.dtd` | `https`, `http` |
+
+TestNG itself is more lenient: it reads its bundled DTD for any URL on `testng.org` or `beust.com`.
+The catalog maps only the eight identifiers above, so a suite file that declares another URL on
+those hosts still runs in TestNG, but a tool that uses the catalog does not resolve it. Use one of
+the eight identifiers in the doctype.
 
 A suite file that declares an XML Schema with `xsi:noNamespaceSchemaLocation` instead of a doctype
 does not benefit. A catalog resolves identifiers, and the schema location is not one. Point your

@@ -29,8 +29,9 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * GITHUB-3324. The XML catalog shipped for tools that read a {@code testng.xml} outside TestNG maps
- * every system id TestNG accepts onto the DTD TestNG resolves it to, and only onto resources that
- * exist.
+ * the eight supported DTD identifiers onto the DTD TestNG resolves them to, and only onto resources
+ * that exist. TestNG's own resolver is broader: it reads its bundled DTD for any URL on {@code
+ * testng.org} or {@code beust.com}. The catalog keeps to the eight published identifiers.
  */
 public class XmlCatalogTest {
 
@@ -54,14 +55,14 @@ public class XmlCatalogTest {
   }
 
   @Test(description = "GITHUB-3324")
-  public void theCatalogMapsEverySystemIdTestNgAccepts() throws Exception {
+  public void theCatalogMapsExactlyTheEightSupportedDtdIdentifiers() throws Exception {
     List<String> expected = new ArrayList<>();
     for (String scheme : SCHEMES) {
       for (String prefix : PREFIXES) {
         for (String name : DTD_NAMES) {
           String systemId = scheme + "://" + prefix + name;
           assertThat(TestNGURLs.isDTDDomainInternallyKnownToTestNG(systemId))
-              .as("TestNG resolves %s from the classpath", systemId)
+              .as("TestNG also resolves %s from the classpath", systemId)
               .isTrue();
           expected.add(systemId);
         }
