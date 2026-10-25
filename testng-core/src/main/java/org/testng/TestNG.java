@@ -1786,7 +1786,7 @@ public class TestNG {
     } catch (TestNGException ex) {
       // Usually there is no ITestNGCliRunner on the class path. Report it as any other command
       // line error, not as an uncaught stack trace.
-      exitWithError(ex.getMessage());
+      exitWithError(ex.getMessage(), ex.getCause());
       return;
     }
     System.exit(testng.getStatus());
@@ -2034,11 +2034,16 @@ public class TestNG {
       cause.printStackTrace(System.err);
     } else {
       printError(cause.getMessage());
-      Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
-      seen.add(cause);
-      for (Throwable t = cause.getCause(); t != null && seen.add(t); t = t.getCause()) {
-        System.err.println("Caused by: " + t);
-      }
+      printCauses(cause);
+    }
+  }
+
+  /** Prints the chain of causes of {@code throwable}, and stops when a cause repeats. */
+  static void printCauses(Throwable throwable) {
+    Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+    seen.add(throwable);
+    for (Throwable t = throwable.getCause(); t != null && seen.add(t); t = t.getCause()) {
+      System.err.println("Caused by: " + t);
     }
   }
 
@@ -2432,7 +2437,17 @@ public class TestNG {
   }
 
   static void exitWithError(@Nullable String msg) {
+    exitWithError(msg, null);
+  }
+
+  // The cause tells the user what is wrong when a runner is on the class path but fails to load,
+  // for example when jcommander is missing.
+  private static void exitWithError(@Nullable String msg, @Nullable Throwable cause) {
     printError(msg);
+    if (cause != null) {
+      System.err.println("Caused by: " + cause);
+      printCauses(cause);
+    }
     usage();
     System.exit(1);
   }
