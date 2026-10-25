@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  An OASIS XML catalog that maps the system ids of the TestNG DTD onto the copy shipped in this jar,
+  so that a tool reading a testng.xml (xmllint, Saxon, an IDE, a build plugin) does not download it.
+  TestNG itself does not need it: it resolves these ids from the classpath on its own.
+
+  The ids are the ones TestNG accepts, see TestNGURLs.isDTDDomainInternallyKnownToTestNG, and they
+  point at the DTD TestNG resolves them to, Parser.TESTNG_DTD. XmlCatalogTest keeps the three in
+  line.
+
+  The location is the one xmlresolver scans when xml.catalog.classpathCatalogs is enabled. Other
+  resolvers, such as the JDK's javax.xml.catalog, have to be pointed at this file. See
+  docs/XML_CATALOG.md.
+-->
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+  <system systemId="https://testng.org/testng-1.0.dtd" uri="../../testng-1.1.dtd"/>
+  <system systemId="http://testng.org/testng-1.0.dtd" uri="../../testng-1.1.dtd"/>
+  <system systemId="https://testng.org/testng-1.1.dtd" uri="../../testng-1.1.dtd"/>
+  <system systemId="http://testng.org/testng-1.1.dtd" uri="../../testng-1.1.dtd"/>
+  <system systemId="https://beust.com/testng/testng-1.0.dtd" uri="../../testng-1.1.dtd"/>
+  <system systemId="http://beust.com/testng/testng-1.0.dtd" uri="../../testng-1.1.dtd"/>
+  <system systemId="https://beust.com/testng/testng-1.1.dtd" uri="../../testng-1.1.dtd"/>
+  <system systemId="http://beust.com/testng/testng-1.1.dtd" uri="../../testng-1.1.dtd"/>
+</catalog>

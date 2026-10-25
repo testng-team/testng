@@ -885,6 +885,7 @@
       <class name="org.testng.xml.XmlPrologueTest"/>
       <class name="org.testng.xml.XsdValidationTest"/>
       <class name="org.testng.xml.SchemaConsistencyTest"/>
+      <class name="org.testng.xml.XmlCatalogTest"/>
     </classes>
   </test>
 
@@ -973,6 +974,7 @@
   <test name="Jar_Related_tests">
     <classes>
       <class name="org.testng.JarFileUtilsTest"/>
+      <class name="org.testng.CauseChainTest"/>
     </classes>
   </test>
 
