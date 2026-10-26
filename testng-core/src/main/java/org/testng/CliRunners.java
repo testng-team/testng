@@ -100,7 +100,7 @@ final class CliRunners {
       ITestNGCliRunner runner = it.next();
       warnIfAnotherProviderFollows(it, runner);
       return runner;
-    } catch (ServiceConfigurationError | RuntimeException e) {
+    } catch (ServiceConfigurationError | RuntimeException | LinkageError e) {
       lastFailure = e;
       return null;
     }
@@ -117,7 +117,7 @@ final class CliRunners {
     boolean ambiguous;
     try {
       ambiguous = it.hasNext();
-    } catch (ServiceConfigurationError | RuntimeException ignored) {
+    } catch (ServiceConfigurationError | RuntimeException | LinkageError ignored) {
       return;
     }
     if (ambiguous) {

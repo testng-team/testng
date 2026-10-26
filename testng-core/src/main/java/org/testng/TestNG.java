@@ -959,21 +959,19 @@ public class TestNG {
   /**
    * Adds a listener of any type.
    *
-   * <p>When the object is not an {@link ITestNGListener}, this method prints an error and stops the
-   * JVM.
+   * <p>When the object is not an {@link ITestNGListener}, this method throws a {@link
+   * TestNGException}.
    *
    * @param listener the listener to add.
+   * @throws TestNGException if {@code listener} is not an {@link ITestNGListener}.
    * @deprecated Use {@link #addListener(ITestNGListener)} instead.
    */
   // TODO: remove this method later. Caution: IntelliJ uses it. Check with @akozlova first.
   @Deprecated
   public void addListener(Object listener) {
     if (!(listener instanceof ITestNGListener)) {
-      exitWithError(
-          "Listener "
-              + listener
-              + " must be one of ITestListener, ISuiteListener, IReporter, "
-              + " IAnnotationTransformer, IMethodInterceptor or IInvokedMethodListener");
+      // A setter throws. Only TestNG#main turns a bad value into an exit code.
+      throw new TestNGException("Listener " + listener + " must implement ITestNGListener");
     }
     addListener((ITestNGListener) listener);
   }
@@ -1788,7 +1786,7 @@ public class TestNG {
     } catch (TestNGException ex) {
       // Usually there is no ITestNGCliRunner on the class path. Report it as any other command
       // line error, not as an uncaught stack trace.
-      exitWithError(ex.getMessage());
+      exitWithError(ex.getMessage(), ex.getCause());
       return;
     }
     System.exit(testng.getStatus());
@@ -2032,16 +2030,38 @@ public class TestNG {
    */
   public void reportRunFailure(TestNGException cause) {
     error(cause.getMessage());
-    if (TestRunner.getVerbose() > 1) {
+    if (verboseLevelOfRun() > 1) {
       cause.printStackTrace(System.err);
     } else {
       printError(cause.getMessage());
-      Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
-      seen.add(cause);
-      for (Throwable t = cause.getCause(); t != null && seen.add(t); t = t.getCause()) {
-        System.err.println("Caused by: " + t);
+      printCauses(cause);
+    }
+  }
+
+  /** Prints the chain of causes of {@code throwable}, and stops when a cause repeats. */
+  static void printCauses(Throwable throwable) {
+    Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+    seen.add(throwable);
+    for (Throwable t = throwable.getCause(); t != null && seen.add(t); t = t.getCause()) {
+      System.err.println("Caused by: " + t);
+    }
+  }
+
+  // The level of this run. TestRunner.getVerbose() is the level of the last test runner that
+  // started in this JVM, and a run that failed before it created a test runner has none. The level
+  // from the command line wins. Without it, the suites decide when they all give the same level. A
+  // different level in each suite leaves no single level for the run, so the default applies.
+  private int verboseLevelOfRun() {
+    if (m_verbose != null) {
+      return m_verbose;
+    }
+    Set<Integer> levels = new HashSet<>();
+    for (XmlSuite suite : m_suites) {
+      if (suite.getVerbose() != null) {
+        levels.add(suite.getVerbose());
       }
     }
+    return levels.size() == 1 ? levels.iterator().next() : RuntimeBehavior.getDefaultVerboseLevel();
   }
 
   /**
@@ -2417,7 +2437,17 @@ public class TestNG {
   }
 
   static void exitWithError(@Nullable String msg) {
+    exitWithError(msg, null);
+  }
+
+  // The cause tells the user what is wrong when a runner is on the class path but fails to load,
+  // for example when jcommander is missing.
+  private static void exitWithError(@Nullable String msg, @Nullable Throwable cause) {
     printError(msg);
+    if (cause != null) {
+      System.err.println("Caused by: " + cause);
+      printCauses(cause);
+    }
     usage();
     System.exit(1);
   }
