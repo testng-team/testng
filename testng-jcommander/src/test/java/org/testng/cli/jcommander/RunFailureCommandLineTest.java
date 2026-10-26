@@ -1,4 +1,4 @@
-﻿package org.testng.cli.jcommander;
+package org.testng.cli.jcommander;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -313,4 +313,3 @@ public class RunFailureCommandLineTest {
     }
   }
 }
-
