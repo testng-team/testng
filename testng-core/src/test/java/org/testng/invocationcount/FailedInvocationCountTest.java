@@ -73,6 +73,21 @@ public class FailedInvocationCountTest extends SimpleBaseTest {
     assertThat(tla.getSkippedTests().size()).isEqualTo(5);
   }
 
+  @Test(description = "GITHUB-3561")
+  public void verifySuiteAttributeShouldStop() {
+    XmlSuite xmlSuite = createXmlSuite("github_3561");
+    xmlSuite.setSkipFailedInvocationCounts(true);
+    createXmlTest(xmlSuite, "github_3561_test", FailedInvocationCount.class);
+    TestNG testng = create(xmlSuite);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    testng.addListener(tla);
+    testng.run();
+
+    assertThat(tla.getPassedTests().size()).isEqualTo(4);
+    assertThat(tla.getFailedTests().size()).isEqualTo(1);
+    assertThat(tla.getSkippedTests().size()).isEqualTo(5);
+  }
+
   @Test(dataProvider = "dp")
   public void ensureSuccessPercentageWorksFineWith(Class<?> clazz, IssueTest.Expected expected) {
     TestNG testng = create(clazz);
