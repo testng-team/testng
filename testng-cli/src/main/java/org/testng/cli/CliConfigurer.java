@@ -15,7 +15,6 @@ import org.testng.ListenerComparator;
 import org.testng.TestNG;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
-import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
 /**
@@ -31,18 +30,13 @@ import org.testng.xml.XmlSuite;
  */
 public final class CliConfigurer {
 
-  // Deliberately keyed on TestNG so that the message reads the same as before the CLI extraction.
-  private static final Logger LOGGER = Logger.getLogger(TestNG.class);
-
   private static final String BAD_METHOD_SELECTOR =
       "Method selector value was not in the format org.example.Selector:4";
 
   private CliConfigurer() {}
 
-  // SLF4J drops the message when no provider is on the class path, and org.testng:testng brings
-  // none. The user must still learn that the option had no effect.
+  // A CLI user expects this on stderr.
   private static void reportBadMethodSelector() {
-    LOGGER.error(BAD_METHOD_SELECTOR);
     System.err.println(BAD_METHOD_SELECTOR);
   }
 
