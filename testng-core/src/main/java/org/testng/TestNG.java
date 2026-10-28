@@ -618,9 +618,22 @@ public class TestNG {
       xmlTest = new XmlTest(xmlSuite);
       xmlTest.setName(testName);
     }
+    // TestRunner drops a scanned class that its own <test> already lists, but not one that a
+    // @Test(suiteName, testName) put in another suite or test: that class would run twice. So the
+    // scan leaves out every class the command line already placed.
+    Set<String> placed = new HashSet<>();
+    for (XmlSuite suite : suites) {
+      for (XmlTest test : suite.getTests()) {
+        test.getXmlClasses().forEach(c -> placed.add(c.getName()));
+      }
+    }
     List<XmlPackage> xmlPackages = new ArrayList<>(xmlTest.getXmlPackages());
     for (String name : packages) {
-      xmlPackages.add(new XmlPackage(name));
+      XmlPackage xmlPackage = new XmlPackage(name);
+      if (!placed.isEmpty()) {
+        xmlPackage.getXmlClasses().removeIf(c -> placed.contains(c.getName()));
+      }
+      xmlPackages.add(xmlPackage);
     }
     xmlTest.setXmlPackages(xmlPackages);
   }

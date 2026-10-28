@@ -22,6 +22,7 @@ public class TestPackageCommandLineTest extends SimpleBaseTest {
   private static final String TEST_PACKAGE = "-testpackage";
   private static final String A = "test.cli.testpackage.a";
   private static final String B = "test.cli.testpackage.b";
+  private static final String C = "test.cli.testpackage.c";
 
   @Test(description = "GITHUB-1226")
   public void runsTheClassesOfThePackageButNotOfItsSubPackages() {
@@ -42,6 +43,11 @@ public class TestPackageCommandLineTest extends SimpleBaseTest {
   public void combinesWithTestClass() {
     assertThat(run(TEST_PACKAGE, A, "-testclass", B + ".OtherSample"))
         .containsExactlyInAnyOrder("firstTest", "otherTest");
+  }
+
+  @Test(description = "GITHUB-1226")
+  public void aClassThatTestClassPutsInItsOwnTestRunsOnce() {
+    assertThat(run(TEST_PACKAGE, C, "-testclass", C + ".NamedSample")).containsExactly("namedTest");
   }
 
   @Test(description = "GITHUB-1226")
