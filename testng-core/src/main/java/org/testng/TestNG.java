@@ -169,6 +169,9 @@ public class TestNG {
   private Class<?> @Nullable [] m_commandLineTestClasses;
   private @Nullable List<String> m_commandLineTestPackages;
 
+  /** The packages {@link #setTestPackages(List)} added to the command line suites. */
+  private final List<XmlPackage> m_commandLineXmlPackages = new ArrayList<>();
+
   private String m_defaultSuiteName = DEFAULT_COMMAND_LINE_SUITE_NAME;
   private String m_defaultTestName = DEFAULT_COMMAND_LINE_TEST_NAME;
 
@@ -618,24 +621,39 @@ public class TestNG {
       xmlTest = new XmlTest(xmlSuite);
       xmlTest.setName(testName);
     }
-    // TestRunner drops a scanned class that its own <test> already lists, but not one that a
-    // @Test(suiteName, testName) put in another suite or test: that class would run twice. So the
-    // scan leaves out every class the command line already placed.
+    List<XmlPackage> xmlPackages = new ArrayList<>(xmlTest.getXmlPackages());
+    for (String name : packages) {
+      XmlPackage xmlPackage = new XmlPackage(name);
+      m_commandLineXmlPackages.add(xmlPackage);
+      xmlPackages.add(xmlPackage);
+    }
+    xmlTest.setXmlPackages(xmlPackages);
+  }
+
+  /**
+   * TestRunner drops a scanned class that its own {@code <test>} already lists, but not one that a
+   * {@code @Test(suiteName, testName)} put in another suite or test: that class would run twice. So
+   * the command line packages leave out every class the command line already placed. This scans the
+   * packages, so it runs after the {@link IAlterSuiteListener} listeners, which may still change
+   * them.
+   */
+  private void excludePlacedClassesFromCommandLinePackages() {
+    List<XmlSuite> cmdlineSuites = m_cmdlineSuites;
+    if (m_commandLineXmlPackages.isEmpty() || cmdlineSuites == null) {
+      return;
+    }
     Set<String> placed = new HashSet<>();
-    for (XmlSuite suite : suites) {
+    for (XmlSuite suite : cmdlineSuites) {
       for (XmlTest test : suite.getTests()) {
         test.getXmlClasses().forEach(c -> placed.add(c.getName()));
       }
     }
-    List<XmlPackage> xmlPackages = new ArrayList<>(xmlTest.getXmlPackages());
-    for (String name : packages) {
-      XmlPackage xmlPackage = new XmlPackage(name);
-      if (!placed.isEmpty()) {
-        xmlPackage.getXmlClasses().removeIf(c -> placed.contains(c.getName()));
-      }
-      xmlPackages.add(xmlPackage);
+    if (placed.isEmpty()) {
+      return;
     }
-    xmlTest.setXmlPackages(xmlPackages);
+    for (XmlPackage xmlPackage : m_commandLineXmlPackages) {
+      xmlPackage.getXmlClasses().removeIf(c -> placed.contains(c.getName()));
+    }
   }
 
   /**
@@ -1482,6 +1500,7 @@ public class TestNG {
       runExecutionListeners(true /* start */);
 
       runSuiteAlterationListeners();
+      excludePlacedClassesFromCommandLinePackages();
 
       m_start = System.currentTimeMillis();
       List<ISuite> suiteRunners = runSuites();

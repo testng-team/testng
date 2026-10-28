@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.testng.IAlterSuiteListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -14,6 +15,8 @@ import org.testng.annotations.Test;
 import org.testng.cli.CliParseException;
 import org.testng.cli.jcommander.JCommanderCliRunner;
 import org.testng.testhelper.OutputDirectoryPatch;
+import org.testng.xml.XmlPackage;
+import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 
 /** GITHUB-1226. {@code -testpackage} selects test classes by package, like {@code <package>}. */
@@ -75,6 +78,21 @@ public class TestPackageCommandLineTest extends SimpleBaseTest {
         .containsExactlyInAnyOrder("firstTest", "nestedTest");
   }
 
+  @Test(description = "GITHUB-1226")
+  public void anAlterSuiteListenerCanStillChangeThePackage() {
+    TestNG testng = create();
+    testng.setTestClasses(new Class[] {test.cli.testpackage.c.NamedSample.class});
+    testng.setTestPackages(Collections.singletonList(C));
+    testng.addListener(new RetargetPackagesTo(A));
+    TestListenerAdapter listener = new TestListenerAdapter();
+    testng.addListener(listener);
+
+    testng.run();
+
+    assertThat(names(listener.getPassedTests()))
+        .containsExactlyInAnyOrder("namedTest", "firstTest");
+  }
+
   private static List<String> run(String... options) {
     List<String> args =
         new ArrayList<>(
@@ -92,5 +110,24 @@ public class TestPackageCommandLineTest extends SimpleBaseTest {
       names.add(result.getMethod().getMethodName());
     }
     return names;
+  }
+
+  /** Points every package of the suite at another package, as a suite alteration may. */
+  public static class RetargetPackagesTo implements IAlterSuiteListener {
+
+    private final String name;
+
+    public RetargetPackagesTo(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public void alter(List<XmlSuite> suites) {
+      for (XmlSuite suite : suites) {
+        suite.getTests().stream()
+            .flatMap(test -> test.getXmlPackages().stream())
+            .forEach((XmlPackage xmlPackage) -> xmlPackage.setName(name));
+      }
+    }
   }
 }
