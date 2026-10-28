@@ -43,6 +43,7 @@ public class CliOptions {
   public static final String USE_DEFAULT_LISTENERS = "-usedefaultlisteners";
   public static final String SKIP_FAILED_INVOCATION_COUNTS = "-skipfailedinvocationcounts";
   public static final String TEST_CLASS = "-testclass";
+  public static final String TEST_PACKAGE = "-testpackage";
   public static final String TEST_NAMES = "-testnames";
   public static final String IGNORE_MISSED_TEST_NAMES = "-ignoreMissedTestNames";
   public static final String TEST_JAR = "-testjar";
@@ -135,6 +136,12 @@ public class CliOptions {
 
   /** The list of test classes. */
   public @Nullable String testClass;
+
+  /**
+   * The list of packages whose test classes to run, as {@code <package>} in {@code testng.xml}. A
+   * name that ends in {@code .*} also selects the sub-packages.
+   */
+  public @Nullable String testPackage;
 
   /** The list of test names to run. */
   public @Nullable String testNames;

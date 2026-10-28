@@ -67,6 +67,7 @@ public class CliConfigurerParityTest {
     cli.testName = "aTest";
     cli.useDefaultListeners = "false";
     cli.skipFailedInvocationCounts = Boolean.TRUE;
+    cli.testPackage = "com.acme,com.acme.sub.*";
     cli.testNames = "t1,t2";
     cli.ignoreMissedTestNames = true;
     cli.testJar = "tests.jar";

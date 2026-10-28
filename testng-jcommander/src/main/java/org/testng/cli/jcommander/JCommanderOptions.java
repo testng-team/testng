@@ -116,6 +116,13 @@ public class JCommanderOptions {
   @Parameter(names = CliOptions.TEST_CLASS, description = "The list of test classes")
   public @Nullable String testClass;
 
+  @Parameter(
+      names = CliOptions.TEST_PACKAGE,
+      description =
+          "The list of packages whose test classes to run. A name that ends in .* also selects"
+              + " the sub-packages")
+  public @Nullable String testPackage;
+
   @Parameter(names = CliOptions.TEST_NAMES, description = "The list of test names to run")
   public @Nullable String testNames;
 
@@ -253,6 +260,7 @@ public class JCommanderOptions {
     cli.useDefaultListeners = useDefaultListeners;
     cli.skipFailedInvocationCounts = skipFailedInvocationCounts;
     cli.testClass = testClass;
+    cli.testPackage = testPackage;
     cli.testNames = testNames;
     cli.ignoreMissedTestNames = ignoreMissedTestNames;
     cli.testJar = testJar;

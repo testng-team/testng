@@ -57,14 +57,16 @@ public final class CliConfigurer {
    */
   public static void validate(CliOptions cli) {
     // What configure() will make of it, not the raw text: -testclass "" and -testclass " , ,"
-    // name no class at all, and selecting nothing has to be rejected here rather than produce a
-    // run with no classes and no complaint.
-    String testClasses = selectedTestClasses(cli.testClass);
+    // name no class at all, and -testpackage " , ," no package, and selecting nothing has to be
+    // rejected here rather than produce a run with no classes and no complaint.
+    String testClasses = namesAny(cli.testClass);
+    String testPackages = namesAny(cli.testPackage);
     List<String> testNgXml = cli.suiteFiles;
     String testJar = cli.testJar;
     List<String> methods = cli.commandLineMethods;
 
     if (testClasses == null
+        && testPackages == null
         && testJar == null
         && (testNgXml == null || testNgXml.isEmpty())
         && (methods == null || methods.isEmpty())) {
@@ -78,20 +80,22 @@ public final class CliConfigurer {
     if (testJar == null
         && (null != groups || null != excludedGroups)
         && testClasses == null
+        && testPackages == null
         && (testNgXml == null || testNgXml.isEmpty())) {
       throw new CliParseException("Groups option should be used with testclass option");
     }
   }
 
   /**
-   * @return the option value when it names at least one class, {@code null} when it names none, so
-   *     that validation treats "names nothing" the same way it treats "was not given".
+   * @return the comma separated option value when it names at least one element, {@code null} when
+   *     it names none, so that validation treats "names nothing" the same way it treats "was not
+   *     given".
    */
-  private static @Nullable String selectedTestClasses(@Nullable String testClass) {
-    if (testClass == null || Utils.splitCommaSeparated(testClass).isEmpty()) {
+  private static @Nullable String namesAny(@Nullable String value) {
+    if (value == null || Utils.splitCommaSeparated(value).isEmpty()) {
       return null;
     }
-    return testClass;
+    return value;
   }
 
   /**
@@ -157,6 +161,10 @@ public final class CliConfigurer {
       }
 
       testng.setTestClasses(classes.toArray(new Class[0]));
+    }
+
+    if (cli.testPackage != null) {
+      testng.setTestPackages(Utils.splitCommaSeparated(cli.testPackage));
     }
 
     if (cli.testNames != null) {
