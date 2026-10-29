@@ -28,7 +28,7 @@ public class TestClassWithPrioritiesSample {
   @Test(dataProvider = "parallelDpStrings", priority = 1)
   public void testStrings(String ignored) throws InterruptedException {
     print();
-    TimeUnit.MILLISECONDS.sleep(SafeRandoms.nextInt(200, 300));
+    TimeUnit.MILLISECONDS.sleep(SafeRandoms.nextInt(20, 30));
   }
 
   @Test(priority = 2)
