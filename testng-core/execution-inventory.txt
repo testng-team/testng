@@ -1,5 +1,6 @@
 NoPackageTest#test	PASS 1
 org.testng.BasicTest#basic test as sample	PASS 1
+org.testng.CauseChainTest#causesThatPointAtEachOtherArePrintedOnce	PASS 1
 org.testng.DryRunTest#testDryRun	PASS 1
 org.testng.JarFileUtilsTest#ensureThatExceptionAreNotThrown	PASS 1
 org.testng.JarFileUtilsTest#ensureThatExceptionAreThrown	PASS 1
@@ -460,6 +461,7 @@ org.testng.factory.issue3111.FactoryInstanceTest#readingTheMetadataOfALazyInstan
 org.testng.factory.issue3111.FactoryInstanceTest#theDeprecatedIndexKeepsMeaningTheInvocation	PASS 1
 org.testng.factory.issue3111.FactoryInstanceTest#theFactoryIsDescribedWithoutLeakingItsImplementation	PASS 1
 org.testng.factory.issue326.IssueTest#testToCheckParallelExecutionOfInstancesWithOneThreadPerInstance	PASS 1
+org.testng.factory.issue3576.IssueTest#pooledInvocationsKeepTheirFactoryParameters	PASS 2
 org.testng.factory.issue553.IssueTest#testMethod	PASS 1
 org.testng.factory.lazy.LazyFactoryConfigMethodTest#beforeSuiteOnLazyFactory	PASS 1
 org.testng.factory.lazy.LazyFactoryConfigMethodTest#beforeTestOnLazyFactory	PASS 1
@@ -804,6 +806,8 @@ org.testng.listeners.issue1777.IssueTest#testOnStartInvokedForSkippedTests	PASS 
 org.testng.listeners.issue2220.IssueTest#ensureAnnotatedListenersAreWiredInOnlyOnce	PASS 1
 org.testng.listeners.issue2328.IssueTest#testIfTestMethodInfoPassedToConfigListeners	PASS 1
 org.testng.listeners.issue2456.IssueTest#testEavesdroppingIntoDataProviderExceptions	PASS 1
+org.testng.listeners.issue3563.AddListenerObjectTest#addListenerKeepsAListener	PASS 1
+org.testng.listeners.issue3563.AddListenerObjectTest#addListenerThrowsWhenTheObjectIsNotAListener	PASS 1
 org.testng.listeners.ordering.ListenerInvocationDefaultBehaviorTest#testOrderForNonSymmetricOnAfterClass	PASS 1
 org.testng.listeners.ordering.ListenerInvocationDefaultBehaviorTest#testOrderForSymmetricOnAfterClass	PASS 1
 org.testng.listeners.ordering.ListenerInvocationDefaultBehaviorTest#testOrderHasOnlyDataDrivenMethodWithPassedAndFailedIteration	PASS 1
@@ -1143,6 +1147,12 @@ org.testng.xml.SchemaConsistencyTest#bothSchemasDeclareTheSameElements	PASS 1
 org.testng.xml.SuiteXmlParserTest#testParse	PASS 5
 org.testng.xml.XMLParserTest#aBlockedParseDoesNotHoldUpAnotherOne	PASS 1
 org.testng.xml.XMLParserTest#theStreamIsClosedByTheTimeTheParseReturns	PASS 3
+org.testng.xml.XmlCatalogTest#aStrictResolverRefusesAnIdTheCatalogDoesNotMap	PASS 1
+org.testng.xml.XmlCatalogTest#everyEntryPointsAtAResourceOnTheClasspath	PASS 1
+org.testng.xml.XmlCatalogTest#everyEntryPointsAtTheDtdTestNgResolvesTo	PASS 1
+org.testng.xml.XmlCatalogTest#theCatalogMapsExactlyTheEightSupportedDtdIdentifiers	PASS 1
+org.testng.xml.XmlCatalogTest#theDtdFromTheCatalogStillRejectsAnInvalidSuite	PASS 1
+org.testng.xml.XmlCatalogTest#theJdkCatalogResolverValidatesASuiteWithoutTheNetwork	PASS 1
 org.testng.xml.XmlPrologueTest#aDoctypeIsFoundWhateverTheEncoding	PASS 1
 org.testng.xml.XmlPrologueTest#aSchemaDeclarationIsNotADoctype	PASS 1
 org.testng.xml.XmlPrologueTest#anUnterminatedPrologueIsNotADoctype	PASS 1
