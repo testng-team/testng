@@ -393,6 +393,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         TestNgMethodUtils.filterMethods(
             null, arguments.getTestClass(), arguments.getConfigMethods(), SAME_CLASS);
     Object[] parameters = new Object[] {};
+    // GITHUB-2448. The configurations of this call that failed or were skipped, so a teardown that
+    // bypasses earlier failures still honours its own dependsOnMethods.
+    Set<ITestNGMethod> notPassed = new HashSet<>();
 
     for (ITestNGMethod tm : methods) {
       if (null == arguments.getTestClass()) {
@@ -434,11 +437,17 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         }
         if (!MethodHelper.isEnabled(configurationAnnotation)) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
+          // GITHUB-2448. A disabled configuration did not pass, so a method depending on it must
+          // not run either.
+          notPassed.add(tm);
           continue;
         }
         // GITHUB-1622. The guard is a field read, so it comes before the map walks.
-        if (!MethodHelper.canBypassConfigurationFailure(tm, configurationAnnotation)
-            && hasConfigurationFailureFor(
+        boolean bypassesFailures =
+            MethodHelper.canBypassConfigurationFailure(tm, configurationAnnotation);
+        if (bypassesFailures
+            ? dependsOnAnyOf(tm, methods, notPassed)
+            : hasConfigurationFailureFor(
                 tm,
                 arguments.getTestMethod(),
                 tm.getGroups(),
@@ -522,11 +531,28 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
             arguments.getInvocationCount());
         copyAttributesFromNativelyInjectedTestResult(parameters, arguments.getTestMethodResult());
       } finally {
+        if (testResult.getStatus() == ITestResult.FAILURE
+            || testResult.getStatus() == ITestResult.SKIP) {
+          notPassed.add(tm);
+        }
         if (ownedGate != null) {
           ownedGate.complete();
         }
       }
     } // for methods
+  }
+
+  /**
+   * GITHUB-2448. Whether {@code tm} names, through {@code dependsOnMethods}, one of the {@code
+   * notPassed} configurations of the same call.
+   */
+  private static boolean dependsOnAnyOf(
+      ITestNGMethod tm, ITestNGMethod[] methods, Set<ITestNGMethod> notPassed) {
+    if (notPassed.isEmpty() || tm.getMethodsDependedUpon().length == 0) {
+      return false;
+    }
+    return Arrays.stream(MethodHelper.findDependedUponMethods(tm, methods))
+        .anyMatch(notPassed::contains);
   }
 
   /** Effectively invokes a configuration method on all passed in instances. */

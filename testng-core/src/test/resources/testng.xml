@@ -924,6 +924,7 @@
       <class name="org.testng.configuration.issue3239.IssueTest"/>
       <class name="org.testng.configuration.issue3435.IssueTest"/>
       <class name="org.testng.configuration.issue3539.IssueTest"/>
+      <class name="org.testng.configuration.issue2448.IssueTest"/>
     </classes>
   </test>
 
