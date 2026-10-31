@@ -1,5 +1,6 @@
 package org.testng;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,10 +31,12 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 /**
- * Local measurement for {@link ConfigurationMethod#bind(IObject.IdentifiableObject)} on a class
- * carrying one method of every configuration type, at the 5000-instance scale from GITHUB-3436.
+ * Local measurement of {@link ConfigurationMethod#bind(IObject.IdentifiableObject)} and {@link
+ * TestNGMethod#bind(IObject.IdentifiableObject)} on a class with one method of every configuration
+ * type, at the 5000-instance scale from GITHUB-3436. The last figure is {@link TestClass}
+ * collection: test methods plus configuration methods.
  *
- * <p>Not part of CI — run {@code ./gradlew :testng-core:runBindMeasurement --rerun-tasks}.
+ * <p>Not part of CI. Run {@code ./gradlew :testng-core:runBindMeasurement --rerun-tasks}.
  */
 public final class TestClassFactoryBindMeasurement {
 
@@ -49,6 +52,7 @@ public final class TestClassFactoryBindMeasurement {
     long configInitNanos = medianNanos(() -> initAll(prototypes.templates, instances));
     TestNGMethod testPrototype = testMethodPrototype(instances[0]);
     long testBindNanos = medianNanos(() -> bindTestMethod(testPrototype, instances));
+    long testInitNanos = medianNanos(() -> initTestMethod(testPrototype, instances));
     long testClassNanos = medianNanos(() -> buildTestClass(instances));
 
     System.out.printf(
@@ -60,13 +64,15 @@ public final class TestClassFactoryBindMeasurement {
         "  new ConfigurationMethod(..., init): %,d (~%.2f ms)%n",
         configInitNanos, configInitNanos / 1e6);
     System.out.printf("  ratio (init/bind):   %.1fx%n", (double) configInitNanos / configBindNanos);
+    System.out.printf("%nTestNGMethod bind vs fresh init() (ns):%n");
     System.out.printf(
-        "%nTestNGMethod bind (ns): %,d (~%.2f ms)%n", testBindNanos, testBindNanos / 1e6);
+        "  bind():              %,d (~%.2f ms)%n", testBindNanos, testBindNanos / 1e6);
     System.out.printf(
-        "%nTestClass construction with bind path (ns): %,d (~%.2f ms)%n",
+        "  new TestNGMethod(..., init): %,d (~%.2f ms)%n", testInitNanos, testInitNanos / 1e6);
+    System.out.printf("  ratio (init/bind):   %.1fx%n", (double) testInitNanos / testBindNanos);
+    System.out.printf(
+        "%nTestClass collection, test methods plus configuration methods (ns): %,d (~%.2f ms)%n",
         testClassNanos, testClassNanos / 1e6);
-    System.out.printf(
-        "%nCompare TestClass time on master (per-instance init) vs this branch for base-vs-HEAD.%n");
   }
 
   private static IObject.IdentifiableObject[] newInstances() {
@@ -95,15 +101,27 @@ public final class TestClassFactoryBindMeasurement {
     }
   }
 
+  private static void initTestMethod(
+      TestNGMethod prototype, IObject.IdentifiableObject[] instances) {
+    Method method = prototype.getConstructorOrMethod().requireMethod();
+    for (IObject.IdentifiableObject each : instances) {
+      new TestNGMethod(OBJECT_FACTORY, method, ANNOTATION_FINDER, XML_TEST, each);
+    }
+  }
+
   private static void buildTestClass(IObject.IdentifiableObject[] instances) {
-    new TestClass(
-        OBJECT_FACTORY,
-        new FactoryInstancesClass(instances),
-        newFinder(),
-        ANNOTATION_FINDER,
-        XML_TEST,
-        java.util.List.of(XML_CLASS),
-        null);
+    TestClass testClass =
+        new TestClass(
+            OBJECT_FACTORY,
+            new FactoryInstancesClass(instances),
+            newFinder(),
+            ANNOTATION_FINDER,
+            XML_TEST,
+            java.util.List.of(XML_CLASS),
+            null);
+    // The constructor builds test methods only. TestRunner then calls this, which is the
+    // configuration half of the 5000-instance collection from GITHUB-3436.
+    testClass.initConfigurationMethods();
   }
 
   private static long medianNanos(Runnable work) {

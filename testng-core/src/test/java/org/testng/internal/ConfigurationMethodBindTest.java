@@ -7,6 +7,7 @@ import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
@@ -56,18 +57,40 @@ public class ConfigurationMethodBindTest {
   }
 
   /**
-   * {@link ConfigurationMethod#clone()} keeps the historical copy set; bind carries more metadata.
+   * Clone keeps the field set it had before bind existed, including priority. Bind also keeps the
+   * time-out and the {@link XmlTest}. {@code init()} sets both, and a same-class bind skips it.
    */
   @Test
-  public void clonePreservesHistoricalMetadataButBindCopiesPriority() {
+  public void cloneKeepsHistoricalMetadataWhileBindAlsoKeepsTimeoutAndXmlTest() {
     ConfigurationMethod source = (ConfigurationMethod) beforeMethodPrototype();
     assertThat(source.getPriority()).isEqualTo(7);
+    assertThat(source.getTimeOut()).isEqualTo(1234L);
+    assertThat(source.getXmlTest()).isNotNull();
 
     ConfigurationMethod cloned = source.clone();
     assertThat(cloned.getPriority()).isEqualTo(7);
+    assertThat(cloned.getTimeOut()).isZero();
+    assertThat(cloned.getXmlTest()).isNull();
 
     ConfigurationMethod bound = source.bind(new IObject.IdentifiableObject(new PrioritySample()));
     assertThat(bound.getPriority()).isEqualTo(7);
+    assertThat(bound.getTimeOut()).isEqualTo(1234L);
+    assertThat(bound.getXmlTest()).isSameAs(source.getXmlTest());
+  }
+
+  /**
+   * {@code init()} records that a method is a {@code @BeforeGroups} configuration. Clone has never
+   * copied that flag. Bind must, because a same-class bind does not call {@code init()} again.
+   */
+  @Test
+  public void cloneDropsTheBeforeGroupsFlagThatBindKeeps() {
+    ConfigurationMethod source = (ConfigurationMethod) beforeGroupsPrototype();
+    assertThat(source.hasBeforeGroupsConfiguration()).isTrue();
+
+    assertThat(source.clone().hasBeforeGroupsConfiguration()).isFalse();
+
+    ConfigurationMethod bound = source.bind(new IObject.IdentifiableObject(new GroupsFlagSample()));
+    assertThat(bound.hasBeforeGroupsConfiguration()).isTrue();
   }
 
   private ITestNGMethod beforeMethodPrototype() {
@@ -97,6 +120,32 @@ public class ConfigurationMethodBindTest {
     return prototypes.get(0);
   }
 
+  private ITestNGMethod beforeGroupsPrototype() {
+    XmlSuite suite = new XmlSuite();
+    XmlTest xmlTest = new XmlTest(suite);
+    XmlClass xmlClass = new XmlClass(GroupsFlagSample.class.getName());
+    xmlTest.getXmlClasses().add(xmlClass);
+
+    XmlMethodSelector selector = new XmlMethodSelector();
+    selector.setXmlClasses(xmlTest.getXmlClasses());
+    RunInfo runInfo = new RunInfo(() -> xmlTest);
+    runInfo.addMethodSelector(selector, 10);
+
+    ITestMethodFinder finder = new TestNGMethodFinder(objectFactory, runInfo, annotationFinder);
+    ITestNGMethod[] templates = finder.getBeforeGroupsConfigurationMethods(GroupsFlagSample.class);
+    assertThat(templates).hasSize(1);
+
+    ITestNGMethod[] prototypes =
+        ConfigurationMethod.createBeforeConfigurationMethods(
+            objectFactory,
+            templates,
+            annotationFinder,
+            true,
+            new IObject.IdentifiableObject(new GroupsFlagSample()));
+    assertThat(prototypes).hasSize(1);
+    return prototypes[0];
+  }
+
   private ITestNGMethod testMethodConfigurationPrototype(Class<?> realClass, Object instance) {
     XmlSuite suite = new XmlSuite();
     XmlTest xmlTest = new XmlTest(suite);
@@ -122,7 +171,7 @@ public class ConfigurationMethodBindTest {
 
   public static class PrioritySample {
 
-    @BeforeMethod(priority = 7)
+    @BeforeMethod(priority = 7, timeOut = 1234)
     public void configure() {}
 
     @AfterMethod
@@ -146,6 +195,15 @@ public class ConfigurationMethodBindTest {
 
   @Test(groups = "group-b")
   public static class RuntimeGroupsSubB extends RuntimeGroupsBase {}
+
+  public static class GroupsFlagSample {
+
+    @BeforeGroups(groups = "a-group")
+    public void beforeGroups() {}
+
+    @Test(groups = "a-group")
+    public void test() {}
+  }
 
   private final DefaultTestObjectFactory objectFactory = new DefaultTestObjectFactory();
   private final IAnnotationFinder annotationFinder =

@@ -176,7 +176,7 @@ public class TestNGMethod extends BaseTestMethod {
             getConstructorOrMethod().requireMethod(),
             getAnnotationFinder(),
             instance);
-    copyInitializedState(bound);
+    copyInitializedStateForBind(bound);
     XmlTest xmlTest = getXmlTest();
     if (xmlTest != null && !effectiveClassForGroups().equals(bound.effectiveClassForGroups())) {
       bound.init(xmlTest);
@@ -184,7 +184,8 @@ public class TestNGMethod extends BaseTestMethod {
     return bound;
   }
 
-  private void copyInitializedState(TestNGMethod target) {
+  /** Copies metadata that both {@link #bind} and {@link #clone} have always propagated. */
+  private void copySharedInitializedState(TestNGMethod target) {
     target.setXmlTest(getXmlTest());
     target.setXmlOccurrence(getXmlClass(), getXmlInclude(), getXmlOccurrenceIndex());
     ITestClass tc = getTestClass();
@@ -215,6 +216,14 @@ public class TestNGMethod extends BaseTestMethod {
     target.setSkipFailedInvocations(skipFailedInvocations());
     target.setInvocationNumbers(getInvocationNumbers());
     target.setPriority(getPriority());
+  }
+
+  /**
+   * Copies the metadata {@link #init(XmlTest)} stores. {@link #bind} needs it when the runtime
+   * class matches and {@code init} does not run again. {@link #clone()} does not use this.
+   */
+  private void copyInitializedStateForBind(TestNGMethod target) {
+    copySharedInitializedState(target);
     target.m_attributes = m_attributes;
     target.isDataDriven = isDataDriven;
     target.setIgnoreMissingDependencies(ignoreMissingDependencies());
@@ -234,7 +243,8 @@ public class TestNGMethod extends BaseTestMethod {
             getConstructorOrMethod().requireMethod(),
             getAnnotationFinder(),
             cloneInstance());
-    copyInitializedState(clone);
+    copySharedInitializedState(clone);
+    // Pool workers share one counter. bind() must not: each factory instance counts alone.
     clone.m_currentInvocationCount = m_currentInvocationCount;
     return clone;
   }

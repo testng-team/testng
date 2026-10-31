@@ -236,7 +236,38 @@ public class TestClassConfigurationLookupTest {
 
   @Test
   public void differingRuntimeClassesFromFactoryGetTheirOwnClassLevelGroups() {
+    TestClass testClass = newMultiRuntimeTestClass(new FakeClass(new SubClassA(), new SubClassB()));
+
+    ITestNGMethod[] testMethods = testClass.getTestMethods();
+    assertThat(testMethods).hasSize(2);
+    assertThat(testMethods[0].getGroups()).containsExactly("group-a");
+    assertThat(testMethods[1].getGroups()).containsExactly("group-b");
+  }
+
+  /**
+   * A factory can return subclasses that each declare their own class-level groups. A configuration
+   * method that inherits those groups must follow the instance, not the prototype.
+   */
+  @Test
+  public void differingRuntimeClassesInheritClassLevelGroupsOnConfigurationMethods() {
     FakeClass multiClass = new FakeClass(new SubClassA(), new SubClassB());
+    TestClass testClass = newMultiRuntimeTestClass(multiClass);
+    testClass.initConfigurationMethods();
+
+    IObject.IdentifiableObject[] objects = testClass.getObjects(false, null);
+    assertThat(objects).hasSize(2);
+    assertThat(groupsOfBeforeClass(testClass, objects[0])).containsExactly("group-a");
+    assertThat(groupsOfBeforeClass(testClass, objects[1])).containsExactly("group-b");
+  }
+
+  private static String[] groupsOfBeforeClass(
+      TestClass testClass, IObject.IdentifiableObject instance) {
+    List<ITestNGMethod> methods = testClass.getInstanceBeforeClassMethods(instance.getInstanceId());
+    assertThat(methods).hasSize(1);
+    return methods.get(0).getGroups();
+  }
+
+  private TestClass newMultiRuntimeTestClass(FakeClass multiClass) {
     XmlClass multiXmlClass = new XmlClass(BaseSample.class.getName());
     XmlTest multiXmlTest = new XmlTest(xmlSuite);
     multiXmlTest.getXmlClasses().add(multiXmlClass);
@@ -247,20 +278,14 @@ public class TestClassConfigurationLookupTest {
     runInfo.addMethodSelector(selector, 10);
     ITestMethodFinder finder = new TestNGMethodFinder(objectFactory, runInfo, annotationFinder);
 
-    TestClass testClass =
-        new TestClass(
-            objectFactory,
-            multiClass,
-            finder,
-            annotationFinder,
-            multiXmlTest,
-            Collections.singletonList(multiXmlClass),
-            null);
-
-    ITestNGMethod[] testMethods = testClass.getTestMethods();
-    assertThat(testMethods).hasSize(2);
-    assertThat(testMethods[0].getGroups()).containsExactly("group-a");
-    assertThat(testMethods[1].getGroups()).containsExactly("group-b");
+    return new TestClass(
+        objectFactory,
+        multiClass,
+        finder,
+        annotationFinder,
+        multiXmlTest,
+        Collections.singletonList(multiXmlClass),
+        null);
   }
 
   private static List<Object> instancesOf(FakeClass fakeClass) {
@@ -439,6 +464,10 @@ public class TestClassConfigurationLookupTest {
   }
 
   public static class BaseSample {
+
+    @BeforeClass
+    public void beforeClass() {}
+
     @Test
     public void baseTest() {}
   }
