@@ -28,7 +28,7 @@ public class TestClassSample {
   @Test(dataProvider = "parallelDpStrings")
   public void testStrings(String ignored) throws InterruptedException {
     print();
-    TimeUnit.MILLISECONDS.sleep(SafeRandoms.nextInt(200, 300));
+    TimeUnit.MILLISECONDS.sleep(SafeRandoms.nextInt(20, 30));
   }
 
   private static void print() {
