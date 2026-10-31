@@ -114,6 +114,17 @@ public class XmlSuiteTest extends SimpleBaseTest {
   }
 
   @Test(description = "GITHUB-3571")
+  public void malformedChildOfProgrammaticSuiteHasNoTests() throws IOException {
+    Path child = Files.createTempFile("testng-malformed-child-", ".xml");
+    Files.writeString(child, "<suite>");
+    TestNG testNG = create();
+    testNG.setXmlSuites(List.of(parentSuite(child.toString())));
+
+    assertThatThrownBy(testNG::run).isInstanceOf(TestNGException.class);
+    assertThat(testNG.getStatus()).isEqualTo(ExitCode.HAS_NO_TEST);
+  }
+
+  @Test(description = "GITHUB-3571")
   public void missingChildSuiteFileFailsRunWhenSetTestSuitesIsUsed() throws IOException {
     Path directory = Files.createTempDirectory("testng-parent-&-");
     Path parentSuite = directory.resolve("parent.xml");

@@ -382,7 +382,8 @@ public class TestNG {
       }
       for (String suiteFile : s.getSuiteFiles()) {
         String fileNameToUse = s.getFileName();
-        if (fileNameToUse == null || fileNameToUse.trim().isEmpty()) {
+        boolean parsingChildDirectly = fileNameToUse == null || fileNameToUse.trim().isEmpty();
+        if (parsingChildDirectly) {
           fileNameToUse = suiteFile;
         }
         Parser parser = new Parser(fileNameToUse);
@@ -400,7 +401,9 @@ public class TestNG {
           }
           childSuiteParsingFailed =
               m_suites.size() == 1
-                  && (cause instanceof IOException || parser.lastParseFailedInChildSuite());
+                  && (parsingChildDirectly
+                      || cause instanceof IOException
+                      || parser.lastParseFailedInChildSuite());
           throw new TestNGException("Failed to parse suite: " + fileNameToUse, e);
         }
       }
