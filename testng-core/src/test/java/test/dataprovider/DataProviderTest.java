@@ -935,13 +935,16 @@ public class DataProviderTest extends SimpleBaseTest {
     testng.setVerbose(2);
     testng.run();
     assertThat(testng.getStatus()).isEqualTo(0);
-    assertThat(test.dataprovider.issue3081.TestClassSample.getLogs().size())
+    int threads = test.dataprovider.issue3081.TestClassSample.getLogs().size();
+    assertThat(threads)
         .withFailMessage(
             "The data driven rows should run in parallel on the shared global thread-pool "
                 + "without ever exceeding its size. With the work-stealing pool the calling "
                 + "worker also helps run the rows, so the exact number of distinct threads that "
                 + "service them is timing dependent - it must simply stay above 1 (real "
-                + "parallelism) and at most the pool size.")
+                + "parallelism) and at most the pool size. The rows ran on %d distinct "
+                + "thread(s); 1 means they all ran one after another (GITHUB-3440).",
+            threads)
         .isBetween(2, threadCount);
   }
 
@@ -959,13 +962,16 @@ public class DataProviderTest extends SimpleBaseTest {
     testng.setVerbose(2);
     testng.run();
     assertThat(testng.getStatus()).isEqualTo(0);
-    assertThat(TestClassWithPrioritiesSample.getLogs().size())
+    int threads = TestClassWithPrioritiesSample.getLogs().size();
+    assertThat(threads)
         .withFailMessage(
             "The data driven rows should run in parallel on the shared global thread-pool "
                 + "without ever exceeding its size. With the work-stealing pool the calling "
                 + "worker also helps run the rows, so the exact number of distinct threads that "
                 + "service them is timing dependent - it must simply stay above 1 (real "
-                + "parallelism) and at most the pool size.")
+                + "parallelism) and at most the pool size. The rows ran on %d distinct "
+                + "thread(s); 1 means they all ran one after another (GITHUB-3440).",
+            threads)
         .isBetween(2, threadCount);
   }
 
