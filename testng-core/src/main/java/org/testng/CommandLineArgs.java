@@ -148,6 +148,14 @@ public class CommandLineArgs {
   /** The test classes to run, as class names or {@code .class} files, separated by commas. */
   public @Nullable String testClass;
 
+  public static final String TEST_PACKAGE = "-testpackage";
+
+  /**
+   * The packages whose test classes to run, separated by commas, as {@code <package>} in {@code
+   * testng.xml}. A name that ends in {@code .*} also selects the sub-packages.
+   */
+  public @Nullable String testPackage;
+
   public static final String TEST_NAMES = "-testnames";
 
   /** The names of the {@code <test>} tags to run, separated by commas. */
