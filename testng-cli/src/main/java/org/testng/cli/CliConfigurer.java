@@ -106,12 +106,10 @@ public final class CliConfigurer {
     Optional.ofNullable(cli.useGlobalThreadPool).ifPresent(testng::shouldUseGlobalThreadPool);
     Optional.ofNullable(cli.shareThreadPoolForDataProviders)
         .ifPresent(testng::shareThreadPoolForDataProviders);
-    // FIXME: the field defaults to FALSE rather than null, so this toggle is switched on for every
-    // command line run and -propagateDataProviderFailureAsTestFailure cannot be turned off. Kept
-    // verbatim for parity with the frozen TestNG#configure(CommandLineArgs); fixing it is a
-    // behaviour change that belongs in its own issue.
-    Optional.ofNullable(cli.propagateDataProviderFailureAsTestFailure)
-        .ifPresent(value -> testng.propagateDataProviderFailureAsTestFailure());
+    // GITHUB-3565. The field defaults to FALSE, so only TRUE turns the setting on.
+    if (Boolean.TRUE.equals(cli.propagateDataProviderFailureAsTestFailure)) {
+      testng.propagateDataProviderFailureAsTestFailure();
+    }
     testng.setReportAllDataDrivenTestsAsSkipped(cli.includeAllDataDrivenTestsWhenSkipping);
     Optional.ofNullable(cli.emptyDataProviderBehavior)
         .ifPresent(testng::setEmptyDataProviderBehavior);
