@@ -192,8 +192,15 @@ public class MethodRunner implements IMethodRunner {
     // but never throws, so one failing row cannot stop us waiting for the rest - once this loop
     // ends every row has completed and none is left running. This mirrors the async path's all-of
     // semantics. See GITHUB-3242.
-    for (ForkJoinTask<List<ITestResult>> task : tasks) {
-      task.quietlyJoin();
+    //
+    // Join the newest row first. The rows sit in this worker's own queue, and the other workers
+    // steal from its oldest end. Joining the oldest row first makes JDK 17's ForkJoinPool remove
+    // it from that end and shift every later row down one slot, during which a worker woken to
+    // steal can see the queue as empty and go back to sleep. Nothing wakes it again, so this
+    // worker ends up running every row on its own. Joining from the newest end never touches the
+    // slots the other workers read. See GITHUB-3440.
+    for (int i = tasks.size() - 1; i >= 0; i--) {
+      tasks.get(i).quietlyJoin();
     }
     // Now that every row has finished, collect the results. join() here only reports an
     // already-computed outcome: it returns the result, or re-throws the first failure (exactly as
