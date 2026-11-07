@@ -96,6 +96,8 @@ public interface ITestInvoker {
 
   void invokeListenersForSkippedTestResult(ITestResult r, IInvokedMethod invokedMethod);
 
+  default void setSkipFailedInvocationCounts(boolean skipFailedInvocationCounts) {}
+
   /**
    * Cancels the {@code invocationCount}s an invocation leaves behind by failing, when {@code
    * skipFailedInvocationCounts} or {@code skipFailedInvocations} asks for it.
