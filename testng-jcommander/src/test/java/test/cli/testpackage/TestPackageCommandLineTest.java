@@ -15,8 +15,10 @@ import org.testng.annotations.Test;
 import org.testng.cli.CliParseException;
 import org.testng.cli.jcommander.JCommanderCliRunner;
 import org.testng.testhelper.OutputDirectoryPatch;
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
 /** GITHUB-1226. {@code -testpackage} selects test classes by package, like {@code <package>}. */
@@ -93,6 +95,19 @@ public class TestPackageCommandLineTest extends SimpleBaseTest {
         .containsExactlyInAnyOrder("namedTest", "firstTest");
   }
 
+  @Test(description = "GITHUB-1226")
+  public void aClassThatAnAlterSuiteListenerAddsToAnotherTestStillRunsInThePackage() {
+    TestNG testng = create();
+    testng.setTestPackages(Collections.singletonList(A));
+    testng.addListener(new AddTestWithClass(test.cli.testpackage.a.FirstSample.class));
+    TestListenerAdapter listener = new TestListenerAdapter();
+    testng.addListener(listener);
+
+    testng.run();
+
+    assertThat(names(listener.getPassedTests())).containsExactly("firstTest", "firstTest");
+  }
+
   private static List<String> run(String... options) {
     List<String> args =
         new ArrayList<>(
@@ -127,6 +142,25 @@ public class TestPackageCommandLineTest extends SimpleBaseTest {
         suite.getTests().stream()
             .flatMap(test -> test.getXmlPackages().stream())
             .forEach((XmlPackage xmlPackage) -> xmlPackage.setName(name));
+      }
+    }
+  }
+
+  /** Adds a test that runs one class to every suite, as a suite alteration may. */
+  public static class AddTestWithClass implements IAlterSuiteListener {
+
+    private final Class<?> testClass;
+
+    public AddTestWithClass(Class<?> testClass) {
+      this.testClass = testClass;
+    }
+
+    @Override
+    public void alter(List<XmlSuite> suites) {
+      for (XmlSuite suite : suites) {
+        XmlTest test = new XmlTest(suite);
+        test.setName("Added by " + getClass().getSimpleName());
+        test.setXmlClasses(Collections.singletonList(new XmlClass(testClass)));
       }
     }
   }

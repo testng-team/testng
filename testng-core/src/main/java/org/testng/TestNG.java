@@ -635,25 +635,38 @@ public class TestNG {
    * {@code @Test(suiteName, testName)} put in another suite or test: that class would run twice. So
    * the command line packages leave out every class the command line already placed. This scans the
    * packages, so it runs after the {@link IAlterSuiteListener} listeners, which may still change
-   * them.
+   * them. A class counts as placed only if it was in a test before those listeners ran and still
+   * is: a class that a listener adds to another test keeps running in the package too.
+   *
+   * @param placedBeforeAlteration the classes of the command line tests before the listeners ran,
+   *     from {@link #classesOfCommandLineTests()}.
    */
-  private void excludePlacedClassesFromCommandLinePackages() {
-    List<XmlSuite> cmdlineSuites = m_cmdlineSuites;
-    if (m_commandLineXmlPackages.isEmpty() || cmdlineSuites == null) {
+  private void excludePlacedClassesFromCommandLinePackages(Set<String> placedBeforeAlteration) {
+    if (m_commandLineXmlPackages.isEmpty() || placedBeforeAlteration.isEmpty()) {
       return;
     }
-    Set<String> placed = new HashSet<>();
-    for (XmlSuite suite : cmdlineSuites) {
-      for (XmlTest test : suite.getTests()) {
-        test.getXmlClasses().forEach(c -> placed.add(c.getName()));
-      }
-    }
+    Set<String> placed = classesOfCommandLineTests();
+    placed.retainAll(placedBeforeAlteration);
     if (placed.isEmpty()) {
       return;
     }
     for (XmlPackage xmlPackage : m_commandLineXmlPackages) {
       xmlPackage.getXmlClasses().removeIf(c -> placed.contains(c.getName()));
     }
+  }
+
+  /** The names of the classes that the tests of the command line suites list. */
+  private Set<String> classesOfCommandLineTests() {
+    Set<String> classes = new HashSet<>();
+    if (m_commandLineXmlPackages.isEmpty() || m_cmdlineSuites == null) {
+      return classes;
+    }
+    for (XmlSuite suite : m_cmdlineSuites) {
+      for (XmlTest test : suite.getTests()) {
+        test.getXmlClasses().forEach(c -> classes.add(c.getName()));
+      }
+    }
+    return classes;
   }
 
   /**
@@ -1499,8 +1512,9 @@ public class TestNG {
 
       runExecutionListeners(true /* start */);
 
+      Set<String> placedBeforeAlteration = classesOfCommandLineTests();
       runSuiteAlterationListeners();
-      excludePlacedClassesFromCommandLinePackages();
+      excludePlacedClassesFromCommandLinePackages(placedBeforeAlteration);
 
       m_start = System.currentTimeMillis();
       List<ISuite> suiteRunners = runSuites();
