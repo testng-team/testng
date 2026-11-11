@@ -264,8 +264,8 @@ public class CommandLineArgs {
   /**
    * Whether TestNG reports a data provider failure as a test failure.
    *
-   * <p>{@link TestNG#configure(CommandLineArgs)} turns this setting on whenever this field is not
-   * {@code null}. So the default value, {@code false}, also turns it on.
+   * <p>Only {@code true} turns the setting on. The default value, {@code false}, leaves a data
+   * provider failure reported as a skip.
    */
   public Boolean propagateDataProviderFailureAsTestFailure = false;
 
