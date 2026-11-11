@@ -298,13 +298,15 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   /**
    * Sets whether TestNG adds its default reporters.
    *
-   * <p>This method has no effect on the test runners. The constructor already created them, and
-   * read the value at that time.
+   * <p>Propagates the change to the test runners created for this suite.
    *
    * @param reportResults whether to add the default reporters.
    */
   public void setReportResults(boolean reportResults) {
     useDefaultListeners = reportResults;
+    for (TestRunner tr : testRunners) {
+      tr.setReportResults(reportResults);
+    }
   }
 
   @Override
@@ -818,13 +820,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
               suiteRunner);
 
       if (useDefaultListeners) {
-        testRunner.addListener(new TestHTMLReporter());
-        testRunner.addListener(new JUnitXMLReporter());
-
-        // TODO: TestNG adds these reporters only when the default listeners are on. Maven 2 runs
-        // its own reporters, and these would also create directories and files there. Do users
-        // need these reporters even with the default listeners off? That is still open.
-        testRunner.addListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
+        testRunner.addDefaultListeners();
       }
 
       for (ITestListener itl : failureGenerators) {
@@ -916,14 +912,21 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
    * Sets whether TestNG skips the remaining invocations of a test method after one invocation
    * fails.
    *
-   * <p>This method has no effect on the test runners. The constructor already created them, and
-   * read the value at that time. A {@code null} value changes nothing.
+   * <p>Propagates the change to the test runners created for this suite. A {@code null} value
+   * changes nothing.
    *
    * @param skipFailedInvocationCounts whether to skip the remaining invocations.
    */
   public void setSkipFailedInvocationCounts(Boolean skipFailedInvocationCounts) {
     if (skipFailedInvocationCounts != null) {
       this.skipFailedInvocationCounts = skipFailedInvocationCounts;
+      for (TestRunner tr : testRunners) {
+        boolean skip = skipFailedInvocationCounts;
+        if (!skip && tr.getTest() != null) {
+          skip = tr.getTest().skipFailedInvocationCounts();
+        }
+        tr.setSkipFailedInvocationCounts(skip);
+      }
     }
   }
 

@@ -63,6 +63,9 @@ import org.testng.internal.invokers.IInvoker;
 import org.testng.internal.invokers.Invoker;
 import org.testng.internal.objects.IObjectDispenser;
 import org.testng.internal.thread.ThreadTimeoutException;
+import org.testng.reporters.JUnitXMLReporter;
+import org.testng.reporters.TestHTMLReporter;
+import org.testng.reporters.TextReporter;
 import org.testng.thread.IThreadWorkerFactory;
 import org.testng.thread.IWorker;
 import org.testng.util.Strings;
@@ -1520,6 +1523,59 @@ public class TestRunner
   // TODO: instance method adjusts static configuration. Should it be removed?
   public void setVerbose(int n) {
     Utils.setVerbose(n);
+  }
+
+  private final Set<ITestNGListener> m_defaultListeners = new HashSet<>();
+
+  public void setSkipFailedInvocationCounts(boolean skipFailedInvocationCounts) {
+    if (m_invoker != null && m_invoker.getTestInvoker() != null) {
+      m_invoker.getTestInvoker().setSkipFailedInvocationCounts(skipFailedInvocationCounts);
+    }
+  }
+
+  public void setReportResults(boolean reportResults) {
+    if (reportResults) {
+      addDefaultListeners();
+    } else {
+      removeDefaultListeners();
+    }
+  }
+
+  void addDefaultListeners() {
+    boolean hasHtml =
+        m_defaultListeners.stream().anyMatch(l -> l.getClass().equals(TestHTMLReporter.class));
+    if (!hasHtml) {
+      TestHTMLReporter reporter = new TestHTMLReporter();
+      m_defaultListeners.add(reporter);
+      addTestListener(reporter);
+    }
+    boolean hasJunit =
+        m_defaultListeners.stream().anyMatch(l -> l.getClass().equals(JUnitXMLReporter.class));
+    if (!hasJunit) {
+      JUnitXMLReporter reporter = new JUnitXMLReporter();
+      m_defaultListeners.add(reporter);
+      addTestListener(reporter);
+      addConfigurationListener(reporter);
+    }
+    boolean hasText =
+        m_defaultListeners.stream().anyMatch(l -> l.getClass().equals(TextReporter.class));
+    if (!hasText) {
+      TextReporter reporter = new TextReporter(getName(), getVerbose());
+      m_defaultListeners.add(reporter);
+      addTestListener(reporter);
+    }
+  }
+
+  void removeDefaultListeners() {
+    for (ITestNGListener listener : m_defaultListeners) {
+      if (listener instanceof ITestListener) {
+        m_testListeners.remove((ITestListener) listener);
+      }
+      if (listener instanceof IConfigurationListener) {
+        m_configurationListeners.remove((IConfigurationListener) listener);
+      }
+    }
+    m_defaultListeners.clear();
   }
 
   // TODO: This method needs to be removed and we need to be leveraging addListener().
