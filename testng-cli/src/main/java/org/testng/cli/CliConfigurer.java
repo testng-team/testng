@@ -15,7 +15,6 @@ import org.testng.ListenerComparator;
 import org.testng.TestNG;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
-import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
 /**
@@ -31,13 +30,15 @@ import org.testng.xml.XmlSuite;
  */
 public final class CliConfigurer {
 
-  // Deliberately keyed on TestNG so that the message reads the same as before the CLI extraction.
-  private static final Logger LOGGER = Logger.getLogger(TestNG.class);
-
   private static final String BAD_METHOD_SELECTOR =
       "Method selector value was not in the format org.example.Selector:4";
 
   private CliConfigurer() {}
+
+  // A CLI user expects this on stderr.
+  private static void reportBadMethodSelector() {
+    System.err.println(BAD_METHOD_SELECTOR);
+  }
 
   /**
    * Narrows a class loaded by name without checking it, so that an unsuitable {@code
@@ -225,10 +226,10 @@ public final class CliConfigurer {
           if (sel.length == 2) {
             testng.addMethodSelector(sel[0], Integer.parseInt(sel[1]));
           } else {
-            LOGGER.error(BAD_METHOD_SELECTOR);
+            reportBadMethodSelector();
           }
         } catch (NumberFormatException nfe) {
-          LOGGER.error(BAD_METHOD_SELECTOR);
+          reportBadMethodSelector();
         }
       }
     }
