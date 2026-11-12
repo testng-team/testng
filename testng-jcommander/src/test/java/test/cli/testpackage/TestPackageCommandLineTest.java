@@ -20,49 +20,51 @@ import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
+import test.cli.testpackage.b.OtherSample;
 
-/** GITHUB-1226. {@code -testpackage} selects test classes by package, like {@code <package>}. */
+/** GITHUB-1226. {@code -testpackages} selects test classes by package, like {@code <package>}. */
 public class TestPackageCommandLineTest extends SimpleBaseTest {
 
-  private static final String TEST_PACKAGE = "-testpackage";
+  private static final String TEST_PACKAGES = "-testpackages";
   private static final String A = "test.cli.testpackage.a";
   private static final String B = "test.cli.testpackage.b";
   private static final String C = "test.cli.testpackage.c";
 
   @Test(description = "GITHUB-1226")
   public void runsTheClassesOfThePackageButNotOfItsSubPackages() {
-    assertThat(run(TEST_PACKAGE, A)).containsExactly("firstTest");
+    assertThat(run(TEST_PACKAGES, A)).containsExactly("firstTest");
   }
 
   @Test(description = "GITHUB-1226")
   public void aTrailingWildcardAlsoRunsTheSubPackages() {
-    assertThat(run(TEST_PACKAGE, A + ".*")).containsExactlyInAnyOrder("firstTest", "nestedTest");
+    assertThat(run(TEST_PACKAGES, A + ".*")).containsExactlyInAnyOrder("firstTest", "nestedTest");
   }
 
   @Test(description = "GITHUB-1226")
   public void acceptsACommaSeparatedListOfPackages() {
-    assertThat(run(TEST_PACKAGE, A + "," + B)).containsExactlyInAnyOrder("firstTest", "otherTest");
+    assertThat(run(TEST_PACKAGES, A + "," + B)).containsExactlyInAnyOrder("firstTest", "otherTest");
   }
 
   @Test(description = "GITHUB-1226")
   public void combinesWithTestClass() {
-    assertThat(run(TEST_PACKAGE, A, "-testclass", B + ".OtherSample"))
+    assertThat(run(TEST_PACKAGES, A, "-testclass", B + ".OtherSample"))
         .containsExactlyInAnyOrder("firstTest", "otherTest");
   }
 
   @Test(description = "GITHUB-1226")
   public void aClassThatTestClassPutsInItsOwnTestRunsOnce() {
-    assertThat(run(TEST_PACKAGE, C, "-testclass", C + ".NamedSample")).containsExactly("namedTest");
+    assertThat(run(TEST_PACKAGES, C, "-testclass", C + ".NamedSample"))
+        .containsExactly("namedTest");
   }
 
   @Test(description = "GITHUB-1226")
   public void groupsFilterThePackagesWithoutATestClass() {
-    assertThat(run(TEST_PACKAGE, A + ".*", "-groups", "nested")).containsExactly("nestedTest");
+    assertThat(run(TEST_PACKAGES, A + ".*", "-groups", "nested")).containsExactly("nestedTest");
   }
 
   @Test(description = "GITHUB-1226")
   public void aPackageListThatNamesNoPackageSelectsNothing() {
-    assertThatThrownBy(() -> run(TEST_PACKAGE, " , "))
+    assertThatThrownBy(() -> run(TEST_PACKAGES, " , "))
         .isInstanceOf(CliParseException.class)
         .hasMessageContaining("at least one");
   }
@@ -70,7 +72,7 @@ public class TestPackageCommandLineTest extends SimpleBaseTest {
   @Test(description = "GITHUB-1226")
   public void theJavaApiRunsThePackages() {
     TestNG testng = create();
-    testng.setTestPackages(Collections.singletonList(A + ".*"));
+    testng.setTestPackages(Collections.singletonList(new XmlPackage(A + ".*")));
     TestListenerAdapter listener = new TestListenerAdapter();
     testng.addListener(listener);
 
@@ -81,10 +83,26 @@ public class TestPackageCommandLineTest extends SimpleBaseTest {
   }
 
   @Test(description = "GITHUB-1226")
+  public void theJavaApiKeepsTheSuitesThatWereSetBefore() {
+    TestNG testng = create();
+    List<XmlSuite> suites = new ArrayList<>();
+    suites.add(createXmlSuite("Suite", "Test", OtherSample.class));
+    testng.setXmlSuites(suites);
+    testng.setTestPackages(Collections.singletonList(new XmlPackage(A)));
+    TestListenerAdapter listener = new TestListenerAdapter();
+    testng.addListener(listener);
+
+    testng.run();
+
+    assertThat(names(listener.getPassedTests()))
+        .containsExactlyInAnyOrder("otherTest", "firstTest");
+  }
+
+  @Test(description = "GITHUB-1226")
   public void anAlterSuiteListenerCanStillChangeThePackage() {
     TestNG testng = create();
     testng.setTestClasses(new Class[] {test.cli.testpackage.c.NamedSample.class});
-    testng.setTestPackages(Collections.singletonList(C));
+    testng.setTestPackages(Collections.singletonList(new XmlPackage(C)));
     testng.addListener(new RetargetPackagesTo(A));
     TestListenerAdapter listener = new TestListenerAdapter();
     testng.addListener(listener);
@@ -98,7 +116,7 @@ public class TestPackageCommandLineTest extends SimpleBaseTest {
   @Test(description = "GITHUB-1226")
   public void aClassThatAnAlterSuiteListenerAddsToAnotherTestStillRunsInThePackage() {
     TestNG testng = create();
-    testng.setTestPackages(Collections.singletonList(A));
+    testng.setTestPackages(Collections.singletonList(new XmlPackage(A)));
     testng.addListener(new AddTestWithClass(test.cli.testpackage.a.FirstSample.class));
     TestListenerAdapter listener = new TestListenerAdapter();
     testng.addListener(listener);

@@ -15,6 +15,7 @@ import org.testng.ListenerComparator;
 import org.testng.TestNG;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
+import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 
 /**
@@ -58,10 +59,10 @@ public final class CliConfigurer {
    */
   public static void validate(CliOptions cli) {
     // What configure() will make of it, not the raw text: -testclass "" and -testclass " , ,"
-    // name no class at all, and -testpackage " , ," no package, and selecting nothing has to be
+    // name no class at all, and -testpackages " , ," no package, and selecting nothing has to be
     // rejected here rather than produce a run with no classes and no complaint.
     String testClasses = namesAny(cli.testClass);
-    String testPackages = namesAny(cli.testPackage);
+    String testPackages = namesAny(cli.testPackages);
     List<String> testNgXml = cli.suiteFiles;
     String testJar = cli.testJar;
     List<String> methods = cli.commandLineMethods;
@@ -162,8 +163,12 @@ public final class CliConfigurer {
       testng.setTestClasses(classes.toArray(new Class[0]));
     }
 
-    if (cli.testPackage != null) {
-      testng.setTestPackages(Utils.splitCommaSeparated(cli.testPackage));
+    if (cli.testPackages != null) {
+      List<XmlPackage> packages = new ArrayList<>();
+      for (String name : Utils.splitCommaSeparated(cli.testPackages)) {
+        packages.add(new XmlPackage(name));
+      }
+      testng.setTestPackages(packages);
     }
 
     if (cli.testNames != null) {

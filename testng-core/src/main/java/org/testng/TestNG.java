@@ -167,10 +167,9 @@ public class TestNG {
   private XmlSuite.@Nullable ParallelMode m_parallelMode = null;
   private XmlSuite.@Nullable FailurePolicy m_configFailurePolicy;
   private Class<?> @Nullable [] m_commandLineTestClasses;
-  private @Nullable List<String> m_commandLineTestPackages;
 
-  /** The packages {@link #setTestPackages(List)} added to the command line suites. */
-  private final List<XmlPackage> m_commandLineXmlPackages = new ArrayList<>();
+  /** The packages from {@link #setTestPackages(List)}, which go into the command line suites. */
+  private List<XmlPackage> m_commandLineTestPackages = new ArrayList<>();
 
   private String m_defaultSuiteName = DEFAULT_COMMAND_LINE_SUITE_NAME;
   private String m_defaultTestName = DEFAULT_COMMAND_LINE_TEST_NAME;
@@ -587,19 +586,19 @@ public class TestNG {
    *
    * <p>A name that ends in {@code .*} also selects the classes of the sub-packages. When the run
    * starts, TestNG adds the packages to the test with the default name, in the suite with the
-   * default name, next to the classes from {@link #setTestClasses(Class[])}. Like that method, it
-   * removes the suites that you set before as {@link XmlSuite} objects.
+   * default name, next to the classes from {@link #setTestClasses(Class[])}. It keeps the suites
+   * that you set before, so TestNG runs those too.
    *
-   * @param packages the package names. An empty list selects no package.
+   * @param packages the packages, which may carry {@code include} and {@code exclude} patterns. An
+   *     empty list selects no package.
    * @since 7.13
    */
-  public void setTestPackages(List<String> packages) {
-    m_suites.clear();
-    m_commandLineTestPackages = packages.isEmpty() ? null : new ArrayList<>(packages);
+  public void setTestPackages(List<XmlPackage> packages) {
+    m_commandLineTestPackages = new ArrayList<>(packages);
   }
 
   /** Adds the command line packages to the default test of the default suite, creating both. */
-  private void addCommandLinePackages(List<XmlSuite> suites, List<String> packages) {
+  private void addCommandLinePackages(List<XmlSuite> suites, List<XmlPackage> packages) {
     String suiteName = getDefaultSuiteName();
     XmlSuite xmlSuite =
         suites.stream().filter(s -> suiteName.equals(s.getName())).findFirst().orElse(null);
@@ -622,11 +621,7 @@ public class TestNG {
       xmlTest.setName(testName);
     }
     List<XmlPackage> xmlPackages = new ArrayList<>(xmlTest.getXmlPackages());
-    for (String name : packages) {
-      XmlPackage xmlPackage = new XmlPackage(name);
-      m_commandLineXmlPackages.add(xmlPackage);
-      xmlPackages.add(xmlPackage);
-    }
+    xmlPackages.addAll(packages);
     xmlTest.setXmlPackages(xmlPackages);
   }
 
@@ -642,7 +637,7 @@ public class TestNG {
    *     from {@link #classesOfCommandLineTests()}.
    */
   private void excludePlacedClassesFromCommandLinePackages(Set<String> placedBeforeAlteration) {
-    if (m_commandLineXmlPackages.isEmpty() || placedBeforeAlteration.isEmpty()) {
+    if (m_commandLineTestPackages.isEmpty() || placedBeforeAlteration.isEmpty()) {
       return;
     }
     Set<String> placed = classesOfCommandLineTests();
@@ -650,7 +645,7 @@ public class TestNG {
     if (placed.isEmpty()) {
       return;
     }
-    for (XmlPackage xmlPackage : m_commandLineXmlPackages) {
+    for (XmlPackage xmlPackage : m_commandLineTestPackages) {
       xmlPackage.getXmlClasses().removeIf(c -> placed.contains(c.getName()));
     }
   }
@@ -658,7 +653,7 @@ public class TestNG {
   /** The names of the classes that the tests of the command line suites list. */
   private Set<String> classesOfCommandLineTests() {
     Set<String> classes = new HashSet<>();
-    if (m_commandLineXmlPackages.isEmpty() || m_cmdlineSuites == null) {
+    if (m_commandLineTestPackages.isEmpty() || m_cmdlineSuites == null) {
       return classes;
     }
     for (XmlSuite suite : m_cmdlineSuites) {
@@ -1277,8 +1272,10 @@ public class TestNG {
   }
 
   private void initializeCommandLineSuites() {
-    List<String> cliPackages = m_commandLineTestPackages;
-    if (m_commandLineTestClasses != null || m_commandLineMethods != null || cliPackages != null) {
+    List<XmlPackage> cliPackages = m_commandLineTestPackages;
+    if (m_commandLineTestClasses != null
+        || m_commandLineMethods != null
+        || !cliPackages.isEmpty()) {
       List<String> cliMethods = m_commandLineMethods;
       Class<?>[] cliClasses = m_commandLineTestClasses;
       List<XmlSuite> suites;
@@ -1289,7 +1286,7 @@ public class TestNG {
       } else {
         suites = new ArrayList<>();
       }
-      if (cliPackages != null) {
+      if (!cliPackages.isEmpty()) {
         addCommandLinePackages(suites, cliPackages);
       }
       m_cmdlineSuites = suites;
@@ -1982,8 +1979,12 @@ public class TestNG {
       setTestClasses(classes.toArray(new Class[0]));
     }
 
-    if (cla.testPackage != null) {
-      setTestPackages(Utils.splitCommaSeparated(cla.testPackage));
+    if (cla.testPackages != null) {
+      List<XmlPackage> packages = new ArrayList<>();
+      for (String name : Utils.splitCommaSeparated(cla.testPackages)) {
+        packages.add(new XmlPackage(name));
+      }
+      setTestPackages(packages);
     }
 
     if (cla.testNames != null) {
@@ -2258,9 +2259,9 @@ public class TestNG {
       result.testClass = testClasses;
     }
 
-    String testPackages = (String) cmdLineArgs.get(CommandLineArgs.TEST_PACKAGE);
+    String testPackages = (String) cmdLineArgs.get(CommandLineArgs.TEST_PACKAGES);
     if (null != testPackages) {
-      result.testPackage = testPackages;
+      result.testPackages = testPackages;
     }
 
     String testNames = (String) cmdLineArgs.get(CommandLineArgs.TEST_NAMES);
@@ -2490,7 +2491,7 @@ public class TestNG {
     if (testClasses != null && Utils.splitCommaSeparated(testClasses).isEmpty()) {
       testClasses = null;
     }
-    String testPackages = args.testPackage;
+    String testPackages = args.testPackages;
     if (testPackages != null && Utils.splitCommaSeparated(testPackages).isEmpty()) {
       testPackages = null;
     }
