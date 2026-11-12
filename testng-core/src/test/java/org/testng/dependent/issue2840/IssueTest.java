@@ -11,6 +11,7 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.dependent.samples.issue2840.DownstreamSample;
 import org.testng.dependent.samples.issue2840.FactorySample;
+import org.testng.dependent.samples.issue2840.LazyFactorySample;
 import org.testng.dependent.samples.issue2840.SameNameFailingSample;
 import org.testng.dependent.samples.issue2840.SameNameSample;
 import org.testng.dependent.samples.issue2840.UpstreamSample;
@@ -49,6 +50,16 @@ public class IssueTest extends SimpleBaseTest {
         .containsExactlyInAnyOrder("FactorySample.first", "FactorySample.second");
     assertThat(names(results.getFailedTests())).containsExactly("FactorySample.first");
     assertThat(names(results.getSkippedTests())).containsExactly("FactorySample.second");
+  }
+
+  @Test(description = "GITHUB-2840")
+  public void dependencyCheckDoesNotCreateALazyFactoryInstanceEarly() {
+    LazyFactorySample.EVENTS.clear();
+    TestNG testng = create(LazyFactorySample.class);
+    testng.setGroupByInstances(true);
+    testng.run();
+    assertThat(LazyFactorySample.EVENTS)
+        .containsExactly("create 0", "first 0", "second 0", "create 1", "first 1", "second 1");
   }
 
   private static TestListenerAdapter runClasses(Class<?>... classes) {

@@ -704,12 +704,25 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       return false;
     }
     Object instance = testMethod.getInstance();
-    if (upstream.getInstance() == instance) {
+    if (instance == null || isBoundTo(upstream, instance)) {
       return false;
     }
     String name = upstream.getMethodName();
     return Arrays.stream(methods)
-        .noneMatch(m -> m.getInstance() == instance && name.equals(m.getMethodName()));
+        .noneMatch(m -> isBoundTo(m, instance) && name.equals(m.getMethodName()));
+  }
+
+  /**
+   * @return true when the method is bound to the given instance. A lazy {@code @Factory} instance
+   *     that has not been created yet cannot be that instance, and asking for it would create it
+   *     before its tests are due to run.
+   */
+  @SuppressWarnings("ReferenceEquality")
+  private static boolean isBoundTo(ITestNGMethod method, Object instance) {
+    if (method instanceof BaseTestMethod && !((BaseTestMethod) method).isInstanceInstantiated()) {
+      return false;
+    }
+    return method.getInstance() == instance;
   }
 
   /** @return the test results that apply to one of the instances of the testMethod. */
