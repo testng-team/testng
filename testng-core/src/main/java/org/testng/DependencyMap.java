@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.testng.collections.ListMultiMap;
@@ -111,6 +112,16 @@ public class DependencyMap {
     }
     if (l.isEmpty() && fromMethod.ignoreMissingDependencies()) {
       return fromMethod;
+    }
+    // GITHUB-3201. With several @Factory instances, every instance has a method of this name. The
+    // dependency is the one on the instance of fromMethod.
+    Object instanceId = IInstanceIdentity.getInstanceId(fromMethod);
+    if (instanceId instanceof UUID) {
+      for (ITestNGMethod m : l) {
+        if (instanceId.equals(IInstanceIdentity.getInstanceId(m))) {
+          return m;
+        }
+      }
     }
     Optional<ITestNGMethod> found =
         l.stream()
