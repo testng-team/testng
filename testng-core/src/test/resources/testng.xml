@@ -366,6 +366,7 @@
       <class name="org.testng.dependent.xml.GroupDependencyTest" />
       <class name="org.testng.dependent.DependencyFixTest"/>
       <class name="org.testng.dependent.issue1648.TestRunner"/>
+      <class name="org.testng.dependent.issue2840.IssueTest"/>
     </classes>
   </test>
 
