@@ -65,7 +65,12 @@ public class TestNGMethodBindTest {
         new IObject.IdentifiableObject(new MetadataSample()));
   }
 
-  public static class MetadataSample {
+  /**
+   * Package-private so {@code Class.getClasses()} does not register this fixture as its own test. A
+   * public nested class is executed by the suite, and {@code dataProvider = "rows"} then fails
+   * because this class only exists to supply method metadata.
+   */
+  static class MetadataSample {
 
     @Test(
         priority = 4,
