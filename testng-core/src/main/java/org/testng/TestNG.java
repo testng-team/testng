@@ -68,6 +68,7 @@ import org.testng.xml.IPostProcessor;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlMethodSelector;
+import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.testng.xml.internal.Parser;
@@ -166,6 +167,9 @@ public class TestNG {
   private XmlSuite.@Nullable ParallelMode m_parallelMode = null;
   private XmlSuite.@Nullable FailurePolicy m_configFailurePolicy;
   private Class<?> @Nullable [] m_commandLineTestClasses;
+
+  /** The packages from {@link #setTestPackages(List)}, which go into the command line suites. */
+  private List<XmlPackage> m_commandLineTestPackages = new ArrayList<>();
 
   private String m_defaultSuiteName = DEFAULT_COMMAND_LINE_SUITE_NAME;
   private String m_defaultTestName = DEFAULT_COMMAND_LINE_TEST_NAME;
@@ -575,6 +579,89 @@ public class TestNG {
   public void setTestClasses(Class[] classes) {
     m_suites.clear();
     m_commandLineTestClasses = classes;
+  }
+
+  /**
+   * Sets the packages whose test classes to run, as {@code <package>} does in {@code testng.xml}.
+   *
+   * <p>A name that ends in {@code .*} also selects the classes of the sub-packages. When the run
+   * starts, TestNG adds the packages to the test with the default name, in the suite with the
+   * default name, next to the classes from {@link #setTestClasses(Class[])}. It keeps the suites
+   * that you set before, so TestNG runs those too.
+   *
+   * @param packages the packages, which may carry {@code include} and {@code exclude} patterns. An
+   *     empty list selects no package.
+   * @since 7.13
+   */
+  public void setTestPackages(List<XmlPackage> packages) {
+    m_commandLineTestPackages = new ArrayList<>(packages);
+  }
+
+  /** Adds the command line packages to the default test of the default suite, creating both. */
+  private void addCommandLinePackages(List<XmlSuite> suites, List<XmlPackage> packages) {
+    String suiteName = getDefaultSuiteName();
+    XmlSuite xmlSuite =
+        suites.stream().filter(s -> suiteName.equals(s.getName())).findFirst().orElse(null);
+    if (xmlSuite == null) {
+      xmlSuite = new XmlSuite();
+      xmlSuite.setName(suiteName);
+      if (m_dataProviderThreadCount != null) {
+        xmlSuite.setDataProviderThreadCount(m_dataProviderThreadCount);
+      }
+      suites.add(xmlSuite);
+    }
+    String testName = getDefaultTestName();
+    XmlTest xmlTest =
+        xmlSuite.getTests().stream()
+            .filter(t -> testName.equals(t.getName()))
+            .findFirst()
+            .orElse(null);
+    if (xmlTest == null) {
+      xmlTest = new XmlTest(xmlSuite);
+      xmlTest.setName(testName);
+    }
+    List<XmlPackage> xmlPackages = new ArrayList<>(xmlTest.getXmlPackages());
+    xmlPackages.addAll(packages);
+    xmlTest.setXmlPackages(xmlPackages);
+  }
+
+  /**
+   * TestRunner drops a scanned class that its own {@code <test>} already lists, but not one that a
+   * {@code @Test(suiteName, testName)} put in another suite or test: that class would run twice. So
+   * the command line packages leave out every class the command line already placed. This scans the
+   * packages, so it runs after the {@link IAlterSuiteListener} listeners, which may still change
+   * them. A class counts as placed only if it was in a test before those listeners ran and still
+   * is: a class that a listener adds to another test keeps running in the package too.
+   *
+   * @param placedBeforeAlteration the classes of the command line tests before the listeners ran,
+   *     from {@link #classesOfCommandLineTests()}.
+   */
+  private void excludePlacedClassesFromCommandLinePackages(Set<String> placedBeforeAlteration) {
+    if (m_commandLineTestPackages.isEmpty() || placedBeforeAlteration.isEmpty()) {
+      return;
+    }
+    Set<String> placed = classesOfCommandLineTests();
+    placed.retainAll(placedBeforeAlteration);
+    if (placed.isEmpty()) {
+      return;
+    }
+    for (XmlPackage xmlPackage : m_commandLineTestPackages) {
+      xmlPackage.getXmlClasses().removeIf(c -> placed.contains(c.getName()));
+    }
+  }
+
+  /** The names of the classes that the tests of the command line suites list. */
+  private Set<String> classesOfCommandLineTests() {
+    Set<String> classes = new HashSet<>();
+    if (m_commandLineTestPackages.isEmpty() || m_cmdlineSuites == null) {
+      return classes;
+    }
+    for (XmlSuite suite : m_cmdlineSuites) {
+      for (XmlTest test : suite.getTests()) {
+        test.getXmlClasses().forEach(c -> classes.add(c.getName()));
+      }
+    }
+    return classes;
   }
 
   /**
@@ -1185,14 +1272,24 @@ public class TestNG {
   }
 
   private void initializeCommandLineSuites() {
-    if (m_commandLineTestClasses != null || m_commandLineMethods != null) {
+    List<XmlPackage> cliPackages = m_commandLineTestPackages;
+    if (m_commandLineTestClasses != null
+        || m_commandLineMethods != null
+        || !cliPackages.isEmpty()) {
       List<String> cliMethods = m_commandLineMethods;
       Class<?>[] cliClasses = m_commandLineTestClasses;
-      m_cmdlineSuites =
-          cliMethods != null
-              ? createCommandLineSuitesForMethods(cliMethods)
-              : createCommandLineSuitesForClasses(
-                  Objects.requireNonNull(cliClasses, "one of the two command line inputs is set"));
+      List<XmlSuite> suites;
+      if (cliMethods != null) {
+        suites = createCommandLineSuitesForMethods(cliMethods);
+      } else if (cliClasses != null) {
+        suites = createCommandLineSuitesForClasses(cliClasses);
+      } else {
+        suites = new ArrayList<>();
+      }
+      if (!cliPackages.isEmpty()) {
+        addCommandLinePackages(suites, cliPackages);
+      }
+      m_cmdlineSuites = suites;
 
       for (XmlSuite s : m_cmdlineSuites) {
         for (XmlTest t : s.getTests()) {
@@ -1412,7 +1509,9 @@ public class TestNG {
 
       runExecutionListeners(true /* start */);
 
+      Set<String> placedBeforeAlteration = classesOfCommandLineTests();
       runSuiteAlterationListeners();
+      excludePlacedClassesFromCommandLinePackages(placedBeforeAlteration);
 
       m_start = System.currentTimeMillis();
       List<ISuite> suiteRunners = runSuites();
@@ -1880,6 +1979,14 @@ public class TestNG {
       setTestClasses(classes.toArray(new Class[0]));
     }
 
+    if (cla.testPackages != null) {
+      List<XmlPackage> packages = new ArrayList<>();
+      for (String name : Utils.splitCommaSeparated(cla.testPackages)) {
+        packages.add(new XmlPackage(name));
+      }
+      setTestPackages(packages);
+    }
+
     if (cla.testNames != null) {
       setTestNames(Utils.splitCommaSeparated(cla.testNames));
       setIgnoreMissedTestNames(cla.ignoreMissedTestNames);
@@ -2152,6 +2259,11 @@ public class TestNG {
       result.testClass = testClasses;
     }
 
+    String testPackages = (String) cmdLineArgs.get(CommandLineArgs.TEST_PACKAGES);
+    if (null != testPackages) {
+      result.testPackages = testPackages;
+    }
+
     String testNames = (String) cmdLineArgs.get(CommandLineArgs.TEST_NAMES);
     if (testNames != null) {
       result.testNames = testNames;
@@ -2379,11 +2491,16 @@ public class TestNG {
     if (testClasses != null && Utils.splitCommaSeparated(testClasses).isEmpty()) {
       testClasses = null;
     }
+    String testPackages = args.testPackages;
+    if (testPackages != null && Utils.splitCommaSeparated(testPackages).isEmpty()) {
+      testPackages = null;
+    }
     List<String> testNgXml = args.suiteFiles;
     String testJar = args.testJar;
     List<String> methods = args.commandLineMethods;
 
     if (testClasses == null
+        && testPackages == null
         && testJar == null
         && (testNgXml == null || testNgXml.isEmpty())
         && (methods == null || methods.isEmpty())) {
@@ -2397,6 +2514,7 @@ public class TestNG {
     if (testJar == null
         && (null != groups || null != excludedGroups)
         && testClasses == null
+        && testPackages == null
         && (testNgXml == null || testNgXml.isEmpty())) {
       throw new TestNGException("Groups option should be used with testclass option");
     }
