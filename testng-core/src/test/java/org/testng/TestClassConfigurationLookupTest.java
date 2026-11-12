@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.AdditionalAnswers.delegatesTo;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -22,6 +23,7 @@ import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Test;
 import org.testng.internal.IObject;
 import org.testng.internal.RunInfo;
@@ -187,6 +189,105 @@ public class TestClassConfigurationLookupTest {
         .containsExactly(tuple(lastInstance, "afterClass"));
   }
 
+  @Test
+  public void annotationLookupsForTestMethodsDoNotGrowWithFactoryInstances() {
+    int lookupsForOneInstance = countTestAnnotationLookups(1);
+    int lookupsForManyInstances = countTestAnnotationLookups(10);
+
+    assertThat(lookupsForManyInstances).isEqualTo(lookupsForOneInstance);
+  }
+
+  private int countTestAnnotationLookups(int instanceCount) {
+    IAnnotationFinder spyAnnotationFinder =
+        mock(IAnnotationFinder.class, delegatesTo(annotationFinder));
+
+    new TestClass(
+        objectFactory,
+        new FakeClass(instanceCount),
+        newFinder(),
+        spyAnnotationFinder,
+        xmlTest,
+        Collections.singletonList(xmlClass),
+        null);
+
+    return (int)
+        mockingDetails(spyAnnotationFinder).getInvocations().stream()
+            .filter(
+                invocation ->
+                    "findAnnotation".equals(invocation.getMethod().getName())
+                        && invocation.getArguments()[1] == ITestAnnotation.class)
+            .count();
+  }
+
+  @Test
+  public void boundTestMethodsHaveIndependentInvocationCounters() {
+    FakeClass fakeClass = new FakeClass(INSTANCES);
+    TestClass testClass = newTestClass(fakeClass);
+
+    ITestNGMethod[] testMethods = testClass.getTestMethods();
+    assertThat(testMethods).hasSize(INSTANCES);
+
+    testMethods[0].incrementCurrentInvocationCount();
+
+    assertThat(testMethods[0].getCurrentInvocationCount()).isEqualTo(1);
+    assertThat(testMethods[1].getCurrentInvocationCount()).isEqualTo(0);
+    assertThat(testMethods[2].getCurrentInvocationCount()).isEqualTo(0);
+  }
+
+  @Test
+  public void differingRuntimeClassesFromFactoryGetTheirOwnClassLevelGroups() {
+    TestClass testClass = newMultiRuntimeTestClass(new FakeClass(new SubClassA(), new SubClassB()));
+
+    ITestNGMethod[] testMethods = testClass.getTestMethods();
+    assertThat(testMethods).hasSize(2);
+    assertThat(testMethods[0].getGroups()).containsExactly("group-a");
+    assertThat(testMethods[1].getGroups()).containsExactly("group-b");
+  }
+
+  /**
+   * A factory can return subclasses that each declare their own class-level groups. A configuration
+   * method that inherits those groups must follow the instance, not the prototype.
+   */
+  @Test
+  public void differingRuntimeClassesInheritClassLevelGroupsOnConfigurationMethods() {
+    FakeClass multiClass = new FakeClass(new SubClassA(), new SubClassB());
+    TestClass testClass = newMultiRuntimeTestClass(multiClass);
+    testClass.initConfigurationMethods();
+
+    IObject.IdentifiableObject[] objects = testClass.getObjects(false, null);
+    assertThat(objects).hasSize(2);
+    assertThat(groupsOfBeforeClass(testClass, objects[0])).containsExactly("group-a");
+    assertThat(groupsOfBeforeClass(testClass, objects[1])).containsExactly("group-b");
+  }
+
+  private static String[] groupsOfBeforeClass(
+      TestClass testClass, IObject.IdentifiableObject instance) {
+    List<ITestNGMethod> methods = testClass.getInstanceBeforeClassMethods(instance.getInstanceId());
+    assertThat(methods).hasSize(1);
+    return methods.get(0).getGroups();
+  }
+
+  private TestClass newMultiRuntimeTestClass(FakeClass multiClass) {
+    XmlClass multiXmlClass = new XmlClass(BaseSample.class.getName());
+    XmlTest multiXmlTest = new XmlTest(xmlSuite);
+    multiXmlTest.getXmlClasses().add(multiXmlClass);
+
+    XmlMethodSelector selector = new XmlMethodSelector();
+    selector.setXmlClasses(multiXmlTest.getXmlClasses());
+    RunInfo runInfo = new RunInfo(() -> multiXmlTest);
+    runInfo.addMethodSelector(selector, 10);
+    ITestMethodFinder finder = new TestNGMethodFinder(objectFactory, runInfo, annotationFinder);
+
+    return new TestClass(
+        objectFactory,
+        multiClass,
+        finder,
+        annotationFinder,
+        multiXmlTest,
+        Collections.singletonList(multiXmlClass),
+        null);
+  }
+
   private static List<Object> instancesOf(FakeClass fakeClass) {
     return fakeClass.objects.stream()
         .map(IObject.IdentifiableObject::getInstance)
@@ -257,6 +358,12 @@ public class TestClassConfigurationLookupTest {
       }
     }
 
+    FakeClass(Object... instances) {
+      for (Object inst : instances) {
+        objects.add(new IObject.IdentifiableObject(inst));
+      }
+    }
+
     @Override
     public IdentifiableObject[] getObjects(boolean create, @Nullable String errorMsgPrefix) {
       return objects.toArray(new IdentifiableObject[0]);
@@ -289,6 +396,9 @@ public class TestClassConfigurationLookupTest {
 
     @Override
     public Class<?> getRealClass() {
+      if (!objects.isEmpty() && objects.get(0).getInstance() instanceof BaseSample) {
+        return BaseSample.class;
+      }
       return Sample.class;
     }
 
@@ -352,4 +462,19 @@ public class TestClassConfigurationLookupTest {
     @Test(groups = "a-group")
     public void aTest() {}
   }
+
+  public static class BaseSample {
+
+    @BeforeClass
+    public void beforeClass() {}
+
+    @Test
+    public void baseTest() {}
+  }
+
+  @Test(groups = "group-a")
+  public static class SubClassA extends BaseSample {}
+
+  @Test(groups = "group-b")
+  public static class SubClassB extends BaseSample {}
 }
