@@ -36,8 +36,17 @@ public class IssueTest extends SimpleBaseTest {
           ChainedFactorySample.EVENTS.stream()
               .filter(event -> event.startsWith(prefix))
               .collect(Collectors.toList());
+      // A dependent method starts only after the method it depends on has ended.
       assertThat(ofInstance)
-          .containsExactly(prefix + "a", prefix + "b", prefix + "c", prefix + "d");
+          .containsExactly(
+              prefix + "a:start",
+              prefix + "a:end",
+              prefix + "b:start",
+              prefix + "b:end",
+              prefix + "c:start",
+              prefix + "c:end",
+              prefix + "d:start",
+              prefix + "d:end");
     }
   }
 }

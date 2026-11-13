@@ -5,7 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-/** Four instances that each record the order in which their dependent methods run. */
+/** Four instances that each record when their dependent methods start and end. */
 public class ChainedFactorySample {
 
   public static final List<String> EVENTS = new CopyOnWriteArrayList<>();
@@ -47,7 +47,8 @@ public class ChainedFactorySample {
   }
 
   private void record(String method) {
-    // A method that finishes late gives a method that wrongly started with it time to record first.
+    EVENTS.add(index + "." + method + ":start");
+    // A method that finishes late shows up as an overlap when a dependent method starts too early.
     if (!method.equals("d")) {
       try {
         Thread.sleep(50);
@@ -55,6 +56,6 @@ public class ChainedFactorySample {
         Thread.currentThread().interrupt();
       }
     }
-    EVENTS.add(index + "." + method);
+    EVENTS.add(index + "." + method + ":end");
   }
 }
