@@ -19,8 +19,6 @@ import org.testng.internal.objects.ObjectFactoryImpl;
 import org.testng.internal.reporters.ParameterSnapshotRecorder;
 import org.testng.internal.reporters.ParameterSnapshots;
 import org.testng.internal.thread.ThreadUtil;
-import org.testng.reporters.JUnitXMLReporter;
-import org.testng.reporters.TestHTMLReporter;
 import org.testng.reporters.TextReporter;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
