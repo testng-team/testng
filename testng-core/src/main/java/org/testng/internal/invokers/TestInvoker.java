@@ -80,7 +80,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   private final DataProviderHolder holder;
   private final ParameterResolverHolder parameterResolverHolder;
   private final List<IClassListener> m_classListeners;
-  private final boolean m_skipFailedInvocationCounts;
+  private boolean m_skipFailedInvocationCounts;
 
   public TestInvoker(
       ITestResultNotifier m_notifier,
@@ -106,6 +106,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     this.m_classListeners = m_classListeners;
     this.m_skipFailedInvocationCounts = m_skipFailedInvocationCounts;
     this.invoker = invoker;
+  }
+
+  @Override
+  public void setSkipFailedInvocationCounts(boolean skipFailedInvocationCounts) {
+    this.m_skipFailedInvocationCounts = skipFailedInvocationCounts;
   }
 
   @Override
