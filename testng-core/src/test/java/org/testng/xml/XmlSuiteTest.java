@@ -96,13 +96,16 @@ public class XmlSuiteTest extends SimpleBaseTest {
   public void unreadableRootSuiteIsNotClassifiedAsChildFailure() throws IOException {
     Path rootDirectory = Files.createTempDirectory("testng-root-suite-");
     XmlSuite suite = parentSuite("missing-child.xml");
+    addParentSuiteTest(suite);
     suite.setFileName(rootDirectory.toString());
+    parentSuiteTestExecuted = false;
     TestNG testNG = create();
     testNG.setXmlSuites(List.of(suite));
 
     for (int attempt = 0; attempt < 2; attempt++) {
       assertThatThrownBy(testNG::run).isInstanceOf(TestNGException.class);
       assertThat(testNG.getStatus()).isEqualTo(ExitCode.FAILED);
+      assertThat(parentSuiteTestExecuted).isFalse();
     }
   }
 
@@ -115,6 +118,27 @@ public class XmlSuiteTest extends SimpleBaseTest {
     TestNG testNG = create();
     testNG.setTestSuites(List.of(parent.toString()));
     testNG.setTestClasses(new Class<?>[] {ParentSuiteTest.class});
+
+    for (int attempt = 0; attempt < 2; attempt++) {
+      assertThatThrownBy(testNG::run).isInstanceOf(TestNGException.class);
+      assertThat(testNG.getStatus()).isEqualTo(ExitCode.FAILED);
+      assertThat(parentSuiteTestExecuted).isFalse();
+    }
+  }
+
+  @Test(description = "GITHUB-3571")
+  public void childFailureWithMultipleRequestedSuitesReportsFailure() throws IOException {
+    Path directory = Files.createTempDirectory("testng-multiple-suites-");
+    Path parent = directory.resolve("parent.xml");
+    Path other = directory.resolve("other.xml");
+    writeSuite(parent, parentSuite(directory.resolve("missing.xml").toString()));
+    XmlSuite otherSuite = new XmlSuite();
+    otherSuite.setName("other");
+    addParentSuiteTest(otherSuite);
+    writeSuite(other, otherSuite);
+    parentSuiteTestExecuted = false;
+    TestNG testNG = create();
+    testNG.setTestSuites(List.of(parent.toString(), other.toString()));
 
     for (int attempt = 0; attempt < 2; attempt++) {
       assertThatThrownBy(testNG::run).isInstanceOf(TestNGException.class);

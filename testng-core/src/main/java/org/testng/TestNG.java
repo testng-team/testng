@@ -6,7 +6,6 @@ import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
