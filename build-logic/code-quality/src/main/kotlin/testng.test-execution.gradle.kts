@@ -21,6 +21,7 @@ val verifyTestExecution = tasks.register<VerifyTestExecution>("verifyTestExecuti
     )
     factoryProduced.convention(layout.projectDirectory.file("execution-factory-produced.txt"))
     results.convention(layout.buildDirectory.dir("test-results/test"))
+    testSources.convention(layout.projectDirectory.dir("src/test/java"))
     update.convention(providers.gradleProperty("updateExecutionInventory").map { true }.orElse(false))
 }
 
