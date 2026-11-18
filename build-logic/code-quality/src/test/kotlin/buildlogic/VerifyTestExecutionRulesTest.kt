@@ -390,6 +390,84 @@ class VerifyTestExecutionRulesTest {
         assert(filtered.contains("org.testng.concurrency.ThreadTest")) {
             "expected ThreadTest in filtered set, got $filtered"
         }
+        // Regression1 uses a <define> block for evenodd, not a <run> block. The verifier must not
+        // mistake those <define> members for include filters and silently exempt CtorCalledOnce.
+        assert(!filtered.contains("test.CtorCalledOnce")) {
+            "test.CtorCalledOnce must NOT be group-filtered; <define> members are not execution filters"
+        }
+    }
+    @Test(description = "define blocks inside groups are not treated as include filters; CtorCalledOnce must not be classified as filtered")
+    fun defineBlockMembersAreNotTreatedAsIncludeFilters() {
+        // Regression1 in testng.xml defines a meta-group evenodd via <define>, which contains
+        // <include name="even"/> and <include name="odd"/>. Only <run><include/exclude> are
+        // execution filters. The verifier must not mistake <define> members for include filters
+        // and thereby exempt normally-running classes such as test.CtorCalledOnce.
+        val xml = """
+            <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+            <suite name="S">
+              <test name="Regression1">
+                <groups>
+                  <define name="evenodd">
+                    <include name="even"/>
+                    <include name="odd"/>
+                  </define>
+                  <run>
+                    <exclude name="excludeThisGroup"/>
+                  </run>
+                </groups>
+                <classes>
+                  <class name="test.CtorCalledOnce"/>
+                </classes>
+              </test>
+            </suite>
+        """.trimIndent()
+        val filter = parseGroupFilter(xml)
+        // The <run> block only excludes "excludeThisGroup"; the define members must not appear
+        // as include patterns.
+        assert(filter.includePatterns.isEmpty()) {
+            "expected no include patterns from <define> members, got ${filter.includePatterns}"
+        }
+        assert(filter.excludePatterns.size == 1) {
+            "expected exactly one exclude pattern, got ${filter.excludePatterns}"
+        }
+        // A plain @Test method with no groups must not be classified as filtered by an
+        // exclude-only filter: exclude-only filters leave ungrouped methods active.
+        val source = """
+            package test;
+            import org.testng.annotations.Test;
+            public class CtorCalledOnce {
+                @Test
+                public void testMethod1() {}
+                @Test
+                public void testMethod2() {}
+            }
+        """.trimIndent()
+        assert(!isClassGroupFiltered("test.CtorCalledOnce", source, filter)) {
+            "test.CtorCalledOnce must NOT be classified as group-filtered; it has plain @Test methods"
+        }
+    }
+
+    @Test(description = "nested class @Test annotation with annotation before class keyword does not leak into outer class body")
+    fun classLevelAnnotationOnNestedClassDoesNotLeakIntoOuterClass() {
+        // Before the fix, stripNestedClasses() removed text from the class keyword onward but left
+        // the annotation that preceded it.  So @Test(groups = "broken") public static class Nested
+        // left "@Test(groups = \"broken\") public static " in the outer body, causing the outer
+        // class to be classified as filtered even though it has no test methods of its own.
+        val source = """
+            package test;
+            import org.testng.annotations.Test;
+            public class OuterWithAnnotatedNested {
+                @Test(groups = "broken")
+                public static class AnnotatedNested {
+                    public void notATest() {}
+                }
+            }
+        """.trimIndent()
+        val filter = GroupFilter(excludePatterns = listOf(Regex(asRegexp("broken"))))
+        // OuterWithAnnotatedNested has no direct @Test methods, so it must NOT be filtered.
+        assert(!isClassGroupFiltered("test.OuterWithAnnotatedNested", source, filter)) {
+            "outer class with no direct tests must not be classified as filtered via nested class annotation"
+        }
     }
 
     @Test(description = "suite-file traversal is supported when computing groupFilteredClasses")

@@ -354,8 +354,10 @@ internal data class GroupFilter(
 
 internal fun parseGroupFilter(xmlText: String): GroupFilter {
     val groupsBlock = GROUPS_BLOCK.find(xmlText)?.groupValues?.get(1) ?: return GroupFilter()
-    val includes = INCLUDE_NAME.findAll(groupsBlock).map { Regex(asRegexp(it.groupValues[1])) }.toList()
-    val excludes = EXCLUDE_NAME.findAll(groupsBlock).map { Regex(asRegexp(it.groupValues[1])) }.toList()
+    // Only <run> children are execution filters. <define> blocks name meta-groups, not filters.
+    val runBlock = RUN_BLOCK.find(groupsBlock)?.groupValues?.get(1) ?: return GroupFilter()
+    val includes = INCLUDE_NAME.findAll(runBlock).map { Regex(asRegexp(it.groupValues[1])) }.toList()
+    val excludes = EXCLUDE_NAME.findAll(runBlock).map { Regex(asRegexp(it.groupValues[1])) }.toList()
     return GroupFilter(includes, excludes)
 }
 
@@ -417,7 +419,12 @@ private fun stripNestedClasses(body: String): String {
     val result = StringBuilder()
     var i = 0
     val len = body.length
+    // Match only class/enum/interface that appear as direct members, i.e. not inside a method body.
+    // The regex anchors on the keyword; preceding annotations are trimmed from the result buffer.
     val classDeclRegex = Regex("""\b(?:class|enum|interface)\s+\w+""")
+    // Pattern that matches a single annotation or Java access modifier token from the right end of
+    // a string.  Used to walk backwards and drop the full nested-class prefix from the outer body.
+    val prefixRegex = Regex("""(?:@\w+(?:\s*\([^)]*\))?\s*|(?:public|protected|private|static|abstract|final|strictfp)\s+)+$""")
 
     while (i < len) {
         val match = classDeclRegex.find(body, i)
@@ -425,7 +432,11 @@ private fun stripNestedClasses(body: String): String {
             result.append(body.substring(i))
             break
         }
-        result.append(body.substring(i, match.range.first))
+        // Append everything from i to the class keyword start, then strip any trailing annotations
+        // or modifiers that belong to the nested declaration rather than the outer class body.
+        val textBefore = body.substring(i, match.range.first)
+        val stripped = textBefore.replace(prefixRegex, "")
+        result.append(stripped)
 
         val openBrace = body.indexOf('{', match.range.last)
         if (openBrace == -1) {
@@ -455,6 +466,8 @@ private val SUITE_FILE = Regex("""<suite-file\s+path="([^"]+)"""")
 private val CLASS_ENTRY = Regex("""<class\s+name="([^"]+)"""")
 private val TEST_BLOCK = Regex("""<test\b[^>]*>.*?</test>""", RegexOption.DOT_MATCHES_ALL)
 private val GROUPS_BLOCK = Regex("""<groups\b[^>]*>(.*?)</groups>""", RegexOption.DOT_MATCHES_ALL)
+// Captures content inside <run>...</run>, so <define> meta-group members are excluded.
+private val RUN_BLOCK = Regex("""<run\b[^>]*>(.*?)</run>""", RegexOption.DOT_MATCHES_ALL)
 private val INCLUDE_NAME = Regex("""<include\s+name="([^"]+)"""")
 private val EXCLUDE_NAME = Regex("""<exclude\s+name="([^"]+)"""")
 private val TEST_ANNOTATION = Regex("""@Test\b\s*(?:\(([^)]*)\))?""", RegexOption.DOT_MATCHES_ALL)
