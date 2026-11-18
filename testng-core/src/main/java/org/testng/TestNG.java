@@ -1847,17 +1847,19 @@ public class TestNG {
    *
    * @param cla the command line values.
    * @deprecated since 7.13. The command line code is in the {@code testng-cli} module. Use {@code
-   *     org.testng.cli.CliConfigurer#configure(TestNG, org.testng.cli.CliOptions)}. This method no
-   *     longer changes, so that subclasses such as {@code RemoteTestNG} keep working. TestNG 8.0
-   *     will remove it.
+   *     org.testng.cli.CliConfigurer#configure(TestNG, org.testng.cli.CliOptions)}. This method
+   *     only changes to stay in line with a bug fix in {@code CliConfigurer}, such as GITHUB-3565,
+   *     so that subclasses such as {@code RemoteTestNG} keep working. TestNG 8.0 will remove it.
    */
   @Deprecated
   protected void configure(CommandLineArgs cla) {
     Optional.ofNullable(cla.useGlobalThreadPool).ifPresent(this::shouldUseGlobalThreadPool);
     Optional.ofNullable(cla.shareThreadPoolForDataProviders)
         .ifPresent(this::shareThreadPoolForDataProviders);
-    Optional.ofNullable(cla.propagateDataProviderFailureAsTestFailure)
-        .ifPresent(value -> propagateDataProviderFailureAsTestFailure());
+    // GITHUB-3565. The field defaults to FALSE, so only TRUE turns the setting on.
+    if (Boolean.TRUE.equals(cla.propagateDataProviderFailureAsTestFailure)) {
+      propagateDataProviderFailureAsTestFailure();
+    }
     setReportAllDataDrivenTestsAsSkipped(cla.includeAllDataDrivenTestsWhenSkipping);
     Optional.ofNullable(cla.emptyDataProviderBehavior)
         .ifPresent(this::setEmptyDataProviderBehavior);
@@ -2295,6 +2297,11 @@ public class TestNG {
         Boolean.parseBoolean(
             cmdLineArgs.getOrDefault(CommandLineArgs.GENERATE_RESULTS_PER_SUITE, false).toString());
 
+    result.propagateDataProviderFailureAsTestFailure =
+        Boolean.parseBoolean(
+            String.valueOf(
+                cmdLineArgs.get(CommandLineArgs.PROPAGATE_DATA_PROVIDER_FAILURES_AS_TEST_FAILURE)));
+
     Optional.ofNullable(cmdLineArgs.get(CommandLineArgs.LISTENER_COMPARATOR))
         .map(Object::toString)
         .ifPresent(it -> result.listenerComparator = it);
@@ -2352,7 +2359,11 @@ public class TestNG {
     if (instance != null) {
       addListener(instance);
     } else {
-      LOGGER.warn("Could not find reporter class : " + reporterConfig.getClassName());
+      String message = "Could not find reporter class : " + reporterConfig.getClassName();
+      LOGGER.warn(message);
+      // SLF4J drops the message when no provider is on the class path. The user must still learn
+      // that the reporter will not run.
+      System.err.println(message);
     }
   }
 
