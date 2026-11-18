@@ -395,15 +395,9 @@ public class TestNG {
             s.getChildSuites().add(cSuite);
           }
         } catch (Exception e) {
-          Throwable cause = e;
-          while (cause.getCause() != null) {
-            cause = cause.getCause();
-          }
           childSuiteParsingFailed =
               m_suites.size() == 1
-                  && (parsingChildDirectly
-                      || cause instanceof IOException
-                      || parser.lastParseFailedInChildSuite());
+                  && (parsingChildDirectly || parser.lastParseFailedInChildSuite());
           throw new TestNGException("Failed to parse suite: " + fileNameToUse, e);
         }
       }
@@ -428,7 +422,10 @@ public class TestNG {
       while (t.getCause() != null) {
         t = t.getCause();
       }
-      if (m_stringSuites.size() == 1 && parser.lastParseFailedInChildSuite()) {
+      if (m_stringSuites.size() == 1
+          && m_commandLineTestClasses == null
+          && m_commandLineMethods == null
+          && parser.lastParseFailedInChildSuite()) {
         childSuiteParsingFailed = true;
       }
       if (t instanceof TestNGException) {

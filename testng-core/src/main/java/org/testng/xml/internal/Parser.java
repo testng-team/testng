@@ -179,12 +179,17 @@ public class Parser {
         if (!suiteFiles.isEmpty()) {
           for (String path : suiteFiles) {
             String canonicalPath = path;
-            if (hasFileScheme(path)) {
-              if (parentFile != null && new File(parentFile, path).exists()) {
-                canonicalPath = new File(parentFile, path).getCanonicalPath();
-              } else {
-                canonicalPath = new File(path).getCanonicalPath();
+            try {
+              if (hasFileScheme(path)) {
+                if (parentFile != null && new File(parentFile, path).exists()) {
+                  canonicalPath = new File(parentFile, path).getCanonicalPath();
+                } else {
+                  canonicalPath = new File(path).getCanonicalPath();
+                }
               }
+            } catch (IOException e) {
+              lastParseFailedInChildSuite = true;
+              throw e;
             }
             if (!processedSuites.contains(canonicalPath)) {
               toBeAdded.add(canonicalPath);

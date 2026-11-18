@@ -93,6 +93,51 @@ public class XmlSuiteTest extends SimpleBaseTest {
   }
 
   @Test(description = "GITHUB-3571")
+  public void unreadableRootSuiteIsNotClassifiedAsChildFailure() throws IOException {
+    Path rootDirectory = Files.createTempDirectory("testng-root-suite-");
+    XmlSuite suite = parentSuite("missing-child.xml");
+    suite.setFileName(rootDirectory.toString());
+    TestNG testNG = create();
+    testNG.setXmlSuites(List.of(suite));
+
+    for (int attempt = 0; attempt < 2; attempt++) {
+      assertThatThrownBy(testNG::run).isInstanceOf(TestNGException.class);
+      assertThat(testNG.getStatus()).isEqualTo(ExitCode.FAILED);
+    }
+  }
+
+  @Test(description = "GITHUB-3571")
+  public void childFailureWithRequestedClassesIsNotAnOnlySuiteFailure() throws IOException {
+    Path directory = Files.createTempDirectory("testng-child-with-classes-");
+    Path parent = directory.resolve("parent.xml");
+    writeSuite(parent, parentSuite(directory.resolve("missing.xml").toString()));
+    parentSuiteTestExecuted = false;
+    TestNG testNG = create();
+    testNG.setTestSuites(List.of(parent.toString()));
+    testNG.setTestClasses(new Class<?>[] {ParentSuiteTest.class});
+
+    for (int attempt = 0; attempt < 2; attempt++) {
+      assertThatThrownBy(testNG::run).isInstanceOf(TestNGException.class);
+      assertThat(testNG.getStatus()).isEqualTo(ExitCode.FAILED);
+      assertThat(parentSuiteTestExecuted).isFalse();
+    }
+  }
+
+  @Test(description = "GITHUB-3571")
+  public void childPathResolutionFailureIsClassifiedAsChildFailure() throws IOException {
+    Path directory = Files.createTempDirectory("testng-child-path-");
+    Path parent = directory.resolve("parent.xml");
+    writeSuite(parent, parentSuite("x".repeat(5000)));
+    TestNG testNG = create();
+    testNG.setTestSuites(List.of(parent.toString()));
+
+    for (int attempt = 0; attempt < 2; attempt++) {
+      assertThatThrownBy(testNG::run).isInstanceOf(TestNGException.class);
+      assertThat(testNG.getStatus()).isEqualTo(ExitCode.HAS_NO_TEST);
+    }
+  }
+
+  @Test(description = "GITHUB-3571")
   public void missingChildSuiteFileFailsRun() {
     String missingSuiteFile =
         Path.of(
