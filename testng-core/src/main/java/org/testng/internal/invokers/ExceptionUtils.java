@@ -1,6 +1,5 @@
 package org.testng.internal.invokers;
 
-import java.util.List;
 import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import org.testng.IInvokedMethod;
@@ -15,18 +14,10 @@ final class ExceptionUtils {
   }
 
   static @Nullable Throwable getExceptionDetails(ITestContext context, Object instance) {
-    Set<ITestResult> failedConfigs = context.getFailedConfigurations().getAllResults();
-    Set<ITestResult> skippedConfigs = context.getSkippedConfigurations().getAllResults();
-    // The configuration of the test's own instance comes first, whether it failed or was skipped.
-    // A failure in another class must not hide a SkipException thrown by this class's setup.
-    for (Set<ITestResult> results : List.of(failedConfigs, skippedConfigs)) {
-      for (ITestResult configResult : results) {
-        if (sameInstance(configResult, instance) && configResult.getThrowable() != null) {
-          return configResult.getThrowable();
-        }
-      }
+    Set<ITestResult> configResults = context.getFailedConfigurations().getAllResults();
+    if (configResults.isEmpty()) {
+      configResults = context.getSkippedConfigurations().getAllResults();
     }
-    Set<ITestResult> configResults = failedConfigs.isEmpty() ? skippedConfigs : failedConfigs;
     if (configResults.isEmpty()) {
       // if we are here it means we have a test method skip due to a @BeforeSuite failure in a
       // different <test> maybe
@@ -34,6 +25,19 @@ final class ExceptionUtils {
       // information into our
       // current test method's test result.
       return getConfigFailureException(context);
+    }
+    for (ITestResult configResult : configResults) {
+      if (sameInstance(configResult, instance)) {
+        return configResult.getThrowable();
+      }
+    }
+    // The failed configurations hold no result for this instance, but its own configuration can
+    // still have been skipped, for example by a SkipException in its @BeforeClass. That skip is the
+    // reason, not the failure of another class.
+    for (ITestResult configResult : context.getSkippedConfigurations().getAllResults()) {
+      if (sameInstance(configResult, instance) && configResult.getThrowable() != null) {
+        return configResult.getThrowable();
+      }
     }
     // If we are here it perhaps means that the test method is being skipped because there was a
     // configuration
