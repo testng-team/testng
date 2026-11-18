@@ -60,6 +60,7 @@ public class Parser {
   private @Nullable IPostProcessor m_postProcessor;
 
   private boolean m_loadClasses = true;
+  private boolean lastParseFailedInChildSuite;
 
   /**
    * Constructs a <code>Parser</code> to use the inputStream as the source of the xml test suite to
@@ -113,6 +114,7 @@ public class Parser {
    *     testng.xml file is not found.
    */
   public Collection<XmlSuite> parse() throws IOException {
+    lastParseFailedInChildSuite = false;
     // Each suite found is put in this list, using their canonical
     // path to make sure we don't add a same file twice
     // (e.g. "testng.xml" and "./testng.xml")
@@ -143,15 +145,20 @@ public class Parser {
       for (String currentFile : toBeParsed) {
         File parentFile = null;
         InputStream inputStream = null;
+        XmlSuite currentXmlSuite;
+        try {
+          if (hasFileScheme(currentFile)) {
+            File currFile = new File(currentFile);
+            parentFile = currFile.getParentFile();
+            inputStream = m_inputStream != null ? m_inputStream : new FileInputStream(currFile);
+          }
 
-        if (hasFileScheme(currentFile)) {
-          File currFile = new File(currentFile);
-          parentFile = currFile.getParentFile();
-          inputStream = m_inputStream != null ? m_inputStream : new FileInputStream(currFile);
+          IFileParser<XmlSuite> fileParser = getParser(currentFile);
+          currentXmlSuite = fileParser.parse(currentFile, inputStream, m_loadClasses);
+        } catch (IOException | RuntimeException e) {
+          lastParseFailedInChildSuite = !processedSuites.isEmpty();
+          throw e;
         }
-
-        IFileParser<XmlSuite> fileParser = getParser(currentFile);
-        XmlSuite currentXmlSuite = fileParser.parse(currentFile, inputStream, m_loadClasses);
         currentXmlSuite.setParsed(true);
         processedSuites.add(currentFile);
         toBeRemoved.add(currentFile);
@@ -172,12 +179,17 @@ public class Parser {
         if (!suiteFiles.isEmpty()) {
           for (String path : suiteFiles) {
             String canonicalPath = path;
-            if (hasFileScheme(path)) {
-              if (parentFile != null && new File(parentFile, path).exists()) {
-                canonicalPath = new File(parentFile, path).getCanonicalPath();
-              } else {
-                canonicalPath = new File(path).getCanonicalPath();
+            try {
+              if (hasFileScheme(path)) {
+                if (parentFile != null && new File(parentFile, path).exists()) {
+                  canonicalPath = new File(parentFile, path).getCanonicalPath();
+                } else {
+                  canonicalPath = new File(path).getCanonicalPath();
+                }
               }
+            } catch (IOException e) {
+              lastParseFailedInChildSuite = true;
+              throw e;
             }
             if (!processedSuites.contains(canonicalPath)) {
               toBeAdded.add(canonicalPath);
@@ -212,6 +224,15 @@ public class Parser {
     } else {
       return resultList;
     }
+  }
+
+  /**
+   * Whether the last parse failed while reading a suite referenced by a {@code <suite-file>} tag.
+   *
+   * @return true when parsing failed after the input suite had been read.
+   */
+  public boolean lastParseFailedInChildSuite() {
+    return lastParseFailedInChildSuite;
   }
 
   /**
