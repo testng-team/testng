@@ -16,8 +16,23 @@ public interface IFactoryAnnotation extends IParameterizable, IDataProvidable {
 
   void setIndices(List<Integer> indices);
 
-  /** @return - The lazy instantiation preference declared on the {@code @Factory}. */
-  Lazy getLazy();
+  /**
+   * Returns the lazy instantiation preference declared on the {@code @Factory}.
+   *
+   * <p>The default is {@link Lazy#UNSET}, which lets the suite or runner choose.
+   *
+   * @return the lazy instantiation preference
+   */
+  default Lazy getLazy() {
+    return Lazy.UNSET;
+  }
 
-  void setLazy(@Nullable Lazy lazy);
+  /**
+   * Sets the lazy instantiation preference.
+   *
+   * <p>The default implementation does nothing. Override this method to store a preference.
+   *
+   * @param lazy the preference, or {@code null} to leave it unset
+   */
+  default void setLazy(@Nullable Lazy lazy) {}
 }
