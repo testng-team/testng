@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
@@ -35,6 +36,44 @@ public class FileStringBufferTest {
   private static final int DIRECT_TO_FILE = 100_000;
 
   private static final String TEN = "0123456789";
+
+  @Test(description = "GITHUB-3508")
+  public void contentStaysInMemoryUntilItActuallySpills() {
+    FileStringBuffer buffer = new FileStringBuffer(5);
+    assertThat(buffer.isInMemory()).isTrue();
+
+    buffer.append("12345");
+    assertThat(buffer.isInMemory()).isTrue();
+    buffer.append("6");
+    assertThat(buffer.isInMemory()).isTrue();
+    assertThat(buffer.toString()).isEqualTo("123456");
+
+    buffer.append("tail");
+    assertThat(buffer.isInMemory()).isFalse();
+    assertThat(buffer.toString()).isEqualTo("123456tail");
+    assertThat(buffer.isInMemory()).isFalse();
+  }
+
+  @DataProvider
+  public Object[][] residentPanelSizes() {
+    return new Object[][] {{DIRECT_TO_FILE - 1}, {DIRECT_TO_FILE}, {DIRECT_TO_FILE + 1}};
+  }
+
+  @Test(dataProvider = "residentPanelSizes", description = "GITHUB-3508")
+  public void foldingAnInMemoryBufferDoesNotForceADirectSpill(int size) {
+    String content = "x".repeat(size);
+    FileStringBuffer source = new FileStringBuffer();
+    source.append(content.substring(0, size / 2));
+    source.append(content.substring(size / 2));
+    assertThat(source.isInMemory()).isTrue();
+    FileStringBuffer target = new FileStringBuffer();
+
+    new XMLStringBuffer(target, "").addBuffer(new XMLStringBuffer(source, ""));
+
+    assertThat(target.isInMemory()).isTrue();
+    assertThat(target.toString()).isEqualTo(content);
+    assertThat(source.isInMemory()).isTrue();
+  }
 
   @Test
   public void aBufferThatNeverFilledUpGivesItsContentBack() {
@@ -77,6 +116,7 @@ public class FileStringBufferTest {
     FileStringBuffer buffer = new FileStringBuffer(5);
     buffer.append(large);
 
+    assertThat(buffer.isInMemory()).isFalse();
     assertThat(buffer.toString()).isEqualTo(large);
     assertThat(written(buffer)).isEqualTo(large);
   }
@@ -158,6 +198,7 @@ public class FileStringBufferTest {
       assertThat(temporary.setWritable(true)).isTrue();
     }
 
+    assertThat(buffer.isInMemory()).isFalse();
     assertThatThrownBy(buffer::toString, "toString handed back a document with a hole in it")
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("could not be written out");
