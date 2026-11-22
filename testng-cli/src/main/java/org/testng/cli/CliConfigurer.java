@@ -10,7 +10,6 @@ import org.testng.IInjectorFactory;
 import org.testng.ITestNGListener;
 import org.testng.ITestNGListenerFactory;
 import org.testng.ITestObjectFactory;
-import org.testng.ITestRunnerFactory;
 import org.testng.ListenerComparator;
 import org.testng.TestNG;
 import org.testng.internal.ClassHelper;
@@ -252,8 +251,7 @@ public final class CliConfigurer {
     }
     if (cli.testRunnerFactory != null) {
       testng.setTestRunnerFactoryClass(
-          CliConfigurer.<ITestRunnerFactory>uncheckedSubclass(
-              ClassHelper.fileToClass(cli.testRunnerFactory)));
+          CliConfigurer.uncheckedSubclass(ClassHelper.fileToClass(cli.testRunnerFactory)));
     }
 
     testng.addReporter(cli.reporter);

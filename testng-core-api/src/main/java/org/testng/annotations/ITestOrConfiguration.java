@@ -48,11 +48,22 @@ public interface ITestOrConfiguration extends IParameterizable {
   void setDescription(@Nullable String description);
 
   /**
-   * The scheduling priority. Lower priorities get scheduled first.
+   * Returns the scheduling priority. Lower priorities run first.
    *
-   * @return the value
+   * <p>The default is zero for implementations that do not store priorities.
+   *
+   * @return the priority
    */
-  int getPriority();
+  default int getPriority() {
+    return 0;
+  }
 
-  void setPriority(int priority);
+  /**
+   * Sets the scheduling priority.
+   *
+   * <p>The default implementation does nothing. Override this method to store a priority.
+   *
+   * @param priority the priority
+   */
+  default void setPriority(int priority) {}
 }
