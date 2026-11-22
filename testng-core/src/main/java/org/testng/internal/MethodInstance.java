@@ -37,7 +37,7 @@ public class MethodInstance implements IMethodInstance {
   }
 
   public static final Comparator<IMethodInstance> SORT_BY_INDEX =
-      new Comparator<IMethodInstance>() {
+      new Comparator<>() {
         @Override
         public int compare(IMethodInstance o1, IMethodInstance o2) {
           // If the two methods are in different <test>
