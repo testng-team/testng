@@ -162,12 +162,11 @@ Possible backward incompatible changes:
 
 - org.testng.annotations.ITestOrConfiguration declares getPriority() and setPriority(int), which
   org.testng.annotations.ITestAnnotation declared until now and still inherits. Every TestNG
-  implementation of the interface already had both, and a caller reading them through either type
-  is unaffected, source and binary. A class outside TestNG implementing ITestOrConfiguration or
-  IConfigurationAnnotation directly, rather than extending
-  org.testng.internal.annotations.TestOrConfiguration, has to add them. The gain on the
-  configuration side is that org.testng.IAnnotationTransformer can now set the priority of a
-  configuration method, as it could already do for a test method.
+  implementation already overrides both. The defaults return priority zero and ignore assignments,
+  so existing classes implementing ITestOrConfiguration or IConfigurationAnnotation directly remain
+  source and binary compatible. An implementation that needs to retain priority changes must override
+  both methods. The gain on the configuration side is that org.testng.IAnnotationTransformer can now
+  set the priority of a configuration method, as it could already do for a test method.
 - org.testng.ITestContext.getInjectorFactory() is declared non-null and its default answers
   IInjectorFactory.NONE. Code testing the result for null must test for the token instead. A custom
   ITestContext that never overrode it used to fail a @Guice test class with a NullPointerException
