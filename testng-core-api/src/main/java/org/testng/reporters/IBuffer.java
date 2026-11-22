@@ -8,14 +8,14 @@ public interface IBuffer {
   void toWriter(Writer fw);
 
   /**
-   * Returns whether {@code toString()} can supply the complete content from memory.
+   * Returns the character count when the complete content is available in memory.
    *
-   * <p>Return {@code false} if this is unknown. The default keeps existing implementations on the
-   * streaming path.
+   * <p>This method does not read spilled content or create a string. Return {@code -1} if the size
+   * is unknown. The default keeps existing implementations on the streaming path.
    *
-   * @return {@code true} if the complete content is available in memory
+   * @return the complete in-memory character count, or {@code -1} if unavailable
    */
-  default boolean isInMemory() {
-    return false;
+  default int getInMemorySize() {
+    return -1;
   }
 }
