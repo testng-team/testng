@@ -25,7 +25,7 @@ import org.testng.log4testng.Logger;
  * @since Nov 9, 2012
  */
 public class FileStringBuffer implements IBuffer {
-  private static final int MAX = 100000;
+  static final int MAX = 100000;
   private static final boolean VERBOSE = RuntimeBehavior.verboseMode();
   private static final Logger LOGGER = Logger.getLogger(FileStringBuffer.class);
 
@@ -71,6 +71,12 @@ public class FileStringBuffer implements IBuffer {
       spill(s);
     }
     return this;
+  }
+
+  @Override
+  public boolean isInMemory() {
+    // Keep subclasses on their existing path: they can change the behavior of either reader.
+    return getClass() == FileStringBuffer.class && m_file == null && spillFailure == null;
   }
 
   @Override
