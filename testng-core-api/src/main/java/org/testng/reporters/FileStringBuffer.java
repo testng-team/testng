@@ -74,9 +74,11 @@ public class FileStringBuffer implements IBuffer {
   }
 
   @Override
-  public boolean isInMemory() {
+  public int getInMemorySize() {
     // Keep subclasses on their existing path: they can change the behavior of either reader.
-    return getClass() == FileStringBuffer.class && m_file == null && spillFailure == null;
+    return getClass() == FileStringBuffer.class && m_file == null && spillFailure == null
+        ? m_sb.length()
+        : -1;
   }
 
   @Override
