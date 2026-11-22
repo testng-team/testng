@@ -342,10 +342,10 @@ public class XMLStringBuffer {
   /**
    * Appends the XML of another buffer to this one.
    *
-   * <p>If the source reports content in memory, this method filters its string. It appends strings
-   * below the direct-to-file cutoff in {@link FileStringBuffer} directly. Larger strings and other
-   * buffers use {@link XmlCharFilteringWriter}, without reading spilled content into one {@code
-   * String}.
+   * <p>If the source reports an in-memory size below the direct-to-file cutoff in {@link
+   * FileStringBuffer}, this method filters and appends its string directly. Larger buffers and
+   * buffers with an unknown size use {@link XmlCharFilteringWriter}, without first creating or
+   * filtering a {@code String}.
    *
    * <p>Both paths remove the characters that {@link #toXML()} removes. They leave the content and
    * open tag stack of {@code other} unchanged.
@@ -355,15 +355,14 @@ public class XMLStringBuffer {
    * @param other The buffer to append. Its content is left as it is.
    */
   public void addBuffer(XMLStringBuffer other) {
-    if (other.m_buffer.isInMemory()) {
+    int size = other.m_buffer.getInMemorySize();
+    if (size >= 0 && size < FileStringBuffer.MAX) {
       String content = INVALID_XML_CHARS.matcher(other.m_buffer.toString()).replaceAll("");
       if (content.isEmpty()) {
         return;
       }
-      if (content.length() < FileStringBuffer.MAX) {
-        m_buffer.append(content);
-        return;
-      }
+      m_buffer.append(content);
+      return;
     }
     XmlCharFilteringWriter writer = new XmlCharFilteringWriter(m_buffer);
     other.m_buffer.toWriter(writer);
