@@ -53,6 +53,7 @@ import org.testng.collections.CollectionUtils;
 import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ConfigurationGroupMethods;
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IObject;
 import org.testng.internal.IParameterInfo;
@@ -688,10 +689,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
   /**
    * GITHUB-2840. A {@code dependsOnMethods} name can only be found on another instance when the
-   * instance of the test method has no method of that name, for example when it names a method of
+   * instance of the test method has no copy of that method, for example when it names a method of
    * another class. The results of such a method count whatever instance they come from. When the
-   * instance has a method of that name, that method is the dependency, and the methods of the same
-   * name on other instances are left out, as before.
+   * instance has a copy of the method, that copy is the dependency, and the copies on other
+   * instances are left out, as before. The method is compared, not its name: a test method can
+   * depend on a method of another class and on one of its own class that has the same name.
    *
    * @return true when the upstream method is a method dependency of the test method that its own
    *     instance cannot satisfy.
@@ -707,9 +709,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     if (instance == null || isBoundTo(upstream, instance)) {
       return false;
     }
-    String name = upstream.getMethodName();
+    ConstructorOrMethod method = upstream.getConstructorOrMethod();
     return Arrays.stream(methods)
-        .noneMatch(m -> isBoundTo(m, instance) && name.equals(m.getMethodName()));
+        .noneMatch(m -> isBoundTo(m, instance) && method.equals(m.getConstructorOrMethod()));
   }
 
   /**

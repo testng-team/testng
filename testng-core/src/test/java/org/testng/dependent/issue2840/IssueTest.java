@@ -9,8 +9,10 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.dependent.samples.issue2840.BothSetupsSample;
 import org.testng.dependent.samples.issue2840.DownstreamSample;
 import org.testng.dependent.samples.issue2840.FactorySample;
+import org.testng.dependent.samples.issue2840.FailingSetupSample;
 import org.testng.dependent.samples.issue2840.LazyFactorySample;
 import org.testng.dependent.samples.issue2840.SameNameFailingSample;
 import org.testng.dependent.samples.issue2840.SameNameSample;
@@ -32,6 +34,14 @@ public class IssueTest extends SimpleBaseTest {
     assertThat(names(results.getFailedTests())).containsExactly("UpstreamSample.fails");
     assertThat(names(results.getSkippedTests()))
         .containsExactly("DownstreamSample.afterFailingUpstream");
+  }
+
+  @Test(description = "GITHUB-2840")
+  public void methodIsSkippedWhenItsFailedDependencyInAnotherClassSharesANameWithALocalOne() {
+    TestListenerAdapter results = runClasses(BothSetupsSample.class, FailingSetupSample.class);
+    assertThat(names(results.getPassedTests())).containsExactly("BothSetupsSample.setup");
+    assertThat(names(results.getFailedTests())).containsExactly("FailingSetupSample.setup");
+    assertThat(names(results.getSkippedTests())).containsExactly("BothSetupsSample.run");
   }
 
   @Test(description = "GITHUB-2840")
