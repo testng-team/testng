@@ -203,6 +203,8 @@ org.testng.conffailure.issue3522.Issue3522Test#ignoreFailureOnBeforeMethodDoesNo
 org.testng.conffailure.issue3533.Issue3533Test#aParallelSiblingRowIsNotSkippedByTheOtherRowsSetupFailure	PASS 1
 org.testng.conffailure.issue3533.Issue3533Test#aSharedFirstTimeOnlyFailureSkipsEveryParallelRowUnderContinue	PASS 1
 org.testng.conffailure.issue3533.Issue3533Test#aSkippedFirstTimeOnlySetupDoesNotSkipTheSiblingRowUnderContinue	PASS 1
+org.testng.conffailure.issue3616.Issue3616Test#aFailureInAnotherClassDoesNotHideTheOwnConfigurationSkip	PASS 1
+org.testng.conffailure.issue3616.Issue3616Test#theOwnConfigurationSkipAloneStillGivesItsException	PASS 1
 org.testng.configuration.AfterMethodWithGroupFiltersTest#beforeMethodWithBeforeGroupsShouldOnlyRunBeforeGroupMethods	PASS 1
 org.testng.configuration.BaseGroupsTest#verifyBeforeGroupUseAppropriateInstance	PASS 1
 org.testng.configuration.BaseGroupsTest#verifySingleInvocation	PASS 1
@@ -1050,6 +1052,8 @@ org.testng.reporters.FileStringBufferTest#aStringAtTheDirectToFileSizeIsGivenBac
 org.testng.reporters.FileStringBufferTest#aStringJustBelowTheDirectToFileSizeIsGivenBackWhole	PASS 1
 org.testng.reporters.FileStringBufferTest#appendingAfterAFailedSpillIsSilent	PASS 1
 org.testng.reporters.FileStringBufferTest#appendingNothingIsRejectedByName	PASS 1
+org.testng.reporters.FileStringBufferTest#contentStaysInMemoryUntilItActuallySpills	PASS 1
+org.testng.reporters.FileStringBufferTest#foldingAnInMemoryBufferDoesNotForceADirectSpill	PASS 3
 org.testng.reporters.JUnitReportTimestampTest#formattedTimeUsesTheConfiguredTimezoneRatherThanGmt	PASS 1
 org.testng.reporters.JUnitReportTimestampTest#junitReportReporterWritesATimezoneAwareTimestamp	PASS 1
 org.testng.reporters.JUnitReportTimestampTest$PassingSample#ok	PASS 1
@@ -1280,6 +1284,7 @@ test.Test2#setUpWithGroups	PASS 2
 test.abstractconfmethod.C#test1	PASS 1
 test.abstractmethods.AbstractTest#abstractShouldRun	PASS 1
 test.access.PrivateAccessConfigurationMethods#allAccessModifiersConfiguration	PASS 1
+test.alwaysrun.AlwaysRunTest#alwaysRunAfterMethodIgnoresGroupFiltering	PASS 1
 test.alwaysrun.AlwaysRunTest#withAlwaysRunAfter	PASS 1
 test.alwaysrun.AlwaysRunTest#withAlwaysRunAfterMethod	PASS 1
 test.alwaysrun.AlwaysRunTest#withoutAlwaysRunAfter	PASS 1
@@ -1777,6 +1782,12 @@ test.xml.TestNGContentHandlerTest#resolverFollowsOnlyOneRedirect	PASS 1
 test.xml.TestNGContentHandlerTest#testDescriptionInclusion	PASS 1
 test.xml.TestNGContentHandlerTest$LocalTestClass#helloWorld	PASS 1
 test.xml.XMLStringBufferTest#addBufferAppendsWhatAddingItsXmlWouldHave	PASS 1
+test.xml.XMLStringBufferTest#addBufferDoesNotAppendAnEmptyFilteredPanel	PASS 2
+test.xml.XMLStringBufferTest#addBufferDoesNotCallXmlStringBufferOverrides	PASS 1
+test.xml.XMLStringBufferTest#addBufferDoesNotStreamAnInMemoryPanel	PASS 3
+test.xml.XMLStringBufferTest#addBufferKeepsStreamingAFileBufferSubclass	PASS 1
+test.xml.XMLStringBufferTest#addBufferKeepsStreamingCustomBuffers	PASS 1
+test.xml.XMLStringBufferTest#addBufferKeepsUsingAFileBufferWriterOverride	PASS 1
 test.xml.XMLStringBufferTest#addCDATAElementKeepsLeadingAndTrailingWhitespace	PASS 1
 test.xml.XMLStringBufferTest#addCDATAElementSplitsTheTerminatorSequenceInsideTheTag	PASS 1
 test.xml.XMLStringBufferTest#addCDATAElementWritesTheTagAndCdataOnOneLine	PASS 1
