@@ -158,6 +158,11 @@ public class PackageUtils {
     };
   }
 
+  /**
+   * Returns {@code true} when the URL of a package comes from an entry that {@code
+   * testng.test.classpath} lists, or when the property is not set. The property filters the URLs
+   * that the class loaders return. An entry that is not on the class path adds no classes.
+   */
   private static boolean matchTestClasspath(URL url, String lastFragment, boolean recursive) {
     String[] classpathFragments = getTestClasspath();
     if (null == classpathFragments) {
