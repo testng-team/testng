@@ -7,6 +7,7 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.testhelper.OutputDirectoryPatch;
+import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
 public class AlwaysRunTest extends SimpleBaseTest {
@@ -58,5 +59,18 @@ public class AlwaysRunTest extends SimpleBaseTest {
     assertThat(AlwaysRunBefore1.success())
         .withFailMessage("before alwaysRun methods should have been run")
         .isTrue();
+  }
+
+  @Test(description = "GITHUB-526")
+  public void alwaysRunAfterMethodIgnoresGroupFiltering() {
+    TestNG testng = create(AlwaysRunAfterGroupFilteringSample.class);
+    testng.setGroups("a");
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    testng.addListener(listener);
+    testng.run();
+    // Only the alwaysRun @AfterMethod of group b runs: not the one without alwaysRun, not the
+    // one whose onlyForGroups excludes the test, and not the alwaysRun @AfterGroups.
+    assertThat(listener.getInvokedMethodNames())
+        .containsExactly("testInGroupA", "alwaysRunAfterMethodInGroupB");
   }
 }

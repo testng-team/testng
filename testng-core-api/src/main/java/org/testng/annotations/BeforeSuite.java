@@ -44,11 +44,15 @@ public @interface BeforeSuite {
   String[] dependsOnMethods() default {};
 
   /**
-   * For before methods (beforeSuite, beforeTest, beforeTestClass and beforeTestMethod, but not
-   * beforeGroups): If set to true, this configuration method will be run regardless of what groups
-   * it belongs to. <br>
-   * For after methods (afterSuite, afterClass, ...): If set to true, this configuration method will
-   * be run even if one or more methods invoked previously failed or was skipped.
+   * For before methods ({@code beforeSuite}, {@code beforeTest}, {@code beforeTestClass} and {@code
+   * beforeTestMethod}, but not {@code beforeGroups}): If set to true, this configuration method
+   * will be run regardless of what groups it belongs to. <br>
+   * For after methods ({@code afterSuite}, {@code afterTest}, {@code afterTestClass} and {@code
+   * afterTestMethod}, but not {@code afterGroups}): If set to true, this configuration method runs
+   * regardless of what groups it belongs to. <br>
+   * For all after methods: If set to true, this configuration method runs even after a failure or a
+   * skip of an earlier configuration method. It still does not run if it has {@code enabled =
+   * false}. A failed test method does not stop an after method from running.
    *
    * @return the value (default false)
    */
