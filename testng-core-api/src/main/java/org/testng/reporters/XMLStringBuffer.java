@@ -340,25 +340,30 @@ public class XMLStringBuffer {
           "[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
 
   /**
-   * Appends the XML of another buffer to this one, a slice at a time once it has spilled to disk.
+   * Appends the XML of another buffer to this one.
    *
-   * <p>A buffer that never reached that size is still held whole, since that is where it already
-   * is; what this avoids is reading a spilled one back into a single {@code String}, which is what
-   * a buffer backed by a temporary file exists not to do.
+   * <p>If the source reports an in-memory size below the direct-to-file cutoff in {@link
+   * FileStringBuffer}, this method filters and appends its string directly. Larger buffers and
+   * buffers with an unknown size use {@link XmlCharFilteringWriter}, without first creating or
+   * filtering a {@code String}.
    *
-   * <p>This is {@code addString(other.toXML())} with the {@code String} taken out of the middle:
-   * {@link XmlCharFilteringWriter} drops the same characters a slice at a time, where {@link
-   * #toXML()} reads the whole buffer back and copies it again for its regular expression. What is
-   * appended is otherwise identical, the tag stack of {@code other} included -- neither this nor
-   * {@code toXML()} closes what is still open on it.
+   * <p>Both paths remove the characters that {@link #toXML()} removes. They leave the content and
+   * open tag stack of {@code other} unchanged.
    *
-   * <p>Note this drops those characters from what is appended, not from the buffer appended to:
-   * whatever was written to this buffer directly is left as it was, and so is anything written
-   * after.
+   * <p>This method does not filter content already in this buffer or content appended later.
    *
    * @param other The buffer to append. Its content is left as it is.
    */
   public void addBuffer(XMLStringBuffer other) {
+    int size = other.m_buffer.getInMemorySize();
+    if (size >= 0 && size < FileStringBuffer.MAX) {
+      String content = INVALID_XML_CHARS.matcher(other.m_buffer.toString()).replaceAll("");
+      if (content.isEmpty()) {
+        return;
+      }
+      m_buffer.append(content);
+      return;
+    }
     XmlCharFilteringWriter writer = new XmlCharFilteringWriter(m_buffer);
     other.m_buffer.toWriter(writer);
     writer.close();
