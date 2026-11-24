@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.testng.collections.ListMultiMap;
@@ -43,8 +42,7 @@ public class DependencyMap {
   /**
    * Returns the test methods in the groups whose names match a regular expression.
    *
-   * <p>Note: the list holds each matching method twice (GITHUB-3564). The callers in TestNG put the
-   * list into a set or a map, so the second copy does not change a run.
+   * <p>The list holds each method once, also when the method is in several of the matching groups.
    *
    * @param group a regular expression for the group names.
    * @param fromMethod the test method that depends on the groups.
@@ -54,7 +52,6 @@ public class DependencyMap {
    *     dependencies.
    */
   public List<ITestNGMethod> getMethodsThatBelongTo(String group, ITestNGMethod fromMethod) {
-    Set<String> uniqueKeys = m_groups.keySet();
     Pattern pattern = Pattern.compile(group);
 
     List<ITestNGMethod> result =
@@ -62,13 +59,8 @@ public class DependencyMap {
             .parallel()
             .filter(k -> pattern.matcher(k).matches())
             .flatMap(k -> m_groups.get(k).stream())
+            .distinct()
             .collect(Collectors.toList());
-
-    for (String k : uniqueKeys) {
-      if (Pattern.matches(group, k)) {
-        result.addAll(m_groups.get(k));
-      }
-    }
 
     if (result.isEmpty() && !fromMethod.ignoreMissingDependencies()) {
       throw new TestNGException(
