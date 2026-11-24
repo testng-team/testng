@@ -361,6 +361,7 @@
       <class name="org.testng.dependent.DepBugSampleTest" />
       <class name="org.testng.dependent.DepBugVerifyTest" />
       <class name="org.testng.dependent.DependsOnProtectedMethodTest" />
+      <class name="org.testng.dependent.issue3201.IssueTest"/>
       <class name="test.dependsongroup.DependsOnGroupsTest" />
       <class name="org.testng.dependent.GroupByInstancesTest" />
       <class name="org.testng.dependent.xml.GroupDependencyTest" />
