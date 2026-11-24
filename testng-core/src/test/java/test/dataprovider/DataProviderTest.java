@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.SoftAssertions;
 import org.testng.IDataProviderMethod;
@@ -568,15 +572,22 @@ public class DataProviderTest extends SimpleBaseTest {
     assertThat(listener.getSucceedMethodNames()).containsExactly("test1(Cedric)", "test1(Alois)");
   }
 
-  @Test
+  @Test(description = "GITHUB-3482")
   public void shouldNotThrowConcurrentModificationException() {
     InvokedMethodNameListener listener = run(ParallelDataProvider2Sample.class);
 
     assertThat(listener.getFailedMethodNames()).isEmpty();
-    assertThat(listener.getSucceedMethodNames())
-        .are(new RegexCondition("checkCME\\(\\d+\\)|null", true));
-    // TODO null is not an expected value
-    // .hasSize(2_000); TODO it is supposed to work
+    List<String> succeeded = listener.getSucceedMethodNames();
+    assertThat(succeeded).hasSize(2_000);
+    // The provider supplies rows 0 to 999, and invocationCount = 2 runs each row twice.
+    Map<String, Long> runsPerRow =
+        succeeded.stream()
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+    Map<String, Long> expected =
+        IntStream.range(0, 1_000)
+            .boxed()
+            .collect(Collectors.toMap(row -> "checkCME(" + row + ")", row -> 2L));
+    assertThat(runsPerRow).isEqualTo(expected);
   }
 
   @Test(description = "GITHUB-2565", dataProvider = "2565")
@@ -601,27 +612,14 @@ public class DataProviderTest extends SimpleBaseTest {
   public static class RegexCondition extends Condition<String> {
 
     private final String regex;
-    private final boolean acceptNull;
 
     public RegexCondition(String regex) {
-      this(regex, false);
-    }
-
-    public RegexCondition(String regex, boolean acceptNull) {
       this.regex = regex;
-      this.acceptNull = acceptNull;
     }
 
     @Override
     public boolean matches(String value) {
-      if (value == null) {
-        if (acceptNull) {
-          value = "null";
-        } else {
-          return false;
-        }
-      }
-      return value.matches(regex);
+      return value != null && value.matches(regex);
     }
   }
 

@@ -107,8 +107,7 @@ public class XmlCharFilteringWriterTest {
   @Test(description = "A slice stays in the buffer rather than opening its temporary file")
   public void aSliceIsSmallEnoughToStayInTheInMemoryBuilder() throws Exception {
     // FileStringBuffer.append sends a string of MAX characters or more straight to the file. A
-    // slice at that size would open it once per drain, which is what SLICE has to stay under --
-    // MAX is private in that class, so nothing but this holds the two numbers together.
+    // slice at that size would open it once per drain. This holds SLICE below that cutoff.
     FileStringBuffer buffer = new FileStringBuffer();
     buffer.append("a".repeat(XmlCharFilteringWriter.SLICE));
 

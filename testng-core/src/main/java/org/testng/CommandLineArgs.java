@@ -148,6 +148,14 @@ public class CommandLineArgs {
   /** The test classes to run, as class names or {@code .class} files, separated by commas. */
   public @Nullable String testClass;
 
+  public static final String TEST_PACKAGES = "-testpackages";
+
+  /**
+   * The packages whose test classes to run, separated by commas, as {@code <package>} in {@code
+   * testng.xml}. A name that ends in {@code .*} also selects the sub-packages.
+   */
+  public @Nullable String testPackages;
+
   public static final String TEST_NAMES = "-testnames";
 
   /** The names of the {@code <test>} tags to run, separated by commas. */
@@ -264,8 +272,8 @@ public class CommandLineArgs {
   /**
    * Whether TestNG reports a data provider failure as a test failure.
    *
-   * <p>{@link TestNG#configure(CommandLineArgs)} turns this setting on whenever this field is not
-   * {@code null}. So the default value, {@code false}, also turns it on.
+   * <p>Only {@code true} turns the setting on. The default value, {@code false}, leaves a data
+   * provider failure reported as a skip.
    */
   public Boolean propagateDataProviderFailureAsTestFailure = false;
 

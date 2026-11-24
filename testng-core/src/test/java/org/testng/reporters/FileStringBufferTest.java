@@ -2,6 +2,12 @@ package org.testng.reporters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.AdditionalAnswers.delegatesTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
@@ -35,6 +42,56 @@ public class FileStringBufferTest {
   private static final int DIRECT_TO_FILE = 100_000;
 
   private static final String TEN = "0123456789";
+
+  @Test(description = "GITHUB-3508")
+  public void contentStaysInMemoryUntilItActuallySpills() {
+    FileStringBuffer buffer = new FileStringBuffer(5);
+    assertThat(buffer.getInMemorySize()).isZero();
+
+    buffer.append("12345");
+    assertThat(buffer.getInMemorySize()).isEqualTo(5);
+    buffer.append("6");
+    assertThat(buffer.getInMemorySize()).isEqualTo(6);
+    assertThat(buffer.toString()).isEqualTo("123456");
+
+    buffer.append("tail");
+    assertThat(buffer.getInMemorySize()).isEqualTo(-1);
+    assertThat(buffer.toString()).isEqualTo("123456tail");
+    assertThat(buffer.getInMemorySize()).isEqualTo(-1);
+  }
+
+  @DataProvider
+  public Object[][] residentPanelSizes() {
+    return new Object[][] {{DIRECT_TO_FILE - 1}, {DIRECT_TO_FILE}, {DIRECT_TO_FILE + 1}};
+  }
+
+  @Test(dataProvider = "residentPanelSizes", description = "GITHUB-3508")
+  public void foldingAnInMemoryBufferDoesNotForceADirectSpill(int size) {
+    String content = "x".repeat(size);
+    FileStringBuffer source = new FileStringBuffer();
+    source.append(content.substring(0, size / 2));
+    source.append(content.substring(size / 2));
+    assertThat(source.getInMemorySize()).isEqualTo(size);
+    FileStringBuffer monitored = mock(FileStringBuffer.class, delegatesTo(source));
+    if (size >= DIRECT_TO_FILE) {
+      doThrow(new AssertionError("A large resident buffer must go straight to its writer"))
+          .when(monitored)
+          .toString();
+    }
+    FileStringBuffer target = new FileStringBuffer();
+
+    new XMLStringBuffer(target, "").addBuffer(new XMLStringBuffer(monitored, ""));
+
+    if (size < DIRECT_TO_FILE) {
+      verify(monitored, never()).toWriter(any(Writer.class));
+    } else {
+      verify(monitored).toWriter(any(Writer.class));
+    }
+
+    assertThat(target.getInMemorySize()).isEqualTo(size);
+    assertThat(target.toString()).isEqualTo(content);
+    assertThat(source.getInMemorySize()).isEqualTo(size);
+  }
 
   @Test
   public void aBufferThatNeverFilledUpGivesItsContentBack() {
@@ -77,6 +134,7 @@ public class FileStringBufferTest {
     FileStringBuffer buffer = new FileStringBuffer(5);
     buffer.append(large);
 
+    assertThat(buffer.getInMemorySize()).isEqualTo(-1);
     assertThat(buffer.toString()).isEqualTo(large);
     assertThat(written(buffer)).isEqualTo(large);
   }
@@ -158,6 +216,7 @@ public class FileStringBufferTest {
       assertThat(temporary.setWritable(true)).isTrue();
     }
 
+    assertThat(buffer.getInMemorySize()).isEqualTo(-1);
     assertThatThrownBy(buffer::toString, "toString handed back a document with a hole in it")
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("could not be written out");

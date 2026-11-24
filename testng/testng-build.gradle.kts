@@ -5,6 +5,19 @@ plugins {
 
 description = "Testing framework for Java"
 
+// Compile these consumers against the released API, then run their bytecode with the merged jar.
+val compatibilityTest = sourceSets.create("compatibilityTest") {
+    // Gradle 9 resolves this module's own coordinates as a self-dependency, regardless of version.
+    compileClasspath = rootProject.configurations.detachedConfiguration(
+        rootProject.dependencies.create("org.testng:testng:7.12.0"),
+    ).apply { isTransitive = false }
+}
+
+dependencies {
+    testImplementation(compatibilityTest.output)
+    testRuntimeOnly("org.yaml:snakeyaml:2.6")
+}
+
 java {
     // The features would be merged into testng.jar as follows:
     // org.testng dependencies would be included to the jar

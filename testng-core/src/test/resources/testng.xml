@@ -107,6 +107,7 @@
       <class name="org.testng.conffailure.issue1622.IssueTest" />
       <class name="org.testng.conffailure.issue3522.Issue3522Test" />
       <class name="org.testng.conffailure.issue3533.Issue3533Test" />
+      <class name="org.testng.conffailure.issue3616.Issue3616Test" />
       <class name="test.superclass.MainTest" />
       <class name="test.superclass.Test3" />
       <class name="test.failures.FailuresTest" />
@@ -366,6 +367,7 @@
       <class name="org.testng.dependent.xml.GroupDependencyTest" />
       <class name="org.testng.dependent.DependencyFixTest"/>
       <class name="org.testng.dependent.issue1648.TestRunner"/>
+      <class name="org.testng.dependent.issue3564.IssueTest"/>
     </classes>
   </test>
 
@@ -924,6 +926,7 @@
       <class name="org.testng.configuration.issue3239.IssueTest"/>
       <class name="org.testng.configuration.issue3435.IssueTest"/>
       <class name="org.testng.configuration.issue3539.IssueTest"/>
+      <class name="org.testng.configuration.issue2448.IssueTest"/>
     </classes>
   </test>
 

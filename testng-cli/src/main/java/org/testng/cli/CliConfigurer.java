@@ -10,12 +10,11 @@ import org.testng.IInjectorFactory;
 import org.testng.ITestNGListener;
 import org.testng.ITestNGListenerFactory;
 import org.testng.ITestObjectFactory;
-import org.testng.ITestRunnerFactory;
 import org.testng.ListenerComparator;
 import org.testng.TestNG;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
-import org.testng.log4testng.Logger;
+import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 
 /**
@@ -31,13 +30,15 @@ import org.testng.xml.XmlSuite;
  */
 public final class CliConfigurer {
 
-  // Deliberately keyed on TestNG so that the message reads the same as before the CLI extraction.
-  private static final Logger LOGGER = Logger.getLogger(TestNG.class);
-
   private static final String BAD_METHOD_SELECTOR =
       "Method selector value was not in the format org.example.Selector:4";
 
   private CliConfigurer() {}
+
+  // A CLI user expects this on stderr.
+  private static void reportBadMethodSelector() {
+    System.err.println(BAD_METHOD_SELECTOR);
+  }
 
   /**
    * Narrows a class loaded by name without checking it, so that an unsuitable {@code
@@ -57,14 +58,16 @@ public final class CliConfigurer {
    */
   public static void validate(CliOptions cli) {
     // What configure() will make of it, not the raw text: -testclass "" and -testclass " , ,"
-    // name no class at all, and selecting nothing has to be rejected here rather than produce a
-    // run with no classes and no complaint.
-    String testClasses = selectedTestClasses(cli.testClass);
+    // name no class at all, and -testpackages " , ," no package, and selecting nothing has to be
+    // rejected here rather than produce a run with no classes and no complaint.
+    String testClasses = namesAny(cli.testClass);
+    String testPackages = namesAny(cli.testPackages);
     List<String> testNgXml = cli.suiteFiles;
     String testJar = cli.testJar;
     List<String> methods = cli.commandLineMethods;
 
     if (testClasses == null
+        && testPackages == null
         && testJar == null
         && (testNgXml == null || testNgXml.isEmpty())
         && (methods == null || methods.isEmpty())) {
@@ -78,20 +81,22 @@ public final class CliConfigurer {
     if (testJar == null
         && (null != groups || null != excludedGroups)
         && testClasses == null
+        && testPackages == null
         && (testNgXml == null || testNgXml.isEmpty())) {
       throw new CliParseException("Groups option should be used with testclass option");
     }
   }
 
   /**
-   * @return the option value when it names at least one class, {@code null} when it names none, so
-   *     that validation treats "names nothing" the same way it treats "was not given".
+   * @return the comma separated option value when it names at least one element, {@code null} when
+   *     it names none, so that validation treats "names nothing" the same way it treats "was not
+   *     given".
    */
-  private static @Nullable String selectedTestClasses(@Nullable String testClass) {
-    if (testClass == null || Utils.splitCommaSeparated(testClass).isEmpty()) {
+  private static @Nullable String namesAny(@Nullable String value) {
+    if (value == null || Utils.splitCommaSeparated(value).isEmpty()) {
       return null;
     }
-    return testClass;
+    return value;
   }
 
   /**
@@ -106,12 +111,10 @@ public final class CliConfigurer {
     Optional.ofNullable(cli.useGlobalThreadPool).ifPresent(testng::shouldUseGlobalThreadPool);
     Optional.ofNullable(cli.shareThreadPoolForDataProviders)
         .ifPresent(testng::shareThreadPoolForDataProviders);
-    // FIXME: the field defaults to FALSE rather than null, so this toggle is switched on for every
-    // command line run and -propagateDataProviderFailureAsTestFailure cannot be turned off. Kept
-    // verbatim for parity with the frozen TestNG#configure(CommandLineArgs); fixing it is a
-    // behaviour change that belongs in its own issue.
-    Optional.ofNullable(cli.propagateDataProviderFailureAsTestFailure)
-        .ifPresent(value -> testng.propagateDataProviderFailureAsTestFailure());
+    // GITHUB-3565. The field defaults to FALSE, so only TRUE turns the setting on.
+    if (Boolean.TRUE.equals(cli.propagateDataProviderFailureAsTestFailure)) {
+      testng.propagateDataProviderFailureAsTestFailure();
+    }
     testng.setReportAllDataDrivenTestsAsSkipped(cli.includeAllDataDrivenTestsWhenSkipping);
     Optional.ofNullable(cli.emptyDataProviderBehavior)
         .ifPresent(testng::setEmptyDataProviderBehavior);
@@ -157,6 +160,14 @@ public final class CliConfigurer {
       }
 
       testng.setTestClasses(classes.toArray(new Class[0]));
+    }
+
+    if (cli.testPackages != null) {
+      List<XmlPackage> packages = new ArrayList<>();
+      for (String name : Utils.splitCommaSeparated(cli.testPackages)) {
+        packages.add(new XmlPackage(name));
+      }
+      testng.setTestPackages(packages);
     }
 
     if (cli.testNames != null) {
@@ -225,10 +236,10 @@ public final class CliConfigurer {
           if (sel.length == 2) {
             testng.addMethodSelector(sel[0], Integer.parseInt(sel[1]));
           } else {
-            LOGGER.error(BAD_METHOD_SELECTOR);
+            reportBadMethodSelector();
           }
         } catch (NumberFormatException nfe) {
-          LOGGER.error(BAD_METHOD_SELECTOR);
+          reportBadMethodSelector();
         }
       }
     }
@@ -240,8 +251,7 @@ public final class CliConfigurer {
     }
     if (cli.testRunnerFactory != null) {
       testng.setTestRunnerFactoryClass(
-          CliConfigurer.<ITestRunnerFactory>uncheckedSubclass(
-              ClassHelper.fileToClass(cli.testRunnerFactory)));
+          CliConfigurer.uncheckedSubclass(ClassHelper.fileToClass(cli.testRunnerFactory)));
     }
 
     testng.addReporter(cli.reporter);

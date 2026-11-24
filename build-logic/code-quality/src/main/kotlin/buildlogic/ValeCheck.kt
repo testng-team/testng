@@ -48,7 +48,7 @@ private const val MAX_ARGUMENT_CHARS = 8000
  * in the summary. Nothing here knows about the project that uses it.
  */
 /** What a branch touched: which files, and which lines within them are new. */
-private data class ChangedFiles(
+internal data class ChangedFiles(
     val paths: Set<String>,
     val addedLines: Map<String, Set<Int>>,
     val wholeFiles: Set<String>,
@@ -168,7 +168,7 @@ abstract class ValeCheck : DefaultTask() {
      *
      * `git diff -U0` prints `@@ -a,b +c,d @@` before each hunk. Everything from c to c+d-1 is new.
      */
-    private fun collectAddedLines(
+    internal fun collectAddedLines(
         top: String,
         diff: String,
         into: MutableMap<String, MutableSet<Int>>,
@@ -270,7 +270,7 @@ abstract class ValeCheck : DefaultTask() {
     }
 
     /** Splits the paths so no single command line approaches the platform limit. */
-    private fun batches(files: List<File>): List<List<File>> {
+    internal fun batches(files: List<File>): List<List<File>> {
         val result = mutableListOf<List<File>>()
         var current = mutableListOf<File>()
         var length = 0
