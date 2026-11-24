@@ -31,6 +31,14 @@ final class ExceptionUtils {
         return configResult.getThrowable();
       }
     }
+    // The failed configurations hold no result for this instance, but its own configuration can
+    // still have been skipped, for example by a SkipException in its @BeforeClass. That skip is the
+    // reason, not the failure of another class.
+    for (ITestResult configResult : context.getSkippedConfigurations().getAllResults()) {
+      if (sameInstance(configResult, instance) && configResult.getThrowable() != null) {
+        return configResult.getThrowable();
+      }
+    }
     // If we are here it perhaps means that the test method is being skipped because there was a
     // configuration
     // failure in a different class due to @BeforeGroups being used.
