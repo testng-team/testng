@@ -415,6 +415,8 @@ org.testng.dependent.SampleDependentMethods3#one	PASS 2
 org.testng.dependent.SampleDependentMethods3#secondA	PASS 1
 org.testng.dependent.SampleDependentTest#test2	PASS 1
 org.testng.dependent.issue1648.TestRunner#testMethod	PASS 1
+org.testng.dependent.issue3564.IssueTest#aMethodInSeveralMatchingGroupsIsReturnedOnce	PASS 1
+org.testng.dependent.issue3564.IssueTest#aMethodOfTheGroupIsReturnedOnce	PASS 1
 org.testng.dependent.xml.GroupDependencyTest#verifyGroupMulti	PASS 6
 org.testng.dependent.xml.GroupDependencyTest#verifyGroupSingle	PASS 6
 org.testng.factory.DisabledFactoryTest#disabledFactoryShouldNotRun	PASS 1

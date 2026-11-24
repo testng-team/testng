@@ -1,11 +1,21 @@
 package test.xml;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.AdditionalAnswers.delegatesTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.testng.reporters.XMLStringBuffer.EOL;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.io.Writer;
 import java.util.Properties;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.reporters.Buffer;
+import org.testng.reporters.FileStringBuffer;
 import org.testng.reporters.IBuffer;
 import org.testng.reporters.XMLStringBuffer;
 
@@ -64,6 +74,145 @@ public class XMLStringBufferTest {
     assertThat(streamed.getStringBuffer().toString()).isEqualTo(materialized.toXML());
     // And the content really did cross the threshold, so this was the streaming path.
     assertThat(materializedContent.length()).isGreaterThan(100_000);
+  }
+
+  @DataProvider
+  public Object[][] inMemoryPanelSizes() {
+    return new Object[][] {{0}, {5_000}, {90_000}};
+  }
+
+  @DataProvider
+  public Object[][] emptyPanelVariants() {
+    return new Object[][] {{false}, {true}};
+  }
+
+  @Test(dataProvider = "emptyPanelVariants", description = "GITHUB-3508")
+  public void addBufferDoesNotAppendAnEmptyFilteredPanel(boolean onlyForbiddenCharacters) {
+    String content = onlyForbiddenCharacters ? "\u0001\uFFFE" : "";
+    FileStringBuffer actual = new FileStringBuffer(5);
+    actual.append("123456");
+    IBuffer target = mock(IBuffer.class, delegatesTo(actual));
+    XMLStringBuffer source = new XMLStringBuffer("");
+    source.addString(content);
+
+    new XMLStringBuffer(target, "").addBuffer(source);
+
+    verify(target, never()).append(any(CharSequence.class));
+    assertThat(actual.toString()).isEqualTo("123456");
+  }
+
+  @Test(dataProvider = "inMemoryPanelSizes", description = "GITHUB-3508")
+  public void addBufferDoesNotStreamAnInMemoryPanel(int size) {
+    FileStringBuffer buffer = mock(FileStringBuffer.class, delegatesTo(new FileStringBuffer()));
+    XMLStringBuffer content = new XMLStringBuffer(buffer, "");
+    String payload = "x".repeat(size);
+    content.push("open");
+    content.addString(payload + "\u0001\uFFFE\uD800bad\uDC00\t\n\r" + SUPPLEMENTARY);
+    String original = buffer.toString();
+
+    XMLStringBuffer target = new XMLStringBuffer("");
+    target.addString("\u0002before|");
+    target.addBuffer(content);
+    target.addString("|after\u0003");
+
+    verify(buffer, never()).toWriter(any(Writer.class));
+    assertThat(target.getStringBuffer().toString())
+        .isEqualTo(
+            "\u0002before|<open>" + EOL + payload + "bad\t\n\r" + SUPPLEMENTARY + "|after\u0003");
+    assertThat(buffer.toString()).isEqualTo(original);
+    content.pop("open");
+    assertThat(buffer.toString()).endsWith("</open>" + EOL);
+  }
+
+  @Test(description = "GITHUB-3508")
+  public void addBufferKeepsStreamingCustomBuffers() {
+    IBuffer source =
+        new IBuffer() {
+          @Override
+          public IBuffer append(CharSequence value) {
+            throw new UnsupportedOperationException("Not used by this source buffer");
+          }
+
+          @Override
+          public void toWriter(Writer writer) {
+            try {
+              writer.write("custom\u0001" + SUPPLEMENTARY);
+            } catch (IOException e) {
+              throw new UncheckedIOException(e);
+            }
+          }
+
+          @Override
+          public String toString() {
+            throw new UnsupportedOperationException("This buffer must be streamed");
+          }
+        };
+    XMLStringBuffer target = new XMLStringBuffer("");
+
+    target.addBuffer(new XMLStringBuffer(source, ""));
+
+    assertThat(target.getStringBuffer().toString()).isEqualTo("custom" + SUPPLEMENTARY);
+  }
+
+  @Test(description = "GITHUB-3508")
+  public void addBufferKeepsStreamingAFileBufferSubclass() {
+    FileStringBuffer source =
+        new FileStringBuffer() {
+          @Override
+          public String toString() {
+            throw new UnsupportedOperationException("This buffer must be streamed");
+          }
+        };
+    source.append("content\u0001" + SUPPLEMENTARY);
+    XMLStringBuffer target = new XMLStringBuffer("");
+
+    target.addBuffer(new XMLStringBuffer(source, ""));
+
+    assertThat(target.getStringBuffer().toString()).isEqualTo("content" + SUPPLEMENTARY);
+  }
+
+  @Test(description = "GITHUB-3508")
+  public void addBufferKeepsUsingAFileBufferWriterOverride() {
+    FileStringBuffer source =
+        new FileStringBuffer() {
+          @Override
+          public void toWriter(Writer writer) {
+            try {
+              writer.write("custom\u0001" + SUPPLEMENTARY);
+            } catch (IOException e) {
+              throw new UncheckedIOException(e);
+            }
+          }
+        };
+    source.append("unused");
+    XMLStringBuffer target = new XMLStringBuffer("");
+
+    target.addBuffer(new XMLStringBuffer(source, ""));
+
+    assertThat(target.getStringBuffer().toString()).isEqualTo("custom" + SUPPLEMENTARY);
+  }
+
+  @Test(description = "GITHUB-3508")
+  public void addBufferDoesNotCallXmlStringBufferOverrides() {
+    XMLStringBuffer source =
+        new XMLStringBuffer("") {
+          @Override
+          public String toXML() {
+            throw new UnsupportedOperationException("Not used when appending the backing buffer");
+          }
+        };
+    XMLStringBuffer target =
+        new XMLStringBuffer("") {
+          @Override
+          public void addString(String value) {
+            throw new UnsupportedOperationException("Not used when appending the backing buffer");
+          }
+        };
+    source.getStringBuffer().append("content\u0001");
+
+    target.addBuffer(source);
+
+    assertThat(target.getStringBuffer().toString()).isEqualTo("content");
   }
 
   @Test
