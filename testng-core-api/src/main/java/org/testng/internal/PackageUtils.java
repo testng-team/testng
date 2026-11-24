@@ -104,27 +104,46 @@ public class PackageUtils {
       return null;
     }
 
-    String[] classpathFragments = Utils.split(testClasspath, File.pathSeparator);
-    String[] paths = new String[classpathFragments.length];
-
-    for (int i = 0; i < classpathFragments.length; i++) {
-      String path;
-      String fragment = classpathFragments[i].toLowerCase(Locale.ROOT);
-      if (fragment.endsWith(".jar") || fragment.endsWith(".zip")) {
-        path = classpathFragments[i] + "!/";
-      } else {
-        if (classpathFragments[i].endsWith(File.separator)) {
-          path = classpathFragments[i];
-        } else {
-          path = classpathFragments[i] + "/";
-        }
+    List<String> paths = new ArrayList<>();
+    for (String fragment : Utils.split(testClasspath, File.pathSeparator)) {
+      paths.add(toMatchedPath(fragment));
+      // The system class loader builds the URL of a class path entry from its canonical path:
+      // absolute, with no "." or "..", and with symbolic links resolved. So an entry such as
+      // "./out" never matches as written. Match the canonical path of each entry too.
+      String canonical = canonicalPath(fragment);
+      if (canonical != null && !canonical.equals(fragment)) {
+        paths.add(toMatchedPath(canonical));
       }
-
-      paths[i] = path.replace('\\', '/');
     }
 
-    testClassPaths = paths;
-    return paths;
+    String[] result = paths.toArray(new String[0]);
+    testClassPaths = result;
+    return result;
+  }
+
+  private static String toMatchedPath(String fragment) {
+    String path;
+    String lowerCase = fragment.toLowerCase(Locale.ROOT);
+    if (lowerCase.endsWith(".jar") || lowerCase.endsWith(".zip")) {
+      path = fragment + "!/";
+    } else if (fragment.endsWith(File.separator)) {
+      path = fragment;
+    } else {
+      path = fragment + "/";
+    }
+    return path.replace('\\', '/');
+  }
+
+  private static @Nullable String canonicalPath(String fragment) {
+    if (fragment.isEmpty()) {
+      return null;
+    }
+    try {
+      return new File(fragment).getCanonicalPath();
+    } catch (IOException e) {
+      // The entry as written can still match.
+      return null;
+    }
   }
 
   private static Function<ClassLoader, Stream<URL>> asURLs(String packageDir) {
@@ -146,6 +165,12 @@ public class PackageUtils {
     }
 
     String fileName = URLDecoder.decode(url.getFile(), UTF_8);
+    // The file part of a jar URL starts with the URL of the archive, as in
+    // "file:/repo/tests.jar!/org/acme/". Without the scheme, an absolute entry matches it the same
+    // way it matches a directory.
+    if ("jar".equals(url.getProtocol()) && fileName.startsWith("file:")) {
+      fileName = fileName.substring("file:".length());
+    }
 
     for (String classpathFrag : classpathFragments) {
       String path = classpathFrag + lastFragment;

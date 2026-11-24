@@ -90,6 +90,7 @@
       <class name="org.testng.internal.invokers.ParameterHandlerTest"/>
       <class name="org.testng.internal.TestListenerHelperTest"/>
       <class name="org.testng.internal.classfinder.ClassFinderNoClassDefFoundErrorTest"/>
+      <class name="org.testng.internal.issue573.IssueTest"/>
       <class name="org.testng.internal.GroupsHelperTest"/>
       <class name="org.testng.internal.DynamicGraphHelperTest"/>
       <class name="org.testng.internal.thread.graph.TestNGFutureTaskTest"/>
