@@ -53,6 +53,7 @@ import org.testng.collections.CollectionUtils;
 import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ConfigurationGroupMethods;
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IObject;
 import org.testng.internal.IParameterInfo;
@@ -658,12 +659,18 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       ITestNGMethod testMethod, ITestNGMethod[] methods) {
     // Make sure the method has been run successfully
     for (ITestNGMethod method : methods) {
-      Set<ITestResult> results = keepSameInstances(testMethod, m_notifier.getPassedTests(method));
+      boolean onAnotherInstance = isOnlyOnAnotherInstance(testMethod, method, methods);
+      Set<ITestResult> passedTests = m_notifier.getPassedTests(method);
+      Set<ITestResult> results =
+          onAnotherInstance ? passedTests : keepSameInstances(testMethod, passedTests);
       Set<ITestResult> failedAndSkippedMethods = new HashSet<>();
       Set<ITestResult> skippedAttempts = m_notifier.getSkippedTests(method);
       failedAndSkippedMethods.addAll(m_notifier.getFailedTests(method));
       failedAndSkippedMethods.addAll(skippedAttempts);
-      Set<ITestResult> failedresults = keepSameInstances(testMethod, failedAndSkippedMethods);
+      Set<ITestResult> failedresults =
+          onAnotherInstance
+              ? failedAndSkippedMethods
+              : keepSameInstances(testMethod, failedAndSkippedMethods);
       boolean wasMethodRetried = !results.isEmpty() && !skippedAttempts.isEmpty();
 
       if (!wasMethodRetried && !failedresults.isEmpty()) {
@@ -678,6 +685,46 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       }
     }
     return false;
+  }
+
+  /**
+   * GITHUB-2840. A {@code dependsOnMethods} name can only be found on another instance when the
+   * instance of the test method has no copy of that method, for example when it names a method of
+   * another class. The results of such a method count whatever instance they come from. When the
+   * instance has a copy of the method, that copy is the dependency, and the copies on other
+   * instances are left out, as before. The method is compared, not its name: a test method can
+   * depend on a method of another class and on one of its own class that has the same name.
+   *
+   * @return true when the upstream method is a method dependency of the test method that its own
+   *     instance cannot satisfy.
+   */
+  // Identity on purpose, for the reason given on keepSameInstances.
+  @SuppressWarnings("ReferenceEquality")
+  private static boolean isOnlyOnAnotherInstance(
+      ITestNGMethod testMethod, ITestNGMethod upstream, ITestNGMethod[] methods) {
+    if (testMethod.getGroupsDependedUpon().length != 0) {
+      return false;
+    }
+    Object instance = testMethod.getInstance();
+    if (instance == null || isBoundTo(upstream, instance)) {
+      return false;
+    }
+    ConstructorOrMethod method = upstream.getConstructorOrMethod();
+    return Arrays.stream(methods)
+        .noneMatch(m -> isBoundTo(m, instance) && method.equals(m.getConstructorOrMethod()));
+  }
+
+  /**
+   * @return true when the method is bound to the given instance. A lazy {@code @Factory} instance
+   *     that has not been created yet cannot be that instance, and asking for it would create it
+   *     before its tests are due to run.
+   */
+  @SuppressWarnings("ReferenceEquality")
+  private static boolean isBoundTo(ITestNGMethod method, Object instance) {
+    if (method instanceof BaseTestMethod && !((BaseTestMethod) method).isInstanceInstantiated()) {
+      return false;
+    }
+    return method.getInstance() == instance;
   }
 
   /** @return the test results that apply to one of the instances of the testMethod. */
