@@ -616,6 +616,7 @@ org.testng.internal.invokers.MethodConfigLookupTest#anOverriddenIndexIsWhatTheIn
 org.testng.internal.invokers.ParameterHandlerTest#testCreateParameters	PASS 2
 org.testng.internal.invokers.ParameterHandlerTest#testCreateParametersUsingDataProvider	PASS 2
 org.testng.internal.invokers.ParameterHandlerTest#testCreateParametersUsingDataProviderNegativeCase	PASS 2
+org.testng.internal.issue573.IssueTest#packageScanRunsTheSamplesOfTheListedEntries	PASS 15
 org.testng.internal.listeners.parameterindex.ParameterIndexListenerTest#listenerShouldReceiveRightParameterIndexTest	PASS 1
 org.testng.internal.objects.GuiceHelperTest#getInjector_spiModule_injectorHasModule	PASS 1
 org.testng.internal.objects.InstanceCreatorTest#testCreateInstance1WithOneArgStringParamForConstructor	PASS 1
