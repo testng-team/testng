@@ -1,6 +1,7 @@
 package test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Comparator;
 import java.util.List;
@@ -55,14 +56,10 @@ public class GraphTest {
 
   @Test
   public void cycleShouldBeCorrect() {
-    Graph<String> g = null;
-    try {
-      g = createCyclicGraph();
-      g.topologicalSort();
-    } catch (TestNGException ex) {
-      Tarjan<String> t = new Tarjan<>(g, "1");
-      assertThat(t.getCycle().size()).isEqualTo(3);
-    }
+    Graph<String> g = createCyclicGraph();
+    assertThatThrownBy(g::topologicalSort).isInstanceOf(TestNGException.class);
+    Tarjan<String> t = new Tarjan<>(g, "1");
+    assertThat(t.getCycle().size()).isEqualTo(3);
   }
 
   private Graph<String> createCyclicGraph() {
