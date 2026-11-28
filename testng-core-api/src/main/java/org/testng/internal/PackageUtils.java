@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -114,6 +116,12 @@ public class PackageUtils {
       if (canonical != null && !canonical.equals(fragment)) {
         paths.add(toMatchedPath(canonical));
       }
+      // Before JDK 24, getCanonicalPath does not resolve symbolic links on Windows (JDK-8003887),
+      // so an entry through a link matched nothing there. The real path resolves them everywhere.
+      String real = realPath(fragment);
+      if (real != null && !real.equals(fragment) && !real.equals(canonical)) {
+        paths.add(toMatchedPath(real));
+      }
     }
 
     String[] result = paths.toArray(new String[0]);
@@ -142,6 +150,19 @@ public class PackageUtils {
       return new File(fragment).getCanonicalPath();
     } catch (IOException e) {
       // The entry as written can still match.
+      return null;
+    }
+  }
+
+  private static @Nullable String realPath(String fragment) {
+    if (fragment.isEmpty()) {
+      return null;
+    }
+    try {
+      return Path.of(fragment).toRealPath().toString();
+    } catch (IOException | InvalidPathException e) {
+      // An entry that does not exist has no real path. It can still match as written or through
+      // its canonical path.
       return null;
     }
   }
