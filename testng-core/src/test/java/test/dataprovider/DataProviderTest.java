@@ -572,13 +572,33 @@ public class DataProviderTest extends SimpleBaseTest {
     assertThat(listener.getSucceedMethodNames()).containsExactly("test1(Cedric)", "test1(Alois)");
   }
 
-  @Test(description = "GITHUB-3482")
-  public void shouldNotThrowConcurrentModificationException() {
-    InvokedMethodNameListener listener = run(ParallelDataProvider2Sample.class);
+  @DataProvider(name = "dataProviderPoolModes")
+  public Object[][] dataProviderPoolModes() {
+    // MethodRunner runs parallel data-provider rows on one of three pools: a pool of its own for
+    // each data-driven invocation, one data-provider pool shared by the suite, or the global
+    // ForkJoinPool. The last one runs the rows through a different code path (work-stealing).
+    return new Object[][] {
+      {"dedicated data-provider pool", false, false},
+      {"shared data-provider pool", true, false},
+      {"global thread pool", false, true}
+    };
+  }
 
-    assertThat(listener.getFailedMethodNames()).isEmpty();
+  @Test(description = "GITHUB-3482, GITHUB-3623", dataProvider = "dataProviderPoolModes")
+  public void shouldNotThrowConcurrentModificationException(
+      String poolMode, boolean shareThreadPoolForDataProviders, boolean useGlobalThreadPool) {
+    TestNG testng = create(ParallelDataProvider2Sample.class);
+    testng.shareThreadPoolForDataProviders(shareThreadPoolForDataProviders);
+    testng.shouldUseGlobalThreadPool(useGlobalThreadPool);
+    InvokedMethodNameListener listener = run(false, testng);
+
+    assertThat(listener.getFailedMethodNames()).as("failed rows on the %s", poolMode).isEmpty();
+    assertThat(listener.getFailedBeforeInvocationMethodNames())
+        .as("rows that failed before invocation on the %s", poolMode)
+        .isEmpty();
+    assertThat(listener.getSkippedMethodNames()).as("skipped rows on the %s", poolMode).isEmpty();
     List<String> succeeded = listener.getSucceedMethodNames();
-    assertThat(succeeded).hasSize(2_000);
+    assertThat(succeeded).as("passed rows on the %s", poolMode).hasSize(2_000);
     // The provider supplies rows 0 to 999, and invocationCount = 2 runs each row twice.
     Map<String, Long> runsPerRow =
         succeeded.stream()
@@ -587,7 +607,7 @@ public class DataProviderTest extends SimpleBaseTest {
         IntStream.range(0, 1_000)
             .boxed()
             .collect(Collectors.toMap(row -> "checkCME(" + row + ")", row -> 2L));
-    assertThat(runsPerRow).isEqualTo(expected);
+    assertThat(runsPerRow).as("runs per row on the %s", poolMode).isEqualTo(expected);
   }
 
   @Test(description = "GITHUB-2565", dataProvider = "2565")
