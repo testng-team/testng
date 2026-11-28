@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -159,7 +159,7 @@ public class PackageUtils {
       return null;
     }
     try {
-      return Paths.get(fragment).toRealPath().toString();
+      return Path.of(fragment).toRealPath().toString();
     } catch (IOException | InvalidPathException e) {
       // An entry that does not exist has no real path. It can still match as written or through
       // its canonical path.
