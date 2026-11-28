@@ -4,16 +4,24 @@ import org.assertj.core.api.Assertions.assertThat
 
 import org.testng.IReporter
 import org.testng.ISuite
+import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
+import org.testng.internal.TestResult
+import org.testng.internal.Utils
 import org.testng.internal.paramhandler.FakeSuite
 import org.testng.reporters.XMLStringBuffer
+import org.testng.xml.XmlClass
 import org.testng.xml.XmlSuite
+import org.testng.xml.XmlSuite.ParallelMode
 import test.SimpleBaseTest
 
 class TimesPanelTest : SimpleBaseTest() {
 
     companion object {
         const val GITHUB_1931 = "GITHUB-1931 [NPE] TimesPanel.maxTime(ISuite suite)"
+
+        /** Two results that ran side by side, for the same 100 ms. */
+        private val SAME_WINDOW = listOf(1_000L to 1_100L, 1_000L to 1_100L)
     }
 
     @Test(description = GITHUB_1931)
@@ -60,6 +68,102 @@ class TimesPanelTest : SimpleBaseTest() {
         assertThat(methodCells.map { it.groupValues[1] }).containsExactly("0", "1")
     }
 
+    @DataProvider
+    fun runningTimes(): Array<Array<Any>> =
+        arrayOf(
+            arrayOf(ParallelMode.CLASSES, listOf(SAME_WINDOW), "100 ms"),
+            arrayOf(ParallelMode.METHODS, listOf(SAME_WINDOW), "100 ms"),
+            arrayOf(ParallelMode.INSTANCES, listOf(SAME_WINDOW), "100 ms"),
+            // Partly overlapping: from the first start to the last end.
+            arrayOf(
+                ParallelMode.METHODS,
+                listOf(listOf(1_000L to 1_100L, 1_050L to 1_150L)),
+                "150 ms",
+            ),
+            // Two <test>s run one after the other, even when the methods in each run in parallel.
+            arrayOf(
+                ParallelMode.METHODS,
+                listOf(SAME_WINDOW, listOf(1_200L to 1_300L, 1_200L to 1_300L)),
+                "200 ms",
+            ),
+            // One after another, with a gap that no test ran in: the sum, as before.
+            arrayOf(ParallelMode.NONE, listOf(listOf(1_000L to 1_100L, 1_150L to 1_250L)), "200 ms"),
+        )
+
+    @Test(description = "GITHUB-1423", dataProvider = "runningTimes")
+    fun theSuiteTotalCountsOverlappingResultsOnce(
+        mode: ParallelMode,
+        intervalsPerTest: List<List<Pair<Long, Long>>>,
+        expected: String,
+    ) {
+        val suite = suiteWithResults(mode, intervalsPerTest)
+        val content = TimesPanel(Model(listOf(suite))).getContent(suite, XMLStringBuffer(""))
+
+        assertThat(totalRunningTimeOf(content)).isEqualTo("Total running time: $expected")
+    }
+
+    @Test(description = "GITHUB-1423: parallel=\"tests\" still reports its longest <test>")
+    fun testsInParallelReportTheLongestTest() {
+        val suite = suiteWithResults(ParallelMode.TESTS, listOf(SAME_WINDOW, SAME_WINDOW))
+        val longest = suite.results.values.maxOf { Utils.durationOf(it.testContext) }
+        val content = TimesPanel(Model(listOf(suite))).getContent(suite, XMLStringBuffer(""))
+
+        assertThat(longest).`as`("the longest <test>, in ms").isLessThan(1_000)
+        assertThat(totalRunningTimeOf(content)).isEqualTo("Total running time: $longest ms")
+    }
+
+    /**
+     * Runs one <test> of [TwoMethodsSample] per entry of [intervalsPerTest], then swaps the two
+     * results of each for ones that started and ended at the given millis, so the totals do not
+     * depend on how long anything really took.
+     */
+    private fun suiteWithResults(
+        mode: ParallelMode,
+        intervalsPerTest: List<List<Pair<Long, Long>>>,
+    ): ISuite {
+        val xmlSuite = createXmlSuite("GITHUB-1423").apply { setParallel(mode) }
+        intervalsPerTest.indices.forEach {
+            createXmlTest(xmlSuite, "test-$it").apply {
+                xmlClasses = listOf(XmlClass(TwoMethodsSample::class.java))
+            }
+        }
+        val captured = mutableListOf<ISuite>()
+        val tng = create(xmlSuite)
+        tng.addListener(
+            object : IReporter {
+                override fun generateReport(
+                    xmlSuites: List<XmlSuite>,
+                    suites: List<ISuite>,
+                    outputDirectory: String,
+                ) {
+                    captured.addAll(suites)
+                }
+            }
+        )
+        tng.run()
+
+        val suite = captured.single()
+        intervalsPerTest.forEachIndexed { index, intervals ->
+            val context = suite.results.getValue("test-$index").testContext
+            val passed = context.passedTests
+            val ran = passed.allResults.sortedBy { it.method.methodName }
+            assertThat(ran).hasSameSizeAs(intervals)
+            ran.zip(intervals).forEach { (result, interval) ->
+                passed.removeResult(result)
+                passed.addResult(
+                    TestResult.newEndTimeAwareTestResult(
+                            result.method,
+                            context,
+                            null,
+                            interval.first,
+                        )
+                        .apply { endMillis = interval.second }
+                )
+            }
+        }
+        return suite
+    }
+
     private fun totalRunningTimeOf(content: String): String =
         Regex("""<span class="suite-total-time">([^<]*)</span>""").find(content)!!.groupValues[1]
 
@@ -79,6 +183,12 @@ class TimesPanelTest : SimpleBaseTest() {
         )
         tng.run()
         return captured
+    }
+
+    class TwoMethodsSample {
+        @Test fun first() {}
+
+        @Test fun second() {}
     }
 
     /** Sleeps so the durations the panel sums are not all zero. */

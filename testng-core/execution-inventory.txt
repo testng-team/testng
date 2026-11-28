@@ -1100,9 +1100,13 @@ org.testng.reporters.jq.ModelParametersTest#passedConfigurationKeepsItsInvocatio
 org.testng.reporters.jq.ModelParametersTest#valuesKeepTheirPlainRenderingAndOrder	PASS 1
 org.testng.reporters.jq.TimesPanelTest#everyResultGetsOneRowOfItsOwn	PASS 1
 org.testng.reporters.jq.TimesPanelTest#generateReportTimesPanelContentForSuiteWithoutStartedTests	PASS 1
+org.testng.reporters.jq.TimesPanelTest#testsInParallelReportTheLongestTest	PASS 1
+org.testng.reporters.jq.TimesPanelTest#theSuiteTotalCountsOverlappingResultsOnce	PASS 6
 org.testng.reporters.jq.TimesPanelTest#theSuiteTotalIsNotAccumulatedAcrossCalls	PASS 1
 org.testng.reporters.jq.TimesPanelTest$SleepingSample#first	PASS 1
 org.testng.reporters.jq.TimesPanelTest$SleepingSample#second	PASS 1
+org.testng.reporters.jq.TimesPanelTest$TwoMethodsSample#first	PASS 1
+org.testng.reporters.jq.TimesPanelTest$TwoMethodsSample#second	PASS 1
 org.testng.skip.BeforeClassSkipExceptionTest#testExceptionDetailsUsingGroupsWithFailures	PASS 1
 org.testng.skip.BeforeClassSkipExceptionTest#testExceptionDetailsWhenClassHasExplicitSkipInConfiguration	PASS 1
 org.testng.skip.BeforeClassSkipExceptionTest#testExceptionDetailsWhenClassHasMultipleFailures	PASS 1

@@ -1,5 +1,7 @@
 package org.testng.reporters.jq;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +60,6 @@ public class TimesPanel extends BaseMultiSuitePanel {
             + ");\n");
 
     int index = 0;
-    long total = 0;
     // One builder, reused: a row is about 160 characters, so a fresh default-capacity one grows
     // through four array copies before it fits.
     StringBuilder row = new StringBuilder(256);
@@ -86,7 +87,6 @@ public class TimesPanel extends BaseMultiSuitePanel {
           .append(", 3, ")
           .append(time)
           .append(");\n");
-      total += time;
       xsb.addString(row.toString());
       index++;
     }
@@ -94,7 +94,7 @@ public class TimesPanel extends BaseMultiSuitePanel {
       // Assigned rather than added to: getContent is public and this method used to add each
       // duration again on every call, so a second call reported twice the suite's running time.
       // A suite that started nothing still records nothing, which is what maxTime reads as zero.
-      m_totalTime.put(suite.getName(), total);
+      m_totalTime.put(suite.getName(), runningTime(allTestResults));
     }
 
     xsb.addString(
@@ -143,6 +143,29 @@ public class TimesPanel extends BaseMultiSuitePanel {
 
   private static long time(ITestResult o1) {
     return o1.getEndMillis() - o1.getStartMillis();
+  }
+
+  /**
+   * The time during which at least one of the results was running. Results that overlap, as they do
+   * when a suite runs classes, methods or instances in parallel, count once. Results that run one
+   * after another never overlap, so for them this is the sum of their durations. See GITHUB-1423.
+   */
+  private static long runningTime(List<ITestResult> results) {
+    List<ITestResult> byStart = new ArrayList<>(results);
+    byStart.sort(Comparator.comparingLong(ITestResult::getStartMillis));
+    long total = 0;
+    long spanStart = byStart.get(0).getStartMillis();
+    long spanEnd = byStart.get(0).getEndMillis();
+    for (ITestResult result : byStart.subList(1, byStart.size())) {
+      if (result.getStartMillis() > spanEnd) {
+        total += spanEnd - spanStart;
+        spanStart = result.getStartMillis();
+        spanEnd = result.getEndMillis();
+      } else {
+        spanEnd = Math.max(spanEnd, result.getEndMillis());
+      }
+    }
+    return total + (spanEnd - spanStart);
   }
 
   private long maxTime(ISuite suite) {
