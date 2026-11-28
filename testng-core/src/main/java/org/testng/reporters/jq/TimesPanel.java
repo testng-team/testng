@@ -148,7 +148,13 @@ public class TimesPanel extends BaseMultiSuitePanel {
   /**
    * The time during which at least one of the results was running. Results that overlap, as they do
    * when a suite runs classes, methods or instances in parallel, count once. Results that run one
-   * after another never overlap, so for them this is the sum of their durations. See GITHUB-1423.
+   * after another never overlap, so for them this is the sum of their durations, as it always was.
+   * See GITHUB-1423.
+   *
+   * <p>This is not the elapsed wall-clock time of the suite: a gap in which no test method ran,
+   * such as time spent in configuration methods or between two {@code <test>}s, does not count. The
+   * time from the first start to the last end would count those gaps too, and so change the total
+   * that a suite running one test after another has always reported.
    */
   private static long runningTime(List<ITestResult> results) {
     List<ITestResult> byStart = new ArrayList<>(results);
@@ -168,6 +174,10 @@ public class TimesPanel extends BaseMultiSuitePanel {
     return total + (spanEnd - spanStart);
   }
 
+  /**
+   * The total running time of {@code suite}: with {@code parallel="tests"}, the duration of its
+   * longest {@code <test>}, as before; otherwise {@link #runningTime(List)}.
+   */
   private long maxTime(ISuite suite) {
     boolean testsInParallel = XmlSuite.ParallelMode.TESTS.equals(suite.getXmlSuite().getParallel());
     Long result = m_totalTime.get(suite.getName());
