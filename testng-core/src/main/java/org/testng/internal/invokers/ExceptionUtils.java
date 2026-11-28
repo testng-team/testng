@@ -46,8 +46,11 @@ final class ExceptionUtils {
     return configResults.iterator().next().getThrowable();
   }
 
+  // Identity, not equals: two @Factory instances can be equal and still have their own
+  // configuration results. TestNG does not own the equals method of a test class.
+  @SuppressWarnings("ReferenceEquality")
   private static boolean sameInstance(ITestResult configResult, Object instance) {
-    return instance.equals(configResult.getInstance());
+    return configResult.getInstance() == instance;
   }
 
   private static @Nullable Throwable getConfigFailureException(ITestContext context) {
